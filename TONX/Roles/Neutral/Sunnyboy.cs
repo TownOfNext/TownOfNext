@@ -15,16 +15,15 @@ public sealed class Sunnyboy : RoleBase, IAdditionalWinner
             typeof(Sunnyboy),
             player => new Sunnyboy(player),
             CustomRoles.Sunnyboy,
-         () =>  RoleTypes.Scientist,
+            () => RoleTypes.Scientist,
             CustomRoleTypes.Neutral,
             75_1_2_1000,
             null,
-            "sb|Ñô¹â|Ñô¹â¿ªÀÊ",
-            "#ff9902",
-           true
-           #if RELEASE
+            "sb|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½â¿ªï¿½ï¿½",
+            "#ff9902"
+            #if RELEASE
 ,
-            Hidden: true
+            Hidden: true // For Debug
 #endif
 
         );
