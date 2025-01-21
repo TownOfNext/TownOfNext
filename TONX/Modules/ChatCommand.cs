@@ -44,7 +44,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     text = "Winner: " + string.Join(",", Main.winnerNameList);
                 return (MsgRecallMode.Block, text);
             }),
-             new(["level"], CommandAccess.Host, mc =>
+            new(["level"], CommandAccess.Host, mc =>
             {
                 string text = GetString("Message.AllowLevelRange");
                 if (int.TryParse(mc.Args, out int level) && level is >= 1 and <= 999)
@@ -53,7 +53,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
                 }
                 return (MsgRecallMode.Block, text);
-            }),new(["l", "lastresult"], CommandAccess.All, mc =>
+            }),
+            new(["l", "lastresult"], CommandAccess.All, mc =>
             {
                 Utils.ShowKillLog(mc.Player.PlayerId);
                 Utils.ShowLastResult(mc.Player.PlayerId);
@@ -65,7 +66,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (text == null) Main.HostNickName = mc.Args;
                 return (MsgRecallMode.Block, text);
             }),
-                        new(["role", "r"], CommandAccess.All, mc =>
+            new(["role", "r"], CommandAccess.All, mc =>
             {
                 SendRolesInfo(mc.Args, mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
@@ -306,17 +307,25 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
-            var roleinfo = role.GetRoleInfo();
-            if (!role.IsAddon())
+            if (role.IsAddon())
             {
-
-                var roleDescription = roleinfo.Description;
-                var rff = roleDescription.FullFormatHelp;
-                Utils.SendMessage(rff, playerId);
+                Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role),playerId);
             }
-            Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role) ??
+            else
+            {
+                Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp,playerId);
+            }
+            // var roleinfo = role.GetRoleInfo();
+            // if (!role.IsAddon())
+            // {
+
+                // var roleDescription = roleinfo.Description;
+                // var rff = roleDescription.FullFormatHelp;
+                // Utils.SendMessage(rff, playerId);
+            // }
+            // Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role) ??
         // roleInfoがない役職
-        $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{AddonDescription.FullFormatHelpBySubRole(role)}", playerId);
+        // $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{AddonDescription.FullFormatHelpBySubRole(role)}", playerId);
         }
     }
     public static void SpecifyRole(string input, byte playerId)
