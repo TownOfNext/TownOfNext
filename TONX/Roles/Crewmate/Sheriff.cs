@@ -97,7 +97,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral()).ToArray())
         {
             if (neutral is CustomRoles.SchrodingerCat) continue;
-            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
+            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
         foreach (var catType in EnumHelper.GetAllValues<SchrodingerCat.TeamType>())
@@ -106,7 +106,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
             {
                 continue;
             }
-            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutrals);
+            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
     }

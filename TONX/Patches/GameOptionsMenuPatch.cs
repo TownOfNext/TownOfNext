@@ -286,17 +286,6 @@ namespace TONX
             }
             
             item.OptionBehaviour.gameObject.SetActive(enabled);
-            if (item is TextOptionItem)
-            {
-                foreach (var button in stringOption.GetComponentsInChildren<PassiveButton>())
-                {
-                    button.gameObject.SetActive(false);
-                }
-                stringOption.LabelBackground.gameObject.SetActive(false);
-                stringOption.ValueText.gameObject.SetActive(false);
-                // stringOption.TitleText.gameObject.SetActive(true);
-
-            }
 
             if (enabled)
             {
@@ -314,6 +303,8 @@ namespace TONX
                     offset,
                     -2f);
 
+                stringOption.ValueText.text = item.GetString();
+
                 isOdd = !isOdd;
             }
         }
@@ -329,7 +320,17 @@ namespace TONX
             var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
             if (option == null) return true;
 
-            if (option is TextOptionItem) option.OptionBehaviour.ValueText.gameObject.SetActive(false);
+            if (option is TextOptionItem)
+            {
+                foreach (var button in option.OptionBehaviour.GetComponentsInChildren<PassiveButton>())
+                {
+                    button.gameObject.SetActive(false);
+                }
+                option.OptionBehaviour.LabelBackground.gameObject.SetActive(false);
+                option.OptionBehaviour.ValueText.gameObject.SetActive(false);
+                // stringOption.TitleText.gameObject.SetActive(true);
+            }
+
             __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
             __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
             __instance.Value = __instance.oldValue = option.CurrentValue;
