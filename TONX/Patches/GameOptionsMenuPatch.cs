@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using AmongUs.GameOptions;
@@ -15,139 +16,125 @@ namespace TONX
     [HarmonyPatch(typeof(GameSettingMenu))]
     public static class GameSettingMenuPatch
     {
-        private static GameOptionsMenu tonxSettingsTab;
-        private static PassiveButton tonxSettingsButton;
-        public static CategoryHeaderMasked SystemSettingsCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked GameSettingsCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked ImpostorRoleCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked CrewmateRoleCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked NeutralRoleCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked AddOnCategoryHeader { get; private set; }
-        public static CategoryHeaderMasked OtherRoleCategoryHeader { get; private set; }
+        private static List<GameOptionsMenu> tonxSettingsTab = new List<GameOptionsMenu>();
+        private static List<PassiveButton> tonxSettingsButton = new List<PassiveButton>();
+        public static List<string> TONXMenuName = new List<string>();
+        public static List<CategoryHeaderMasked> CategoryHeaders = new List<CategoryHeaderMasked>();
+        // 左侧按钮坐标
+        private static Vector3 buttonPosition = new(-2.55f, -0.1f, 0f);
+        // 本体按钮大小
+        private static Vector3 buttonSize = new(0.45f, 0.6f, 1f);
 
         [HarmonyPatch(nameof(GameSettingMenu.Start)), HarmonyPostfix]
         public static void StartPostfix(GameSettingMenu __instance)
         {
-            tonxSettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
-            tonxSettingsTab.name = TONXMenuName;
-            var vanillaOptions = tonxSettingsTab.GetComponentsInChildren<OptionBehaviour>();
-            foreach (var vanillaOption in vanillaOptions)
-            {
-                Object.Destroy(vanillaOption.gameObject);
-            }
+            // 重置列表
+            tonxSettingsTab = new List<GameOptionsMenu>();
+            tonxSettingsButton = new List<PassiveButton>();
+            TONXMenuName = new List<string>();
+            CategoryHeaders = new List<CategoryHeaderMasked>();
 
-            // TONX設定ボタンのスペースを作るため，左側の要素を上に詰める
-            var gameSettingsLabel = __instance.transform.Find("GameSettingsLabel");
-            if (gameSettingsLabel)
-            {
-                gameSettingsLabel.localPosition += Vector3.up * 0.2f;
-            }
-            __instance.MenuDescriptionText.transform.parent.localPosition += Vector3.up * 0.4f;
-            __instance.GamePresetsButton.transform.parent.localPosition += Vector3.up * 0.5f;
+            __instance.GamePresetsButton.transform.parent.localPosition = buttonPosition;
+            __instance.GamePresetsButton.transform.parent.localScale = buttonSize;
 
             // TONX設定ボタン
-            tonxSettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
-            tonxSettingsButton.name = "TONXSettingsButton";
-            tonxSettingsButton.transform.localPosition = __instance.RoleSettingsButton.transform.localPosition + (__instance.RoleSettingsButton.transform.localPosition - __instance.GameSettingsButton.transform.localPosition);
-            tonxSettingsButton.buttonText.DestroyTranslator();
-            tonxSettingsButton.buttonText.text = GetString("TONXSettingsButtonLabel");
-            var activeSprite = tonxSettingsButton.activeSprites.GetComponent<SpriteRenderer>();
-            var selectedSprite = tonxSettingsButton.selectedSprites.GetComponent<SpriteRenderer>();
-            activeSprite.color = selectedSprite.color = Main.UnityModColor;
-            tonxSettingsButton.OnClick.AddListener((Action)(() =>
+            foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
-                __instance.ChangeTab(-1, false);  // バニラタブを閉じる
-                tonxSettingsTab.gameObject.SetActive(true);
-                __instance.MenuDescriptionText.text = GetString("TONXSettingsDescription");
-                tonxSettingsButton.SelectButton(true);
-            }));
-
-            // 各カテゴリの見出しを作成
-            SystemSettingsCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.SystemSettings");
-            GameSettingsCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.GameSettings");
-            ImpostorRoleCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.ImpostorRoles");
-            CrewmateRoleCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.CrewmateRoles");
-            NeutralRoleCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.NeutralRoles");
-            AddOnCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.Addons");
-            OtherRoleCategoryHeader = CreateCategoryHeader(__instance, tonxSettingsTab, "TabGroup.OtherRoles");
-
-            // 各設定スイッチを作成
-            var template = __instance.GameSettingsTab.stringOptionOrigin;
-            var scOptions = new Il2CppSystem.Collections.Generic.List<OptionBehaviour>();
-            foreach (var option in OptionItem.AllOptions)
-            {
-                if (option.OptionBehaviour == null)
+                Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
+                Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
+                var SettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
+                SettingsTab.name = "Tab" + tab.ToString();
+                TONXMenuName.Add(SettingsTab.name);
+                var vanillaOptions = SettingsTab.GetComponentsInChildren<OptionBehaviour>();
+                foreach (var vanillaOption in vanillaOptions)
                 {
-                    var stringOption = Object.Instantiate(template, tonxSettingsTab.settingsContainer);
-                    scOptions.Add(stringOption);
-                    if (option is not TextOptionItem)
+                    Object.Destroy(vanillaOption.gameObject);
+                }
+
+                var SettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
+                SettingsButton.name = "Button" + tab.ToString();
+                SettingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
+                SettingsButton.buttonText.DestroyTranslator();
+                SettingsButton.buttonText.text = GetString($"TabGroup.{tab}");
+                var activeSprite = SettingsButton.activeSprites.GetComponent<SpriteRenderer>();
+                var selectedSprite = SettingsButton.selectedSprites.GetComponent<SpriteRenderer>();
+                Color32 buttonColor = tab switch
+                {
+                    TabGroup.SystemSettings => Main.UnityModColor,
+                    TabGroup.GameSettings => new Color32(89, 239, 131, 255),
+                    TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
+                    TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
+                    TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
+                    TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
+                    TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
+                    _ => new Color32(225, 225, 225, 255),
+                };
+                Logger.Info($"{tab},{buttonColor}", "Start");
+                activeSprite.color = selectedSprite.color = buttonColor;
+                SettingsButton.OnClick.AddListener((Action)(() =>
+                {
+                    __instance.ChangeTab((int)tab+3, false);  // バニラタブを閉じる
+                    SettingsTab.gameObject.SetActive(true);
+                    __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
+                    SettingsButton.SelectButton(true);
+                }));
+
+                // 各設定スイッチを作成
+                var template = __instance.GameSettingsTab.stringOptionOrigin;
+                var scOptions = new Il2CppSystem.Collections.Generic.List<OptionBehaviour>();
+                foreach (var option in OptionItem.AllOptions)
+                {
+                    if (option.Tab != (TabGroup)tab) continue;
+                    if (option.OptionBehaviour == null)
                     {
+                        if (option.IsText) 
+                        {
+                            CategoryHeaders.Add(CreateCategoryHeader(__instance, SettingsTab, option));
+                            continue;
+                        }
+                        var stringOption = Object.Instantiate(template, SettingsTab.settingsContainer);
+                        scOptions.Add(stringOption);
                         stringOption.SetClickMask(__instance.GameSettingsButton.ClickMask);
                         stringOption.SetUpFromData(stringOption.data, GameOptionsMenu.MASK_LAYER);
-                    }
-                    stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                    stringOption.TitleText.text = option.Name;
-                    stringOption.Value = stringOption.oldValue = option.CurrentValue;
-                    stringOption.ValueText.text = option.GetString();
-                    stringOption.name = option.Name;
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.TitleText.text = option.Name;
+                        stringOption.Value = stringOption.oldValue = option.CurrentValue;
+                        stringOption.ValueText.text = option.GetString();
+                        stringOption.name = option.Name;
 
-                    // タイトルの枠をデカくする
-                    var indent = 0f;  // 親オプションがある場合枠の左を削ってインデントに見せる
-                    var parent = option.Parent;
-                    while (parent != null)
-                    {
-                        indent += 0.15f;
-                        parent = parent.Parent;
-                    }
-                    stringOption.LabelBackground.size += new Vector2(2f - indent * 2, 0f);
-                    stringOption.LabelBackground.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
-                    stringOption.TitleText.rectTransform.sizeDelta += new Vector2(2f - indent * 2, 0f);
-                    stringOption.TitleText.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
+                        // タイトルの枠をデカくする
+                        var indent = 0f;  // 親オプションがある場合枠の左を削ってインデントに見せる
+                        var parent = option.Parent;
+                        while (parent != null)
+                        {
+                            indent += 0.15f;
+                            parent = parent.Parent;
+                        }
+                        stringOption.LabelBackground.size += new Vector2(2f - indent * 2, 0f);
+                        stringOption.LabelBackground.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
+                        stringOption.TitleText.rectTransform.sizeDelta += new Vector2(2f - indent * 2, 0f);
+                        stringOption.TitleText.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
 
-                    option.OptionBehaviour = stringOption;
+                        option.OptionBehaviour = stringOption;
+                    }
+                    option.OptionBehaviour.gameObject.SetActive(true);
                 }
-                option.OptionBehaviour.gameObject.SetActive(true);
-            }
-            tonxSettingsTab.Children = scOptions;
-            tonxSettingsTab.gameObject.SetActive(false);
+                SettingsTab.Children = scOptions;
+                SettingsTab.gameObject.SetActive(false);
 
-            // 各カテゴリまでスクロールするボタンを作成
-            var jumpButtonY = -0.45f;
-            var jumpToSysButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_SystemSettings.png", ref jumpButtonY, SystemSettingsCategoryHeader);
-            var jumpToGameButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_GameSettings.png", ref jumpButtonY, GameSettingsCategoryHeader);
-            var jumpToImpButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_ImpostorRoles.png", ref jumpButtonY, ImpostorRoleCategoryHeader);
-            var jumpToCrewButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_CrewmateRoles.png", ref jumpButtonY, CrewmateRoleCategoryHeader);
-            var jumpToNeutralButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_NeutralRoles.png", ref jumpButtonY, NeutralRoleCategoryHeader);
-            var jumpToAddOnButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_Addons.png", ref jumpButtonY, AddOnCategoryHeader);
-            var jumpToOtherButton = CreateJumpToCategoryButton(__instance, tonxSettingsTab, "TONX.Resources.Images.TabIcon_OtherRoles.png", ref jumpButtonY, OtherRoleCategoryHeader);
-        }
-        private static MapSelectButton CreateJumpToCategoryButton(GameSettingMenu __instance, GameOptionsMenu tonxTab, string resourcePath, ref float localY, CategoryHeaderMasked jumpTo)
-        {
-            var image = Utils.LoadSprite(resourcePath, 100f);
-            var button = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
-            button.SetImage(image, GameOptionsMenu.MASK_LAYER);
-            button.transform.localPosition = new(7.1f, localY, -10f);
-            button.Button.ClickMask = tonxTab.ButtonClickMask;
-            button.Button.OnClick.AddListener((Action)(() =>
-            {
-                tonxTab.scrollBar.velocity = Vector2.zero;  // ドラッグの慣性によるスクロールを止める
-                var relativePosition = tonxTab.scrollBar.transform.InverseTransformPoint(jumpTo.transform.position);  // Scrollerのローカル空間における座標に変換
-                var scrollAmount = CategoryJumpY - relativePosition.y;
-                tonxTab.scrollBar.Inner.localPosition = tonxTab.scrollBar.Inner.localPosition + Vector3.up * scrollAmount;  // 強制スクロール
-                tonxTab.scrollBar.ScrollRelative(Vector2.zero);  // スクロール範囲内に収め，スクロールバーを更新する
-            }));
-            button.Button.activeSprites.transform.GetChild(0).gameObject.SetActive(false);  // チェックボックスを消す
-            localY -= JumpButtonSpacing;
-            return button;
+                // 存储模组设置按钮
+                tonxSettingsTab.Add(SettingsTab);
+                tonxSettingsButton.Add(SettingsButton);
+            }
         }
         private const float JumpButtonSpacing = 0.6f;
         // ジャンプしたカテゴリヘッダのScrollerとの相対Y座標がこの値になる
         private const float CategoryJumpY = 2f;
-        private static CategoryHeaderMasked CreateCategoryHeader(GameSettingMenu __instance, GameOptionsMenu tonxTab, string translationKey)
+        private static CategoryHeaderMasked CreateCategoryHeader(GameSettingMenu __instance, GameOptionsMenu tonxTab, OptionItem option)
         {
             var categoryHeader = Object.Instantiate(__instance.GameSettingsTab.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, tonxTab.settingsContainer);
-            categoryHeader.name = translationKey;
-            categoryHeader.Title.text = GetString(translationKey);
+            categoryHeader.name = option.Name;
+            categoryHeader.Title.text = option.GetName();
             var maskLayer = GameOptionsMenu.MASK_LAYER;
             categoryHeader.Background.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);
             if (categoryHeader.Divider != null)
@@ -162,22 +149,26 @@ namespace TONX
 
         // 初めてロール設定を表示したときに発生する例外(バニラバグ)の影響を回避するためPrefix
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
-        public static void ChangeTabPrefix(bool previewOnly)
+        public static void ChangeTabPrefix(int tabNum, bool previewOnly)
         {
             if (!previewOnly)
             {
-                if (tonxSettingsTab)
+                foreach (var tab in tonxSettingsTab)
                 {
-                    tonxSettingsTab.gameObject.SetActive(false);
+                    if (tab)
+                    {
+                        tab.gameObject.SetActive(false);
+                    }
                 }
-                if (tonxSettingsButton)
+                foreach (var button in tonxSettingsButton)
                 {
-                    tonxSettingsButton.SelectButton(false);
+                    if (button)
+                    {
+                        button.SelectButton(false);
+                    }
                 }
             }
         }
-
-        public const string TONXMenuName = "TownOfNextTab";
     }
 
     [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Initialize))]
@@ -217,59 +208,53 @@ namespace TONX
 
         public static void Postfix(GameOptionsMenu __instance)
         {
-            if (__instance.name != GameSettingMenuPatch.TONXMenuName) return;
+            if (!GameSettingMenuPatch.TONXMenuName.Contains(__instance.name)) return;
 
-            _timer += Time.deltaTime;
-            if (_timer < 0.1f) return;
-            _timer = 0f;
+            foreach (var tab in Enum.GetValues(typeof(TabGroup)))
+            {
+                if (__instance.name != "Tab" + tab.ToString()) continue;
 
-            var offset = 2.7f;
-            var isOdd = true;
+                _timer += Time.deltaTime;
+                if (_timer < 0.1f) return;
+                _timer = 0f;
 
-            UpdateCategoryHeader(GameSettingMenuPatch.SystemSettingsCategoryHeader, ref offset);
-            foreach (var option in OptionItem.SystemSettingsOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.GameSettingsCategoryHeader, ref offset);
-            foreach (var option in OptionItem.GameSettingsOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.ImpostorRoleCategoryHeader, ref offset);
-            foreach (var option in OptionItem.ImpostorRoleOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.CrewmateRoleCategoryHeader, ref offset);
-            foreach (var option in OptionItem.CrewmateRoleOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.NeutralRoleCategoryHeader, ref offset);
-            foreach (var option in OptionItem.NeutralRoleOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.AddOnCategoryHeader, ref offset);
-            foreach (var option in OptionItem.AddOnOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
-            UpdateCategoryHeader(GameSettingMenuPatch.OtherRoleCategoryHeader, ref offset);
-            foreach (var option in OptionItem.OtherRoleOptions)
-            {
-                UpdateOption(ref isOdd, option, ref offset);
-            }
+                var offset = 2.4f;
+                var isOdd = true;
+                var isFirst = true;
 
-            __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
+                foreach (var option in OptionItem.AllOptions)
+                {
+                    if ((TabGroup)tab != option.Tab) continue;
+                    if (option.IsText)
+                    {
+                        if (isFirst)
+                        {
+                            offset += 0.3f;
+                            isFirst = false;
+                        }
+                        foreach (var categoryHeader in GameSettingMenuPatch.CategoryHeaders)
+                        {
+                            if (option.Name == categoryHeader.name)
+                            {
+                                UpdateCategoryHeader(categoryHeader, ref offset);
+                                continue;
+                            }
+                        }
+                        continue;
+                    }
+                    if (isFirst) isFirst = false;
+                    UpdateOption(ref isOdd, option, ref offset, tab);
+                }
+
+                __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
+            }
         }
         private static void UpdateCategoryHeader(CategoryHeaderMasked categoryHeader, ref float offset)
         {
             offset -= GameOptionsMenu.HEADER_HEIGHT;
             categoryHeader.transform.localPosition = new(GameOptionsMenu.HEADER_X, offset, -2f);
         }
-        private static void UpdateOption(ref bool isOdd, OptionItem item, ref float offset)
+        private static void UpdateOption(ref bool isOdd, OptionItem item, ref float offset, object tab)
         {
             if (item?.OptionBehaviour == null || item.OptionBehaviour.gameObject == null) return;
 
@@ -319,17 +304,6 @@ namespace TONX
         {
             var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
             if (option == null) return true;
-
-            if (option is TextOptionItem)
-            {
-                foreach (var button in option.OptionBehaviour.GetComponentsInChildren<PassiveButton>())
-                {
-                    button.gameObject.SetActive(false);
-                }
-                option.OptionBehaviour.LabelBackground.gameObject.SetActive(false);
-                option.OptionBehaviour.ValueText.gameObject.SetActive(false);
-                // stringOption.TitleText.gameObject.SetActive(true);
-            }
 
             __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
             __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
