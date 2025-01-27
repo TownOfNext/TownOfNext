@@ -67,7 +67,7 @@ namespace TONX
                     TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
                     TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
                     TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
-                    _ => new Color32(225, 225, 225, 255),
+                    _ => Color.white,
                 };
                 Logger.Info($"{tab},{buttonColor}", "Start");
                 activeSprite.color = selectedSprite.color = buttonColor;
