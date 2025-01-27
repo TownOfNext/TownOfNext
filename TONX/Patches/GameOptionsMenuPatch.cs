@@ -75,7 +75,7 @@ namespace TONX
                     __instance.ChangeTab((int)tab+3, false);  // バニラタブを閉じる
                     SettingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
-                    SettingsButton.SelectButton(true);                  
+                    SettingsButton.SelectButton(true);
                 }));
 
                 // 各設定スイッチを作成
