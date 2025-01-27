@@ -43,7 +43,7 @@ namespace TONX
                 Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
                 Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
                 var SettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
-                SettingsTab.name = "Tab" + tab.ToString();
+                SettingsTab.name = tab.ToString() + " TAB";
                 TONXMenuName.Add(SettingsTab.name);
                 var vanillaOptions = SettingsTab.GetComponentsInChildren<OptionBehaviour>();
                 foreach (var vanillaOption in vanillaOptions)
@@ -69,7 +69,6 @@ namespace TONX
                     TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
                     _ => Color.white,
                 };
-                Logger.Info($"{tab},{buttonColor}", "Start");
                 activeSprite.color = selectedSprite.color = buttonColor;
                 SettingsButton.OnClick.AddListener((Action)(() =>
                 {
@@ -149,8 +148,15 @@ namespace TONX
 
         // 初めてロール設定を表示したときに発生する例外(バニラバグ)の影響を回避するためPrefix
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
-        public static void ChangeTabPrefix(int tabNum, bool previewOnly)
+        public static bool ChangeTabPrefix(GameSettingMenu __instance, int tabNum, bool previewOnly)
         {
+            // 用于应对按下快捷键会触发预设按钮的bug
+            if (previewOnly && tabNum == 0)
+            {
+                if (!__instance.GamePresetsButton.beingHeldDown) return false;
+            }
+
+            // 用于应对CloseOverlayMenu失败的bug
             if (!previewOnly)
             {
                 foreach (var tab in tonxSettingsTab)
@@ -168,6 +174,7 @@ namespace TONX
                     }
                 }
             }
+            return true;
         }
     }
 
@@ -212,7 +219,7 @@ namespace TONX
 
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
-                if (__instance.name != "Tab" + tab.ToString()) continue;
+                if (__instance.name != tab.ToString() + " TAB") continue;
 
                 _timer += Time.deltaTime;
                 if (_timer < 0.1f) return;
