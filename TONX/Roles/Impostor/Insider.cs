@@ -41,8 +41,7 @@ public sealed class Insider : RoleBase, IImpostor
     private static void SetupOptionItem()
     {
         optionCanSeeMadmates = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeMadmates, false, false);
-        optionKillCountToSeeMadmates = IntegerOptionItem.Create(RoleInfo, 11, OptionName.InsiderKillCountToSeeMadmates, new(0, 15, 1), 2, false)
-            .SetParent(optionCanSeeMadmates)
+        optionKillCountToSeeMadmates = IntegerOptionItem.Create(RoleInfo, 11, OptionName.InsiderKillCountToSeeMadmates, new(0, 15, 1), 2, false, optionCanSeeMadmates)
             .SetValueFormat(OptionFormat.Times);
     }
 
