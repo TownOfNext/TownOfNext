@@ -14,7 +14,7 @@ public class MainMenuManagerPatch
     public static MainMenuManager Instance { get; private set; }
 
     public static GameObject InviteButton;
-    public static GameObject WebsiteButton;
+    //public static GameObject WebsiteButton;
     public static GameObject UpdateButton;
     public static GameObject PlayButton;
 
@@ -99,20 +99,20 @@ public class MainMenuManagerPatch
         string extraLinkName = "Github";
         string extraLinkUrl = Main.GithubRepoUrl;
         bool extraLinkEnabled = Main.ShowGithubUrl;
-        if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
-        {
-            extraLinkName = IsChineseUser ? "QQ群" : "Discord";
-            extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
-            extraLinkEnabled = true;
-        }
+        // if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
+        // {
+        //     extraLinkName = IsChineseUser ? "QQ群" : "Discord";
+        //     extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
+        //     extraLinkEnabled = true;
+        // }
 
-        if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
-        InviteButton.gameObject.SetActive(extraLinkEnabled);
-        InviteButton.name = "TONX Extra Link Button";
-
-        if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
-        WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
-        WebsiteButton.name = "TONX Website Button";
+         if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
+         InviteButton.gameObject.SetActive(extraLinkEnabled);
+         InviteButton.name = "TONX Extra Link Button";
+        
+         // if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
+         // WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
+         // WebsiteButton.name = "TONX Website Button";
 
         if (UpdateButton == null)
         {
