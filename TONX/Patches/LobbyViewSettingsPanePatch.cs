@@ -40,23 +40,29 @@ namespace TONX
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
                 Vector3 offset_up = new (1.6f * ((int)tab + 2), 0.18f, 0f);
-                Vector3 offset_down = new (1.6f * ((int)tab - 2), -0.18f, 0f);
-                var SettingsButton = Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
-                SettingsButton.name = tab.ToString() + " VIEWBUTTON";
-                SettingsButton.transform.localPosition = buttonPosition + (((int)tab < 2) ? offset_up : offset_down);
-                SettingsButton.transform.localScale = buttonSize;
-                SettingsButton.buttonText.DestroyTranslator();
-                SettingsButton.buttonText.text = GetString($"TabGroup.{tab}");
-                SettingsButton.OnClick.RemoveAllListeners();
-                SettingsButton.OnClick.AddListener((Action)(() => 
-                {
-                    __instance.ChangeTab((StringNames)((int)tab + 3551));
-                    SettingsButton.SelectButton(true);
-                }));
-                SettingsButton.OnMouseOut.RemoveAllListeners();
-                SettingsButton.OnMouseOver.RemoveAllListeners();
-                tonxSettingsButton.Add(SettingsButton);
+                Vector3 offset_down = new (1.6f * ((int)tab - 2), -0.2f, 0f);
+                tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
             }
+            tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
+        }
+
+        public static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset, string buttonText, int targetMenu)
+        {
+            var SettingsButton = Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
+            SettingsButton.name = buttonName;
+            SettingsButton.transform.localPosition = buttonPosition + offset;
+            SettingsButton.transform.localScale = buttonSize;
+            SettingsButton.buttonText.DestroyTranslator();
+            SettingsButton.buttonText.text = buttonText;
+            SettingsButton.OnClick.RemoveAllListeners();
+            SettingsButton.OnClick.AddListener((Action)(() => 
+            {
+                __instance.ChangeTab((StringNames)targetMenu);
+                SettingsButton.SelectButton(true);
+            }));
+            SettingsButton.OnMouseOut.RemoveAllListeners();
+            SettingsButton.OnMouseOver.RemoveAllListeners();
+            return SettingsButton;
         }
 
         [HarmonyPatch(nameof(LobbyViewSettingsPane.ChangeTab)), HarmonyPostfix]
@@ -68,10 +74,10 @@ namespace TONX
             }
             if ((int)category < 3551) return;
             __instance.taskTabButton.SelectButton(false);
-            CreateOptions(__instance);
+            CreateCustomOptions(__instance, (int)__instance.currentTab == 3558);
         }
 
-        public static void CreateOptions(LobbyViewSettingsPane __instance)
+        public static void CreateCustomOptions(LobbyViewSettingsPane __instance, bool isRolesOverview)
         {
             // 删除原版gameobject
             foreach (var vanillaOption in __instance.settingsInfo)
@@ -83,39 +89,34 @@ namespace TONX
             // 模组设置
             CategoryHeaders = new List<CategoryHeaderMasked>();
             var template = __instance.infoPanelOrigin;
-            foreach (var option in OptionItem.AllOptions)
+            if (isRolesOverview)
             {
-                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;  
-                
-                if (option.IsText)
+                foreach (var kvp in Options.CustomRoleSpawnChances)
                 {
-                    var categoryHeader = CreateCategoryHeader(__instance, option);
-                    CategoryHeaders.Add(categoryHeader);
-                    __instance.settingsInfo.Add(categoryHeader.gameObject);
-                    continue;
+                    var option = kvp.Value;
+                    var infoPanelOption = CreateOption(__instance, option, template, option.GetString() + " x " + kvp.Key.GetCount());
+                    __instance.settingsInfo.Add(infoPanelOption.gameObject);
+                    option.ViewOptionBehaviour = infoPanelOption;
                 }
-
-                var infoPanelOption = Object.Instantiate(template, __instance.settingsContainer);
-                infoPanelOption.SetMaskLayer(LobbyViewSettingsPane.MASK_LAYER);
-                infoPanelOption.titleText.text = option.Name;
-                infoPanelOption.settingText.text = option.GetString();
-                infoPanelOption.name = option.Name;
-                __instance.settingsInfo.Add(infoPanelOption.gameObject);
-
-                var indent = 0f;
-                var parent = option.Parent;
-                while (parent != null)
+            }
+            else
+            {
+                foreach (var option in OptionItem.AllOptions)
                 {
-                    indent += 0.15f;
-                    parent = parent.Parent;
+                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;  
+                    
+                    if (option.IsText)
+                    {
+                        var categoryHeader = CreateCategoryHeader(__instance, option);
+                        CategoryHeaders.Add(categoryHeader);
+                        __instance.settingsInfo.Add(categoryHeader.gameObject);
+                        continue;
+                    }
+
+                    var infoPanelOption = CreateOption(__instance, option, template, option.GetString());
+                    __instance.settingsInfo.Add(infoPanelOption.gameObject);
+                    option.ViewOptionBehaviour = infoPanelOption;
                 }
-
-                infoPanelOption.labelBackground.size += new Vector2(2f - indent * 2, 0f);
-                infoPanelOption.labelBackground.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
-                infoPanelOption.titleText.rectTransform.sizeDelta += new Vector2(2f - indent * 2, 0f);
-                infoPanelOption.titleText.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
-
-                option.ViewOptionBehaviour = infoPanelOption;
             }
         }
 
@@ -135,6 +136,30 @@ namespace TONX
             return categoryHeader;
         }
 
+        public static ViewSettingsInfoPanel CreateOption(LobbyViewSettingsPane __instance, OptionItem option, ViewSettingsInfoPanel template, string settingText)
+        {
+            var infoPanelOption = Object.Instantiate(template, __instance.settingsContainer);
+            infoPanelOption.SetMaskLayer(LobbyViewSettingsPane.MASK_LAYER);
+            infoPanelOption.titleText.text = option.Name;
+            infoPanelOption.settingText.text = settingText;
+            infoPanelOption.name = option.Name;
+
+            var indent = 0f;
+            var parent = option.Parent;
+            while (parent != null)
+            {
+                indent += 0.15f;
+                parent = parent.Parent;
+            }
+
+            infoPanelOption.labelBackground.size += new Vector2(2f - indent * 2, 0f);
+            infoPanelOption.labelBackground.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
+            infoPanelOption.titleText.rectTransform.sizeDelta += new Vector2(2f - indent * 2, 0f);
+            infoPanelOption.titleText.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
+
+            return infoPanelOption;
+        }
+
         [HarmonyPatch(nameof(LobbyViewSettingsPane.Update)), HarmonyPostfix]
         public static void UpdatePostfix(LobbyViewSettingsPane __instance)
         {
@@ -144,28 +169,40 @@ namespace TONX
             var offset = 2f;
             var isFirst = true;
 
-            foreach (var option in OptionItem.AllOptions)
+            if ((int)__instance.currentTab == 3558)
             {
-                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue; 
-                if (option.IsText)
+                foreach (var kvp in Options.CustomRoleSpawnChances)
                 {
-                    if (isFirst)
-                    {
-                        offset += 0.3f;
-                        isFirst = false;
-                    }
-                    foreach (var categoryHeader in CategoryHeaders)
-                    {
-                        if (option.Name == categoryHeader.name)
-                        {
-                            UpdateCategoryHeader(categoryHeader, ref offset);
-                            continue;
-                        }
-                    }
-                    continue;
+                    if (isFirst) isFirst = false;
+                    var option = kvp.Value;
+                    UpdateOption(ref isOdd, option, ref offset, option.GetString() + " x " + kvp.Key.GetCount());
                 }
-                if (isFirst) isFirst = false;
-                UpdateOption(ref isOdd, option, ref offset);
+            }
+            else
+            {
+                foreach (var option in OptionItem.AllOptions)
+                {
+                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue; 
+                    if (option.IsText)
+                    {
+                        if (isFirst)
+                        {
+                            offset += 0.3f;
+                            isFirst = false;
+                        }
+                        foreach (var categoryHeader in CategoryHeaders)
+                        {
+                            if (option.Name == categoryHeader.name)
+                            {
+                                UpdateCategoryHeader(categoryHeader, ref offset);
+                                continue;
+                            }
+                        }
+                        continue;
+                    }
+                    if (isFirst) isFirst = false;
+                    UpdateOption(ref isOdd, option, ref offset, option.GetString());
+                }
             }
             __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
         }
@@ -183,7 +220,7 @@ namespace TONX
             }
         }
 
-        private static void UpdateOption(ref bool isOdd, OptionItem option, ref float offset)
+        private static void UpdateOption(ref bool isOdd, OptionItem option, ref float offset, string settingText)
         {
             if (option?.ViewOptionBehaviour == null || option.ViewOptionBehaviour.gameObject == null) return;
 
@@ -205,7 +242,7 @@ namespace TONX
             {
                 infoPanelOption.labelBackground.color = option is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
                 infoPanelOption.titleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
-                infoPanelOption.settingText.text = option.GetString();
+                infoPanelOption.settingText.text = settingText;
 
                 offset -= LobbyViewSettingsPane.SPACING_Y;
                 if (option.IsHeader)
