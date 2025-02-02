@@ -17,6 +17,7 @@ class OnGameJoinedPatch
     public static void Postfix(AmongUsClient __instance)
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
+        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
         Logger.Info($"{__instance.GameId} 加入房间", "OnGameJoined");
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
@@ -117,6 +118,7 @@ class OnPlayerLeftPatch
 {
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
+        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
         CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(data.Character, PlayerState.GetByPlayerId(data.Character.PlayerId).DeathReason, GameStates.IsMeeting));
     }
