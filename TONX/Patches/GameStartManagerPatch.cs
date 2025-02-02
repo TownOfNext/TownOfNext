@@ -271,16 +271,16 @@ public static class GameStartManagerBeginGamePatch
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ResetStartState))]
 class ResetStartStatePatch
 {
-    public static void Prefix()
+    public static void Prefix(GameStartManager __instance)
     {
         if (GameStates.IsCountDown)
         {
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
             PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+            SoundManager.Instance.StopSound(__instance.gameStartSound);
         }
     }
 }
-
 [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
 public static class HiddenTextPatch
 {
