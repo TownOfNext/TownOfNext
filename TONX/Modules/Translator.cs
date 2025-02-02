@@ -17,7 +17,7 @@ public static class Translator
     public static Dictionary<int, Dictionary<string, string>> translateMaps = new();
     public const string LANGUAGE_FOLDER_NAME = "Language";
 
-    [PluginModuleInitializer]
+    [PluginModuleInitializer(InitializePriority.High)]
     public static void Init()
     {
         Logger.Info("加载语言文件...", "Translator");

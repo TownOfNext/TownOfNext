@@ -5,4 +5,5 @@
 /// staticメソッドの前に [PluginModuleInitializer] と付けると起動時に自動で呼び出される<br/>
 /// [PluginModuleInitializer(InitializePriority.High)] のようにすることで呼び出される順番を指定できる
 /// </summary>
-public sealed class PluginModuleInitializerAttribute : InitializerAttribute<PluginModuleInitializerAttribute> { }
+public sealed class PluginModuleInitializerAttribute(InitializePriority priority = InitializePriority.Normal) 
+    : InitializerAttribute<PluginModuleInitializerAttribute>(priority);
