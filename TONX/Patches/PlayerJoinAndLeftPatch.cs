@@ -109,7 +109,7 @@ class OnPlayerJoinedPatch
         {
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
-            if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+           // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
         }
     }
 }

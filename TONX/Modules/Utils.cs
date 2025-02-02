@@ -872,7 +872,7 @@ public static class Utils
             + $"\n  ○ /exe {GetString("Command.exe")}"
             + $"\n  ○ /level {GetString("Command.level")}"
             + $"\n  ○ /id {GetString("Command.idlist")}"
-            + $"\n  ○ /qq {GetString("Command.qq")}"
+          //  + $"\n  ○ /qq {GetString("Command.qq")}"
             + $"\n  ○ /dump {GetString("Command.dump")}"
             + $"\n  ○ /up {GetString("Command.up")}"
             , ID);
