@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using TONX.Attributes;
+using TONX.Modules;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -85,7 +87,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> HorseMode { get; private set; }
+    public static ConfigEntry<bool> LongMode { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -174,7 +176,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        LongMode = Config.Bind("Client Options", "LongMode", false);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -311,6 +313,8 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
+        Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
+        
         Harmony.PatchAll();
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
