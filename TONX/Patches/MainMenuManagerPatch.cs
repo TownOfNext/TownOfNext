@@ -96,23 +96,23 @@ public class MainMenuManagerPatch
             return button;
         }
 
-        string extraLinkName = "Github";
-        string extraLinkUrl = Main.GithubRepoUrl;
-        bool extraLinkEnabled = Main.ShowGithubUrl;
-        if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
-        {
-            extraLinkName = IsChineseUser ? "QQ群" : "Discord";
-            extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
-            extraLinkEnabled = true;
-        }
+        // string extraLinkName = "Github";
+        // string extraLinkUrl = Main.GithubRepoUrl;
+        // bool extraLinkEnabled = Main.ShowGithubUrl;
+        // if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
+        // {
+        //     extraLinkName = IsChineseUser ? "QQ群" : "Discord";
+        //     extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
+        //     extraLinkEnabled = true;
+        // }
 
-        if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
-        InviteButton.gameObject.SetActive(extraLinkEnabled);
-        InviteButton.name = "TONX Extra Link Button";
+        // if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
+        // InviteButton.gameObject.SetActive(extraLinkEnabled);
+        // InviteButton.name = "TONX Extra Link Button";
 
-        if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
-        WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
-        WebsiteButton.name = "TONX Website Button";
+        // if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
+        // WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
+        // WebsiteButton.name = "TONX Website Button";
 
         if (UpdateButton == null)
         {

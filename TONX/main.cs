@@ -46,9 +46,9 @@ public class Main : BasePlugin
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
     public static readonly bool ShowQQButton = false;
-    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
+    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6"; // QQ群的群号甚至已经重分配了=(
     public static readonly bool ShowDiscordButton = false;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";// O.o
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/KARPED1EM/TownOfNext";
     // ==========
