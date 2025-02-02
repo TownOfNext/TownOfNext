@@ -9,7 +9,7 @@ namespace TONX;
 public static class OptionsMenuBehaviourStartPatch
 {
     private static ClientOptionItem UnlockFPS;
-    private static ClientOptionItem HorseMode;
+    private static ClientOptionItem LongMode;
     private static ClientOptionItem AutoStartGame;
     private static ClientOptionItem AutoEndGame;
     private static ClientOptionItem ForceOwnLanguage;
@@ -45,9 +45,9 @@ public static class OptionsMenuBehaviourStartPatch
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
-        if (HorseMode == null || HorseMode.ToggleButton == null)
+        if (LongMode == null || LongMode.ToggleButton == null)
         {
-            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
+            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance);
         }
         if (AutoStartGame == null || AutoStartGame.ToggleButton == null)
         {
