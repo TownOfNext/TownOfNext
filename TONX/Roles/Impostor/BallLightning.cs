@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -72,7 +72,7 @@ public sealed class BallLightning : RoleBase, IImpostor
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         seen ??= seer;
-        string mark = Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■");
+        string mark = ColorString(GetRoleColor(CustomRoles.BallLightning), "■");
         return IsGhost(seen.PlayerId) ? mark : "";
     }
     private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
@@ -99,7 +99,7 @@ public sealed class BallLightning : RoleBase, IImpostor
                 Ghosts.TryAdd(target.PlayerId, killer.PlayerId);
                 (killer.GetRoleClass() as BallLightning)?.SendRPC();
                 if (!killer.inVent) killer.RpcProtectedMurderPlayer(killer);
-                Utils.NotifyRoles();
+                NotifyRoles();
                 Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "BallLightning.StartConvertCountDown");
             }
         }, OptionConvertTime.GetFloat(), "BallLightning.StartConvertCountDown");
@@ -116,8 +116,8 @@ public sealed class BallLightning : RoleBase, IImpostor
         List<byte> deList = new();
         foreach (var ghost in Ghosts)
         {
-            var gs = Utils.GetPlayerById(ghost.Key);
-            var killer = Utils.GetPlayerById(ghost.Value);
+            var gs = GetPlayerById(ghost.Key);
+            var killer = GetPlayerById(ghost.Value);
             if (killer == null || gs == null || !gs.IsAlive() || gs.Data.Disconnected)
             {
                 deList.Add(gs.PlayerId);
@@ -146,14 +146,14 @@ public sealed class BallLightning : RoleBase, IImpostor
         if (deList.Count > 0)
         {
             SendRPC();
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
     }
     public override void OnStartMeeting()
     {
         foreach (var ghost in Ghosts)
         {
-            var player = Utils.GetPlayerById(ghost.Key);
+            var player = GetPlayerById(ghost.Key);
             if (player == null) continue;
             MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Quantization, player.PlayerId);
             player.SetRealKiller(ghost.Value);
@@ -164,7 +164,7 @@ public sealed class BallLightning : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("BallLightningButtonText");
+        text = GetString("BallLightningButtonText");
         return true;
     }
 }

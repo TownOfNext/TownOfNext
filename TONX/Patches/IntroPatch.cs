@@ -1,11 +1,12 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AmongUs.GameOptions;
+using HarmonyLib;
+using Il2CppSystem.Collections.Generic;
+using TMPro;
 using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -21,20 +22,20 @@ class IntroCutscenePatch
             CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
             if (!role.IsVanilla())
             {
-                __instance.YouAreText.color = Utils.GetRoleColor(role);
-                __instance.RoleText.text = Utils.GetRoleName(role);
-                __instance.RoleText.color = Utils.GetRoleColor(role);
-                __instance.RoleText.fontWeight = TMPro.FontWeight.Thin;
-                __instance.RoleText.SetOutlineColor(Utils.ShadeColor(Utils.GetRoleColor(role), 0.1f).SetAlpha(0.38f));
+                __instance.YouAreText.color = GetRoleColor(role);
+                __instance.RoleText.text = GetRoleName(role);
+                __instance.RoleText.color = GetRoleColor(role);
+                __instance.RoleText.fontWeight = FontWeight.Thin;
+                __instance.RoleText.SetOutlineColor(GetRoleColor(role).ShadeColor(0.1f).SetAlpha(0.38f));
                 __instance.RoleText.SetOutlineThickness(0.17f);
-                __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
+                __instance.RoleBlurbText.color = GetRoleColor(role);
                 __instance.RoleBlurbText.text = PlayerControl.LocalPlayer.GetRoleInfo();
             }
             foreach (var subRole in PlayerState.GetByPlayerId(PlayerControl.LocalPlayer.PlayerId).SubRoles)
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
+                __instance.RoleBlurbText.text += "\n" + ColorString(GetRoleColor(subRole), GetString($"{subRole}Info"));
             if (!PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) && !PlayerControl.LocalPlayer.Is(CustomRoles.Neptune) && CustomRoles.Neptune.IsExist())
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
-            __instance.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
+                __instance.RoleBlurbText.text += "\n" + ColorString(GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
+            __instance.RoleText.text += GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
         }, 0.0001f, "Override Role Text");
     }
     [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPrefix]
@@ -84,30 +85,31 @@ class IntroCutscenePatch
         GameData.Instance.RecomputeTaskCounts();
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
-        Utils.NotifyRoles();
+        NotifyRoles();
 
         GameStates.InGame = true;
     }
     [HarmonyPatch(nameof(IntroCutscene.BeginCrewmate)), HarmonyPrefix]
-    public static bool BeginCrewmate_Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
+    public static bool BeginCrewmate_Prefix(IntroCutscene __instance, ref List<PlayerControl> teamToDisplay)
     {
         if (PlayerControl.LocalPlayer.Is(CustomRoles.CrewPostor))
         {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay = new List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) teamToDisplay.Add(pc);
             __instance.BeginImpostor(teamToDisplay);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
         {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay = new List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay = new List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             __instance.BeginImpostor(teamToDisplay);
             __instance.overlayHandle.color = Palette.ImpostorRed;
@@ -116,7 +118,7 @@ class IntroCutscenePatch
         return true;
     }
     [HarmonyPatch(nameof(IntroCutscene.BeginCrewmate)), HarmonyPostfix]
-    public static void BeginCrewmate_Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
+    public static void BeginCrewmate_Postfix(IntroCutscene __instance, ref List<PlayerControl> teamToDisplay)
     {
         //チーム表示変更
         CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
@@ -143,9 +145,9 @@ class IntroCutscenePatch
         switch (role)
         {
             case CustomRoles.GM:
-                __instance.TeamTitle.text = Utils.GetRoleName(role);
-                __instance.TeamTitle.color = Utils.GetRoleColor(role);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
+                __instance.TeamTitle.text = GetRoleName(role);
+                __instance.TeamTitle.color = GetRoleColor(role);
+                __instance.BackgroundBar.material.color = GetRoleColor(role);
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
                 break;
         }
@@ -181,7 +183,7 @@ class IntroCutscenePatch
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+        return RoleManager.Instance.AllRoles.Where(role => role.Role == roleType).FirstOrDefault().IntroSound;
     }
     private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end)
     {
@@ -202,27 +204,29 @@ class IntroCutscenePatch
         }
     }
     [HarmonyPatch(nameof(IntroCutscene.BeginImpostor)), HarmonyPrefix]
-    public static bool BeginImpostor_Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    public static bool BeginImpostor_Prefix(IntroCutscene __instance, ref List<PlayerControl> yourTeam)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
         if (role is CustomRoles.CrewPostor)
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) yourTeam.Add(pc);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
+
+        if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
         {
-            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            yourTeam = new List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
@@ -233,7 +237,7 @@ class IntroCutscenePatch
         return true;
     }
     [HarmonyPatch(nameof(IntroCutscene.BeginImpostor)), HarmonyPostfix]
-    public static void BeginImpostor_Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+    public static void BeginImpostor_Postfix(IntroCutscene __instance, ref List<PlayerControl> yourTeam)
     {
         BeginCrewmate_Postfix(__instance, ref yourTeam);
     }

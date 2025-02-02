@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -75,7 +75,7 @@ public sealed class Deceiver : RoleBase, IKiller
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("DeceiverButtonText");
+        text = GetString("DeceiverButtonText");
         return true;
     }
     public bool OnCheckMurderAsKiller(MurderInfo info)
@@ -85,7 +85,7 @@ public sealed class Deceiver : RoleBase, IKiller
 
         if (Customers.ContainsKey(target.PlayerId))
         {
-            killer.Notify(Translator.GetString("DeceiverRepeatSell"));
+            killer.Notify(GetString("DeceiverRepeatSell"));
             return false;
         }
 
@@ -126,7 +126,7 @@ public sealed class Deceiver : RoleBase, IKiller
         keys.Do(x => Customers[x] = true);
         foreach (var pcId in Customers.Keys)
         {
-            var target = Utils.GetPlayerById(pcId);
+            var target = GetPlayerById(pcId);
             if (target == null || !target.IsAlive()) continue;
             if (target.GetRoleClass() is IKiller x && x.IsKiller && x.CanKill) continue;
             MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Misfire, target.PlayerId);
@@ -137,7 +137,7 @@ public sealed class Deceiver : RoleBase, IKiller
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seen == null) return "";
-        return Customers.ContainsKey(seen.PlayerId) ? Utils.ColorString(RoleInfo.RoleColor, "▲") : "";
+        return Customers.ContainsKey(seen.PlayerId) ? ColorString(RoleInfo.RoleColor, "▲") : "";
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({SellLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({SellLimit})");
 }

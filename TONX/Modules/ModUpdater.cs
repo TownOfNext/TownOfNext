@@ -1,5 +1,3 @@
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +8,11 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -42,16 +41,16 @@ public class ModUpdater
 
     public static bool firstStart = true;
 
-    public static bool hasUpdate = false;
-    public static bool forceUpdate = false;
-    public static bool isBroken = false;
-    public static bool isChecked = false;
+    public static bool hasUpdate;
+    public static bool forceUpdate;
+    public static bool isBroken;
+    public static bool isChecked;
 
     public static string versionInfoRaw = "";
 
-    public static Version latestVersion = null;
-    public static Version minimumVersion = null;
-    public static int creation = 0;
+    public static Version latestVersion;
+    public static Version minimumVersion;
+    public static int creation;
     public static string md5 = "";
     public static int visit => isChecked ? 216822 : 0;
 
@@ -61,7 +60,7 @@ public class ModUpdater
     public static string downloadUrl_gitee = "";
     public static string downloadUrl_cos = "";
 
-    private static int retried = 0;
+    private static int retried;
     private static bool firstLaunch = true;
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.LowerThanNormal)]
@@ -106,9 +105,9 @@ public class ModUpdater
         if (isChecked)
         {
             Logger.Info("Has Update: " + hasUpdate, "CheckRelease");
-            Logger.Info("Latest Version: " + latestVersion.ToString(), "CheckRelease");
-            Logger.Info("Minimum Version: " + minimumVersion.ToString(), "CheckRelease");
-            Logger.Info("Creation: " + creation.ToString(), "CheckRelease");
+            Logger.Info("Latest Version: " + latestVersion, "CheckRelease");
+            Logger.Info("Minimum Version: " + minimumVersion, "CheckRelease");
+            Logger.Info("Creation: " + creation, "CheckRelease");
             Logger.Info("Force Update: " + forceUpdate, "CheckRelease");
             Logger.Info("File MD5: " + md5, "CheckRelease");
             Logger.Info("Github Url: " + downloadUrl_github, "CheckRelease");
@@ -275,13 +274,11 @@ public class ModUpdater
                 File.Delete(DownloadFileTempPath);
                 return (false, GetString("updateFileMd5Incorrect"));
             }
-            else
-            {
-                var fileName = Assembly.GetExecutingAssembly().Location;
-                File.Move(fileName, fileName + ".bak");
-                File.Move("BepInEx/plugins/TONX.dll.temp", fileName);
-                return (true, null);
-            }
+
+            var fileName = Assembly.GetExecutingAssembly().Location;
+            File.Move(fileName, fileName + ".bak");
+            File.Move("BepInEx/plugins/TONX.dll.temp", fileName);
+            return (true, null);
         }
         catch (Exception ex)
         {

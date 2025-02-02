@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -20,7 +20,7 @@ public class ErrorText : MonoBehaviour
     {
         if (_instance != null)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
@@ -29,7 +29,7 @@ public class ErrorText : MonoBehaviour
         }
     }
     #endregion
-    public static void Create(TMPro.TextMeshPro baseText)
+    public static void Create(TextMeshPro baseText)
     {
         var Text = Instantiate(baseText);
         Text.fontSizeMax = Text.fontSizeMin = 2f;
@@ -41,7 +41,7 @@ public class ErrorText : MonoBehaviour
         Text.text = "NO ERROR";
         Text.color = Color.red;
         Text.outlineColor = Color.black;
-        Text.alignment = TMPro.TextAlignmentOptions.Top;
+        Text.alignment = TextAlignmentOptions.Top;
 
         // 背景
         var bgObject = new GameObject("Background") { layer = LayerMask.NameToLayer("UI") };
@@ -63,7 +63,7 @@ public class ErrorText : MonoBehaviour
         bgObject.SetActive(false);
     }
 
-    public TMPro.TextMeshPro Text;
+    public TextMeshPro Text;
     private SpriteRenderer background;
     public Camera Camera;
     public List<ErrorData> AllErrors = new();
@@ -77,7 +77,7 @@ public class ErrorText : MonoBehaviour
             AllErrors.RemoveAll(err => ToRemove.Contains(err));
             UpdateText();
             if (HnSFlag)
-                Destroy(this.gameObject);
+                Destroy(gameObject);
         }
     }
     public void LateUpdate()
@@ -151,14 +151,14 @@ public class ErrorText : MonoBehaviour
         public readonly int ErrorType2;
         public readonly int ErrorLevel;
         public float Timer { get; private set; }
-        public string Message => GetString(this.ToString());
+        public string Message => GetString(ToString());
         public ErrorData(ErrorCode code)
         {
-            this.Code = code;
-            this.ErrorType1 = (int)code / 10000;
-            this.ErrorType2 = (int)code / 10 - ErrorType1 * 1000; // xxxyyy - xxx000
-            this.ErrorLevel = (int)code - (int)code / 10 * 10;
-            this.Timer = 0f;
+            Code = code;
+            ErrorType1 = (int)code / 10000;
+            ErrorType2 = (int)code / 10 - ErrorType1 * 1000; // xxxyyy - xxx000
+            ErrorLevel = (int)code - (int)code / 10 * 10;
+            Timer = 0f;
         }
         public override string ToString()
         {

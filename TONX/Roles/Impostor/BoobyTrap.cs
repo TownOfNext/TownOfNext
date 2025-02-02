@@ -1,6 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -41,7 +41,7 @@ public sealed class BoobyTrap : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("BoobyTrapKillButtonText");
+        text = GetString("BoobyTrapKillButtonText");
         return true;
     }
     public void OnMurderPlayerAsKiller(MurderInfo info)

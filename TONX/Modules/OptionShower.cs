@@ -1,11 +1,9 @@
-using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TMPro;
+using HarmonyLib;
 using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -13,7 +11,7 @@ namespace TONX;
 
 public static class OptionShower
 {
-    public static int currentPage = 0;
+    public static int currentPage;
     public static List<string> pages = new();
     public static string GetText() => $"{GetString("PressTabTONXtPage")}({currentPage + 1}/{pages.Count})\n\n{pages[currentPage]}";
     public static string BuildText()
@@ -37,12 +35,12 @@ public static class OptionShower
             if (Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 //有効な役職一覧
-                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {Options.EnableGM.GetString()}\n\n");
+                sb.Append($"<color={GetRoleColorCode(CustomRoles.GM)}>{GetRoleName(CustomRoles.GM)}:</color> {Options.EnableGM.GetString()}\n\n");
                 sb.Append(GetString("ActiveRolesList")).Append('\n');
                 foreach (var kvp in Options.CustomRoleSpawnChances)
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
-                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n");
-                pages.Add(sb.ToString() + "\n\n");
+                        sb.Append($"{ColorString(GetRoleColor(kvp.Key), GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n");
+                pages.Add(sb + "\n\n");
                 sb.Clear();
             }
 
@@ -56,15 +54,15 @@ public static class OptionShower
 
             foreach (var type in pageRoleTypes)
             {
-                sb.Append($"<size=140%>{Utils.ColorString(Utils.GetCustomRoleTypeColor(type.Value), GetString(type.Key))}</size>\n");
+                sb.Append($"<size=140%>{ColorString(GetCustomRoleTypeColor(type.Value), GetString(type.Key))}</size>\n");
                 foreach (var kvp in Options.CustomRoleSpawnChances.Where(o => o.Key.GetCustomRoleTypes() == type.Value && !(o.Key.GetRoleInfo()?.Broken ?? false)))
                 {
                     if (!kvp.Key.IsEnable() || kvp.Value.IsHiddenOn(Options.CurrentGameMode)) continue;
                     sb.Append('\n');
-                    sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n");
-                    ShowChildren(kvp.Value, ref sb, Utils.GetRoleColor(kvp.Key).ShadeColor(-0.5f), 1);
-                    string rule = Utils.ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┣ ");
-                    string ruleFooter = Utils.ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┗ ");
+                    sb.Append($"{ColorString(GetRoleColor(kvp.Key), GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n");
+                    ShowChildren(kvp.Value, ref sb, GetRoleColor(kvp.Key).ShadeColor(-0.5f), 1);
+                    string rule = ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┣ ");
+                    string ruleFooter = ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┗ ");
                 }
                 pages.Add(sb.ToString());
                 sb.Clear();
@@ -113,8 +111,8 @@ public static class OptionShower
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
             if (deep > 0)
             {
-                sb.Append(string.Concat(Enumerable.Repeat(Utils.ColorString(color, "┃"), deep - 1)));
-                sb.Append(Utils.ColorString(color, opt.Index == option.Children.Count ? "┗ " : "┣ "));
+                sb.Append(string.Concat(Enumerable.Repeat(ColorString(color, "┃"), deep - 1)));
+                sb.Append(ColorString(color, opt.Index == option.Children.Count ? "┗ " : "┣ "));
             }
             sb.Append($"{opt.Value.GetName()}: {opt.Value.GetString()}\n");
             if (opt.Value.GetBool()) ShowChildren(opt.Value, ref sb, color, deep + 1);

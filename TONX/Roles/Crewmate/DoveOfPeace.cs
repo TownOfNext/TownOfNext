@@ -1,11 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Linq;
+using AmongUs.GameOptions;
 using HarmonyLib;
-using System.Linq;
-
 using TONX.Modules;
 using TONX.Roles.Core;
-
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class DoveOfPeace : RoleBase
@@ -74,17 +71,15 @@ public sealed class DoveOfPeace : RoleBase
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldownV2();
-                x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoveOfPeace), GetString("DoveOfPeaceSkillNotify")));
+                x.Notify(ColorString(GetRoleColor(CustomRoles.DoveOfPeace), GetString("DoveOfPeaceSkillNotify")));
             });
             Player.RPCPlayCustomSound("Dove");
             Player.Notify(string.Format(GetString("DoveOfPeaceOnGuard"), SkillLimit));
             return true;
         }
-        else
-        {
-            Player.Notify(GetString("DoveOfPeaceMaxUsage"));
-            return false;
-        }
+
+        Player.Notify(GetString("DoveOfPeaceMaxUsage"));
+        return false;
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {

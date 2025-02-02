@@ -1,5 +1,5 @@
-using HarmonyLib;
 using System.Collections.Generic;
+using HarmonyLib;
 
 namespace TONX;
 
@@ -8,17 +8,17 @@ public class TextBoxPatch
 {
     static Dictionary<string, string> replaceDic = new()
             {
-                { "£¨", " (" },
-                { "£©", ") " },
-                { "£¬", ", " },
-                { "£º", ": " },
-                { "[", "¡¾" },
-                { "]", "¡¿" },
-                { "¡®", " '" },
-                { "¡¯", "' " },
-                { "¡°", " ''" },
-                { "¡±", "'' " },
-                { "£¡", "! " },
+                { "ï¿½ï¿½", " (" },
+                { "ï¿½ï¿½", ") " },
+                { "ï¿½ï¿½", ", " },
+                { "ï¿½ï¿½", ": " },
+                { "[", "ï¿½ï¿½" },
+                { "]", "ï¿½ï¿½" },
+                { "ï¿½ï¿½", " '" },
+                { "ï¿½ï¿½", "' " },
+                { "ï¿½ï¿½", " ''" },
+                { "ï¿½ï¿½", "'' " },
+                { "ï¿½ï¿½", "! " },
             };
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
     public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")

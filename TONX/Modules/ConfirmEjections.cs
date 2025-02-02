@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -18,14 +17,14 @@ public static class ConfirmEjections
 
         var player = exiledPlayer.Object;
         var playerName = player.GetRealName(isMeeting: true);
-        var coloredPlayerName = Utils.ColorString(Main.PlayerColors[player.PlayerId], playerName);
+        var coloredPlayerName = ColorString(Main.PlayerColors[player.PlayerId], playerName);
         var role = exiledPlayer.GetCustomRole();
         var roleName = GetRoleString(role.ToString());
-        var coloredRoleName = Utils.GetTrueRoleName(exileId, false);
+        var coloredRoleName = GetTrueRoleName(exileId, false);
         var roleType = player.Is(CustomRoles.Madmate) ? CustomRoleTypes.Impostor
             : player.Is(CustomRoles.Charmed) ? CustomRoleTypes.Neutral
             : role.GetCustomRoleTypes();
-        var coloredTeamName = GetString($"Team{roleType}").Color(Utils.GetCustomRoleTypeColor(roleType));
+        var coloredTeamName = GetString($"Team{roleType}").Color(GetCustomRoleTypeColor(roleType));
 
         string text = string.Empty;
         int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor) || p.Is(CustomRoles.Madmate));
@@ -38,7 +37,8 @@ public static class ConfirmEjections
             text += "\n\t\t——" + GetString("ByBard");
             goto EndOfSession;
         }
-        else if (decidedWinner) // 已经决定胜利者
+
+        if (decidedWinner) // 已经决定胜利者
         {
             text = string.Format(GetString("ExiledWrongPerson"), coloredPlayerName, coloredRoleName);
             winDescriptionText.Do(t => text += $"\n{t}");

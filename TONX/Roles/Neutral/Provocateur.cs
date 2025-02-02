@@ -1,10 +1,7 @@
 using AmongUs.GameOptions;
-using System.Linq;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using Hazel;
 
 namespace TONX.Roles.Neutral;
 
@@ -19,7 +16,7 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
             CustomRoleTypes.Neutral,
             75_1_2_0900,
             null,
-            "prov|×Ô±¬¿¨³µ|×Ô±¬",
+            "prov|ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½|ï¿½Ô±ï¿½",
             "#74ba43",
            true
 

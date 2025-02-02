@@ -1,13 +1,12 @@
-using AmongUs.Data;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using TONX.Modules;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core;
@@ -15,7 +14,6 @@ using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -41,7 +39,7 @@ static class ExtendedPlayerControl
         }
         CustomRoleManager.CreateInstance(role, player);
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.WritePacked((int)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -50,7 +48,7 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable);
         writer.Write(PlayerId);
         writer.WritePacked((int)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -89,7 +87,7 @@ static class ExtendedPlayerControl
     {
         if (player == null)
         {
-            var caller = new System.Diagnostics.StackFrame(1, false);
+            var caller = new StackFrame(1, false);
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
@@ -114,7 +112,7 @@ static class ExtendedPlayerControl
     {
         if (player == null)
         {
-            var caller = new System.Diagnostics.StackFrame(1, false);
+            var caller = new StackFrame(1, false);
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
@@ -319,7 +317,7 @@ static class ExtendedPlayerControl
         foreach (var role in SubRoles)
         {
             if (role is CustomRoles.NotAssigned) continue;
-            sb.Append($"{Utils.ColorString(Color.white, " + ")}{Utils.GetRoleName(role, forUser)}");
+            sb.Append($"{ColorString(Color.white, " + ")}{GetRoleName(role, forUser)}");
         }
 
         return sb.ToString();
@@ -327,7 +325,7 @@ static class ExtendedPlayerControl
     public static string GetAllRoleName(this PlayerControl player)
     {
         if (!player) return null;
-        var text = Utils.GetRoleName(player.GetCustomRole());
+        var text = GetRoleName(player.GetCustomRole());
         text += player.GetSubRoleName(false);
         return text;
     }
@@ -348,7 +346,7 @@ static class ExtendedPlayerControl
     {
         if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
 
-        var systemtypes = Utils.GetCriticalSabotageSystemType();
+        var systemtypes = GetCriticalSabotageSystemType();
 
         _ = new LateTask(() =>
         {
@@ -372,7 +370,7 @@ static class ExtendedPlayerControl
         if (pc == null) return;
         int clientId = pc.GetClientId();
         // Logger.Info($"{pc}", "ReactorFlash");
-        var systemtypes = Utils.GetCriticalSabotageSystemType();
+        var systemtypes = GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
 
         pc.RpcDesyncUpdateSystem(systemtypes, 128);
@@ -424,7 +422,7 @@ static class ExtendedPlayerControl
     public static void RpcExileV2(this PlayerControl player)
     {
         player.Exiled();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void MurderPlayer(this PlayerControl killer, PlayerControl target)
@@ -443,11 +441,11 @@ static class ExtendedPlayerControl
         {
             killer.MurderPlayer(target);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None);
         messageWriter.WriteNetObject(target);
         messageWriter.Write((int)SucceededFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
     public static void RpcProtectedMurderPlayer(this PlayerControl killer, PlayerControl target = null)
     {
@@ -479,7 +477,7 @@ static class ExtendedPlayerControl
             pc.RpcExileV2();
             PlayerState.GetByPlayerId(pc.PlayerId)?.SetDead();
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SuicideWithAnime, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SuicideWithAnime, SendOption.Reliable);
             writer.Write(pc.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
@@ -510,7 +508,7 @@ static class ExtendedPlayerControl
         {
             if (playerVoteArea.VotedFor != pc.PlayerId) continue;
             playerVoteArea.UnsetVote();
-            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+            var voteAreaPlayer = GetPlayerById(playerVoteArea.TargetPlayerId);
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
         }
@@ -533,9 +531,9 @@ static class ExtendedPlayerControl
                     .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
         MeetingTimeManager.OnReportDeadBody();
 
-        Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+        NotifyRoles(isForMeeting: true, NoCache: true);
 
-        Utils.SyncAllSettings();
+        SyncAllSettings();
 
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
@@ -669,7 +667,7 @@ static class ExtendedPlayerControl
     public static PlayerControl GetRealKiller(this PlayerControl target)
     {
         var killerId = PlayerState.GetByPlayerId(target.PlayerId).GetRealKiller();
-        return killerId == byte.MaxValue ? null : Utils.GetPlayerById(killerId);
+        return killerId == byte.MaxValue ? null : GetPlayerById(killerId);
     }
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)
     {

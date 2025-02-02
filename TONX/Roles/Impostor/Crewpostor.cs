@@ -1,7 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -43,7 +42,7 @@ public sealed class CrewPostor : RoleBase, IImpostor
 
         if (list.Count < 1)
         {
-            Logger.Info($"船鬼没有可击杀目标", "CrewPostor");
+            Logger.Info("船鬼没有可击杀目标", "CrewPostor");
         }
         else
         {

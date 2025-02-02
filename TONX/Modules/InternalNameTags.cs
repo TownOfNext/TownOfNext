@@ -1,8 +1,7 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 using static TONX.NameTagManager;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -61,7 +60,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Переводчик",
+                    Text = "Переводчик",
                     TextColor = new(31, 243, 198, 255),
                     SizePercentage = 80
                 }
@@ -73,7 +72,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Temmie",
+                    Text = "Temmie",
                     Gradient = new(new Color32(66, 103, 152, 255), new Color32(246, 229, 9, 255)),
                     SizePercentage = 80
                 }
@@ -85,7 +84,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"阿龍",
+                    Text = "阿龍",
                     TextColor = new Color32(72, 255, 255, 255),
                     SizePercentage = 80
                 }
@@ -97,7 +96,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"美術NotKomi",
+                    Text = "美術NotKomi",
                     Gradient = new(new Color32(211, 164, 255, 255), new Color32(90, 90, 173, 255)),
                     SizePercentage = 80
                 }
@@ -109,7 +108,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"The 200IQ guy",
+                    Text = "The 200IQ guy",
                     TextColor = new Color32(255, 255, 0, 255),
                     SizePercentage = 80
                 }
@@ -121,7 +120,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"The 200IQ guy",
+                    Text = "The 200IQ guy",
                     TextColor = new Color32(255, 255, 0, 255),
                     SizePercentage = 80
                 }
@@ -133,7 +132,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"小叨.exe已停止运行",
+                    Text = "小叨.exe已停止运行",
                     TextColor = new Color32(255, 255, 0, 255),
                     SizePercentage = 80
                 }
@@ -145,7 +144,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Night_瓜",
+                    Text = "Night_瓜",
                     TextColor = new Color32(255, 0, 102, 255),
                     SizePercentage = 80
                 }
@@ -157,7 +156,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"屑Slok（没信誉的鸽子）",
+                    Text = "屑Slok（没信誉的鸽子）",
                     TextColor = new Color32(19, 121, 191, 255),
                     SizePercentage = 80
                 }
@@ -169,7 +168,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"高冷男模法师",
+                    Text = "高冷男模法师",
                     TextColor = new Color32(255, 0, 255, 255),
                     SizePercentage = 80
                 }
@@ -181,7 +180,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"我是喜唉awa",
+                    Text = "我是喜唉awa",
                     TextColor = new Color32(255, 252, 190, 255),
                     SizePercentage = 80
                 }
@@ -193,7 +192,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"不要首刀我",
+                    Text = "不要首刀我",
                     TextColor = new Color32(19, 121, 191, 255),
                     SizePercentage = 80
                 }
@@ -205,7 +204,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"林@林",
+                    Text = "林@林",
                     TextColor = new Color32(243, 0, 0, 255),
                     SizePercentage = 80
                 }
@@ -217,7 +216,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"寄才是真理",
+                    Text = "寄才是真理",
                     TextColor = new Color32(142, 129, 113, 255),
                     SizePercentage = 80
                 }
@@ -229,7 +228,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"寄才是真理",
+                    Text = "寄才是真理",
                     TextColor = new Color32(142, 129, 113, 255),
                     SizePercentage = 80
                 }
@@ -241,7 +240,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"啊哈修maker",
+                    Text = "啊哈修maker",
                     TextColor = new Color32(0, 0, 255, 255),
                     SizePercentage = 80
                 }
@@ -253,7 +252,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"波奇酱",
+                    Text = "波奇酱",
                     TextColor = new Color32(248, 156, 203, 255),
                     SizePercentage = 80
                 }
@@ -265,7 +264,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Amaster-1111",
+                    Text = "Amaster-1111",
                     TextColor = new Color32(100, 149, 237, 255),
                     SizePercentage = 80
                 }
@@ -277,7 +276,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"HostTONX",
+                    Text = "HostTONX",
                     TextColor = new Color32(255, 214, 236, 255),
                     SizePercentage = 80
                 }
@@ -289,7 +288,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Sylveon",
+                    Text = "Sylveon",
                     TextColor = new Color32(211, 129, 217, 255),
                     SizePercentage = 80
                 }
@@ -301,7 +300,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"disc.gg/maul",
+                    Text = "disc.gg/maul",
                     TextColor = new Color32(28, 36, 81, 255),
                     SizePercentage = 80
                 }

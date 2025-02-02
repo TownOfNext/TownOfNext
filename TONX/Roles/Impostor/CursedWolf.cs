@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -67,11 +66,11 @@ public sealed class CursedWolf : RoleBase, IImpostor
         killer.SetDeathReason(CustomDeathReason.Spell);
         target.RpcMurderPlayerV2(killer);
 
-        target.Notify(Translator.GetString("CursedWolfSkill"));
+        target.Notify(GetString("CursedWolfSkill"));
 
         Logger.Info($"{target.GetNameWithRole()} 呪狼反杀 => {killer.GetNameWithRole()}", "CursedWolf.OnCheckMurderAsTarget");
         Logger.Info($"{target.GetNameWithRole()} 呪狼反杀：剩余{SpellLimit}次", "CursedWolf.OnCheckMurderAsTarget");
         return false;
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(SpellLimit >= 1 ? Color.red : Color.gray, $"({SpellLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(SpellLimit >= 1 ? Color.red : Color.gray, $"({SpellLimit})");
 }

@@ -1,8 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Detective : RoleBase
@@ -58,7 +56,7 @@ public sealed class Detective : RoleBase
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
         if (MsgToSend != null)
-            msgToSend.Add((MsgToSend, Player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("DetectiveNoticeTitle"))));
+            msgToSend.Add((MsgToSend, Player.PlayerId, ColorString(RoleInfo.RoleColor, GetString("DetectiveNoticeTitle"))));
         MsgToSend = null;
     }
 }

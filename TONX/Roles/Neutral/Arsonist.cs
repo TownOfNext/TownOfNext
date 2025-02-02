@@ -1,10 +1,9 @@
+using System.Collections.Generic;
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class Arsonist : RoleBase, IKiller
@@ -80,7 +79,7 @@ public sealed class Arsonist : RoleBase, IKiller
     public override string GetProgressText(bool comms = false)
     {
         var doused = GetDousedPlayerCount();
-        return Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({doused.Item1}/{doused.Item2})");
+        return ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({doused.Item1}/{doused.Item2})");
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -122,7 +121,7 @@ public sealed class Arsonist : RoleBase, IKiller
         if (!IsDoused[target.PlayerId] && TargetInfo == null)
         {
             TargetInfo = new(target.PlayerId, 0f);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            NotifyRoles(SpecifySeer: killer);
             SendRPC(RPC_type.SetCurrentDousingTarget, target.PlayerId);
         }
         return false;
@@ -140,12 +139,12 @@ public sealed class Arsonist : RoleBase, IKiller
             if (!Player.IsAlive())
             {
                 TargetInfo = null;
-                Utils.NotifyRoles(SpecifySeer: Player);
+                NotifyRoles(SpecifySeer: Player);
                 SendRPC(RPC_type.SetCurrentDousingTarget);
             }
             else
             {
-                var ar_target = Utils.GetPlayerById(TargetInfo.TargetId);//塗られる人
+                var ar_target = GetPlayerById(TargetInfo.TargetId);//塗られる人
                 var ar_time = TargetInfo.Timer;//塗った時間
                 if (!ar_target.IsAlive())
                 {
@@ -157,7 +156,7 @@ public sealed class Arsonist : RoleBase, IKiller
                     TargetInfo = null;//塗が完了したのでTupleから削除
                     IsDoused[ar_target.PlayerId] = true;//塗り完了
                     SendRPC(RPC_type.SetDousedPlayer, ar_target.PlayerId, true);
-                    Utils.NotifyRoles();//名前変更
+                    NotifyRoles();//名前変更
                     SendRPC(RPC_type.SetCurrentDousingTarget);
                 }
                 else
@@ -171,7 +170,7 @@ public sealed class Arsonist : RoleBase, IKiller
                     else//それ以外は削除
                     {
                         TargetInfo = null;
-                        Utils.NotifyRoles(SpecifySeer: Player);
+                        NotifyRoles(SpecifySeer: Player);
                         SendRPC(RPC_type.SetCurrentDousingTarget);
 
                         Logger.Info($"Canceled: {Player.GetNameWithRole()}", "Arsonist");
@@ -231,9 +230,9 @@ public sealed class Arsonist : RoleBase, IKiller
         seen ??= seer;
 
         if (IsDousedPlayer(seen.PlayerId)) //seerがtargetに既にオイルを塗っている(完了)
-            return Utils.ColorString(RoleInfo.RoleColor, "▲");
+            return ColorString(RoleInfo.RoleColor, "▲");
         if (!isForMeeting && TargetInfo?.TargetId == seen.PlayerId) //オイルを塗っている対象がtarget
-            return Utils.ColorString(RoleInfo.RoleColor, "△");
+            return ColorString(RoleInfo.RoleColor, "△");
 
         return "";
     }
@@ -245,7 +244,7 @@ public sealed class Arsonist : RoleBase, IKiller
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
-        return IsDouseDone(Player) ? Utils.ColorString(RoleInfo.RoleColor, GetString("EnterVentToWin")) : "";
+        return IsDouseDone(Player) ? ColorString(RoleInfo.RoleColor, GetString("EnterVentToWin")) : "";
     }
     public bool IsDousedPlayer(byte targetId) => IsDoused.TryGetValue(targetId, out bool isDoused) && isDoused;
     public static bool IsDouseDone(PlayerControl player)

@@ -1,5 +1,5 @@
-﻿using AmongUs.GameOptions;
-using System.Linq;
+﻿using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -40,7 +40,7 @@ public sealed class SuperStar : RoleBase
     public static string MarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        return (seen.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool()) ? Utils.ColorString(RoleInfo.RoleColor, "★") : "";
+        return (seen.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool()) ? ColorString(RoleInfo.RoleColor, "★") : "";
     }
     public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
         => enabled |= OptionEveryoneKnowSuperStar.GetBool();

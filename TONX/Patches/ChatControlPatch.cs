@@ -1,8 +1,10 @@
+using System;
 using AmongUs.Data;
 using HarmonyLib;
-using System;
+using InnerNet;
 using TMPro;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
@@ -22,7 +24,7 @@ public static class SendTargetPatch
     {
         __instance.freeChatField.textArea.SetText("");
         if (SendTargetShower != null) return;
-        SendTargetShower = UnityEngine.Object.Instantiate(__instance.freeChatField.charCountText.gameObject, __instance.freeChatField.charCountText.transform.parent);
+        SendTargetShower = Object.Instantiate(__instance.freeChatField.charCountText.gameObject, __instance.freeChatField.charCountText.transform.parent);
         SendTargetShower.name = "TONX Send Target Shower";
         SendTargetShower.transform.localPosition = new Vector3(1.95f, 0.5f, 0f);
         SendTargetShower.GetComponent<RectTransform>().sizeDelta = new Vector2(5f, 0.1f);
@@ -34,10 +36,10 @@ public static class SendTargetPatch
     public static void Update_Postfix(ChatController __instance)
     {
         if (SendTargetShower == null) return;
-        string text = Translator.GetString($"SendTargets.{Enum.GetName(SendTarget)}");
+        string text = GetString($"SendTargets.{Enum.GetName(SendTarget)}");
         if (AmongUsClient.Instance.AmHost && GameStates.IsInGame && __instance.IsOpenOrOpening)
         {
-            text += "<size=75%>" + Translator.GetString("SendTargetSwitchNotice") + "</size>";
+            text += "<size=75%>" + GetString("SendTargetSwitchNotice") + "</size>";
             if (Input.GetKey(KeyCode.LeftShift)) SendTarget = SendTargets.All;
             else if (Input.GetKey(KeyCode.LeftControl)) SendTarget = SendTargets.Dead;
             else SendTarget = SendTargets.Default;
@@ -54,8 +56,8 @@ public static class ChatControllerUpdatePatch
     public static int CurrentHistorySelection = -1;
     public static void Prefix()
     {
-        if (AmongUsClient.Instance.AmHost && DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
-            DataManager.Settings.Multiplayer.ChatMode = InnerNet.QuickChatModes.FreeChatOrQuickChat; //コマンドを打つためにホストのみ常時フリーチャット開放
+        if (AmongUsClient.Instance.AmHost && DataManager.Settings.Multiplayer.ChatMode == QuickChatModes.QuickChatOnly)
+            DataManager.Settings.Multiplayer.ChatMode = QuickChatModes.FreeChatOrQuickChat; //コマンドを打つためにホストのみ常時フリーチャット開放
     }
     public static void Postfix(ChatController __instance)
     {

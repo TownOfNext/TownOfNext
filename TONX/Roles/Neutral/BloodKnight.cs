@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
@@ -16,7 +15,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
            CustomRoleTypes.Neutral,
            50923,
            SetupOptionItem,
-           "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
+           "bn|ï¿½ï¿½Ñªï¿½TÊ¿|Ñªï¿½ï¿½|ï¿½ï¿½Ê¿",
            "#630000",
            true,
            countType: CountTypes.BloodKnight
@@ -69,17 +68,17 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(OptionHasImpostorVision.GetBool());
     public static void SetHudActive(HudManager __instance, bool _) => __instance.SabotageButton.ToggleVisible(false);
     public bool CanUseSabotageButton() => false;
-    private bool InProtect() => ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() > Utils.GetTimeStamp();
+    private bool InProtect() => ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() > GetTimeStamp();
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return;
-        ProtectStartTime = Utils.GetTimeStamp();
+        ProtectStartTime = GetTimeStamp();
         SendRPC();
-        Utils.NotifyRoles(Player);
+        NotifyRoles(Player);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() < Utils.GetTimeStamp())
+        if (ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() < GetTimeStamp())
         {
             ProtectStartTime = 0;
             player.Notify(GetString("BKProtectOut"));
@@ -92,8 +91,9 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
         {
             return isForHud ? GetString("BKSkillNotice") : "";
         }
-        else return isForHud
-            ? string.Format(GetString("BKSkillTimeRemain"), ProtectStartTime + OptionProtectDuration.GetFloat() - Utils.GetTimeStamp())
+
+        return isForHud
+            ? string.Format(GetString("BKSkillTimeRemain"), ProtectStartTime + OptionProtectDuration.GetFloat() - GetTimeStamp())
             : GetString("BKInProtectForUnModed");
     }
 }

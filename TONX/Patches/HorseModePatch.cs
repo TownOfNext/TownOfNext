@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX;
+﻿namespace TONX;
 
 // 来源：https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/HorseModePatch.cs
 //[HarmonyPatch(typeof(Constants), nameof(Constants.ShouldHorseAround))]

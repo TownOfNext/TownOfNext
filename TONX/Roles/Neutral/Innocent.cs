@@ -1,10 +1,8 @@
-using AmongUs.GameOptions;
-using System.Linq;
-using TONX.Roles.Core;
-using TONX.Roles.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using AmongUs.GameOptions;
 using Hazel;
+using TONX.Roles.Core;
 
 namespace TONX.Roles.Neutral;
 
@@ -19,7 +17,7 @@ public sealed class Innocent : RoleBase
             CustomRoleTypes.Neutral,
             75_1_2_0800,
             null,
-            "inno|Ô©×ï|Ô­×ï",
+            "inno|Ô©ï¿½ï¿½|Ô­ï¿½ï¿½",
             "#8f815e",
            true
            
@@ -70,7 +68,7 @@ public sealed class Innocent : RoleBase
         if (!AmongUsClient.Instance.AmHost || Player.GetRealKiller().PlayerId != exiled.PlayerId ||!IsKilled) return null;
 
         DecidedWinner = true;
-        WinDescriptionText.Add(Translator.GetString("ExiledInnocentTarget"));
+        WinDescriptionText.Add(GetString("ExiledInnocentTarget"));
         return () =>
         {
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Innocent);

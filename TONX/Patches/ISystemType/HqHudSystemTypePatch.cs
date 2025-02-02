@@ -30,6 +30,6 @@ public static class HqHudSystemTypeUpdateSystemPatch
     public static void Postfix()
     {
         Camouflage.CheckCamouflage();
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
 }

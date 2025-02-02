@@ -1,11 +1,10 @@
-﻿using AmongUs.GameOptions;
-using HarmonyLib;
-using System;
+﻿using System;
 using System.Linq;
+using AmongUs.GameOptions;
+using HarmonyLib;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
@@ -140,7 +139,7 @@ public sealed class AntiAdminer : RoleBase, IImpostor
 
         if (isChange)
         {
-            Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.AntiAdminer)).Do(x => Utils.NotifyRoles(x));
+            Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.AntiAdminer)).Do(x => NotifyRoles(x));
         }
     }
 }

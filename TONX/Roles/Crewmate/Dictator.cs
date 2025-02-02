@@ -14,7 +14,7 @@ public sealed class Dictator : RoleBase
             CustomRoleTypes.Crewmate,
             21200,
             null,
-            "dic|ªš²ÃÕß|¶À²Ã",
+            "dic|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½",
             "#df9b00"
         );
     public Dictator(PlayerControl player)
@@ -31,7 +31,7 @@ public sealed class Dictator : RoleBase
         if (votedFor != null && lastVoted == votedFor.PlayerId) return true;
         lastVoted = votedFor.PlayerId;
         ModifyVote(Player.PlayerId, votedFor.PlayerId, true);
-        Utils.SendMessage(Translator.GetString("DictatorOnVote"), Player.PlayerId);
+        SendMessage(GetString("DictatorOnVote"), Player.PlayerId);
         return false;
     }
     public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
@@ -43,7 +43,7 @@ public sealed class Dictator : RoleBase
             return baseVote;
         }
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Suicide, Player.PlayerId);
-        Utils.GetPlayerById(sourceVotedForId).SetRealKiller(Player);
+        GetPlayerById(sourceVotedForId).SetRealKiller(Player);
         MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, sourceVotedForId);
         return (votedForId, numVotes, false);
     }

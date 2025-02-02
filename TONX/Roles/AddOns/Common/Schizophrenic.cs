@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Schizophrenic
 {
     private static readonly int Id = 81500;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Schizophrenic);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Schizophrenic);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

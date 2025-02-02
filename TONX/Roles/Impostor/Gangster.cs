@@ -1,10 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Gangster : RoleBase, IImpostor
@@ -72,7 +70,7 @@ public sealed class Gangster : RoleBase, IImpostor
         RecruitLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => RecruitLimit >= 1 ? OptionKillCooldown.GetFloat() : Options.DefaultKillCooldown;
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(RecruitLimit >= 1 ? Color.red : Color.gray, $"({RecruitLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(RecruitLimit >= 1 ? Color.red : Color.gray, $"({RecruitLimit})");
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("GangsterButtonText");
@@ -95,9 +93,9 @@ public sealed class Gangster : RoleBase, IImpostor
 
             target.RpcSetCustomRole(CustomRoles.Madmate);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));
-            Utils.NotifyRoles();
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
+            target.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));
+            NotifyRoles();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -109,7 +107,7 @@ public sealed class Gangster : RoleBase, IImpostor
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit}次招募机会", "Gangster");
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
+        killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit}次招募机会", "Gangster");
         return true;
     }

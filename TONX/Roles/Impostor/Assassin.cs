@@ -1,10 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Assassin : RoleBase, IImpostor
@@ -37,7 +35,7 @@ public sealed class Assassin : RoleBase, IImpostor
         AssassinCanKillAfterAssassinate,
     }
 
-    public byte MarkedPlayer = new();
+    public byte MarkedPlayer;
     private static void SetupOptionItem()
     {
         MarkCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.AssassinMarkCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -74,15 +72,12 @@ public sealed class Assassin : RoleBase, IImpostor
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
         if (Shapeshifting) return true;
-        else
-        {
-            MarkedPlayer = target.PlayerId;
-            SendRPC();
-            killer.ResetKillCooldown();
-            killer.SetKillCooldownV2();
-            killer.RPCPlayCustomSound("Clothe");
-            return false;
-        }
+        MarkedPlayer = target.PlayerId;
+        SendRPC();
+        killer.ResetKillCooldown();
+        killer.SetKillCooldownV2();
+        killer.RPCPlayCustomSound("Clothe");
+        return false;
     }
     private bool Shapeshifting;
     public override void OnShapeshift(PlayerControl target)
@@ -98,14 +93,14 @@ public sealed class Assassin : RoleBase, IImpostor
         }
         if (MarkedPlayer != byte.MaxValue)
         {
-            target = Utils.GetPlayerById(MarkedPlayer);
+            target = GetPlayerById(MarkedPlayer);
             MarkedPlayer = byte.MaxValue;
             SendRPC();
             new LateTask(() =>
             {
                 if (!(target == null || !target.IsAlive() || target.IsEaten() || target.inVent || !GameStates.IsInTask))
                 {
-                    Utils.TP(Player.NetTransform, target.GetTruePosition());
+                    TP(Player.NetTransform, target.GetTruePosition());
                     CustomRoleManager.OnCheckMurder(Player, target);
                 }
             }, 1.5f, "Assassin Assassinate");

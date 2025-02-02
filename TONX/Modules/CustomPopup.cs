@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -20,7 +20,7 @@ public static class CustomPopup
     public static PassiveButton? ActionButtonPrefab;
     public static List<PassiveButton>? ActionButtons;
 
-    private static bool busy = false;
+    private static bool busy;
 
     /// <summary>
     /// 显示一个全屏信息显示界面
@@ -83,7 +83,7 @@ public static class CustomPopup
 
         busy = false;
     }
-    private static (string title, string info, List<(string, Action)>? buttons)? waitToShow = null;
+    private static (string title, string info, List<(string, Action)>? buttons)? waitToShow;
     public static void ShowLater(string title, string info, List<(string, Action)>? buttons) => waitToShow = (title, info, buttons);
     private static string waitToUpdateText = string.Empty;
     public static void UpdateTextLater(string info) => waitToUpdateText = info;
@@ -135,4 +135,3 @@ public static class CustomPopup
         }
     }
 }
-#nullable disable

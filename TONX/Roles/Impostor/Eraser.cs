@@ -3,7 +3,6 @@ using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Eraser : RoleBase, IImpostor
@@ -55,7 +54,7 @@ public sealed class Eraser : RoleBase, IImpostor
         
         EraseLimit = reader.ReadInt32();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(EraseLimit >= 1 ? Color.red : Color.gray, $"({EraseLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(EraseLimit >= 1 ? Color.red : Color.gray, $"({EraseLimit})");
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
         if (votedFor == null || !Player.IsAlive() || EraseLimit < 1 || PlayerToErase != byte.MaxValue) return true;
@@ -86,7 +85,7 @@ public sealed class Eraser : RoleBase, IImpostor
         void ShowMsg(string msg)
         {
             Player.ShowPopUp(msg);
-            Utils.SendMessage(msg, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+            SendMessage(msg, Player.PlayerId, ColorString(GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
         }
     }
     public override void OnStartMeeting()
@@ -96,10 +95,10 @@ public sealed class Eraser : RoleBase, IImpostor
     public override void AfterMeetingTasks()
     {
         if (PlayerToErase == byte.MaxValue) return;
-        var player = Utils.GetPlayerById(PlayerToErase);
+        var player = GetPlayerById(PlayerToErase);
         if (player == null) return;
         player.RpcSetCustomRole(player.GetCustomRole().GetRoleInfo().BaseRoleType.Invoke().GetCustomRoleTypes());
-        NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
+        player.Notify(GetString("LostRoleByEraser"));
         Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser.AfterMeetingTasks");
 
     }

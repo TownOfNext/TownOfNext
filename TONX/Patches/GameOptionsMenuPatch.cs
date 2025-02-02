@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using AmongUs.GameOptions;
 using HarmonyLib;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
+using TONX.Roles.Core;
 using UnityEngine;
-using UnityEngine.UI;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX
@@ -43,7 +40,7 @@ namespace TONX
                 Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
                 Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
                 var SettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
-                SettingsTab.name = tab.ToString() + " TAB";
+                SettingsTab.name = tab + " TAB";
                 TONXMenuName.Add(SettingsTab.name);
                 var vanillaOptions = SettingsTab.GetComponentsInChildren<OptionBehaviour>();
                 foreach (var vanillaOption in vanillaOptions)
@@ -52,7 +49,7 @@ namespace TONX
                 }
 
                 var SettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
-                SettingsButton.name = tab.ToString() + " BUTTON";
+                SettingsButton.name = tab + " BUTTON";
                 SettingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
                 SettingsButton.buttonText.DestroyTranslator();
                 SettingsButton.buttonText.text = GetString($"TabGroup.{tab}");
@@ -62,10 +59,10 @@ namespace TONX
                 {
                     TabGroup.SystemSettings => Main.UnityModColor,
                     TabGroup.GameSettings => new Color32(89, 239, 131, 255),
-                    TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
-                    TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
-                    TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
-                    TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
+                    TabGroup.ImpostorRoles => GetCustomRoleTypeColor(CustomRoleTypes.Impostor),
+                    TabGroup.CrewmateRoles => GetCustomRoleTypeColor(CustomRoleTypes.Crewmate),
+                    TabGroup.NeutralRoles => GetCustomRoleTypeColor(CustomRoleTypes.Neutral),
+                    TabGroup.Addons => GetCustomRoleTypeColor(CustomRoleTypes.Addon),
                     TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
                     _ => Color.white,
                 };
@@ -95,7 +92,7 @@ namespace TONX
                         scOptions.Add(stringOption);
                         stringOption.SetClickMask(__instance.GameSettingsButton.ClickMask);
                         stringOption.SetUpFromData(stringOption.data, GameOptionsMenu.MASK_LAYER);
-                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>(o => { });
                         stringOption.TitleText.text = option.Name;
                         stringOption.Value = stringOption.oldValue = option.CurrentValue;
                         stringOption.ValueText.text = option.GetString();
@@ -141,7 +138,7 @@ namespace TONX
                 categoryHeader.Divider.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);
             }
             categoryHeader.Title.fontMaterial.SetFloat("_StencilComp", 3f);
-            categoryHeader.Title.fontMaterial.SetFloat("_Stencil", (float)maskLayer);
+            categoryHeader.Title.fontMaterial.SetFloat("_Stencil", maskLayer);
             categoryHeader.transform.localScale = Vector3.one * GameOptionsMenu.HEADER_SCALE;
             return categoryHeader;
         }
@@ -201,8 +198,6 @@ namespace TONX
                             ob.Cast<NumberOption>().ValidRange.min = 0;
                         }
                         break;
-                    default:
-                        break;
                 }
             }
         }
@@ -219,7 +214,7 @@ namespace TONX
 
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
-                if (__instance.name != tab.ToString() + " TAB") continue;
+                if (__instance.name != tab + " TAB") continue;
 
                 _timer += Time.deltaTime;
                 if (_timer < 0.1f) return;
@@ -312,7 +307,7 @@ namespace TONX
             var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
             if (option == null) return true;
 
-            __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+            __instance.OnValueChanged = new Action<OptionBehaviour>(o => { });
             __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
             __instance.Value = __instance.oldValue = option.CurrentValue;
             __instance.ValueText.text = option.GetString();
@@ -369,8 +364,6 @@ namespace TONX
                         break;
                     case StringNames.ShapeshifterCooldown:
                         ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                        break;
-                    default:
                         break;
                 }
             }

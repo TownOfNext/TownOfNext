@@ -1,13 +1,12 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 
@@ -123,7 +122,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
     public bool CanUseSabotageButton() => false;
     public override string GetProgressText(bool comms = false)
     {
-        return Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({InfectCount})");
+        return ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({InfectCount})");
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -209,7 +208,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
                 if (oldRate >= 100) continue;
 
                 //範囲外は除外
-                var distance = UnityEngine.Vector3.Distance(player.transform.position, target.transform.position);
+                var distance = Vector3.Distance(player.transform.position, target.transform.position);
                 if (distance > InfectDistance) continue;
 
                 var newRate = oldRate + Time.fixedDeltaTime / InfectTime * 100;
@@ -226,7 +225,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
             {
                 //誰かの感染が進行していたら
                 CheckWin();
-                Utils.NotifyRoles();
+                NotifyRoles();
             }
         }
     }
@@ -294,7 +293,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
         Logger.Info($"InfectRate[{player.GetNameWithRole()}]:100%", "OnCheckMurderAsKiller");
         InfectInfos[player.PlayerId] = 100;
         SendRPC(player.PlayerId, 100);
-        Utils.NotifyRoles();
+        NotifyRoles();
         CheckWin();
     }
     public static void CheckWin()

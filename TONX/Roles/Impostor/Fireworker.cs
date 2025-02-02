@@ -1,11 +1,10 @@
-using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Fireworker : RoleBase, IImpostor
@@ -83,7 +82,7 @@ public sealed class Fireworker : RoleBase, IImpostor
     public override void OnShapeshift(PlayerControl target)
     {
         var shapeshifting = !Is(target);
-        Logger.Info($"Fireworker ShapeShift", "Fireworker");
+        Logger.Info("Fireworker ShapeShift", "Fireworker");
         if (!shapeshifting) return;
         switch (State)
         {
@@ -138,10 +137,8 @@ public sealed class Fireworker : RoleBase, IImpostor
                 }
                 State = FireworkerState.FireEnd;
                 break;
-            default:
-                break;
         }
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
@@ -152,7 +149,7 @@ public sealed class Fireworker : RoleBase, IImpostor
         {
             Logger.Info("爆破準備OK", "Fireworker");
             State = FireworkerState.ReadyFire;
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
         switch (State)
         {

@@ -1,17 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using AmongUs.GameOptions;
 using HarmonyLib;
-using Sentry.Internal.Extensions;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
-using TONX.Roles.Crewmate;
 using UnityEngine;
-using UnityEngine.UI;
-using YamlDotNet.Serialization;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX
@@ -41,7 +33,7 @@ namespace TONX
             {
                 Vector3 offset_up = new (1.6f * ((int)tab + 2), 0.18f, 0f);
                 Vector3 offset_down = new (1.6f * ((int)tab - 2), -0.2f, 0f);
-                tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
+                tonxSettingsButton.Add(CreateButton(__instance, tab + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
             }
             tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
         }
@@ -132,7 +124,7 @@ namespace TONX
                 categoryHeader.Divider.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);
             }
             categoryHeader.Title.fontMaterial.SetFloat("_StencilComp", 3f);
-            categoryHeader.Title.fontMaterial.SetFloat("_Stencil", (float)maskLayer);
+            categoryHeader.Title.fontMaterial.SetFloat("_Stencil", maskLayer);
             return categoryHeader;
         }
 

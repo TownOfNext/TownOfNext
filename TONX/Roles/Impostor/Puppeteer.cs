@@ -1,12 +1,11 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Puppeteer : RoleBase, IImpostor
@@ -75,7 +74,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
         puppeteer.SetKillCooldownV2();
         puppeteer.RPCPlayCustomSound("Line");
 
-        Utils.NotifyRoles(SpecifySeer: puppeteer);
+        NotifyRoles(SpecifySeer: puppeteer);
         return false;
     }
     public override void OnReportDeadBody(PlayerControl _, NetworkedPlayerInfo __)
@@ -119,10 +118,10 @@ public sealed class Puppeteer : RoleBase, IImpostor
                 RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
                 target.SetRealKiller(Player);
                 puppet.RpcMurderPlayer(target);
-                Utils.MarkEveryoneDirtySettings();
+                MarkEveryoneDirtySettings();
                 Puppets.Remove(puppet.PlayerId);
                 SendRPC(puppet.PlayerId, 2);
-                Utils.NotifyRoles();
+                NotifyRoles();
             }
         }
     }
@@ -134,7 +133,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
         if (!(Puppets.ContainsValue(this) &&
             Puppets.ContainsKey(seen.PlayerId))) return "";
 
-        return Utils.ColorString(RoleInfo.RoleColor, "◆");
+        return ColorString(RoleInfo.RoleColor, "◆");
     }
     public bool OverrideKillButtonText(out string text)
     {

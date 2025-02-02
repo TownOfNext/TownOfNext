@@ -1,10 +1,10 @@
-﻿using AmongUs.Data;
-using HarmonyLib;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using AmongUs.Data;
+using HarmonyLib;
 using TONX.Attributes;
 
 namespace TONX;
@@ -12,11 +12,11 @@ namespace TONX;
 internal class Cloud
 {
     private static string IP;
-    private static int LOBBY_PORT = 0;
-    private static int EAC_PORT = 0;
+    private static int LOBBY_PORT;
+    private static int EAC_PORT;
     private static Socket ClientSocket;
     private static Socket EacClientSocket;
-    private static long LastRepotTimeStamp = 0;
+    private static long LastRepotTimeStamp;
 
     [PluginModuleInitializer]
     public static void Init()
@@ -63,19 +63,19 @@ internal class Cloud
                 ClientSocket.Close();
             }
 
-            Utils.SendMessage(Translator.GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
+            SendMessage(GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
 
         }
         catch (Exception e)
         {
-            Utils.SendMessage(Translator.GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
+            SendMessage(GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
             Logger.Exception(e, "SentLobbyToQQ");
             throw;
         }
         return true;
     }
 
-    private static bool connecting = false;
+    private static bool connecting;
     public static void StartConnect()
     {
         if (connecting || EacClientSocket != null && EacClientSocket.Connected) return;
@@ -90,7 +90,7 @@ internal class Cloud
             try
             {
                 if (IP == null || EAC_PORT == 0) throw new("Has no ip or port");
-                LastRepotTimeStamp = Utils.GetTimeStamp();
+                LastRepotTimeStamp = GetTimeStamp();
                 EacClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 EacClientSocket.Connect(IP, EAC_PORT);
                 Logger.Warn("已连接至TONX服务器", "EAC Cloud");
@@ -123,7 +123,7 @@ internal class Cloud
     {
         public static void Postfix()
         {
-            if (LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < Utils.GetTimeStamp())
+            if (LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < GetTimeStamp())
             {
                 LastRepotTimeStamp = 0;
                 StopConnect();

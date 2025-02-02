@@ -1,9 +1,8 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Medium : RoleBase
@@ -62,19 +61,19 @@ public sealed class Medium : RoleBase
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
-        var target = Utils.GetPlayerById(ContactPlayer);
+        var target = GetPlayerById(ContactPlayer);
         if (ContactPlayer == byte.MaxValue || target == null) return;
         msgToSend.Add((
             string.Format(GetString("MediumshipNotifySelf"), target.GetRealName(), ContactLimit),
             Player.PlayerId,
-            Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle"))
+            ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle"))
             ));
 
         if (OptionOnlyReceiveMsgFromCrew.GetBool() && !target.IsCrew()) return;
         msgToSend.Add((
             string.Format(GetString("MediumshipNotifyTarget"), Player.GetRealName()),
             target.PlayerId,
-            Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle"))
+            ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle"))
             ));
     }
     private static void OnReceiveMessage(MessageControl mc)
@@ -96,12 +95,12 @@ public sealed class Medium : RoleBase
             else if (msg.Contains('y') || msg.Contains(GetString("Yes")) || msg.Contains('对')) ans = true;
             else
             {
-                Utils.SendMessage(GetString("MediumshipHelp"), player.PlayerId);
+                SendMessage(GetString("MediumshipHelp"), player.PlayerId);
                 return;
             }
 
-            Utils.SendMessage(GetString("Mediumship" + (ans ? "Yes" : "No")), medium.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
-            Utils.SendMessage(GetString("MediumshipDone"), player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
+            SendMessage(GetString("Mediumship" + (ans ? "Yes" : "No")), medium.PlayerId, ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
+            SendMessage(GetString("MediumshipDone"), player.PlayerId, ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
 
             roleClass.ContactPlayer = byte.MaxValue;
         }

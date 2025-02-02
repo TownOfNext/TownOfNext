@@ -45,10 +45,8 @@ public static class SabotageSystemTypeUpdateSystemPatch
             //その他処理が必要であれば処理
             return roleClass.OnInvokeSabotage(nextSabotage);
         }
-        else
-        {
-            return CanSabotage(player);
-        }
+
+        return CanSabotage(player);
     }
     private static bool CanSabotage(PlayerControl player)
     {
@@ -76,9 +74,9 @@ public static class ElectricTaskInitializePatch
 {
     public static void Postfix()
     {
-        Utils.MarkEveryoneDirtySettings();
+        MarkEveryoneDirtySettings();
         if (!GameStates.IsMeeting)
-            Utils.NotifyRoles(ForceLoop: true);
+            NotifyRoles(ForceLoop: true);
     }
 }
 [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
@@ -86,8 +84,8 @@ public static class ElectricTaskCompletePatch
 {
     public static void Postfix()
     {
-        Utils.MarkEveryoneDirtySettings();
+        MarkEveryoneDirtySettings();
         if (!GameStates.IsMeeting)
-            Utils.NotifyRoles(ForceLoop: true);
+            NotifyRoles(ForceLoop: true);
     }
 }

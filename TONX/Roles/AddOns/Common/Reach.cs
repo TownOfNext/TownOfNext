@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Reach
 {
     private static readonly int Id = 81600;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Reach);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Reach);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

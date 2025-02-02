@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
-using static TONX.Translator;
 
 namespace TONX
 {

@@ -1,5 +1,5 @@
-using AmongUs.GameOptions;
 using System;
+using AmongUs.GameOptions;
 using TONX.Attributes;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -35,7 +35,7 @@ public class MeetingTimeManager
     }
     public static void OnReportDeadBody()
     {
-        if (Options.AllAliveMeeting.GetBool() && Utils.IsAllAlive)
+        if (Options.AllAliveMeeting.GetBool() && IsAllAlive)
         {
             DiscussionTime = 0;
             VotingTime = Options.AllAliveMeetingTime.GetInt();

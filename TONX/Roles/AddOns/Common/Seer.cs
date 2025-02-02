@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Seer
 {
     private static readonly int Id = 80900;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Seer);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Seer);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

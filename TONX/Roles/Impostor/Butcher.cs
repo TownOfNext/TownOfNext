@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -34,7 +34,7 @@ public sealed class Butcher : RoleBase, IImpostor
     public override void Add() => ButcherKilledPlayers = new();
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("ButcherButtonText");
+        text = GetString("ButcherButtonText");
         return true;
     }
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
@@ -56,7 +56,7 @@ public sealed class Butcher : RoleBase, IImpostor
                 Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100), ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
                 location += new Vector2(0, 0.3636f);
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, -1);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
                 NetHelpers.WriteVector2(location, writer);
                 writer.Write(target.NetTransform.lastSequenceId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -73,11 +73,11 @@ public sealed class Butcher : RoleBase, IImpostor
                     rp.RpcMurderPlayerV2(rp);
                 }
 
-                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
+                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None);
                 messageWriter.WriteNetObject(target);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             }
-            Utils.TP(killer.NetTransform, ops);
+            TP(killer.NetTransform, ops);
         }, 0.05f, "Butcher Murder");
 
         return;

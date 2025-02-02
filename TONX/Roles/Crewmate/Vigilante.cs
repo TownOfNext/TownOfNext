@@ -60,5 +60,5 @@ public sealed class Vigilante : RoleBase, IKiller
         }
         return true;
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Color.yellow : Color.gray, $"({(CanUseKillButton() ? 1 : 0)})");
+    public override string GetProgressText(bool comms = false) => ColorString(CanUseKillButton() ? Color.yellow : Color.gray, $"({(CanUseKillButton() ? 1 : 0)})");
 }

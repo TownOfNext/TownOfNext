@@ -1,5 +1,5 @@
-using AmongUs.GameOptions;
 using System;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -15,7 +15,7 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
             CustomRoleTypes.Crewmate,
             21600,
             SetupOptionItem,
-            "tm|•rég²Ù¿ØÕß|Ê±¼ä²Ù¿ØÈË|Ê±¼ä²Ù¿Ø|Ê±¼ä¹ÜÀí|Ê±¼ä¹ÜÀí´óÊ¦|Ê±¼ä¹ÜÀíÕß|Ê±¼ä¹ÜÀíÈË",
+            "tm|ï¿½rï¿½gï¿½Ù¿ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½Ù¿ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",
             "#6495ed"
         );
     public TimeManager(PlayerControl player)
@@ -55,6 +55,6 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
     public override string GetProgressText(bool comms = false)
     {
         var time = CalculateMeetingTimeDelta();
-        return time > 0 ? Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.5f), $"{(Player.Is(CustomRoles.Madmate) ? '-' : '+')}{Math.Abs(time)}s") : "";
+        return time > 0 ? ColorString(RoleInfo.RoleColor.ShadeColor(0.5f), $"{(Player.Is(CustomRoles.Madmate) ? '-' : '+')}{Math.Abs(time)}s") : "";
     }
 }

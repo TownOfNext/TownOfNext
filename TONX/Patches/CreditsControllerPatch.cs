@@ -1,7 +1,6 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static TONX.Translator;
+using HarmonyLib;
 
 namespace TONX;
 
@@ -10,8 +9,8 @@ public class CreditsControllerPatch
 {
     private static List<CreditsController.CreditStruct> GetModCredits()
     {
-        var devList = new List<string>()
-            {
+        var devList = new List<string>
+        {
                 //$"<color=#bd262a><size=150%>{GetString("FromChina")}</size></color>",
 
                 $"KARPED1EM - {GetString("Creater")}",
@@ -31,8 +30,8 @@ public class CreditsControllerPatch
                 $"SolarFlare - {GetString("Contributor")}",
                 $"Mousse - {GetString("Contributor")}",
             };
-        var translatorList = new List<string>()
-            {
+        var translatorList = new List<string>
+        {
                 $"Gurge44 - {GetString(StringNames.LangEnglish)}",
                 $"SolarFlare - {GetString(StringNames.LangEnglish)}",
                 $"Filipianosol - {GetString(StringNames.LangEnglish)}",
@@ -47,8 +46,8 @@ public class CreditsControllerPatch
 
                 $"DopzyGamer - {GetString(StringNames.LangBrazPort)}",
             };
-        var acList = new List<string>()
-            {
+        var acList = new List<string>
+        {
                 //Mods
                 $"{GetString("TownOfHost")}",
                 $"{GetString("TownOfHost_Y")}",
@@ -57,48 +56,48 @@ public class CreditsControllerPatch
                 $"{GetString("Project-Lotus")}",
 
                 // Sponsor
-                $"罗寄",
-                $"鬼",
-                $"喜",
-                $"小叨院长",
-                $"波奇酱",
-                $"法师",
-                $"沐煊",
-                $"SolarFlare",
-                $"侠客",
-                $"林林林",
-                $"撒币",
-                $"斯卡蒂Skadi",
-                $"ltemten",
-                $"Night_瓜",
-                $"群诱饵",
-                $"Slok",
-                $"辣鸡",
-                $"湛蓝色",
-                $"小黄117",
-                $"chun",
-                $"Z某",
-                $"Shark",
-                $"清风awa",
-                $"1 1 1 1",
+                "罗寄",
+                "鬼",
+                "喜",
+                "小叨院长",
+                "波奇酱",
+                "法师",
+                "沐煊",
+                "SolarFlare",
+                "侠客",
+                "林林林",
+                "撒币",
+                "斯卡蒂Skadi",
+                "ltemten",
+                "Night_瓜",
+                "群诱饵",
+                "Slok",
+                "辣鸡",
+                "湛蓝色",
+                "小黄117",
+                "chun",
+                "Z某",
+                "Shark",
+                "清风awa",
+                "1 1 1 1",
 
                 //Discord Server Booster
-                $"bunny",
-                $"Loonie",
-                $"Namra",
-                $"KNIGHT",
-                $"SolarFlare",
-                $"Bluéfôx.",
-                $"shiftyrose",
-                $"M ™",
-                $"yunfi",
+                "bunny",
+                "Loonie",
+                "Namra",
+                "KNIGHT",
+                "SolarFlare",
+                "Bluéfôx.",
+                "shiftyrose",
+                "M \u2122",
+                "yunfi",
 
-                $"...",
+                "...",
             };
 
         var credits = new List<CreditsController.CreditStruct>();
 
-        AddTitleToCredits(Utils.ColorString(Main.ModColor32, Main.ModName));
+        AddTitleToCredits(ColorString(Main.ModColor32, Main.ModName));
         AddPersonToCredits(devList);
         AddSpcaeToCredits();
 

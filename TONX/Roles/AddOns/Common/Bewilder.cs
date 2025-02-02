@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Bewilder
 {
     private static readonly int Id = 81200;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Bewilder);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Bewilder);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionVision;

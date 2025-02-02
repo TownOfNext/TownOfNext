@@ -45,7 +45,7 @@ public class MeetingVoteManager
     /// <param name="exiled">驱逐者</param>
     public void ClearAndExile(byte voter, byte exiled)
     {
-        logger.Info($"{Utils.GetPlayerById(voter).GetNameWithRole()} によって {GetVoteName(exiled)} が追放されます");
+        logger.Info($"{GetPlayerById(voter).GetNameWithRole()} によって {GetVoteName(exiled)} が追放されます");
         ClearVotes();
         var vote = new VoteData(voter);
         vote.DoVote(exiled, 1);
@@ -77,12 +77,12 @@ public class MeetingVoteManager
             var (roleVoteFor, roleNumVotes, roleDoVote) = role.ModifyVote(voter, voteFor, isIntentional);
             if (roleVoteFor.HasValue)
             {
-                logger.Info($"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票先を {GetVoteName(roleVoteFor.Value)} に変更します");
+                logger.Info($"{role.Player.GetNameWithRole()} が {GetPlayerById(voter).GetNameWithRole()} の投票先を {GetVoteName(roleVoteFor.Value)} に変更します");
                 voteFor = roleVoteFor.Value;
             }
             if (roleNumVotes.HasValue)
             {
-                logger.Info($"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票数を {roleNumVotes.Value} に変更します");
+                logger.Info($"{role.Player.GetNameWithRole()} が {GetPlayerById(voter).GetNameWithRole()} の投票数を {roleNumVotes.Value} に変更します");
                 numVotes = roleNumVotes.Value;
             }
             if (!roleDoVote)
@@ -126,7 +126,7 @@ public class MeetingVoteManager
             var voteData = AllVotes.TryGetValue(voteArea.TargetPlayerId, out var value) ? value : null;
             if (voteData == null)
             {
-                logger.Warn($"{Utils.GetPlayerById(voteArea.TargetPlayerId).GetNameWithRole()} 没有投票数据");
+                logger.Warn($"{GetPlayerById(voteArea.TargetPlayerId).GetNameWithRole()} 没有投票数据");
                 continue;
             }
             for (var i = 0; i < voteData.NumVotes; i++)
@@ -212,7 +212,7 @@ public class MeetingVoteManager
             var vote = voteData.Value;
             if (!vote.HasVoted)
             {
-                var voterName = Utils.GetPlayerById(vote.Voter).GetNameWithRole();
+                var voterName = GetPlayerById(vote.Voter).GetNameWithRole();
                 switch (noVoteMode)
                 {
                     case VoteMode.Suicide:
@@ -231,7 +231,7 @@ public class MeetingVoteManager
             }
             else if (!ignoreSkipMode && vote.IsSkip)
             {
-                var voterName = Utils.GetPlayerById(vote.Voter).GetNameWithRole();
+                var voterName = GetPlayerById(vote.Voter).GetNameWithRole();
                 switch (skipMode)
                 {
                     case VoteMode.Suicide:
@@ -254,7 +254,7 @@ public class MeetingVoteManager
     public static string GetVoteName(byte num)
     {
         string name = "invalid";
-        var player = Utils.GetPlayerById(num);
+        var player = GetPlayerById(num);
         if (num < 15 && player != null) name = player?.GetNameWithRole();
         else if (num == Skip) name = "Skip";
         else if (num == NoVote) name = "None";
@@ -274,7 +274,7 @@ public class MeetingVoteManager
 
         public void DoVote(byte voteTo, int numVotes)
         {
-            logger.Info($"投票：{Utils.GetPlayerById(Voter).GetNameWithRole()} => {GetVoteName(voteTo)} x {numVotes}");
+            logger.Info($"投票：{GetPlayerById(Voter).GetNameWithRole()} => {GetVoteName(voteTo)} x {numVotes}");
             VotedFor = voteTo;
             NumVotes = numVotes;
             Tiebreaker.OnVote(Voter, voteTo);
@@ -339,7 +339,7 @@ public class MeetingVoteManager
                         var toExile = mostVotedPlayers.Where(id => id != Skip).ToArray();
                         foreach (var playerId in toExile)
                         {
-                            Utils.GetPlayerById(playerId)?.SetRealKiller(null);
+                            GetPlayerById(playerId)?.SetRealKiller(null);
                         }
                         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, toExile);
                         Exiled = null;

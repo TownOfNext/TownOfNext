@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Neptune
 {
     private static readonly int Id = 80600;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Neptune);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Neptune);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

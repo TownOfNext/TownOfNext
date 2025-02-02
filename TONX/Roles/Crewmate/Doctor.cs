@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -15,7 +14,7 @@ public sealed class Doctor : RoleBase, IDeathReasonSeeable
             CustomRoleTypes.Crewmate,
             21100,
             SetupOptionItem,
-            "doc|·¨át",
+            "doc|ï¿½ï¿½ï¿½t",
             "#80ffdd"
         );
     public Doctor(PlayerControl player)

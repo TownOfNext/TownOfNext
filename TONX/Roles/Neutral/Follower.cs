@@ -1,7 +1,7 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System;
+﻿using System;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -107,8 +107,8 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         if (BetTarget == target.PlayerId || BetLimit < 1) return false;
 
         BetLimit--;
-        var beforeTarget = Utils.GetPlayerById(BetTarget);
-        if (beforeTarget != null) Utils.NotifyRoles(beforeTarget);
+        var beforeTarget = GetPlayerById(BetTarget);
+        if (beforeTarget != null) NotifyRoles(beforeTarget);
 
         BetTarget = target.PlayerId;
         SendRPC();
@@ -117,9 +117,9 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         killer.SetKillCooldownV2();
         killer.RPCPlayCustomSound("Bet");
 
-        killer.Notify(Translator.GetString("FollowerBetPlayer"));
+        killer.Notify(GetString("FollowerBetPlayer"));
         if (OptionBetTargetKnowFollower.GetBool())
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), Translator.GetString("FollowerBetOnYou")));
+            target.Notify(ColorString(GetRoleColor(CustomRoles.Follower), GetString("FollowerBetOnYou")));
 
         Logger.Info($"赌徒下注：{killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Follower");
 
@@ -128,15 +128,15 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        return seen.PlayerId == BetTarget ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
+        return seen.PlayerId == BetTarget ? ColorString(GetRoleColor(CustomRoles.Follower), "♦") : "";
     }
     private static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seen == null || !OptionBetTargetKnowFollower.GetBool()) return "";
         return (seen.GetRoleClass() is Follower roleClass && roleClass.BetTarget == seer.PlayerId)
-            ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
+            ? ColorString(GetRoleColor(CustomRoles.Follower), "♦") : "";
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Utils.ShadeColor(RoleInfo.RoleColor, 0.25f) : Color.gray, $"({BetLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(CanUseKillButton() ? RoleInfo.RoleColor.ShadeColor(0.25f) : Color.gray, $"({BetLimit})");
     public bool CheckWin(ref CustomRoles winnerRole)
     {
         if (BetTarget == byte.MaxValue) return false;
@@ -146,7 +146,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("FollowerKillButtonText");
+        text = GetString("FollowerKillButtonText");
         return true;
     }
 }

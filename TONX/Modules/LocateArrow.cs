@@ -147,7 +147,7 @@ static class LocateArrow
         }
         if (update)
         {
-            Utils.NotifyRoles(SpecifySeer: seer);
+            NotifyRoles(SpecifySeer: seer);
         }
     }
 }

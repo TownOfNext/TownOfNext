@@ -72,7 +72,7 @@ public sealed class Mare : RoleBase, IImpostor
         {
             SendRPC();
             Player.MarkDirtySettings();
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
     }
     public void SendRPC()
@@ -91,7 +91,7 @@ public sealed class Mare : RoleBase, IImpostor
     {
         if (GameStates.IsInTask && IsActivateKill)
         {
-            if (!Utils.IsActive(SystemTypes.Electrical))
+            if (!IsActive(SystemTypes.Electrical))
             {
                 //停電解除されたらキルモード解除
                 ActivateKill(false);
@@ -105,7 +105,7 @@ public sealed class Mare : RoleBase, IImpostor
             _ = new LateTask(() =>
             {
                 //まだ停電が直っていなければキル可能モードに
-                if (Utils.IsActive(SystemTypes.Electrical))
+                if (IsActive(SystemTypes.Electrical))
                 {
                     ActivateKill(true);
                 }

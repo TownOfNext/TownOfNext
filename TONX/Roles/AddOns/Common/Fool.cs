@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Fool
 {
     private static readonly int Id = 81300;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Fool);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Fool);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionImpFoolCanNotSabotage;

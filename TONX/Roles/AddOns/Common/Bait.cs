@@ -10,7 +10,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Bait
 {
     private static readonly int Id = 81700;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Bait);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Bait);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionReportDelayMin;
@@ -51,7 +51,7 @@ public static class Bait
             if (OptionReportDelayMax.GetFloat() < OptionReportDelayMin.GetFloat()) delay = 0f;
             else delay = IRandom.Instance.Next((int)OptionReportDelayMin.GetFloat(), (int)OptionReportDelayMax.GetFloat() + 1);
             delay = Math.Max(delay, 0.15f);
-            if (delay > 0.15f && OptionDelayNotifyForKiller.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(Translator.GetString("KillBaitNotify"), (int)delay)), delay);
+            if (delay > 0.15f && OptionDelayNotifyForKiller.GetBool()) killer.Notify(ColorString(GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
             Logger.Info($"{killer.GetNameWithRole()} Killed Bait => {target.GetNameWithRole()}", "Bait.OnMurderPlayerAsTarget");
             _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
         }

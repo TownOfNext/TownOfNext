@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Egoist
 {
     private static readonly int Id = 80800;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Egoist);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Egoist);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionImpEgoVisibalToAllies;

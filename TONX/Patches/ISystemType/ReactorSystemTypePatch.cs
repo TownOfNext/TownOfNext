@@ -2,7 +2,6 @@
 using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static Il2CppSystem.TimeZoneInfo;
 
 namespace TONX.Patches.ISystemType;
 

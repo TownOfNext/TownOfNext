@@ -2,8 +2,6 @@
 using TONX.Modules;
 using TONX.Roles.Core;
 
-using static TONX.Translator;
-
 namespace TONX.Roles.Crewmate;
 public sealed class Veteran : RoleBase
 {
@@ -75,23 +73,21 @@ public sealed class Veteran : RoleBase
         if (SkillLimit >= 1)
         {
             SkillLimit--;
-            ProtectStartTime = Utils.GetTimeStamp();
+            ProtectStartTime = GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.RPCPlayCustomSound("Gunload");
             Player.Notify(GetString("VeteranOnGuard"), SkillLimit);
             return true;
         }
-        else
-        {
-            Player.Notify(GetString("SkillMaxUsage"));
-            return false;
-        }
+
+        Player.Notify(GetString("SkillMaxUsage"));
+        return false;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (ProtectStartTime == 0) return;
-        if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        if (ProtectStartTime + OptionSkillDuration.GetFloat() < GetTimeStamp())
         {
             ProtectStartTime = 0;
             player.RpcProtectedMurderPlayer();
@@ -101,7 +97,7 @@ public sealed class Veteran : RoleBase
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
+        if (ProtectStartTime != 0 && ProtectStartTime + OptionSkillDuration.GetFloat() >= GetTimeStamp())
         {
             var (killer, target) = info.AttemptTuple;
             target.RpcMurderPlayerV2(killer);

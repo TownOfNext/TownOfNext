@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -38,11 +37,11 @@ public sealed class Scavenger : RoleBase, IImpostor
 
         killer.RpcSnapToForced(target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-        target.RpcSnapToForced(Utils.GetBlackRoomPS());
+        target.RpcSnapToForced(GetBlackRoomPS());
         target.SetRealKiller(killer);
         target.RpcMurderPlayerV2(target);
         killer.SetKillCooldownV2();
-        NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")));
+        target.Notify(ColorString(GetRoleColor(CustomRoles.Scavenger), GetString("KilledByScavenger")));
 
         info.DoKill = false;
     }

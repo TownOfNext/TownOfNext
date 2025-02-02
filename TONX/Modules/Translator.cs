@@ -1,5 +1,3 @@
-using HarmonyLib;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,8 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TONX.Attributes;
 using YamlDotNet.RepresentationModel;
+using Object = Il2CppSystem.Object;
 
 namespace TONX;
 
@@ -27,7 +28,7 @@ public static class Translator
     public static void LoadLangs()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var fileNames = assembly.GetManifestResourceNames().Where(x => x.StartsWith($"TONX.Resources.Languages."));
+        var fileNames = assembly.GetManifestResourceNames().Where(x => x.StartsWith("TONX.Resources.Languages."));
         foreach (var fileName in fileNames)
         {
             var yaml = new YamlStream();
@@ -113,12 +114,12 @@ public static class Translator
         catch (Exception Ex)
         {
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
-            Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
+            Logger.Error("Here was the error:\n" + Ex, "Translator");
         }
         return res;
     }
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Object>(0));
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance?.currentLanguage?.languageID ?? SupportedLangs.English;

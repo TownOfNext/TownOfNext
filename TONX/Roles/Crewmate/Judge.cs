@@ -1,11 +1,10 @@
-﻿using AmongUs.GameOptions;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Judge : RoleBase, IMeetingButton
@@ -62,7 +61,7 @@ public sealed class Judge : RoleBase, IMeetingButton
     {
         if (Player.IsAlive() && seen.IsAlive() && isForMeeting)
         {
-            nameText = Utils.ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
+            nameText = ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
         }
     }
     public string ButtonName { get; private set; } = "Judge";
@@ -91,8 +90,8 @@ public sealed class Judge : RoleBase, IMeetingButton
         }
         if (Is(target))
         {
-            if (!isUi) Utils.SendMessage(GetString("LaughToWhoTrialSelf"), Player.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
-            else Player.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoTrialSelf"));
+            if (!isUi) SendMessage(GetString("LaughToWhoTrialSelf"), Player.PlayerId, ColorString(Color.cyan, GetString("MessageFromKPD")));
+            else Player.ShowPopUp(ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoTrialSelf"));
             judgeSuicide = true;
         }
         else if (Player.Is(CustomRoles.Madmate)) judgeSuicide = false;
@@ -119,9 +118,9 @@ public sealed class Judge : RoleBase, IMeetingButton
             dp.RpcSuicideWithAnime();
 
             //死者检查
-            Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+            NotifyRoles(isForMeeting: true, NoCache: true);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle"))); }, 0.6f, "Guess Msg");
+            _ = new LateTask(() => { SendMessage(string.Format(GetString("TrialKill"), Name), 255, ColorString(GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle"))); }, 0.6f, "Guess Msg");
 
         }, 0.2f, "Trial Kill");
 
@@ -141,29 +140,30 @@ public sealed class Judge : RoleBase, IMeetingButton
 
         if (!pc.IsAlive())
         {
-            Utils.SendMessage(GetString("JudgeDead"), pc.PlayerId);
+            SendMessage(GetString("JudgeDead"), pc.PlayerId);
             return true;
         }
 
         if (operate == 1)
         {
-            Utils.SendMessage(GuesserHelper.GetFormatString(), pc.PlayerId);
+            SendMessage(GuesserHelper.GetFormatString(), pc.PlayerId);
             return true;
         }
-        else if (operate == 2)
+
+        if (operate == 2)
         {
             spam = true;
             if (!AmongUsClient.Instance.AmHost) return true;
 
             if (!MsgToPlayer(msg, out byte targetId, out string error))
             {
-                Utils.SendMessage(error, pc.PlayerId);
+                SendMessage(error, pc.PlayerId);
                 return true;
             }
 
-            var target = Utils.GetPlayerById(targetId);
+            var target = GetPlayerById(targetId);
             if (!Trial(target, out var reason))
-                Utils.SendMessage(reason, pc.PlayerId);
+                SendMessage(reason, pc.PlayerId);
         }
         return true;
     }
@@ -194,7 +194,7 @@ public sealed class Judge : RoleBase, IMeetingButton
         }
 
         //判断选择的玩家是否合理
-        PlayerControl target = Utils.GetPlayerById(id);
+        PlayerControl target = GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
             error = GetString("TrialNull");

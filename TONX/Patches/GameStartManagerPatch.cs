@@ -1,14 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
-using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX;
@@ -97,7 +95,7 @@ public class GameStartManagerPatch
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
     public class GameStartManagerUpdatePatch
     {
-        private static int updateTimer = 0;
+        private static int updateTimer;
         public static float exitTimer = -1f;
         public static void Prefix(GameStartManager __instance)
         {
@@ -145,13 +143,13 @@ public class GameStartManagerPatch
                     if (!MatchVersions(client.Character.PlayerId, true))
                     {
                         canStartGame = false;
-                        mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
+                        mismatchedPlayerNameList.Add(ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
                     }
                 }
                 if (!canStartGame)
                 {
                     __instance.StartButton.gameObject.SetActive(false);
-                    warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
+                    warningMessage = ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
                 }
                 cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
                 __instance.StartButton.gameObject.SetActive(!cancelButton.gameObject.active);
@@ -170,7 +168,7 @@ public class GameStartManagerPatch
                         SceneChanger.ChangeScene("MainMenu");
                     }
                     if (exitTimer != 0)
-                        warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
+                        warningMessage = ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
             }
             if (warningMessage == "")
@@ -196,7 +194,7 @@ public class GameStartManagerPatch
             int minutes = (int)timer / 60;
             int seconds = (int)timer % 60;
             string countDown = $"{minutes:00}:{seconds:00}";
-            if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
+            if (timer <= 60) countDown = ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
         private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
@@ -219,7 +217,7 @@ public static class GameStartManagerBeginGamePatch
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
             var msg = GetString("Error.InvalidColor");
             msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-            Utils.SendMessage(msg);
+            SendMessage(msg);
             return false;
         }
 

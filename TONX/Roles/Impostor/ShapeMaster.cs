@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -15,7 +14,7 @@ public sealed class ShapeMaster : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             1300,
             SetupOptionItem,
-            "sha|Ç§Ãæ¹í|Ç§Ãæ"
+            "sha|Ç§ï¿½ï¿½ï¿½|Ç§ï¿½ï¿½"
         );
     public ShapeMaster(PlayerControl player)
     : base(

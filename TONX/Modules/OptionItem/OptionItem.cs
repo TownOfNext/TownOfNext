@@ -29,7 +29,7 @@ namespace TONX
         private static Dictionary<int, OptionItem> _fastOptions = new(1024);
         public static int CurrentPreset { get; set; }
 #if DEBUG
-        public static bool IdDuplicated { get; private set; } = false;
+        public static bool IdDuplicated { get; private set; }
 #endif
         #endregion
 
@@ -186,7 +186,7 @@ namespace TONX
         {
         return (disableColor ?
             Translator.GetString(Name, ReplacementDictionary, console) :
-            Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
+            ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
             + AddonDescription;
         }
         public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());

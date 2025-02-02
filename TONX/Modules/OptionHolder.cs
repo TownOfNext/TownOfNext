@@ -1,8 +1,8 @@
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HarmonyLib;
 using TONX.Modules;
 using TONX.Modules.OptionItems;
 using TONX.Roles.AddOns.Common;
@@ -446,7 +446,7 @@ public static class Options
     public static int UsedButtonCount = 0;
     public static int SnitchExposeTaskLeft = 1;
 
-    public static bool IsLoaded = false;
+    public static bool IsLoaded;
     public static int GetRoleCount(CustomRoles role)
     {
         return GetRoleChance(role) == 0 ? 0 : CustomRoleCounts.TryGetValue(role, out var option) ? option.GetInt() : 0;
@@ -456,7 +456,7 @@ public static class Options
         if (!CustomRoleSpawnChances.TryGetValue(role, out var option)) return 0;
         if (option.Selections.Length == 2) return option.GetInt() == 0 ? 0 : 2;
         if (option.Selections.Length == 3) return option.GetInt();
-        else return option.GetInt() switch
+        return option.GetInt() switch
         {
             0 => 0,
             1 => 5,
@@ -533,7 +533,7 @@ public static class Options
 
         // GM
         EnableGM = BooleanOptionItem.Create(100, "GM", false, TabGroup.GameSettings, false)
-            .SetColor(Utils.GetRoleColor(CustomRoles.GM))
+            .SetColor(GetRoleColor(CustomRoles.GM))
             .SetHeader(true);
 
         bool setupExpNow = false;
@@ -601,13 +601,13 @@ public static class Options
         // 通用附加
         TextOptionItem.Create(5_100_001, "MenuTitle.Addon.Common", TabGroup.Addons)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
+            .SetColor(GetCustomRoleTypeColor(CustomRoleTypes.Addon));
 
         #region Options of Lover
-        SetupRoleOptions(80100, TabGroup.Addons, CustomRoles.Lovers, Utils.GetRoleColor(CustomRoles.Lovers), assignCountRule: new(2, 2, 2));
-        LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
+        SetupRoleOptions(80100, TabGroup.Addons, CustomRoles.Lovers, GetRoleColor(CustomRoles.Lovers), assignCountRule: new(2, 2, 2));
+        LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
             .SetGameMode(CustomGameMode.Standard);
-        LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
+        LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
             .SetGameMode(CustomGameMode.Standard);
         #endregion
 
@@ -630,7 +630,7 @@ public static class Options
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
+            .SetColor(GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
 
         YouTuber.SetupCustomOption();
         Workhorse.SetupCustomOption();
@@ -639,7 +639,7 @@ public static class Options
         // 内鬼专属附加
         TextOptionItem.Create(5_100_003, "MenuTitle.Addon.Imp", TabGroup.Addons)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Impostor));
+            .SetColor(GetCustomRoleTypeColor(CustomRoleTypes.Impostor));
 
         LastImpostor.SetupCustomOption();
         TicketsStealer.SetupCustomOption();
@@ -756,7 +756,7 @@ public static class Options
         CheatResponses = StringOptionItem.Create(2_004_006, "CheatResponses", CheatResponsesNames, 0, TabGroup.SystemSettings, false)
             .SetColor(new Color32(147, 118, 224, byte.MaxValue));
         RoleAssigningAlgorithm = StringOptionItem.Create(2_004_007, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
-           .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
+           .RegisterUpdateValueEvent((obj, args) => IRandom.SetInstanceById(args.CurrentValue))
            .SetColor(new Color32(147, 118, 224, byte.MaxValue));
 
         DebugModeManager.SetupCustomOption();
@@ -914,7 +914,7 @@ public static class Options
         VoteMode = BooleanOptionItem.Create(3_013_001, "VoteMode", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
-        WhenSkipVote = StringOptionItem.Create(3_013_002, "WhenSkipVote", voteModes[0..3], 0, TabGroup.GameSettings, false).SetParent(VoteMode)
+        WhenSkipVote = StringOptionItem.Create(3_013_002, "WhenSkipVote", voteModes[..3], 0, TabGroup.GameSettings, false).SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
         WhenSkipVoteIgnoreFirstMeeting = BooleanOptionItem.Create(3_013_003, "WhenSkipVoteIgnoreFirstMeeting", false, TabGroup.GameSettings, false).SetParent(WhenSkipVote)
             .SetGameMode(CustomGameMode.Standard);
@@ -1072,8 +1072,8 @@ public static class Options
         => SetupAddonOptions(id, tab, role, Rates, true, customGameMode);
     public static void SetupAddonOptions(int id, TabGroup tab, CustomRoles role, string[] selections, bool canSetNum, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, Utils.GetRoleColor(role))
-            .SetColor(Utils.GetRoleColor(role))
+        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, GetRoleColor(role))
+            .SetColor(GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 15 : 1, 1), 1, tab, false).SetParent(spawnOption)
@@ -1094,9 +1094,9 @@ public static class Options
         bool broken = role.GetRoleInfo()?.Broken ?? false;
 
         var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, RoleSpwanModes, role, roleColor)
-            .SetColor(broken ? Palette.DisabledGrey : Utils.GetRoleColor(role))
+            .SetColor(broken ? Palette.DisabledGrey : GetRoleColor(role))
             .SetHeader(true)
-            .SetAddDesc(broken ? Utils.ColorString(Palette.DisabledGrey, Translator.GetString("RoleBroken")) : "")
+            .SetAddDesc(broken ? ColorString(Palette.DisabledGrey, GetString("RoleBroken")) : "")
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false)
@@ -1110,8 +1110,8 @@ public static class Options
     private static void SetupMadmateRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var role = CustomRoles.Madmate;
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, RoleSpwanToggle, role, Utils.GetRoleColor(role))
-            .SetColor(Utils.GetRoleColor(role))
+        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, RoleSpwanToggle, role, GetRoleColor(role))
+            .SetColor(GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -1145,7 +1145,7 @@ public static class Options
         {
             IdStart = idStart;
             Role = role;
-            Dictionary<string, string> replacementDic = new() { { "%role%", Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)) } };
+            Dictionary<string, string> replacementDic = new() { { "%role%", ColorString(GetRoleColor(role), GetRoleName(role)) } };
             doOverride = BooleanOptionItem.Create(idStart++, "doOverride", false, tab, false).SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.None);
             doOverride.ReplacementDictionary = replacementDic;

@@ -1,17 +1,15 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using Mono.Cecil.Mdb;
-using System;
+﻿using System;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX;
 
 internal class EAC
 {
-    public static int MeetingTimes = 0;
-    public static int DeNum = 0;
+    public static int MeetingTimes;
+    public static int DeNum;
     public static void WarnHost(int denum = 1)
     {
         DeNum += denum;
@@ -97,7 +95,7 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.ReportDeadBody:
-                    var p1 = Utils.GetPlayerById(sr.ReadByte());
+                    var p1 = GetPlayerById(sr.ReadByte());
                     if (p1 != null && p1.IsAlive() && !p1.Is(CustomRoles.Paranoia) && !p1.Is(CustomRoles.GM))
                     {
                         WarnHost();
@@ -253,23 +251,23 @@ internal class EAC
         switch (Options.CheatResponses.GetInt())
         {
             case 0:
-                Utils.KickPlayer(pc.GetClientId(), true, "CheatDetected");
+                KickPlayer(pc.GetClientId(), true, "CheatDetected");
                 string msg0 = string.Format(GetString("Message.KickedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg0, "EAC");
                 RPC.NotificationPop(msg0);
                 break;
             case 1:
-                Utils.KickPlayer(pc.GetClientId(), false, "CheatDetected");
+                KickPlayer(pc.GetClientId(), false, "CheatDetected");
                 string msg1 = string.Format(GetString("Message.BanedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg1, "EAC");
                 RPC.NotificationPop(msg1);
                 break;
             case 2:
-                Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
             case 3:
                 foreach (var apc in Main.AllPlayerControls.Where(x => x.PlayerId != pc?.Data?.PlayerId))
-                    Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                    SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
         }
     }

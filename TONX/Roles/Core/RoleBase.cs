@@ -1,11 +1,10 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Core;
 
@@ -98,7 +97,7 @@ public abstract class RoleBase : IDisposable
         public MessageWriter Writer;
         public RoleRPCSender(RoleBase role)
         {
-            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.Reliable, -1);
+            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.Reliable);
             Writer.Write(role.Player.PlayerId);
         }
         public void Dispose()
@@ -490,7 +489,7 @@ public abstract class RoleBase : IDisposable
     { }
 
     protected static AudioClip GetIntroSound(RoleTypes roleType) =>
-        RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+        RoleManager.Instance.AllRoles.Where(role => role.Role == roleType).FirstOrDefault().IntroSound;
 
     protected enum GeneralOption
     {

@@ -1,5 +1,5 @@
-using AmongUs.GameOptions;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -58,7 +58,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
     private bool FixesElectrical;
     public int UsedSkillCount;
 
-    private bool DoorsProgressing = false;
+    private bool DoorsProgressing;
     private bool fixedSabotage;
 
     public static void SetupOptionItem()

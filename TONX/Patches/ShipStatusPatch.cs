@@ -1,9 +1,8 @@
-using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Il2CppSystem.TimeZoneInfo;
-using TONX.Roles.Core;
+using BepInEx;
+using HarmonyLib;
+using UnityEngine;
 
 namespace TONX;
 
@@ -27,12 +26,12 @@ class ShipStatusUpdateSystemPatch
     {
         if (systemType != SystemTypes.Sabotage)
         {
-            Logger.Info("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount, "UpdateSystem");
+            Logger.Info("SystemType: " + systemType + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount, "UpdateSystem");
         }
 
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
         {
-            Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount);
+            Logger.SendInGame("SystemType: " + systemType + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount);
         }
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
@@ -68,18 +67,18 @@ class StartPatch
         Logger.CurrentMethod();
         Logger.Info("-----------游戏开始-----------", "Phase");
 
-        Utils.CountAlivePlayers(true);
+        CountAlivePlayers(true);
 
-        if (Options.AllowConsole.GetBool() || Utils.AmDev())
+        if (Options.AllowConsole.GetBool() || AmDev())
         {
-            if (!BepInEx.ConsoleManager.ConsoleActive && BepInEx.ConsoleManager.ConsoleEnabled)
-                BepInEx.ConsoleManager.CreateConsole();
+            if (!ConsoleManager.ConsoleActive && ConsoleManager.ConsoleEnabled)
+                ConsoleManager.CreateConsole();
         }
         else
         {
-            if (BepInEx.ConsoleManager.ConsoleActive && !DebugModeManager.AmDebugger)
+            if (ConsoleManager.ConsoleActive && !DebugModeManager.AmDebugger)
             {
-                BepInEx.ConsoleManager.DetachConsole();
+                ConsoleManager.DetachConsole();
                 Logger.SendInGame("很抱歉，本房间禁止使用控制台，因此已将您的控制台关闭");
             }
         }
@@ -91,7 +90,7 @@ class StartMeetingPatch
     public static void Prefix(ShipStatus __instance, PlayerControl reporter, NetworkedPlayerInfo target)
     {
         MeetingStates.ReportTarget = target;
-        MeetingStates.DeadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
+        MeetingStates.DeadBodies = Object.FindObjectsOfType<DeadBody>();
     }
     public static void Postfix()
     {

@@ -1,6 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
@@ -60,12 +60,12 @@ public sealed class Celebrity : RoleBase
         {
             if (isOnMeeting)
             {
-                Utils.SendMessage(string.Format(Translator.GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))); ;
+                SendMessage(string.Format(GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, ColorString(RoleInfo.RoleColor, GetString("CelebrityNewsTitle"))); ;
             }
             else
             {
-                MsgToSend.Add((string.Format(Translator.GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))));
-                pc.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("OnCelebrityDead")));
+                MsgToSend.Add((string.Format(GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, ColorString(RoleInfo.RoleColor, GetString("CelebrityNewsTitle"))));
+                pc.Notify(ColorString(RoleInfo.RoleColor, GetString("OnCelebrityDead")));
             }
         }
     }

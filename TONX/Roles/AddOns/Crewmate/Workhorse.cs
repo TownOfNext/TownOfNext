@@ -9,7 +9,7 @@ namespace TONX.Roles.AddOns.Crewmate;
 public static class Workhorse
 {
     private static readonly int Id = 80400;
-    public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
+    public static Color RoleColor = GetRoleColor(CustomRoles.Workhorse);
     public static List<byte> playerIdList = new();
     private static OptionItem OptionAssignOnlyToCrewmate;
     private static OptionItem OptionSnitchCanBeWorkhorse;
@@ -51,7 +51,7 @@ public static class Workhorse
         if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
         var taskState = pc.GetPlayerTaskState();
         if (taskState.CompletedTasksCount < taskState.AllTasksCount) return false;
-        if (!Utils.HasTasks(pc.Data)) return false;
+        if (!HasTasks(pc.Data)) return false;
         if (pc.Is(CustomRoles.Snitch) && !SnitchCanBeWorkhorse) return false;
         if (AssignOnlyToCrewmate)
             return pc.Is(CustomRoleTypes.Crewmate);
@@ -71,7 +71,7 @@ public static class Workhorse
             Add(pc.PlayerId);
             pc.Data.RpcSetTasks(Array.Empty<byte>()); //タスクを再配布
             pc.SyncSettings();
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
 
         return false;

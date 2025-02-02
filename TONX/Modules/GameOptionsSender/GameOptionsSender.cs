@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
 using InnerNet;
-using System.Collections.Generic;
+
 // Il2CppStructArray<byte>とbyte[]との間での暗黙的な変換の際に発生する重い計算を抑制するため，意図的にIl2CppSystemとIl2CppInterop.Runtime.InteropTypes.Arraysを使用します - Hyz-sui
 
 namespace TONX.Modules;
@@ -33,7 +34,7 @@ public abstract class GameOptionsSender
         var opt = BuildGameOptions();
 
         // option => byte[]
-        MessageWriter writer = MessageWriter.Get(SendOption.None);
+        MessageWriter writer = MessageWriter.Get();
         writer.Write(opt.Version);
         writer.StartMessage(0);
         writer.Write((byte)opt.GameMode);
@@ -44,7 +45,7 @@ public abstract class GameOptionsSender
         else
         {
             writer.Recycle();
-            Logger.Error("オプションのキャストに失敗しました", this.ToString());
+            Logger.Error("オプションのキャストに失敗しました", ToString());
         }
         writer.EndMessage();
 

@@ -1,6 +1,6 @@
-using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -65,8 +65,8 @@ public class Snitch : RoleBase
     private static bool CanFindCharmed;
     private static int RemainingTasksToBeFound;
 
-    private bool IsExposed = false;
-    private bool IsComplete = false;
+    private bool IsExposed;
+    private bool IsComplete;
 
     //複数Snitchで共有するためstatic
     private static HashSet<byte> TargetList = new();
@@ -124,12 +124,13 @@ public class Snitch : RoleBase
             {
                 mark += TargetArrow.GetArrows(seer, ExposedList.ToArray());
             }
-            return Utils.ColorString(RoleInfo.RoleColor, mark);
+            return ColorString(RoleInfo.RoleColor, mark);
         }
-        else if (seen.GetRoleClass() is Snitch snitch && snitch.IsExposed)
+
+        if (seen.GetRoleClass() is Snitch snitch && snitch.IsExposed)
         {
             //seenがタスク終わりそうなスニッチの時
-            return Utils.ColorString(RoleInfo.RoleColor, "★");
+            return ColorString(RoleInfo.RoleColor, "★");
 
         }
         //その他seenなら無し
@@ -159,7 +160,7 @@ public class Snitch : RoleBase
         foreach (var targetId in TargetList)
         {
             var arrow = TargetArrow.GetArrows(seer, targetId);
-            arrows += CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow;
+            arrows += CanGetColoredArrow ? ColorString(TargetColorlist[targetId], arrow) : arrow;
         }
         return arrows;
     }
@@ -207,7 +208,7 @@ public class Snitch : RoleBase
             }
             update = true;
         }
-        if (update) Utils.NotifyRoles();
+        if (update) NotifyRoles();
         cancel = false;
         return false;
     }

@@ -1,13 +1,9 @@
-using AmongUs.GameOptions;
-using Hazel;
-using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
-using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TONX.Roles.Neutral;
 public sealed class Revolutionist : RoleBase
@@ -96,7 +92,7 @@ public sealed class Revolutionist : RoleBase
     public override string GetProgressText(bool comms = false)
     {
         var draw = GetDrawPlayerCount(out var _);
-        return Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})");
+        return ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})");
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -141,7 +137,7 @@ public sealed class Revolutionist : RoleBase
         if (!Isdraw[target.PlayerId] && TargetInfo == null)
         {
             TargetInfo = new(target.PlayerId, 0f);
-            Utils.NotifyRoles(SpecifySeer: killer);
+            NotifyRoles(SpecifySeer: killer);
             SendRPC(RPC_type.SetCurrentDrawTarget, target.PlayerId);
         }
         return false;
@@ -158,12 +154,12 @@ public sealed class Revolutionist : RoleBase
             if (!Player.IsAlive())
             {
                 TargetInfo = null;
-                Utils.NotifyRoles(SpecifySeer: Player);
+                NotifyRoles(SpecifySeer: Player);
                 SendRPC(RPC_type.SetCurrentDrawTarget);
             }
             else
             {
-                var rv_target = Utils.GetPlayerById(TargetInfo.TargetId);//塗られる人
+                var rv_target = GetPlayerById(TargetInfo.TargetId);//塗られる人
                 var rv_time = TargetInfo.Timer;//拉拢时间
                 if (!rv_target.IsAlive())
                 {
@@ -175,7 +171,7 @@ public sealed class Revolutionist : RoleBase
                     TargetInfo = null;//拉拢完成从字典中删除
                     Isdraw[rv_target.PlayerId] = true;//完成拉拢
                     SendRPC(RPC_type.SetDrawPlayer, rv_target.PlayerId, true);
-                    Utils.NotifyRoles(player);
+                    NotifyRoles(player);
                     SendRPC(RPC_type.SetCurrentDrawTarget);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
@@ -197,7 +193,7 @@ public sealed class Revolutionist : RoleBase
                     else//否则删除
                     {
                         TargetInfo = null;
-                        Utils.NotifyRoles(SpecifySeer: Player);
+                        NotifyRoles(SpecifySeer: Player);
                         SendRPC(RPC_type.SetCurrentDrawTarget);
 
                         Logger.Info($"Canceled: {Player.GetNameWithRole()}", "Revolutionist");
@@ -209,7 +205,7 @@ public sealed class Revolutionist : RoleBase
         {
             if (RevolutionistLastTime.ContainsKey(player.PlayerId))
             {
-                long nowtime = Utils.GetTimeStamp();
+                long nowtime = GetTimeStamp();
                 if (RevolutionistLastTime[player.PlayerId] != nowtime) RevolutionistLastTime[player.PlayerId] = nowtime;
                 int time = (int)(RevolutionistLastTime[player.PlayerId] - RevolutionistStart[player.PlayerId]);
                 int countdown = RevolutionistVentCountDown.GetInt() - time;
@@ -223,7 +219,7 @@ public sealed class Revolutionist : RoleBase
                         pc.SetDeathReason(CustomDeathReason.Sacrifice);
                         pc.RpcMurderPlayerV2(pc);
                         pc.SetDeathReason(CustomDeathReason.Sacrifice);
-                        Utils.NotifyRoles(pc);
+                        NotifyRoles(pc);
                     }
                     player.Data.IsDead = true;
                     player.SetDeathReason(CustomDeathReason.Sacrifice);
@@ -241,7 +237,7 @@ public sealed class Revolutionist : RoleBase
         }
         else //如果不存在字典
         {
-            RevolutionistStart.TryAdd(player.PlayerId, Utils.GetTimeStamp());
+            RevolutionistStart.TryAdd(player.PlayerId, GetTimeStamp());
         }
 
     }
@@ -298,9 +294,9 @@ public sealed class Revolutionist : RoleBase
         seen ??= seer;
 
         if (IsDrawPlayer(seen.PlayerId)) //seerがtargetに既にオイルを塗っている(完了)
-            return Utils.ColorString(RoleInfo.RoleColor, "●");
+            return ColorString(RoleInfo.RoleColor, "●");
         if (!isForMeeting && TargetInfo?.TargetId == seen.PlayerId) //オイルを塗っている対象がtarget
-            return Utils.ColorString(RoleInfo.RoleColor, "○");
+            return ColorString(RoleInfo.RoleColor, "○");
 
         return "";
     }
@@ -312,7 +308,7 @@ public sealed class Revolutionist : RoleBase
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
-        return IsDrawDone(Player) ? Utils.ColorString(RoleInfo.RoleColor, GetString("EnterVentToWin")) : "";
+        return IsDrawDone(Player) ? ColorString(RoleInfo.RoleColor, GetString("EnterVentToWin")) : "";
     }
     public bool IsDrawPlayer(byte targetId) => Isdraw.TryGetValue(targetId, out bool isdraw) && isdraw;
     public static bool IsDrawDone(PlayerControl player)

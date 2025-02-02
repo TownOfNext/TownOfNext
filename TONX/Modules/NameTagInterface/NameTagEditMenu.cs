@@ -1,14 +1,14 @@
-﻿using AmongUs.Data;
-using HarmonyLib;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using AmongUs.Data;
+using HarmonyLib;
+using Il2CppSystem.IO;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using static TONX.NameTagManager;
-using static TONX.Translator;
 using Component = TONX.NameTagManager.Component;
+using File = System.IO.File;
 using Object = UnityEngine.Object;
 
 namespace TONX.Modules.NameTagInterface;
@@ -161,7 +161,7 @@ public static class NameTagEditMenu
     {
         if (FriendCode is null or "") return false;
 
-        Il2CppSystem.IO.StringWriter sw = new();
+        StringWriter sw = new();
         JsonWriter JsonWriter = new JsonTextWriter(sw);
         JsonWriter.WriteStartObject();
 

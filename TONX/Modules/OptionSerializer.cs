@@ -1,9 +1,9 @@
-﻿using AmongUs.GameOptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using AmongUs.GameOptions;
 using UnityEngine;
 
 namespace TONX.Modules;
@@ -16,7 +16,7 @@ public static class OptionSerializer
     public static void SaveToClipboard()
     {
         GUIUtility.systemCopyBuffer = GenerateOptionsString();
-        Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.CopiedOptions")));
+        Logger.SendInGame(ColorString(Color.green, GetString("Message.CopiedOptions")));
     }
     public static void SaveToFile()
     {
@@ -26,8 +26,8 @@ public static class OptionSerializer
         }
         var output = $"{exportDir.FullName}/Preset{OptionItem.CurrentPreset}_{DateTime.Now.Ticks}.txt";
         File.WriteAllText(output, GenerateOptionsString());
-        Utils.OpenDirectory(exportDir.FullName);
-        Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.ExportedOptions")));
+        OpenDirectory(exportDir.FullName);
+        Logger.SendInGame(ColorString(Color.green, GetString("Message.ExportedOptions")));
     }
     public static void LoadFromClipboard()
     {
@@ -93,7 +93,7 @@ public static class OptionSerializer
     {
         if (!AmongUsClient.Instance.AmHost)
         {
-            Logger.SendInGame(Translator.GetString("Message.OnlyHostCanLoadOptions"));
+            Logger.SendInGame(GetString("Message.OnlyHostCanLoadOptions"));
             return;
         }
 
@@ -123,7 +123,7 @@ public static class OptionSerializer
             var entries = source.Split('&');
             LoadModOptionsString(entries[0]);
             LoadVanillaOptionsString(entries[1]);
-            Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.LoadedOptions")));
+            Logger.SendInGame(ColorString(Color.green, GetString("Message.LoadedOptions")));
         }
         catch (Exception ex)
         {
@@ -133,7 +133,7 @@ public static class OptionSerializer
         return;
 
     Failed:
-        Logger.SendInGame(Translator.GetString("Message.FailedToLoadOptions"));
+        Logger.SendInGame(GetString("Message.FailedToLoadOptions"));
     }
     /// <summary>
     /// <see cref="GenerateModOptionsString"/>で生成された形式の文字列を読み込んで現在のプリセットを上書きします

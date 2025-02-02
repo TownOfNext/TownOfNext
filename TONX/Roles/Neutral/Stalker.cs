@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-
-using static TONX.Options;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -50,7 +48,7 @@ namespace TONX.Roles.Neutral
         private static bool HasImpostorVision;
         public static bool CanCountNeutralKiller;
 
-        public bool IsWinKill = false;
+        public bool IsWinKill;
 
         public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Stalker;
 
@@ -78,7 +76,7 @@ namespace TONX.Roles.Neutral
                     if (pc.Data.Disconnected) continue;
                     MessageWriter SabotageFixWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, pc.GetClientId());
                     SabotageFixWriter.Write((byte)SystemTypes.Electrical);
-                    MessageExtensions.WriteNetObject(SabotageFixWriter, pc);
+                    SabotageFixWriter.WriteNetObject(pc);
                     AmongUsClient.Instance.FinishRpcImmediately(SabotageFixWriter);
                 }
             }

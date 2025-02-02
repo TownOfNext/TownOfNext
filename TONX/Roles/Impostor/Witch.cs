@@ -1,11 +1,10 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using System.Text;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Witch : RoleBase, IImpostor
@@ -45,7 +44,7 @@ public sealed class Witch : RoleBase, IImpostor
         TriggerKill,
         TriggerVent,
         TriggerDouble,
-    };
+    }
 
     public bool IsSpellMode;
     public List<byte> SpelledPlayer = new();
@@ -117,7 +116,7 @@ public sealed class Witch : RoleBase, IImpostor
         {
             IsSpellMode = !IsSpellMode;
             SendRPC(false);
-            Utils.NotifyRoles(SpecifySeer: Player);
+            NotifyRoles(SpecifySeer: Player);
         }
     }
     public static bool IsSpelled(byte target = 255)
@@ -188,7 +187,7 @@ public sealed class Witch : RoleBase, IImpostor
         seen ??= seer;
         if (isForMeeting && IsSpelled(seen.PlayerId))
         {
-            return Utils.ColorString(Palette.ImpostorRed, "†");
+            return ColorString(Palette.ImpostorRed, "†");
         }
         return "";
     }

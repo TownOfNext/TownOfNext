@@ -1,9 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-
 using TONX.Modules;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class Mario : RoleBase
@@ -62,12 +60,12 @@ public sealed class Mario : RoleBase
         return true;
     }
     public override int OverrideAbilityButtonUsesRemaining() => OptionVentNums.GetInt() - VentedTimes;
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(Utils.ShadeColor(RoleInfo.RoleColor, 0.25f), $"({VentedTimes}/{OptionVentNums.GetInt()})");
+    public override string GetProgressText(bool comms = false) => ColorString(RoleInfo.RoleColor.ShadeColor(0.25f), $"({VentedTimes}/{OptionVentNums.GetInt()})");
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
         VentedTimes++;
         SendRPC();
-        Utils.NotifyRoles(Player);
+        NotifyRoles(Player);
 
         if (VentedTimes % 5 == 0) CustomSoundsManager.Play("MarioCoin");
         else CustomSoundsManager.Play("MarioJump");

@@ -1,10 +1,11 @@
-using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Hazel;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.Core;
+
 namespace TONX;
 
 public static class AntiBlackout
@@ -19,7 +20,7 @@ public static class AntiBlackout
         || CustomRoles.BloodKnight.IsExist(true)
         || CustomRoles.Succubus.IsExist(true);
 
-    public static bool IsCached { get; private set; } = false;
+    public static bool IsCached { get; private set; }
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = new();
     private readonly static LogHandler logger = Logger.Handler("AntiBlackout");
 

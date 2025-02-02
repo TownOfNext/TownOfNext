@@ -1,8 +1,7 @@
-﻿using HarmonyLib;
-using Hazel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using TONX.Roles.Core;
 
 namespace TONX.Modules;
@@ -18,8 +17,8 @@ public class MessageControl
     public bool IsFromMod { get => Player.IsModClient(); }
     public bool IsFromSelf { get => Player.AmOwner; }
 
-    public bool IsCommand { get; set; } = false;
-    public bool ForceSend { get; set; } = false;
+    public bool IsCommand { get; set; }
+    public bool ForceSend { get; set; }
     public MsgRecallMode RecallMode { get; set; } = MsgRecallMode.None;
 
     public MessageControl(PlayerControl player, string message)
@@ -64,7 +63,7 @@ public class MessageControl
                 Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");
 
                 (RecallMode, string msg) = command.Command(this);
-                if (!string.IsNullOrEmpty(msg)) Utils.SendMessage(msg, Player.PlayerId);
+                if (!string.IsNullOrEmpty(msg)) SendMessage(msg, Player.PlayerId);
                 IsCommand = true;
                 return;
             }
@@ -113,7 +112,7 @@ public class MessageControl
         List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
+        string[] command = new[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
@@ -129,7 +128,7 @@ public class MessageControl
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 CustomRoles role = roles[rd.Next(0, roles.Count)];
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                msg += Utils.GetRoleName(role);
+                msg += GetRoleName(role);
             }
             var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
             SendMessageAsPlayerImmediately(player, msg, includeHost, includeModded);
@@ -141,8 +140,8 @@ public class MessageControl
         if (hostCanSee) DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, text);
         if (!sendToModded) text += "\0";
 
-        var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        writer.StartMessage(-1);
+        var writer = CustomRpcSender.Create("MessagesToSend");
+        writer.StartMessage();
         writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
             .Write(text)
             .EndRpc();

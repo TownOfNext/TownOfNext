@@ -1,5 +1,5 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -44,15 +44,15 @@ public sealed class Cleaner : RoleBase, IImpostor
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Translator.GetString("MinerTeleButtonText");
+        text = GetString("MinerTeleButtonText");
         return true;
     }
-    public override string GetReportButtonText() => Translator.GetString("CleanerReportButtonText");
+    public override string GetReportButtonText() => GetString("CleanerReportButtonText");
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (BodiesCleanedUp.Contains(target.PlayerId))
         {
-            reporter.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("ReportCleanedBodies")));
+            reporter.Notify(ColorString(RoleInfo.RoleColor, GetString("ReportCleanedBodies")));
             Logger.Info($"{target.Object.GetNameWithRole()} 的尸体已被清理，无法被报告", "Cleaner.OnCheckReportDeadBody");
             return false;
         }
@@ -60,7 +60,7 @@ public sealed class Cleaner : RoleBase, IImpostor
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         BodiesCleanedUp.Add(target.PlayerId);
         if (OptionResetKillCooldownAfterClean.GetBool()) Player.SetKillCooldownV2();
-        Player.Notify(Translator.GetString("CleanerCleanBody"));
+        Player.Notify(GetString("CleanerCleanBody"));
         Player.RPCPlayCustomSound("Clothe");
         return false;
     }

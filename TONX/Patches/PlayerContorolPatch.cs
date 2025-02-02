@@ -1,19 +1,17 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
-using Hazel;
-using LibCpp2IL;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AmongUs.GameOptions;
+using HarmonyLib;
+using TMPro;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -305,7 +303,7 @@ class ShapeshiftPatch
         {
             _ = new LateTask(() =>
             {
-                Utils.NotifyRoles(NoCache: true);
+                NotifyRoles(NoCache: true);
             },
             1.2f, "ShapeShiftNotify");
         }
@@ -376,9 +374,9 @@ class ReportDeadBodyPatch
                     .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
         MeetingTimeManager.OnReportDeadBody();
 
-        Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+        NotifyRoles(isForMeeting: true, NoCache: true);
 
-        Utils.SyncAllSettings();
+        SyncAllSettings();
 
         return true;
     }
@@ -398,7 +396,7 @@ public static class PlayerControlStartMeetingPatch
     {
         foreach (var kvp in PlayerState.AllPlayerStates)
         {
-            var pc = Utils.GetPlayerById(kvp.Key);
+            var pc = GetPlayerById(kvp.Key);
             kvp.Value.LastRoom = pc.GetPlainShipRoom();
         }
     }
@@ -448,7 +446,7 @@ class FixedUpdatePatch
                 if (LevelKickBufferTime <= 0)
                 {
                     LevelKickBufferTime = 100;
-                    Utils.KickPlayer(player.GetClientId(), false, "LowLevel");
+                    KickPlayer(player.GetClientId(), false, "LowLevel");
                     string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
                     RPC.NotificationPop(msg);
                     Logger.Info(msg, "LowLevel Kick");
@@ -476,7 +474,7 @@ class FixedUpdatePatch
             //キルターゲットの上書き処理
             if (GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() && !__instance.Data.IsDead)
             {
-                var players = __instance.GetPlayersInAbilityRangeSorted(false);
+                var players = __instance.GetPlayersInAbilityRangeSorted();
                 PlayerControl closest = players.Count <= 0 ? null : players[0];
                 HudManager.Instance.KillButton.SetTarget(closest);
             }
@@ -484,7 +482,7 @@ class FixedUpdatePatch
 
         //役職テキストの表示
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
-        var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
+        var RoleText = RoleTextTransform.GetComponent<TextMeshPro>();
         if (RoleText != null && __instance != null)
         {
             if (GameStates.IsLobby)
@@ -506,7 +504,7 @@ class FixedUpdatePatch
                 //    var hasRole = main.AllPlayerCustomRoles.TryGetValue(__instance.PlayerId, out var role);
                 //    if (hasRole) RoleTextData = Utils.GetRoleTextHideAndSeek(__instance.Data.Role.Role, role);
                 //}
-                (RoleText.enabled, RoleText.text) = Utils.GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, __instance);
+                (RoleText.enabled, RoleText.text) = GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, __instance);
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
                     RoleText.enabled = false; //ゲームが始まっておらずフリープレイでなければロールを非表示
@@ -529,7 +527,7 @@ class FixedUpdatePatch
                 if (target.AmOwner && GameStates.IsInTask)
                 { //targetが自分自身
                     if (seer.IsEaten())
-                        RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
+                        RealName = ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
                     if (NameNotifyManager.GetNameNotify(target, out var name))
                         RealName = name;
                 }
@@ -538,26 +536,26 @@ class FixedUpdatePatch
                 RealName = RealName.ApplyNameColorData(seer, target, false);
 
                 //seer役職が対象のMark
-                Mark.Append(seerRole?.GetMark(seer, target, false));
+                Mark.Append(seerRole?.GetMark(seer, target));
                 //seerに関わらず発動するMark
-                Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
+                Mark.Append(CustomRoleManager.GetMarkOthers(seer, target));
 
                 //ハートマークを付ける(会議中MOD視点)
                 if (__instance.Is(CustomRoles.Lovers) && PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
                 {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
+                    Mark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
                 else if (__instance.Is(CustomRoles.Lovers) && PlayerControl.LocalPlayer.Data.IsDead)
                 {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
+                    Mark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
                 else if (__instance.Is(CustomRoles.Neptune) || PlayerControl.LocalPlayer.Is(CustomRoles.Neptune))
                 {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
+                    Mark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
                 else if (__instance == PlayerControl.LocalPlayer && CustomRoles.Neptune.IsExist())
                 {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
+                    Mark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
 
                 //seerに関わらず発動するLowerText
@@ -572,10 +570,10 @@ class FixedUpdatePatch
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                     Mark = isBlocked ? "(true)" : "(false)";
                 }*/
-                if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
+                if ((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
                     RealName = $"<size=0>{RealName}</size> ";
 
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
                 //Mark・Suffixの適用
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
@@ -583,7 +581,7 @@ class FixedUpdatePatch
                 {
                     //名前が2行になると役職テキストを上にずらす必要がある
                     RoleText.transform.SetLocalY(0.35f);
-                    target.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
+                    target.cosmetics.nameText.text += "\r\n" + Suffix;
 
                 }
                 else
@@ -629,7 +627,7 @@ class FixedUpdatePatch
                         {
                             partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
-                        Utils.NotifyRoles(partnerPlayer);
+                        NotifyRoles(partnerPlayer);
                     }
                 }
             }
@@ -641,7 +639,7 @@ class PlayerStartPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
+        var roleText = Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
         roleText.transform.localScale = new(1f, 1f, 1f);
@@ -728,7 +726,7 @@ class PlayerControlCompleteTaskPatch
         ret &= Workhorse.OnCompleteTask(pc);
         ret &= Capitalist.OnCompleteTask(pc);
 
-        Utils.NotifyRoles();
+        NotifyRoles();
         return ret;
     }
     public static void Postfix()

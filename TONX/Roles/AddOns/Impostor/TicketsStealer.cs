@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Impostor;
 public static class TicketsStealer
 {
     private static readonly int Id = 81900;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.TicketsStealer);
+    private static Color RoleColor = GetRoleColor(CustomRoles.TicketsStealer);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionTicketsPerKill;
@@ -43,6 +43,6 @@ public static class TicketsStealer
     {
         if (!playerIdList.Contains(playerId)) return "";
         var votes = (int)((PlayerState.GetByPlayerId(playerId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
-        return votes > 0 ? Utils.ColorString(RoleColor.ShadeColor(0.5f), $"+{votes}") : "";
+        return votes > 0 ? ColorString(RoleColor.ShadeColor(0.5f), $"+{votes}") : "";
     }
 }

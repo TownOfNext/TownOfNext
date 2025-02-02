@@ -1,12 +1,11 @@
-using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HarmonyLib;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -30,8 +29,8 @@ public static class MeetingHudPatch
         {
             if (!AmongUsClient.Instance.AmHost) return true;
 
-            var voter = Utils.GetPlayerById(srcPlayerId);
-            var voted = Utils.GetPlayerById(suspectPlayerId);
+            var voter = GetPlayerById(srcPlayerId);
+            var voted = GetPlayerById(suspectPlayerId);
 
             if (voter != null)
             {
@@ -43,12 +42,12 @@ public static class MeetingHudPatch
                         voter.RpcSetCustomRole(CustomRoles.Madmate);
                         Logger.Info($"注册附加职业：{voter.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
                         voter.ShowPopUp(GetString("MadmateSelfVoteModeSuccessfulMutiny"));
-                        Utils.SendMessage(GetString("MadmateSelfVoteModeSuccessfulMutiny"), voter.PlayerId);
+                        SendMessage(GetString("MadmateSelfVoteModeSuccessfulMutiny"), voter.PlayerId);
                     }
                     else
                     {
                         voter.ShowPopUp(GetString("MadmateSelfVoteModeMutinyFailed"));
-                        Utils.SendMessage(GetString("MadmateSelfVoteModeMutinyFailed"), voter.PlayerId);
+                        SendMessage(GetString("MadmateSelfVoteModeMutinyFailed"), voter.PlayerId);
                     }
                     __instance.RpcClearVote(voter.GetClientId());
                     Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
@@ -74,7 +73,7 @@ public static class MeetingHudPatch
         {
             Logger.Info("------------会议开始------------", "Phase");
             ChatUpdatePatch.DoBlockChat = true;
-            GameStates.AlreadyDied |= !Utils.IsAllAlive;
+            GameStates.AlreadyDied |= !IsAllAlive;
             Main.AllPlayerControls.Do(x => ReportDeadBodyPatch.WaitReport[x.PlayerId].Clear());
             MeetingStates.MeetingCalled = true;
         }
@@ -87,14 +86,14 @@ public static class MeetingHudPatch
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             foreach (var pva in __instance.playerStates)
             {
-                var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+                var pc = GetPlayerById(pva.TargetPlayerId);
                 if (pc == null) continue;
-                var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
+                var roleTextMeeting = Object.Instantiate(pva.NameText);
                 roleTextMeeting.transform.SetParent(pva.NameText.transform);
                 roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
                 roleTextMeeting.fontSize = 1.5f;
                 (roleTextMeeting.enabled, roleTextMeeting.text)
-                    = Utils.GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, pc);
+                    = GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, pc);
                 roleTextMeeting.gameObject.name = "RoleTextMeeting";
                 roleTextMeeting.enableWordWrapping = false;
 
@@ -114,14 +113,14 @@ public static class MeetingHudPatch
 
             if (Options.SyncButtonMode.GetBool())
             {
-                Utils.SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
+                SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
                 Logger.Info("紧急会议剩余 " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + " 次使用次数", "SyncButtonMode");
             }
             if (AntiBlackout.OverrideExiledPlayer && !Options.NoGameEnd.GetBool())
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")));
+                    SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")));
                 }, 5f, "Warning OverrideExiledPlayer");
             }
             if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
@@ -134,7 +133,7 @@ public static class MeetingHudPatch
                     foreach (var seen in Main.AllPlayerControls)
                     {
                         var seenName = seen.GetRealName(isMeeting: true);
-                        var coloredName = Utils.ColorString(seen.GetRoleColor(), seenName);
+                        var coloredName = ColorString(seen.GetRoleColor(), seenName);
                         foreach (var seer in Main.AllPlayerControls)
                         {
                             seen.RpcSetNamePrivate(
@@ -160,7 +159,7 @@ public static class MeetingHudPatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
 
-                var target = Utils.GetPlayerById(pva.TargetPlayerId);
+                var target = GetPlayerById(pva.TargetPlayerId);
                 if (target == null) continue;
 
                 var sb = new StringBuilder();
@@ -180,7 +179,7 @@ public static class MeetingHudPatch
                 //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
                 if (seer.KnowDeathReason(target))
-                    sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
+                    sb.Append($"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})");
 
                 sb.Append(seerRole?.GetMark(seer, target, true));
                 sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
@@ -193,7 +192,7 @@ public static class MeetingHudPatch
                         case CustomRoles.Lovers:
                             if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                             {
-                                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
+                                sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
                                 isLover = true;
                             }
                             break;
@@ -202,9 +201,9 @@ public static class MeetingHudPatch
 
                 //海王相关显示
                 if ((seer.Is(CustomRoles.Neptune) || target.Is(CustomRoles.Neptune)) && !seer.Data.IsDead && !isLover)
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
+                    sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
                 else if (seer == target && CustomRoles.Neptune.IsExist() && !isLover)
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
+                    sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
 
                 //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
@@ -223,12 +222,12 @@ public static class MeetingHudPatch
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
                 {
-                    var player = Utils.GetPlayerById(x.TargetPlayerId);
+                    var player = GetPlayerById(x.TargetPlayerId);
                     player.RpcExileV2();
                     var state = PlayerState.GetByPlayerId(player.PlayerId);
                     state.DeathReason = CustomDeathReason.Execution;
                     state.SetDead();
-                    Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
+                    SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     Logger.Info($"{player.GetNameWithRole()}を処刑しました", "Execution");
                     __instance.CheckForEndVoting();
                 });

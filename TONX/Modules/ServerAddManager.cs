@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using TONX.Attributes;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ public static class ServerAddManager
         serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = new();
 
-        if (Translator.IsChineseUser)
+        if (IsChineseUser)
         {
             regionInfos.Add(CreateHttp("au-cn.niko233.me", "Niko233(CN)", 443, true));
             regionInfos.Add(CreateHttp("nb.8w.fan", "<color=#00FF00>新猫服</color><color=#ffff00>[宁波]</color>", 443, true));
@@ -92,14 +92,14 @@ public static class ServerAddManager
             _ => new(255, 255, 255, 255),
         };
 
-        PingTrackerUpdatePatch.ServerName = Utils.ColorString(color, name);
+        PingTrackerUpdatePatch.ServerName = ColorString(color, name);
     }
 
     public static IRegionInfo CreateHttp(string ip, string name, ushort port, bool ishttps)
     {
         string serverIp = (ishttps ? "https://" : "http://") + ip;
         ServerInfo serverInfo = new ServerInfo(name, serverIp, port, false);
-        ServerInfo[] ServerInfo = new ServerInfo[] { serverInfo };
+        ServerInfo[] ServerInfo = new[] { serverInfo };
         return new StaticHttpRegionInfo(name, (StringNames)1003, ip, ServerInfo).Cast<IRegionInfo>();
     }
 }

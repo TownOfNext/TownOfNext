@@ -1,10 +1,11 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using System.Collections.Generic;
+using Il2CppSystem.Collections.Generic;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.Core;
 using TONX.Roles.Impostor;
+using UnityEngine;
 
 namespace TONX;
 
@@ -12,12 +13,12 @@ namespace TONX;
 class AddTasksFromListPatch
 {
     public static void Prefix(ShipStatus __instance,
-        [HarmonyArgument(4)] Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unusedTasks)
+        [HarmonyArgument(4)] List<NormalPlayerTask> unusedTasks)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (!Options.DisableTasks.GetBool()) return;
-        List<NormalPlayerTask> disabledTasks = new();
+        System.Collections.Generic.List<NormalPlayerTask> disabledTasks = new();
         for (var i = 0; i < unusedTasks.Count; i++)
         {
             var task = unusedTasks[i];
@@ -30,7 +31,7 @@ class AddTasksFromListPatch
         }
         foreach (var task in disabledTasks)
         {
-            Logger.Msg("削除: " + task.TaskType.ToString(), "AddTask");
+            Logger.Msg("削除: " + task.TaskType, "AddTask");
             unusedTasks.Remove(task);
         }
     }
@@ -51,7 +52,7 @@ class RpcSetTasksPatch
             return;
         }
 
-        var pc = Utils.GetPlayerById(__instance.PlayerId);
+        var pc = GetPlayerById(__instance.PlayerId);
         CustomRoles? RoleNullable = pc?.GetCustomRole();
         if (RoleNullable == null) return;
         CustomRoles role = RoleNullable.Value;
@@ -99,7 +100,7 @@ class RpcSetTasksPatch
 
         //割り当て可能なタスクのIDが入ったリスト
         //本来のRpcSetTasksの第二引数のクローン
-        Il2CppSystem.Collections.Generic.List<byte> TasksList = new();
+        List<byte> TasksList = new();
         foreach (var num in taskTypeIds)
             TasksList.Add(num);
 
@@ -113,21 +114,21 @@ class RpcSetTasksPatch
 
         //割り当て済みのタスクが入れられるHashSet
         //同じタスクが複数割り当てられるのを防ぐ
-        Il2CppSystem.Collections.Generic.HashSet<TaskTypes> usedTaskTypes = new();
+        HashSet<TaskTypes> usedTaskTypes = new();
         int start2 = 0;
         int start3 = 0;
 
         //割り当て可能なロングタスクのリスト
-        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
+        List<NormalPlayerTask> LongTasks = new();
         foreach (var task in ShipStatus.Instance.LongTasks)
             LongTasks.Add(task);
-        Shuffle<NormalPlayerTask>(LongTasks);
+        Shuffle(LongTasks);
 
         //割り当て可能なショートタスクのリスト
-        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
+        List<NormalPlayerTask> ShortTasks = new();
         foreach (var task in ShipStatus.Instance.ShortTasks)
             ShortTasks.Add(task);
-        Shuffle<NormalPlayerTask>(ShortTasks);
+        Shuffle(ShortTasks);
 
         //実際にAmong Us側で使われているタスクを割り当てる関数を使う。
         ShipStatus.Instance.AddTasksFromList(
@@ -153,12 +154,12 @@ class RpcSetTasksPatch
         }
 
     }
-    public static void Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
+    public static void Shuffle<T>(List<T> list)
     {
         for (int i = 0; i < list.Count - 1; i++)
         {
             T obj = list[i];
-            int rand = UnityEngine.Random.Range(i, list.Count);
+            int rand = Random.Range(i, list.Count);
             list[i] = list[rand];
             list[rand] = obj;
         }

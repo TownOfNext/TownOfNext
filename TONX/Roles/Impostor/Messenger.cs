@@ -1,9 +1,9 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -111,7 +111,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             // 死体があったら死体の数を書く
             if (canSeeDeadMark && entry.NumDeadBodies > 0)
             {
-                builder.Append('(').Append(Translator.GetString("Deadbody"));
+                builder.Append('(').Append(GetString("Deadbody"));
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
             }
             builder.Append('\n');
@@ -119,13 +119,13 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
 
         // 送信
         var message = builder.ToString();
-        var title = Utils.ColorString(Color.green, Translator.GetString("LastAdminInfo"));
+        var title = ColorString(Color.green, GetString("LastAdminInfo"));
 
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame)
             {
-                Utils.SendMessage(message, Player.PlayerId, title, false);
+                SendMessage(message, Player.PlayerId, title);
             }
         }, 4f, "Messenger Admin Message");
         return;
@@ -165,7 +165,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         });
         if (AmongUsClient.Instance.AmHost)
         {
-            Utils.NotifyRoles(SpecifySeer: Player);
+            NotifyRoles(SpecifySeer: Player);
         }
     }
     public override void OnFixedUpdate(PlayerControl player)
@@ -192,7 +192,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         }
         if (doNotifyRoles && AmongUsClient.Instance.AmHost)
         {
-            Utils.NotifyRoles(SpecifySeer: Player);
+            NotifyRoles(SpecifySeer: Player);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -203,7 +203,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             return base.GetSuffix(seer, seen, isForMeeting);
         }
         var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
-        return Utils.ColorString(Color.green, $"{Translator.GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
+        return ColorString(Color.green, $"{GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
     }
     public bool CheckKillFlash(MurderInfo info) =>
         canSeeKillFlash && !info.IsSuicide && !info.IsAccident && info.AttemptKiller.Is(CustomRoleTypes.Impostor);

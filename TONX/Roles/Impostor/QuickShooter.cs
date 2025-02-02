@@ -3,7 +3,6 @@ using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class QuickShooter : RoleBase, IImpostor
@@ -65,7 +64,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
     {
         AURoleOptions.ShapeshifterCooldown = OptionShapeshiftCooldown.GetFloat();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(ShotLimit >= 1 ? Color.red : Color.gray, $"({ShotLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(ShotLimit >= 1 ? Color.red : Color.gray, $"({ShotLimit})");
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("QuickShooterShapeshiftText");
@@ -86,7 +85,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
             Player.ResetKillCooldown();
             Player.SetKillCooldownV2();
             Player.Notify(GetString("QuickShooterStoraging"));
-            Logger.Info($"{Utils.GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
+            Logger.Info($"{GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
         }
     }
     public float CalculateKillCooldown()

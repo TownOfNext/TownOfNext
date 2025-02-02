@@ -22,7 +22,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem GodMode;
 
 
-    private static bool reseted = false;
+    private static bool reseted;
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
         if (__instance.DisableMouseMovement == null) return;
@@ -42,7 +42,7 @@ public static class OptionsMenuBehaviourStartPatch
             static void UnlockFPSButtonToggle()
             {
                 Application.targetFrameRate = Main.UnlockFPS.Value ? 240 : 60;
-                Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
+                Logger.SendInGame(string.Format(GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
@@ -86,7 +86,7 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if (DumpLog == null || DumpLog.ToggleButton == null)
         {
-            DumpLog = ClientActionItem.Create("DumpLog", () => Utils.DumpLog(), __instance);
+            DumpLog = ClientActionItem.Create("DumpLog", () => DumpLog(), __instance);
         }
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {

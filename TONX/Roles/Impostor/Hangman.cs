@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -46,7 +45,7 @@ public sealed class Hangman : RoleBase, IImpostor
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var s) && s)
         {
 
-            Utils.TP(killer.NetTransform, target.GetTruePosition());
+            TP(killer.NetTransform, target.GetTruePosition());
 
             target.Data.IsDead = true;
             target.SetRealKiller(killer);

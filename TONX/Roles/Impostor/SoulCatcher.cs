@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -43,10 +42,10 @@ public sealed class SoulCatcher : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Translator.GetString("SoulCatcherButtonText");
+        text = GetString("SoulCatcherButtonText");
         return !Shapeshifting;
     }
-    private bool Shapeshifting = false;
+    private bool Shapeshifting;
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);
@@ -60,8 +59,8 @@ public sealed class SoulCatcher : RoleBase, IImpostor
                 if (!(!GameStates.IsInTask || !Player.IsAlive() || !target.IsAlive() || Player.inVent || target.inVent))
                 {
                     var originPs = target.GetTruePosition();
-                    Utils.TP(target.NetTransform, Player.GetTruePosition());
-                    Utils.TP(Player.NetTransform, originPs);
+                    TP(target.NetTransform, Player.GetTruePosition());
+                    TP(Player.NetTransform, originPs);
                 }
             }, 1.5f, "SoulCatcher.OnShapeshift");
         }

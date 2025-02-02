@@ -1,14 +1,12 @@
-using Assets.CoreScripts;
-using HarmonyLib;
-using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.CoreScripts;
+using HarmonyLib;
+using Hazel;
 using TONX.Modules;
-using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -44,15 +42,16 @@ internal class ChatCommands
             __instance.freeChatField.textArea.Clear();
             return false;
         }
-        else if (SendTargetPatch.SendTarget != SendTargetPatch.SendTargets.Default)
+
+        if (SendTargetPatch.SendTarget != SendTargetPatch.SendTargets.Default)
         {
             switch (SendTargetPatch.SendTarget)
             {
                 case SendTargetPatch.SendTargets.All:
-                    Utils.SendMessage(text, title: $"<color=#ff0000>{GetString("MessageFromTheHost")}</color>");
+                    SendMessage(text, title: $"<color=#ff0000>{GetString("MessageFromTheHost")}</color>");
                     break;
                 case SendTargetPatch.SendTargets.Dead:
-                    Main.AllPlayerControls.Where(p => p.AmOwner || !p.IsAlive()).Do(p => Utils.SendMessage(text, p.PlayerId, $"<color=#ff0000>{GetString("MessageFromTheHost")}</color>"));
+                    Main.AllPlayerControls.Where(p => p.AmOwner || !p.IsAlive()).Do(p => SendMessage(text, p.PlayerId, $"<color=#ff0000>{GetString("MessageFromTheHost")}</color>"));
                     break;
             }
             __instance.freeChatField.textArea.Clear();
@@ -89,8 +88,8 @@ internal class ChatCommands
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]
 internal class ChatUpdatePatch
 {
-    public static bool Active = false;
-    public static bool DoBlockChat = false;
+    public static bool Active;
+    public static bool DoBlockChat;
     public static void Postfix(ChatController __instance)
     {
         Active = __instance.IsOpenOrOpening;
@@ -103,7 +102,7 @@ internal class ChatUpdatePatch
         if (player == null) return;
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
-        int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
+        int clientId = sendTo == byte.MaxValue ? -1 : GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
         if (clientId == -1)
         {
@@ -111,7 +110,7 @@ internal class ChatUpdatePatch
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
-        var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+        var writer = CustomRpcSender.Create("MessagesToSend");
         writer.StartMessage(clientId);
 
         writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
@@ -152,8 +151,6 @@ internal class AddChatPatch
     {
         switch (chatText)
         {
-            default:
-                break;
         }
         if (!AmongUsClient.Instance.AmHost) return;
     }

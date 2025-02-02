@@ -3,7 +3,6 @@ using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 
@@ -79,7 +78,7 @@ class Penguin : RoleBase, IImpostor
         }
         else
         {
-            AbductVictim = Utils.GetPlayerById(victim);
+            AbductVictim = GetPlayerById(victim);
             AbductTimer = AbductTimerLimit;
         }
     }
@@ -121,12 +120,10 @@ class Penguin : RoleBase, IImpostor
             RemoveVictim();
             return true;
         }
-        else
-        {
-            info.DoKill = false;
-            AddVictim(target);
-            return false;
-        }
+
+        info.DoKill = false;
+        AddVictim(target);
+        return false;
     }
     public bool OverrideKillButtonText(out string text)
     {

@@ -1,16 +1,17 @@
-﻿using HarmonyLib;
-using Hazel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HarmonyLib;
+using Hazel;
 using TMPro;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
+using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 public static class GuesserHelper
@@ -66,7 +67,7 @@ public static class GuesserHelper
         if (ComfirmIncludeMsg(msg, "灰|灰|gray")) return 15;
         if (ComfirmIncludeMsg(msg, "茶|茶|tan")) return 16;
         if (ComfirmIncludeMsg(msg, "珊瑚|珊瑚|coral")) return 17;
-        else return -1;
+        return -1;
     }
     private static bool ComfirmIncludeMsg(string msg, string key) => key.Split('|').Any(msg.Contains);
     public static bool GuesserMsg(PlayerControl pc, string msg, out bool spam)
@@ -84,29 +85,30 @@ public static class GuesserHelper
 
         if (!pc.IsAlive())
         {
-            Utils.SendMessage(GetString("GuessDead"), pc.PlayerId);
+            SendMessage(GetString("GuessDead"), pc.PlayerId);
             return true;
         }
 
         if (operate == 1)
         {
-            Utils.SendMessage(GetFormatString(), pc.PlayerId);
+            SendMessage(GetFormatString(), pc.PlayerId);
             return true;
         }
-        else if (operate == 2)
+
+        if (operate == 2)
         {
             spam = true;
             if (!AmongUsClient.Instance.AmHost) return true;
 
             if (!MsgToPlayerAndRole(msg, out byte targetId, out CustomRoles role, out string error))
             {
-                Utils.SendMessage(error, pc.PlayerId);
+                SendMessage(error, pc.PlayerId);
                 return true;
             }
 
-            var target = Utils.GetPlayerById(targetId);
+            var target = GetPlayerById(targetId);
             if (!Guess(pc, target, role, out var reason))
-                Utils.SendMessage(reason, pc.PlayerId);
+                SendMessage(reason, pc.PlayerId);
         }
         return true;
     }
@@ -164,8 +166,8 @@ public static class GuesserHelper
         }
         if (guesser == target)
         {
-            if (!isUi) Utils.SendMessage(GetString("LaughToWhoGuessSelf"), guesser.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
-            else guesser.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoGuessSelf"));
+            if (!isUi) SendMessage(GetString("LaughToWhoGuessSelf"), guesser.PlayerId, ColorString(Color.cyan, GetString("MessageFromKPD")));
+            else guesser.ShowPopUp(ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoGuessSelf"));
             guesserSuicide = true;
         }
         else if (guesser.Is(CustomRoles.NiceGuesser) && role.IsCrewmate() && !NiceGuesser.OptionCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate)) guesserSuicide = true;
@@ -194,9 +196,9 @@ public static class GuesserHelper
             dp.SetRealKiller(guesser);
 
             //死者检查
-            Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+            NotifyRoles(isForMeeting: true, NoCache: true);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle"))); }, 0.6f, "Guess Msg");
+            _ = new LateTask(() => { SendMessage(string.Format(GetString("GuessKill"), Name), 255, ColorString(GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle"))); }, 0.6f, "Guess Msg");
 
         }, 0.2f, "Guesser Kill");
 
@@ -231,7 +233,8 @@ public static class GuesserHelper
                 error = GetString("GuessNull");
                 return false;
             }
-            else if (list.Count != 1)
+
+            if (list.Count != 1)
             {
                 error = GetString("GuessMultipleColor");
                 return false;
@@ -240,7 +243,7 @@ public static class GuesserHelper
         }
 
         //判断选择的玩家是否合理
-        PlayerControl target = Utils.GetPlayerById(id);
+        PlayerControl target = GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
             error = GetString("GuessNull");
@@ -301,7 +304,7 @@ public static class GuesserHelper
             myColor = Utils.ShadeColor(myColor, -2f);
         }
 
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || guesserUI != null || !GameStates.IsVoting) return;
 
         try
@@ -312,7 +315,7 @@ public static class GuesserHelper
             PageButtons = new();
             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
-            Transform container = UnityEngine.Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
+            Transform container = Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
             container.gameObject.AddComponent<TransitionOpen>();
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
@@ -322,13 +325,13 @@ public static class GuesserHelper
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
-            if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("RoleTextMeeting") != null) Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);
-            Transform exitButton = UnityEngine.Object.Instantiate(buttonTemplate, exitButtonParent);
+            Transform exitButton = Object.Instantiate(buttonTemplate, exitButtonParent);
             exitButton.FindChild("ControllerHighlight").gameObject.SetActive(false);
-            Transform exitButtonMask = UnityEngine.Object.Instantiate(maskTemplate, exitButtonParent);
+            Transform exitButtonMask = Object.Instantiate(maskTemplate, exitButtonParent);
             exitButtonMask.transform.localScale = new Vector3(2.88f, 0.8f, 1f);
             exitButtonMask.transform.localPosition = new Vector3(0f, 0f, 1f);
             exitButton.gameObject.GetComponent<SpriteRenderer>().sprite = smallButtonTemplate.GetComponent<SpriteRenderer>().sprite;
@@ -339,7 +342,7 @@ public static class GuesserHelper
             exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                UnityEngine.Object.Destroy(container.gameObject);
+                Object.Destroy(container.gameObject);
             }));
             ExitButton = exitButton.GetComponent<PassiveButton>();
 
@@ -361,18 +364,18 @@ public static class GuesserHelper
                 }
                 Transform TeambuttonParent = new GameObject().transform;
                 TeambuttonParent.SetParent(container);
-                Transform Teambutton = UnityEngine.Object.Instantiate(buttonTemplate, TeambuttonParent);
+                Transform Teambutton = Object.Instantiate(buttonTemplate, TeambuttonParent);
                 Teambutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
-                Transform TeambuttonMask = UnityEngine.Object.Instantiate(maskTemplate, TeambuttonParent);
-                TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
+                Transform TeambuttonMask = Object.Instantiate(maskTemplate, TeambuttonParent);
+                TextMeshPro Teamlabel = Object.Instantiate(textTemplate, Teambutton);
                 Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.GetSprite("GuessPlateWithKPD");
                 Teambutton.GetComponent<SpriteRenderer>().color = myColor;
                 RoleSelectButtons.Add((CustomRoleTypes)index, Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-2.75f + tabCount++ * 1.73f, 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
-                Teamlabel.color = Utils.GetCustomRoleTypeColor((CustomRoleTypes)index);
+                Teamlabel.color = GetCustomRoleTypeColor((CustomRoleTypes)index);
                 Logger.Info(Teamlabel.color.ToString(), ((CustomRoleTypes)index).ToString());
-                Teamlabel.text = GetString("Type" + ((CustomRoleTypes)index).ToString());
+                Teamlabel.text = GetString("Type" + ((CustomRoleTypes)index));
                 Teamlabel.alignment = TextAlignmentOptions.Center;
                 Teamlabel.transform.localPosition = new Vector3(0, 0, Teamlabel.transform.localPosition.z);
                 Teamlabel.transform.localScale *= 1.6f;
@@ -380,7 +383,7 @@ public static class GuesserHelper
 
                 static void CreateTeamButton(Transform Teambutton, CustomRoleTypes type)
                 {
-                    Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityAction)(() =>
                     {
                         GuesserSelectRole(type);
                         ReloadPage();
@@ -415,10 +418,10 @@ public static class GuesserHelper
                 var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
                 Transform PagebuttonParent = new GameObject().transform;
                 PagebuttonParent.SetParent(container);
-                Transform Pagebutton = UnityEngine.Object.Instantiate(buttonTemplate, PagebuttonParent);
+                Transform Pagebutton = Object.Instantiate(buttonTemplate, PagebuttonParent);
                 Pagebutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
-                Transform PagebuttonMask = UnityEngine.Object.Instantiate(maskTemplate, PagebuttonParent);
-                TextMeshPro Pagelabel = UnityEngine.Object.Instantiate(textTemplate, Pagebutton);
+                Transform PagebuttonMask = Object.Instantiate(maskTemplate, PagebuttonParent);
+                TextMeshPro Pagelabel = Object.Instantiate(textTemplate, Pagebutton);
                 Pagebutton.GetComponent<SpriteRenderer>().sprite = CustomButton.GetSprite("GuessPlateWithKPD");
                 PagebuttonParent.localPosition = IsNext ? new(3.535f, -2.2f, -200) : new(-3.475f, -2.2f, -200);
                 PagebuttonParent.localScale = new(0.55f, 0.55f, 1f);
@@ -457,10 +460,10 @@ public static class GuesserHelper
                 if (40 <= i[(int)role.GetCustomRoleTypes()]) i[(int)role.GetCustomRoleTypes()] = 0;
                 Transform buttonParent = new GameObject().transform;
                 buttonParent.SetParent(container);
-                Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
+                Transform button = Object.Instantiate(buttonTemplate, buttonParent);
                 button.FindChild("ControllerHighlight").gameObject.SetActive(false);
-                Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
-                TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
+                Transform buttonMask = Object.Instantiate(maskTemplate, buttonParent);
+                TextMeshPro label = Object.Instantiate(textTemplate, button);
 
                 button.GetComponent<SpriteRenderer>().sprite = CustomButton.GetSprite("GuessPlate");
                 button.GetComponent<SpriteRenderer>().color = myColor;
@@ -475,7 +478,7 @@ public static class GuesserHelper
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -200f);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
                 label.text = GetString(role.ToString());
-                label.color = Utils.GetRoleColor(role);
+                label.color = GetRoleColor(role);
                 label.alignment = TextAlignmentOptions.Center;
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
@@ -488,7 +491,7 @@ public static class GuesserHelper
                     if (selectedButton != button)
                     {
                         selectedButton = button;
-                        buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = x == selectedButton ? Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole()) : myColor);
+                        buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = x == selectedButton ? GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole()) : myColor);
                     }
                     else
                     {
@@ -512,7 +515,7 @@ public static class GuesserHelper
 
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                        UnityEngine.Object.Destroy(container.gameObject);
+                        Object.Destroy(container.gameObject);
                         textTemplate.enabled = false;
 
                     }
@@ -533,7 +536,7 @@ public static class GuesserHelper
 
     private static void SendRPC(byte playerId, CustomRoles role)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guess, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guess, SendOption.Reliable);
         writer.Write(playerId);
         writer.Write((byte)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -542,7 +545,7 @@ public static class GuesserHelper
     {
         int PlayerId = reader.ReadByte();
         CustomRoles role = (CustomRoles)reader.ReadByte();
-        if (!Guess(pc, Utils.GetPlayerById(PlayerId), role, out var reason, true))
+        if (!Guess(pc, GetPlayerById(PlayerId), role, out var reason, true))
             pc.ShowPopUp(reason);
     }
 
@@ -552,7 +555,7 @@ public static class GuesserHelper
         public static void Postfix()
         {
             if (textTemplate != null && textTemplate.gameObject != null)
-                UnityEngine.Object.Destroy(textTemplate.gameObject);
+                Object.Destroy(textTemplate.gameObject);
         }
     }
 }

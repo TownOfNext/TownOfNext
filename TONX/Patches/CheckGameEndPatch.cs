@@ -1,13 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
-using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -120,7 +118,7 @@ class GameEndChecker
     public static void StartEndGame(GameOverReason reason)
     {
         var sender = new CustomRpcSender("EndGameSender", SendOption.Reliable, true);
-        sender.StartMessage(-1); // 5: GameData
+        sender.StartMessage(); // 5: GameData
         MessageWriter writer = sender.stream;
 
         //ゴーストロール化
@@ -211,13 +209,13 @@ class GameEndChecker
 
             if (CustomRoles.Sunnyboy.IsExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
 
-            int Imp = Utils.AlivePlayersCount(CountTypes.Impostor);
-            int Crew = Utils.AlivePlayersCount(CountTypes.Crew);
-            int JK = Utils.AlivePlayersCount(CountTypes.Jackal);
-            int PL = Utils.AlivePlayersCount(CountTypes.Pelican);
-            int DM = Utils.AlivePlayersCount(CountTypes.Demon);
-            int BK = Utils.AlivePlayersCount(CountTypes.BloodKnight);
-            int SC = Utils.AlivePlayersCount(CountTypes.Succubus);
+            int Imp = AlivePlayersCount(CountTypes.Impostor);
+            int Crew = AlivePlayersCount(CountTypes.Crew);
+            int JK = AlivePlayersCount(CountTypes.Jackal);
+            int PL = AlivePlayersCount(CountTypes.Pelican);
+            int DM = AlivePlayersCount(CountTypes.Demon);
+            int BK = AlivePlayersCount(CountTypes.BloodKnight);
+            int SC = AlivePlayersCount(CountTypes.Succubus);
 
             foreach (var dualPc in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Schizophrenic)))
             {

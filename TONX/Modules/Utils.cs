@@ -1,17 +1,15 @@
-using AmongUs.Data;
-using AmongUs.GameOptions;
-using Hazel;
-using Il2CppInterop.Runtime.InteropTypes;
-using InnerNet;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes;
+using InnerNet;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
@@ -21,7 +19,7 @@ using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
@@ -49,7 +47,7 @@ public static class Utils
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
+            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout);
             writer.Write(text);
             writer.EndMessage();
             if (Options.EndWhenPlayerBug.GetBool())
@@ -117,14 +115,11 @@ public static class Utils
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
-                {
-                    if (mapId == 2) return false;
-                    else
-                    {
-                        var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
-                        return ReactorSystemType != null && ReactorSystemType.IsActive;
-                    }
-                }
+            {
+                if (mapId == 2) return false;
+                var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                return ReactorSystemType != null && ReactorSystemType.IsActive;
+            }
             case SystemTypes.Laboratory:
                 {
                     if (mapId != 2) return false;
@@ -138,18 +133,16 @@ public static class Utils
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.Comms:
-                {
-                    if (mapId is 1 or 5)
+            {
+                if (mapId is 1 or 5)
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
                     }
-                    else
-                    {
-                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
-                        return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
-                    }
-                }
+
+                var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
+                return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
+            }
             case SystemTypes.HeliSabotage:
                 {
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
@@ -185,19 +178,17 @@ public static class Utils
             }
             return;
         }
-        else
+
+        opt.SetFloat(
+            FloatOptionNames.ImpostorLightMod,
+            opt.GetFloat(FloatOptionNames.CrewLightMod));
+        if (IsActive(SystemTypes.Electrical))
         {
             opt.SetFloat(
                 FloatOptionNames.ImpostorLightMod,
-                opt.GetFloat(FloatOptionNames.CrewLightMod));
-            if (IsActive(SystemTypes.Electrical))
-            {
-                opt.SetFloat(
-                FloatOptionNames.ImpostorLightMod,
                 opt.GetFloat(FloatOptionNames.ImpostorLightMod) / 5);
-            }
-            return;
         }
+        return;
     }
     //誰かが死亡したときのメソッド
     public static void TargetDies(MurderInfo info)
@@ -251,7 +242,7 @@ public static class Utils
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, player.GetClientId());
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        else if (!ReactorCheck) player.ReactorFlash(0f); //リアクターフラッシュ
+        else if (!ReactorCheck) player.ReactorFlash(); //リアクターフラッシュ
         player.MarkDirtySettings();
         _ = new LateTask(() =>
         {
@@ -368,7 +359,7 @@ public static class Utils
             foreach (var subRole in subRolesList)
             {
                 if (subRole <= CustomRoles.NotAssigned || subRole is CustomRoles.LastImpostor or CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Lovers) continue;
-                sb.Append(ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole.ToString())));
+                sb.Append(ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole)));
             }
         }
         return sb.ToString();
@@ -468,8 +459,8 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Count() > 1)
             return string.Empty;
         string mode;
-        if (role.IsVanilla()) return role.GetChance().ToString() + "%";
-        else if (!Options.CustomRoleSpawnChances.ContainsKey(role)) mode = GetString("HidenRole");
+        if (role.IsVanilla()) return role.GetChance() + "%";
+        if (!Options.CustomRoleSpawnChances.ContainsKey(role)) mode = GetString("HidenRole");
         else mode = Options.CustomRoleSpawnChances[role].GetString().RemoveHtmlTags();
         return parentheses ? $"({mode})" : mode;
     }
@@ -683,7 +674,7 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        sb.Append($"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        sb.Append("\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501");
         ClipboardHelper.PutClipboardString(sb.ToString());
     }
     public static void ShowActiveRoles(byte PlayerId = byte.MaxValue)
@@ -705,7 +696,7 @@ public static class Utils
             // else if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
             else headCount--;
 
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
         }
         foreach (CustomRoles role in CustomRolesHelper.AllAddOns)
         {
@@ -713,7 +704,7 @@ public static class Utils
             if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
             else headCount--;
 
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
         }
         SendMessage(sb.ToString(), PlayerId);
     }
@@ -765,12 +756,12 @@ public static class Utils
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, true));
+            sb.Append("\n\u2605 ".Color(winnerColor)).Append(SummaryTexts(id, true));
             cloneRoles.Remove(id);
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n　 ").Append(SummaryTexts(id, true));
+            sb.Append("\n\u3000 ").Append(SummaryTexts(id, true));
         }
         SendMessage(sb.ToString(), PlayerId);
     }
@@ -997,7 +988,7 @@ public static class Utils
                     SelfName = name;
 
                 SelfName = SelfRoleName + "\r\n" + SelfName;
-                SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix.ToString();
+                SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix;
                 if (!isForMeeting) SelfName += "\r\n";
 
                 //適用
@@ -1146,7 +1137,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         OnPlayerLeftPatch.Add(playerId);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKickReason, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKickReason, SendOption.Reliable);
         writer.Write(GetString($"DCNotify.{reason}"));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         _ = new LateTask(() =>
@@ -1178,14 +1169,14 @@ public static class Utils
         string filename = $"{f}TONX-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-        file.CopyTo(@filename);
+        file.CopyTo(filename);
         if (PlayerControl.LocalPlayer != null)
         {
             if (popup) PlayerControl.LocalPlayer.ShowPopUp(string.Format(GetString("Message.DumpfileSaved"), $"TONX - v{Main.PluginVersion}-{t}.log"));
             else AddChatMessage(string.Format(GetString("Message.DumpfileSaved"), $"TONX - v{Main.PluginVersion}-{t}.log"));
         }
         ProcessStartInfo psi = new ProcessStartInfo("Explorer.exe")
-        { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
+        { Arguments = "/e,/select," + filename.Replace("/", "\\") };
         Process.Start(psi);
     }
     public static void OpenDirectory(string path)
@@ -1205,35 +1196,33 @@ public static class Utils
         {
             return ChatSummary ?? "";
         }
-        else
-        {
-            builder.Append(Main.AllPlayerNames[id]);
-            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            builder.Append(' ').Append(GetVitalText(id));
-            builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
-            builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
-            ChatSummary = builder.ToString();
-            builder = new StringBuilder();
-            // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
-            // 1em ≒ 半角2文字
-            // 空白は0.5emとする
-            // SJISではアルファベットは1バイト，日本語は基本的に2バイト
-            var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
-            //最大11.5emとする(★+日本語10文字分+半角空白)
-            var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
-            builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
-            builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
-            // "(00/00) " = 4em
-            pos += 4f;
-            builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
-            // "Lover's Suicide " = 8em
-            // "回線切断 " = 4.5em
-            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
-            builder.AppendFormat("<pos={0}em>", pos);
-            builder.Append(GetTrueRoleName(id, false));
-            builder.Append(GetSubRolesText(id));
-            builder.Append("</pos>");
-        }
+
+        builder.Append(Main.AllPlayerNames[id]);
+        builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+        builder.Append(' ').Append(GetVitalText(id));
+        builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+        builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
+        ChatSummary = builder.ToString();
+        builder = new StringBuilder();
+        // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
+        // 1em ≒ 半角2文字
+        // 空白は0.5emとする
+        // SJISではアルファベットは1バイト，日本語は基本的に2バイト
+        var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        //最大11.5emとする(★+日本語10文字分+半角空白)
+        var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
+        builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
+        builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
+        // "(00/00) " = 4em
+        pos += 4f;
+        builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
+        // "Lover's Suicide " = 8em
+        // "回線切断 " = 4.5em
+        pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
+        builder.AppendFormat("<pos={0}em>", pos);
+        builder.Append(GetTrueRoleName(id, false));
+        builder.Append(GetSubRolesText(id));
+        builder.Append("</pos>");
         return builder.ToString();
     }
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);
@@ -1246,10 +1235,10 @@ public static class Utils
         var obj = hud.transform.FindChild("FlashColor_FullScreen")?.gameObject;
         if (obj == null)
         {
-            obj = UnityEngine.Object.Instantiate(hud.FullScreen.gameObject, hud.transform);
+            obj = Object.Instantiate(hud.FullScreen.gameObject, hud.transform);
             obj.name = "FlashColor_FullScreen";
         }
-        hud.StartCoroutine(Effects.Lerp(duration, new Action<float>((t) =>
+        hud.StartCoroutine(Effects.Lerp(duration, new Action<float>(t =>
         {
             obj.SetActive(t != 1f);
             obj.GetComponent<SpriteRenderer>().color = new(color.r, color.g, color.b, Mathf.Clamp01((-2f * Mathf.Abs(t - 0.5f) + 1) * color.a / 2)); //アルファ値を0→目標→0に変化させる
@@ -1281,7 +1270,7 @@ public static class Utils
             var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
             using MemoryStream ms = new();
             stream.CopyTo(ms);
-            ImageConversion.LoadImage(texture, ms.ToArray(), false);
+            texture.LoadImage(ms.ToArray(), false);
             return texture;
         }
         catch
@@ -1372,7 +1361,7 @@ public static class Utils
             2 => new(42.6f, -19.9f), // Polus
             4 => new(-16.8f, -6.2f), // Airship
             5 => new(9.4f, 17.9f), // The Fungle
-            _ => throw new System.NotImplementedException(),
+            _ => throw new NotImplementedException(),
         };
     }
 }

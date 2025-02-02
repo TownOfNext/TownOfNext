@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Beartrap
 {
     private static readonly int Id = 81800;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Beartrap);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Beartrap);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionBlockMoveTime;
@@ -37,7 +37,7 @@ public static class Beartrap
         if (!playerIdList.Contains(target.PlayerId) || info.IsSuicide) return;
 
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeed¤Çáá¤Û¤É‚Ž¤ò‘ø¤¹¤Î¤Ç´úÈë¤·¤Æ¤¤¤Þ¤¹¡£
+        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedï¿½ï¿½ï¿½ï¿½Û¤É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¤Ç´ï¿½ï¿½ë¤·ï¿½Æ¤ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>

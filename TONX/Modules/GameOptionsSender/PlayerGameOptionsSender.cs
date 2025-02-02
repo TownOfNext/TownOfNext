@@ -1,9 +1,8 @@
+using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.Linq;
 using InnerNet;
-using System.Linq;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
@@ -115,7 +114,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
 
-        // ÎªÃÔ»óÕßµÄÐ×ÊÖ
+        // Îªï¿½Ô»ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
@@ -123,7 +122,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
         }
 
-        // Í¶ÖÀÉµ¹Ïµ°À²£¡£¡£¡£¡£¡
+        // Í¶ï¿½ï¿½Éµï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (Grenadier.IsBlinding(player))
         {
             opt.SetVision(false);
@@ -143,11 +142,11 @@ public class PlayerGameOptionsSender : GameOptionsSender
             AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, 3f);
         }
 
-        state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
+        state.taskState.hasTasks = HasTasks(player.Data, false);
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
             opt.SetBool(BoolOptionNames.AnonymousVotes, false);
         if (Options.AdditionalEmergencyCooldown.GetBool() &&
-            Options.AdditionalEmergencyCooldownThreshold.GetInt() <= Utils.AllAlivePlayersCount)
+            Options.AdditionalEmergencyCooldownThreshold.GetInt() <= AllAlivePlayersCount)
         {
             opt.SetInt(
                 Int32OptionNames.EmergencyCooldown,

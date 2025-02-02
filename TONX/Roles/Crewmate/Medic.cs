@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -77,7 +77,7 @@ public sealed class Medic : RoleBase, IKiller
     }
     private static void SendRPC_SyncList()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicProtectList, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicProtectList, SendOption.Reliable);
         writer.Write(ProtectList.Count);
         for (int i = 0; i < ProtectList.Count; i++)
             writer.Write(ProtectList[i]);
@@ -92,7 +92,7 @@ public sealed class Medic : RoleBase, IKiller
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("MedicButtonText");
+        text = GetString("MedicButtonText");
         return true;
     }
     public bool OverrideKillButtonSprite(out string buttonName)
@@ -106,7 +106,7 @@ public sealed class Medic : RoleBase, IKiller
        && ProtectLimit > 0;
     public bool CanUseSabotageButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({ProtectLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({ProtectLimit})");
     public static bool InProtect(byte id) => ProtectList.Contains(id) && !(PlayerState.GetByPlayerId(id)?.IsDead ?? true);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
@@ -123,8 +123,8 @@ public sealed class Medic : RoleBase, IKiller
         killer.RPCPlayCustomSound("Shield");
         target.RPCPlayCustomSound("Shield");
 
-        Utils.NotifyRoles(killer);
-        Utils.NotifyRoles(target);
+        NotifyRoles(killer);
+        NotifyRoles(target);
 
         Logger.Info($"{killer.GetNameWithRole()} : 将护盾发送给 {target.GetNameWithRole()}", "Medic.OnCheckMurderAsKiller");
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{ProtectLimit}个护盾", "Medic.OnCheckMurderAsKiller");
@@ -145,12 +145,12 @@ public sealed class Medic : RoleBase, IKiller
         if (OptionTargetCanSeeProtect.GetBool())
             target.RpcProtectedMurderPlayer(target);
 
-        Utils.NotifyRoles(target);
+        NotifyRoles(target);
 
         if (OptionKnowTargetShieldBroken.GetBool())
-            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic) && x.PlayerId != target.PlayerId).Do(x => x.Notify(Translator.GetString("MedicTargetShieldBroken")));
+            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic) && x.PlayerId != target.PlayerId).Do(x => x.Notify(GetString("MedicTargetShieldBroken")));
         else
-            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic)).Do(x => Utils.NotifyRoles(x));
+            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic)).Do(x => NotifyRoles(x));
 
         Logger.Info($"{target.GetNameWithRole()} : 来自医生的盾破碎", "Medic.OnCheckMurderPlayerOthers_Before");
 
@@ -164,6 +164,6 @@ public sealed class Medic : RoleBase, IKiller
         if (!InProtect(seen.PlayerId)) return "";
         return (seer.Is(CustomRoles.Medic)
             || (seer == seen && OptionTargetCanSeeProtect.GetBool())
-            ) ? Utils.ColorString(RoleInfo.RoleColor, "●") : "";
+            ) ? ColorString(RoleInfo.RoleColor, "●") : "";
     }
 }

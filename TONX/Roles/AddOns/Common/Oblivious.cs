@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Oblivious
 {
     private static readonly int Id = 81100;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Oblivious);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Oblivious);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Roles.Core;
 using UnityEngine;
 using static TONX.Options;
-using static TONX.Translator;
 
 namespace TONX.Roles.AddOns;
 public class AddOnsAssignData
@@ -33,7 +31,7 @@ public class AddOnsAssignData
         if (role is CustomRoles.Lighter && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Bewilder))) return false;
         if (role is CustomRoles.Bewilder && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Lighter))) return false;
         if (role is CustomRoles.Neptune && (pc.Is(CustomRoles.Lovers) || pc.Is(CustomRoles.Hater))) return false;
-        if (role is CustomRoles.Madmate && !Utils.CanBeMadmate(pc)) return false;
+        if (role is CustomRoles.Madmate && !pc.CanBeMadmate()) return false;
         if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.Detective) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
         if (role is CustomRoles.Fool && pc.Is(CustomRoles.Repairman)) return false;
         if (role is CustomRoles.Tiebreaker && pc.Is(CustomRoles.Dictator)) return false;
@@ -62,7 +60,7 @@ public class AddOnsAssignData
             CrewmateMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            CrewmateMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate")) } };
+            CrewmateMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate")) } };
             CrewmateFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(CrewmateMaximum);
             var crewmateStringArray = CrewmateRoles.Select(role => role.ToString()).ToArray();
@@ -75,7 +73,7 @@ public class AddOnsAssignData
             ImpostorMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 3, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            ImpostorMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(247, 70, 49, byte.MaxValue), GetString("TeamImpostor")) } };
+            ImpostorMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", ColorString(new Color32(247, 70, 49, byte.MaxValue), GetString("TeamImpostor")) } };
             ImpostorFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(ImpostorMaximum);
             var impostorStringArray = ImpostorRoles.Select(role => role.ToString()).ToArray();
@@ -88,7 +86,7 @@ public class AddOnsAssignData
             NeutralMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            NeutralMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(255, 171, 27, byte.MaxValue), GetString("TeamNeutral")) } };
+            NeutralMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", ColorString(new Color32(255, 171, 27, byte.MaxValue), GetString("TeamNeutral")) } };
             NeutralFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(NeutralMaximum);
             var neutralStringsArray = NeutralRoles.Select(role => role.ToString()).ToArray();

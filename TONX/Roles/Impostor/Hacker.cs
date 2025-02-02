@@ -1,10 +1,9 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Hacker : RoleBase, IImpostor
@@ -36,7 +35,7 @@ public sealed class Hacker : RoleBase, IImpostor
         HackLimit,
     }
 
-    private int HackLimit = new();
+    private int HackLimit;
     private static List<byte> DeadBodyList = new();
     private static void SetupOptionItem()
     {
@@ -65,7 +64,7 @@ public sealed class Hacker : RoleBase, IImpostor
         AURoleOptions.ShapeshifterCooldown = 1f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(HackLimit >= 1 ? Color.red : Color.gray, $"({HackLimit})");
+    public override string GetProgressText(bool comms = false) => ColorString(HackLimit >= 1 ? Color.red : Color.gray, $"({HackLimit})");
     public override int OverrideAbilityButtonUsesRemaining() => HackLimit;
     public override bool GetAbilityButtonText(out string text)
     {
@@ -100,7 +99,7 @@ public sealed class Hacker : RoleBase, IImpostor
         // 寻找骇客击杀的尸体
         foreach (var db in DeadBodyList)
         {
-            var dp = Utils.GetPlayerById(db);
+            var dp = GetPlayerById(db);
             if (dp == null || dp.GetRealKiller() == null) continue;
             if (dp.GetRealKiller().PlayerId == Player.PlayerId) targetId = db;
         }
@@ -112,6 +111,6 @@ public sealed class Hacker : RoleBase, IImpostor
         if (targetId == byte.MaxValue)
             _ = new LateTask(() => target?.NoCheckStartMeeting(target?.Data), 0.15f, "Hacker Hacking Report Self");
         else
-            _ = new LateTask(() => target?.NoCheckStartMeeting(Utils.GetPlayerById(targetId)?.Data), 0.15f, "Hacker Hacking Report");
+            _ = new LateTask(() => target?.NoCheckStartMeeting(GetPlayerById(targetId)?.Data), 0.15f, "Hacker Hacking Report");
     }
 }

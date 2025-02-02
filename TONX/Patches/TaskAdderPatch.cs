@@ -1,6 +1,6 @@
+using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
-using System.Linq;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ class ShowFolderPatch
     {
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
         {
-            TaskFolder rolesFolder = UnityEngine.Object.Instantiate<TaskFolder>(
+            TaskFolder rolesFolder = Object.Instantiate(
                 __instance.RootFolderPrefab,
                 __instance.transform
             );
@@ -43,8 +43,8 @@ class ShowFolderPatch
                 cRole == CustomRoles.Shapeshifter
                 ) continue;*/
 
-                TaskAddButton button = UnityEngine.Object.Instantiate<TaskAddButton>(__instance.RoleButton);
-                button.Text.text = Utils.GetRoleName(cRole);
+                TaskAddButton button = Object.Instantiate(__instance.RoleButton);
+                button.Text.text = GetRoleName(cRole);
                 __instance.AddFileAsChild(CustomRolesFolder, button, ref xCursor, ref yCursor, ref maxHeight);
                 var roleBehaviour = new RoleBehaviour
                 {
@@ -53,7 +53,7 @@ class ShowFolderPatch
                 button.Role = roleBehaviour;
 
                 Color IconColor = Color.white;
-                var roleColor = Utils.GetRoleColor(cRole);
+                var roleColor = GetRoleColor(cRole);
 
                 button.FileImage.color = roleColor;
                 button.RolloverHandler.OutColor = roleColor;

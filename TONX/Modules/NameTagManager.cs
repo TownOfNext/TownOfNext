@@ -1,13 +1,12 @@
-﻿using AmongUs.Data;
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using AmongUs.Data;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -90,7 +89,7 @@ public static class NameTagManager
             try { ReadTagsFromFile(path); }
             catch (Exception ex)
             {
-                Logger.Error($"Load Tag From: {path} Failed\n" + ex.ToString(), "NameTagManager", false);
+                Logger.Error($"Load Tag From: {path} Failed\n" + ex, "NameTagManager", false);
             }
         }
 
@@ -110,7 +109,7 @@ public static class NameTagManager
             try { ReadTagsFromFile(file); }
             catch (Exception ex)
             {
-                Logger.Error($"Load Tag From: {file} Failed\n" + ex.ToString(), "NameTagManager", false);
+                Logger.Error($"Load Tag From: {file} Failed\n" + ex, "NameTagManager", false);
             }
         }
 
@@ -247,7 +246,7 @@ public static class NameTagManager
             if (Text == null) return "";
             var text = Text;
             if (Gradient != null && Gradient.IsValid) text = Gradient.Apply(text);
-            else if (TextColor != null) text = Utils.ColorString(TextColor.Value, text);
+            else if (TextColor != null) text = ColorString(TextColor.Value, text);
             if (Spaced && applySpace) text = " " + text + " ";
             if (SizePercentage != null && applySize) text = $"<size={SizePercentage}%>{text}</size>";
             return text;
@@ -267,14 +266,14 @@ public static class NameTagManager
         public string Apply(string input)
         {
             if (input.Length == 0) return input;
-            if (input.Length == 1) return Utils.ColorString(Colors[0], input);
+            if (input.Length == 1) return ColorString(Colors[0], input);
             float step = 1f / (input.Length - 1);
             StringBuilder sb = new();
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
                 var color = Evaluate(step * i);
-                sb.Append(Utils.ColorString(color, c.ToString()));
+                sb.Append(ColorString(color, c.ToString()));
             }
             return sb.ToString();
         }
@@ -297,4 +296,3 @@ public static class NameTagManager
         }
     }
 }
-#nullable disable

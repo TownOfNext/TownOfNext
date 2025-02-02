@@ -1,10 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using System.Linq;
+using TMPro;
 using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
@@ -45,7 +48,7 @@ class MMOnlineManagerStartPatch
         {
             obj?.SetActive(false);
             var parentObj = obj.transform.parent.gameObject;
-            var textObj = Object.Instantiate(obj.transform.FindChild("Text_TMP").GetComponent<TMPro.TextMeshPro>());
+            var textObj = Object.Instantiate(obj.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>());
             textObj.transform.position = new Vector3(0.5f, -0.4f, 0f);
             textObj.name = "CanNotJoinPublic";
             textObj.DestroyTranslator();
@@ -66,7 +69,7 @@ class MMOnlineManagerStartPatch
             {
                 message = GetString("PublicNotAvailableOnThisVersion");
             }
-            textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>";
+            textObj.text = $"<size=2>{ColorString(Color.red, message)}</size>";
         }
     }
 }
@@ -96,7 +99,7 @@ internal class RunLoginPatch
         // 如果您修改了代码，请在房间公告内表明这是修改版本，并给出修改作者
         // If you wish to make your lobby public in a debug build, please use it only for testing purposes
         // If you modify the code, please indicate in the lobby announcement that this is a modified version and provide the author of the modification
-        canOnline = System.Environment.UserName == "Leever";
+        canOnline = Environment.UserName == "Leever";
 #endif
     }
 }
@@ -178,7 +181,7 @@ internal class InnerNetObjectSerializePatch
                         {
                             if (DebugModeManager.IsDebugMode)
                             {
-                                Logger.Info($"SendAllStreamedObjects: Start", "InnerNetClient");
+                                Logger.Info("SendAllStreamedObjects: Start", "InnerNetClient");
                             }
                             sended = true;
                         }
@@ -202,11 +205,11 @@ internal class InnerNetObjectSerializePatch
                         }
                         if (innerNetObject.Chunked && innerNetObject.IsDirty)
                         {
-                            Logger.Info($"SendAllStreamedObjects: Chunked", "InnerNetClient");
+                            Logger.Info("SendAllStreamedObjects: Chunked", "InnerNetClient");
                             __result = true;
                         }
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.Info($"Exception:{ex.Message}", "InnerNetClient");
                         messageWriter.CancelMessage();
@@ -223,7 +226,7 @@ internal class InnerNetObjectSerializePatch
                 {
                     if (DebugModeManager.IsDebugMode)
                     {
-                        Logger.Info($"SendAllStreamedObjects: Start", "InnerNetClient");
+                        Logger.Info("SendAllStreamedObjects: Start", "InnerNetClient");
                     }
                     sended = true;
                 }
@@ -234,7 +237,7 @@ internal class InnerNetObjectSerializePatch
                 messageWriter2.Write(__instance.GameId);
             }
         }
-        if (DebugModeManager.IsDebugMode && sended) Logger.Info($"SendAllStreamedObjects: End", "InnerNetClient");
+        if (DebugModeManager.IsDebugMode && sended) Logger.Info("SendAllStreamedObjects: End", "InnerNetClient");
         return false;
     }
 }
@@ -272,7 +275,7 @@ class InnerNetClientPatch
         if (!Options.FixSpawnPacketSize.GetBool()) return true;
         if (DebugModeManager.IsDebugMode)
         {
-            Logger.Info($"SendInitialData: Start", "InnerNetClient");
+            Logger.Info("SendInitialData: Start", "InnerNetClient");
         }
         MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
         messageWriter.StartMessage(6);
@@ -282,7 +285,7 @@ class InnerNetClientPatch
         var obj = __instance.allObjects;
         lock (obj)
         {
-            var hashSet = new System.Collections.Generic.HashSet<GameObject>();
+            var hashSet = new HashSet<GameObject>();
             //まずはGameManagerを送信
             GameManager gameManager = GameManager.Instance;
             __instance.SendGameManager(clientId, gameManager);
@@ -312,7 +315,7 @@ class InnerNetClientPatch
         messageWriter.Recycle();
         if (DebugModeManager.IsDebugMode)
         {
-            Logger.Info($"SendInitialData: End", "InnerNetClient");
+            Logger.Info("SendInitialData: End", "InnerNetClient");
         }
         return false;
     }
@@ -321,7 +324,7 @@ class InnerNetClientPatch
     {
         if (DebugModeManager.IsDebugMode)
         {
-            Logger.Info($"SpawnPatch", "InnerNetClient");
+            Logger.Info("SpawnPatch", "InnerNetClient");
         }
         var messageWriter = __instance.Streams[(byte)SendOption.Reliable];
         if (messageWriter.Length > 500)

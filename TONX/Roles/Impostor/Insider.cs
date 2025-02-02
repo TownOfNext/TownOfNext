@@ -1,5 +1,5 @@
-﻿using AmongUs.GameOptions;
-using System.Text;
+﻿using System.Text;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -71,7 +71,7 @@ public sealed class Insider : RoleBase, IImpostor
 
         int killCount = MyState.GetKillCount(true);
         string mark = killCount >= killCountToSeeMadmates ? "★" : $"({killCount}/{killCountToSeeMadmates})";
-        return Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), mark);
+        return ColorString(Palette.ImpostorRed.ShadeColor(0.5f), mark);
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
@@ -81,7 +81,7 @@ public sealed class Insider : RoleBase, IImpostor
 
         // 死亡したLoversのマーク追加
         if (seen.Is(CustomRoles.Lovers) && !seer.Is(CustomRoles.Lovers) && IsAbilityAvailable(seen))
-            mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
+            mark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
 
         foreach (var impostor in Main.AllPlayerControls)
         {

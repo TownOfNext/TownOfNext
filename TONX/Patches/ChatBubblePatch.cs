@@ -22,7 +22,7 @@ public static class ChatBubblePatch
         sr.color = modded ? new Color(0, 0, 0) : new Color(1, 1, 1);
         if (modded)
         {
-            chatText = Utils.ColorString(Color.white, chatText.TrimEnd('\0'));
+            chatText = ColorString(Color.white, chatText.TrimEnd('\0'));
             __instance.SetLeft();
         }
     }

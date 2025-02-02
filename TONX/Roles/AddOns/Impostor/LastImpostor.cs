@@ -51,7 +51,7 @@ public static class LastImpostor
                 Add(pc.PlayerId);
                 SetKillCooldown();
                 pc.SyncSettings();
-                Utils.NotifyRoles();
+                NotifyRoles();
                 break;
             }
         }

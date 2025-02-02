@@ -1,6 +1,5 @@
-using AmongUs.GameOptions;
 using System.Linq;
-
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 
 namespace TONX;
@@ -93,10 +92,8 @@ CustomRoles.Shapeshifter or
                 _ => 0
             };
         }
-        else
-        {
-            return Options.GetRoleCount(role);
-        }
+
+        return Options.GetRoleCount(role);
     }
     public static int GetChance(this CustomRoles role)
     {
@@ -116,10 +113,8 @@ CustomRoles.Shapeshifter or
                 _ => 0
             };
         }
-        else
-        {
-            return Options.GetRoleChance(role);
-        }
+
+        return Options.GetRoleChance(role);
     }
     public static bool IsEnable(this CustomRoles role) => role.GetCount() > 0;
     public static CustomRoles GetCustomRoleTypes(this RoleTypes role)

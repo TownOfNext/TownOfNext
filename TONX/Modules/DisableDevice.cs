@@ -1,6 +1,6 @@
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ class DisableDevice
 {
     public static bool DoDisable => Options.DisableDevices.GetBool();
     private static List<byte> DesyncComms = new();
-    private static int frame = 0;
+    private static int frame;
     public static readonly Dictionary<string, Vector2> DevicePos = new()
     {
         ["SkeldAdmin"] = new(3.48f, -8.62f),
@@ -61,7 +61,7 @@ class DisableDevice
                         (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(CustomRoleTypes.Crewmate)) ||
                         (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
-                if (pc.IsAlive() && !Utils.IsActive(SystemTypes.Comms))
+                if (pc.IsAlive() && !IsActive(SystemTypes.Comms))
                 {
                     switch (Main.NormalOptions.MapId)
                     {
@@ -114,7 +114,7 @@ class DisableDevice
 
                     pc.RpcDesyncUpdateSystem(SystemTypes.Comms, 128);
                 }
-                else if (!Utils.IsActive(SystemTypes.Comms) && DesyncComms.Contains(pc.PlayerId))
+                else if (!IsActive(SystemTypes.Comms) && DesyncComms.Contains(pc.PlayerId))
                 {
                     DesyncComms.Remove(pc.PlayerId);
                     pc.RpcDesyncUpdateSystem(SystemTypes.Comms, 16);

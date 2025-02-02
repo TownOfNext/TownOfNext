@@ -1,5 +1,5 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -59,7 +59,7 @@ public static class AdminProvider
                         totalPlayers++;
                         numDeadBodies++;
                         // インポスターの死体だった場合
-                        if (Utils.GetPlayerById(deadBody.ParentId)?.Is(CustomRoleTypes.Impostor) == true)
+                        if (GetPlayerById(deadBody.ParentId)?.Is(CustomRoleTypes.Impostor) == true)
                         {
                             numImpostors++;
                         }

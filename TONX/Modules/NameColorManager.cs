@@ -32,27 +32,27 @@ public static class NameColorManager
     {
         color = "";
 
-        // ÄÚ¹íÅÑÍ½»¥ÈÏ
-        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (target.Is(CustomRoles.Egoist) && Egoist.OptionImpEgoVisibalToAllies.GetBool() && seer != target) ? Utils.GetRoleColorCode(CustomRoles.Egoist) : Utils.GetRoleColorCode(CustomRoles.Impostor);
+        // ï¿½Ú¹ï¿½ï¿½ï¿½Í½ï¿½ï¿½ï¿½ï¿½
+        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (target.Is(CustomRoles.Egoist) && Egoist.OptionImpEgoVisibalToAllies.GetBool() && seer != target) ? GetRoleColorCode(CustomRoles.Egoist) : GetRoleColorCode(CustomRoles.Impostor);
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Options.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Options.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
 
-        //÷ÈÄ§Ð¡µÜ»¥ÈÏ
+        //ï¿½ï¿½Ä§Ð¡ï¿½Ü»ï¿½ï¿½ï¿½
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
         if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Charmed];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];
 
         if (!string.IsNullOrEmpty(color)) return true;
-        else return seer == target
-            || (Main.GodMode.Value && seer.AmOwner)
-            || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
-            || seer.Is(CustomRoles.God)
+        return seer == target
+               || (Main.GodMode.Value && seer.AmOwner)
+               || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
+               || seer.Is(CustomRoles.God)
 
-            || SuperStar.KnowTargetRoleColor(target, isMeeting)
-            || Workaholic.KnowTargetRoleColor(target, isMeeting)
-            || Mare.KnowTargetRoleColor(target, isMeeting);
+               || SuperStar.KnowTargetRoleColor(target, isMeeting)
+               || Workaholic.KnowTargetRoleColor(target, isMeeting)
+               || Mare.KnowTargetRoleColor(target, isMeeting);
     }
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {
@@ -67,7 +67,7 @@ public static class NameColorManager
     {
         if (colorCode == "")
         {
-            var target = Utils.GetPlayerById(targetId);
+            var target = GetPlayerById(targetId);
             if (target == null) return;
             colorCode = target.GetRoleColorCode();
         }
@@ -96,7 +96,7 @@ public static class NameColorManager
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetNameColorData, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetNameColorData, SendOption.Reliable);
         writer.Write(seerId);
         writer.Write(targetId);
         writer.Write(colorCode);

@@ -1,10 +1,9 @@
-using AmongUs.GameOptions;
 using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Bomber : RoleBase, IImpostor
@@ -85,7 +84,7 @@ public sealed class Bomber : RoleBase, IImpostor
                 Player.RpcExileV2();
                 state.SetDead();
             }
-            Utils.NotifyRoles();
+            NotifyRoles();
         }, 1.5f, "Bomber Suiscide");
 
     }

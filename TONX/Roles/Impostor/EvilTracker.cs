@@ -1,11 +1,10 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using System.Text;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
@@ -72,7 +71,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         OnceInGame,
         EveryMeeting,
         Always,
-    };
+    }
     private static readonly string[] TargetModeText =
     {
         "EvilTrackerTargetMode.Never",
@@ -193,7 +192,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         SetTarget(target.PlayerId);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
         Player.MarkDirtySettings();
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
     public override void AfterMeetingTasks()
     {
@@ -202,7 +201,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             ReEnableTargeting();
             Player.MarkDirtySettings();
         }
-        var target = Utils.GetPlayerById(TargetId);
+        var target = GetPlayerById(TargetId);
         if (!Player.IsAlive() || !target.IsAlive())
         {
             RemoveTarget();
@@ -215,7 +214,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool _ = false)
     {
         seen ??= seer;
-        return TargetId == seen.PlayerId ? Utils.ColorString(Palette.ImpostorRed, "◀") : "";
+        return TargetId == seen.PlayerId ? ColorString(Palette.ImpostorRed, "◀") : "";
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -226,10 +225,8 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             // 空のときにタグを付けると，suffixが空ではない判定となりなにもない3行目が表示される
             return roomName.Length == 0 ? "" : $"<size=1.5>{roomName}</size>";
         }
-        else
-        {
-            return GetArrows(seen);
-        }
+
+        return GetArrows(seen);
     }
     private string GetArrows(PlayerControl seen)
     {
@@ -242,17 +239,17 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         var sb = new StringBuilder(80);
         if (ImpostorsId.Count > 0)
         {
-            sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>");
+            sb.Append($"<color={GetRoleColorCode(CustomRoles.Impostor)}>");
             foreach (var impostorId in ImpostorsId)
             {
                 sb.Append(TargetArrow.GetArrows(Player, impostorId));
             }
-            sb.Append($"</color>");
+            sb.Append("</color>");
         }
 
         if (TargetId != byte.MaxValue)
         {
-            sb.Append(Utils.ColorString(Color.white, TargetArrow.GetArrows(Player, TargetId)));
+            sb.Append(ColorString(Color.white, TargetArrow.GetArrows(Player, TargetId)));
         }
         return sb.ToString();
     }
@@ -260,12 +257,12 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
     {
         if (!(CanSeeLastRoomInMeeting && IsTrackTarget(seen))) return "";
 
-        string text = Utils.ColorString(Palette.ImpostorRed, TargetArrow.GetArrows(Player, seen.PlayerId));
+        string text = ColorString(Palette.ImpostorRed, TargetArrow.GetArrows(Player, seen.PlayerId));
         var room = PlayerState.GetByPlayerId(seen.PlayerId).LastRoom;
-        if (room == null) text += Utils.ColorString(Color.gray, "@" + GetString("FailToTrack"));
+        if (room == null) text += ColorString(Color.gray, "@" + GetString("FailToTrack"));
         else
         {
-            text += Utils.ColorString(Palette.ImpostorRed, "@" + GetString(room.RoomId.ToString()));
+            text += ColorString(Palette.ImpostorRed, "@" + GetString(room.RoomId.ToString()));
         }
 
         return text;

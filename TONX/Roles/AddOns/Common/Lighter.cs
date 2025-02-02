@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Lighter
 {
     private static readonly int Id = 82100;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Lighter);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Lighter);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionVistion;

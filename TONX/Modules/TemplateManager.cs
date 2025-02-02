@@ -1,5 +1,3 @@
-using AmongUs.Data;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,8 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using AmongUs.Data;
+using HarmonyLib;
+using InnerNet;
 using TONX.Attributes;
-using static TONX.Translator;
+using UnityEngine;
 
 namespace TONX;
 
@@ -18,9 +19,9 @@ public static class TemplateManager
     private static Dictionary<string, Func<string>> _replaceDictionary = new()
     {
         ["HostName"] = () => PlayerControl.LocalPlayer.GetRealName(),
-        ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
+        ["RoomCode"] = () => GameCode.IntToGameName(AmongUsClient.Instance.GameId),
         ["PlayerName"] = () => DataManager.Player.Customization.Name,
-        ["AmongUsVersion"] = () => UnityEngine.Application.version,
+        ["AmongUsVersion"] = () => Application.version,
         ["ModVersion"] = () => Main.PluginVersion,
         ["Map"] = () => Constants.MapNames[Main.NormalOptions.MapId],
         ["NumEmergencyMeetings"] = () => Main.NormalOptions.NumEmergencyMeetings.ToString(),
@@ -99,18 +100,18 @@ public static class TemplateManager
         if (sendList.Count == 0 && !noErr)
         {
             if (playerId == 0xff)
-                Utils.AddChatMessage(string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
+                AddChatMessage(string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
+            else SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
         }
         else for (int i = 0; i < sendList.Count; i++)
             {
                 if (str == "welcome" && playerId != 0xff)
                 {
-                    var player = Utils.GetPlayerById(playerId);
+                    var player = GetPlayerById(playerId);
                     if (player == null) continue;
-                    Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId, string.Format($"<color=#aaaaff>{GetString("OnPlayerJoinMsgTitle")}</color>", Utils.ColorString(Palette.PlayerColors.Length > player.cosmetics.ColorId ? Palette.PlayerColors[player.cosmetics.ColorId] : UnityEngine.Color.white, player.GetTrueName())));
+                    SendMessage(ApplyReplaceDictionary(sendList[i]), playerId, string.Format($"<color=#aaaaff>{GetString("OnPlayerJoinMsgTitle")}</color>", ColorString(Palette.PlayerColors.Length > player.cosmetics.ColorId ? Palette.PlayerColors[player.cosmetics.ColorId] : Color.white, player.GetTrueName())));
                 }
-                else Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId);
+                else SendMessage(ApplyReplaceDictionary(sendList[i]), playerId);
             }
     }
 

@@ -9,7 +9,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Tiebreaker
 {
     private static readonly int Id = 81000;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Tiebreaker);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Tiebreaker);
     private static List<byte> playerIdList = new();
 
     private static Dictionary<byte, byte> TiebreakerVotes = new();
@@ -45,7 +45,7 @@ public static class Tiebreaker
         if (mostVotedPlayers.Count(TiebreakerVotes.ContainsValue) == 1)
         {
             target = mostVotedPlayers.Where(TiebreakerVotes.ContainsValue).FirstOrDefault();
-            Logger.Info($"Tiebreaker Override Tie => {Utils.GetPlayerById(target)?.GetNameWithRole()}", "Tiebreaker");
+            Logger.Info($"Tiebreaker Override Tie => {GetPlayerById(target)?.GetNameWithRole()}", "Tiebreaker");
             return true;
         }
         return false;

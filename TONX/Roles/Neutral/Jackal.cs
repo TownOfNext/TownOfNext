@@ -1,6 +1,5 @@
-using AmongUs.GameOptions;
 using System.Linq;
-
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -16,7 +15,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             CustomRoleTypes.Neutral,
             50900,
             SetupOptionItem,
-            "jac|²òÀÇ",
+            "jac|ï¿½ï¿½ï¿½ï¿½",
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
@@ -81,7 +80,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         {
             pc.SetKillCooldownV2(0);
             RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
-            pc.Notify(Translator.GetString("JackalResetKillCooldown"));
+            pc.Notify(GetString("JackalResetKillCooldown"));
         }
     }
 }

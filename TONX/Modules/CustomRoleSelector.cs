@@ -1,8 +1,7 @@
-﻿using AmongUs.GameOptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 
 namespace TONX.Modules;
@@ -79,7 +78,7 @@ internal static class CustomRoleSelector
             ImpOnList.Remove(select);
             rolesToAssign.Add(select);
             readyRoleNum++;
-            Logger.Info(select.ToString() + " 加入内鬼职业待选列表（优先）", "CustomRoleSelector");
+            Logger.Info(select + " 加入内鬼职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
             if (readyRoleNum >= optImpNum) break;
         }
@@ -92,7 +91,7 @@ internal static class CustomRoleSelector
                 ImpRateList.Remove(select);
                 rolesToAssign.Add(select);
                 readyRoleNum++;
-                Logger.Info(select.ToString() + " 加入内鬼职业待选列表", "CustomRoleSelector");
+                Logger.Info(select + " 加入内鬼职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
                 if (readyRoleNum >= optImpNum) break;
             }
@@ -106,7 +105,7 @@ internal static class CustomRoleSelector
             rolesToAssign.Add(select);
             readyRoleNum++;
             readyNeutralNum += select.GetAssignCount();
-            Logger.Info(select.ToString() + " 加入中立职业待选列表（优先）", "CustomRoleSelector");
+            Logger.Info(select + " 加入中立职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
             if (readyNeutralNum >= optNeutralNum) break;
         }
@@ -120,7 +119,7 @@ internal static class CustomRoleSelector
                 rolesToAssign.Add(select);
                 readyRoleNum++;
                 readyNeutralNum += select.GetAssignCount();
-                Logger.Info(select.ToString() + " 加入中立职业待选列表", "CustomRoleSelector");
+                Logger.Info(select + " 加入中立职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
                 if (readyNeutralNum >= optNeutralNum) break;
             }
@@ -133,7 +132,7 @@ internal static class CustomRoleSelector
             roleOnList.Remove(select);
             rolesToAssign.Add(select);
             readyRoleNum++;
-            Logger.Info(select.ToString() + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
+            Logger.Info(select + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
         }
         // 优先职业不足以分配，开始分配启用的职业
@@ -145,7 +144,7 @@ internal static class CustomRoleSelector
                 roleRateList.Remove(select);
                 rolesToAssign.Add(select);
                 readyRoleNum++;
-                Logger.Info(select.ToString() + " 加入船员职业待选列表", "CustomRoleSelector");
+                Logger.Info(select + " 加入船员职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
             }
         }
@@ -183,7 +182,7 @@ internal static class CustomRoleSelector
                 {
                     rolesToAssign.RemoveAt(i);
                     rolesToAssign.Insert(0, dr.Value);
-                    Logger.Info("覆盖职业列表：" + i + " " + role.ToString() + " => " + dr.Value, "Dev Role");
+                    Logger.Info("覆盖职业列表：" + i + " " + role + " => " + dr.Value, "Dev Role");
                     break;
                 }
             }
@@ -228,12 +227,12 @@ internal static class CustomRoleSelector
 
     }
 
-    public static int addScientistNum = 0;
-    public static int addEngineerNum = 0;
-    public static int addTrackerNum = 0;
-    public static int addNoisemakerNum = 0; 
-    public static int addPhantomNum = 0;
-    public static int addShapeshifterNum = 0;
+    public static int addScientistNum;
+    public static int addEngineerNum;
+    public static int addTrackerNum;
+    public static int addNoisemakerNum; 
+    public static int addPhantomNum;
+    public static int addShapeshifterNum;
     public static void CalculateVanillaRoleCount()
     {
         // 计算原版特殊职业数量
@@ -273,7 +272,7 @@ internal static class CustomRoleSelector
     public static int GetAssignCount(this CustomRoles role)
     {
         int maximumCount = role.GetCount();
-        int assignUnitCount = CustomRoleManager.GetRoleInfo(role)?.AssignUnitCount ??
+        int assignUnitCount = role.GetRoleInfo()?.AssignUnitCount ??
             role switch
             {
                 CustomRoles.Lovers => 2,

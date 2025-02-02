@@ -1,15 +1,14 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
-using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using HarmonyLib;
+using Hazel;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns;
 using TONX.Roles.Core;
 using static TONX.Modules.CustomRoleSelector;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -116,7 +115,7 @@ internal class ChangeRoleSettings
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Change Role Setting Postfix");
+            ErrorEnd("Change Role Setting Postfix");
             Logger.Fatal(ex.ToString(), "Change Role Setting Postfix");
         }
     }
@@ -170,7 +169,7 @@ internal class SelectRolesPatch
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Prefix");
+            ErrorEnd("Select Role Prefix");
             ex.Message.Split(@"\r\n").Do(line => Logger.Fatal(line, "Select Role Prefix"));
         }
         //以下、バニラ側の役職割り当てが入る
@@ -284,13 +283,13 @@ internal class SelectRolesPatch
                 }
             }
             */
-            Utils.CountAlivePlayers(true);
-            Utils.SyncAllSettings();
+            CountAlivePlayers(true);
+            SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Postfix");
+            ErrorEnd("Select Role Postfix");
             ex.Message.Split(@"\r\n").Do(line => Logger.Fatal(line, "Select Role Postfix"));
         }
     }
@@ -364,7 +363,7 @@ return;
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
     private class RpcSetRoleReplacer
     {
-        public static bool doReplace = false;
+        public static bool doReplace;
         public static Dictionary<byte, CustomRpcSender> senders;
         public static List<(PlayerControl, RoleTypes)> StoragedData = new();
         // 役職Desyncなど別の処理でSetRoleRpcを書き込み済みなため、追加の書き込みが不要なSenderのリスト
@@ -376,7 +375,8 @@ return;
                 StoragedData.Add((__instance, roleType));
                 return false;
             }
-            else return true;
+
+            return true;
         }
         public static void Release()
         {

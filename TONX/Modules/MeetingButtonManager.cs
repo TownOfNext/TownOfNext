@@ -1,26 +1,27 @@
-﻿using HarmonyLib;
-using Hazel;
-using System;
+﻿using System;
 using System.Linq;
+using HarmonyLib;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
 [HarmonyPatch(typeof(MeetingHud))]
 public class MeetingButtonManager
 {
-    private static int Count = 0;
-    public static bool ButtonCreated = false;
+    private static int Count;
+    public static bool ButtonCreated;
     private static void ClearMeetingButton(MeetingHud __instance, bool forceAll = false)
-     => __instance.playerStates.ToList().ForEach(x => { if ((forceAll || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead)) && x.transform.FindChild("Custom Meeting Button") != null) UnityEngine.Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject); });
+     => __instance.playerStates.ToList().ForEach(x => { if ((forceAll || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead)) && x.transform.FindChild("Custom Meeting Button") != null) Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject); });
 
     [HarmonyPatch(nameof(MeetingHud.Start)), HarmonyPrefix]
     public static void Start(MeetingHud __instance)
     {
         //提前储存赌怪游戏组件的模板
-        GuesserHelper.textTemplate = UnityEngine.Object.Instantiate(__instance.playerStates[0].NameText);
+        GuesserHelper.textTemplate = Object.Instantiate(__instance.playerStates[0].NameText);
         GuesserHelper.textTemplate.enabled = false;
 
         // CreateMeetingButton
@@ -72,10 +73,10 @@ public class MeetingButtonManager
     {
         foreach (var pva in __instance.playerStates)
         {
-            var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+            var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !meetingButton.ShouldShowButtonFor(pc)) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
-            GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
+            GameObject targetBox = Object.Instantiate(template, pva.transform);
             targetBox.name = "Custom Meeting Button";
             targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
@@ -89,7 +90,7 @@ public class MeetingButtonManager
                     if (AmongUsClient.Instance.AmHost) meetingButton.OnClickButton(pc);
                     else
                     {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OnClickMeetingButton, SendOption.Reliable, -1);
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OnClickMeetingButton, SendOption.Reliable);
                         writer.Write(pc.PlayerId);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }

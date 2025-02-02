@@ -1,11 +1,11 @@
-using HarmonyLib;
 using System.Collections.Generic;
 using System.Text;
+using HarmonyLib;
+using Il2CppSystem;
 using TMPro;
 using TONX.Templates;
 using UnityEngine;
-
-using static TONX.Translator;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
@@ -14,8 +14,8 @@ internal class PingTrackerUpdatePatch
 {
     private static float deltaTime;
     public static string ServerName = "";
-    private static TextMeshPro pingTrackerCredential = null;
-    private static AspectPosition pingTrackerCredentialAspectPos = null;
+    private static TextMeshPro pingTrackerCredential;
+    private static AspectPosition pingTrackerCredentialAspectPos;
     private static void Postfix(PingTracker __instance)
     {
         if (pingTrackerCredential == null)
@@ -49,16 +49,16 @@ internal class PingTrackerUpdatePatch
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = Mathf.Ceil(1.0f / deltaTime);
 
-        sb.Append($"\r\n").Append($"<color={color}>{ping} <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>{(GameStates.IsOnlineGame ? "  " + ServerName : "")}");
+        sb.Append("\r\n").Append($"<color={color}>{ping} <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>{(GameStates.IsOnlineGame ? "  " + ServerName : "")}");
 
-        if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
+        if (!GameStates.IsModHost) sb.Append("\r\n").Append("<size=135%>" + ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
         else
         {
-            if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
-            if (Options.AllowConsole.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("AllowConsole")));
-            if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("DebugMode")));
-            if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("LowLoadMode")));
-            if (Options.EnableDirectorMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
+            if (Options.NoGameEnd.GetBool()) sb.Append("\r\n").Append(ColorString(Color.red, GetString("NoGameEnd")));
+            if (Options.AllowConsole.GetBool()) sb.Append("\r\n").Append(ColorString(Color.red, GetString("AllowConsole")));
+            if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(ColorString(Color.green, GetString("DebugMode")));
+            if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(ColorString(Color.green, GetString("LowLoadMode")));
+            if (Options.EnableDirectorMode.GetBool()) sb.Append("\r\n").Append(ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
         }
 
         var offset_x = 1.2f; //右端からのオフセット
@@ -144,7 +144,7 @@ internal class TitleLogoPatch
         TONX_Background = new GameObject("TONX Background");
         TONX_Background.transform.position = new Vector3(0, 0, 520f);
         var bgRenderer = TONX_Background.AddComponent<SpriteRenderer>();
-        bgRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.TONX-BG.jpg", 179f);
+        bgRenderer.sprite = LoadSprite("TONX.Resources.Images.TONX-BG.jpg", 179f);
 
         if (!(Ambience = GameObject.Find("Ambience"))) return;
         if (!(Starfield = Ambience.transform.FindChild("starfield").gameObject)) return;
@@ -156,7 +156,7 @@ internal class TitleLogoPatch
         if (!(LeftPanel = GameObject.Find("LeftPanel"))) return;
         LeftPanel.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         static void ResetParent(GameObject obj) => obj.transform.SetParent(LeftPanel.transform.parent);
-        LeftPanel.ForEachChild((Il2CppSystem.Action<GameObject>)ResetParent);
+        LeftPanel.ForEachChild((Action<GameObject>)ResetParent);
         LeftPanel.SetActive(false);
 
         Color shade = new(0f, 0f, 0f, 0f);
@@ -165,11 +165,11 @@ internal class TitleLogoPatch
 
         Dictionary<List<PassiveButton>, (Sprite, Color, Color, Color, Color)> mainButtons = new()
         {
-            {new List<PassiveButton>() {__instance.playButton, __instance.inventoryButton, __instance.shopButton},
+            {new List<PassiveButton> {__instance.playButton, __instance.inventoryButton, __instance.shopButton},
                 (standardActiveSprite, new(1f, 0.524f, 0.549f, 0.8f), shade, Color.white, Color.white) },
-            {new List<PassiveButton>() {__instance.newsButton, __instance.myAccountButton, __instance.settingsButton},
+            {new List<PassiveButton> {__instance.newsButton, __instance.myAccountButton, __instance.settingsButton},
                 (minorActiveSprite, new(1f, 0.825f, 0.686f, 0.8f), shade, Color.white, Color.white) },
-            {new List<PassiveButton>() {__instance.creditsButton, __instance.quitButton},
+            {new List<PassiveButton> {__instance.creditsButton, __instance.quitButton},
                 (minorActiveSprite, new(0.526f, 1f, 0.792f, 0.8f), shade, Color.white, Color.white) },
         };
 
@@ -212,7 +212,7 @@ internal class TitleLogoPatch
         CloseRightButton.transform.localScale = new(1f, 1f, 1f);
         CloseRightButton.AddComponent<BoxCollider2D>().size = new(0.6f, 1.5f);
         var closeRightSpriteRenderer = CloseRightButton.AddComponent<SpriteRenderer>();
-        closeRightSpriteRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.RightPanelCloseButton.png", 100f);
+        closeRightSpriteRenderer.sprite = LoadSprite("TONX.Resources.Images.RightPanelCloseButton.png", 100f);
         closeRightSpriteRenderer.color = new(1f, 0.78f, 0.9f, 1f);
         var closeRightPassiveButton = CloseRightButton.AddComponent<PassiveButton>();
         closeRightPassiveButton.OnClick = new();
@@ -250,7 +250,7 @@ internal class TitleLogoPatch
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
-        logoRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.TONX-Logo.png");
+        logoRenderer.sprite = LoadSprite("TONX.Resources.Images.TONX-Logo.png");
 
         if (!(BottomButtonBounds = GameObject.Find("BottomButtonBounds"))) return;
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);

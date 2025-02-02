@@ -1,9 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Text;
+using AmongUs.GameOptions;
 using Hazel;
-using System.Text;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Swooper : RoleBase, IImpostor
@@ -66,7 +65,7 @@ public sealed class Swooper : RoleBase, IImpostor
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || LastTime == -1) return;
-        var now = Utils.GetTimeStamp();
+        var now = GetTimeStamp();
 
         if (LastTime + (long)SwooperCooldown.GetFloat() < now)
         {
@@ -85,50 +84,49 @@ public sealed class Swooper : RoleBase, IImpostor
             InvisTime = -1;
             SendRPC();
             player?.MyPhysics?.RpcBootFromVent(VentedId != -1 ? VentedId : Main.LastEnteredVent[player.PlayerId].Id);
-            NameNotifyManager.Notify(player, GetString("SwooperInvisStateOut"));
+            player.Notify(GetString("SwooperInvisStateOut"));
             return;
         }
-        else if (remainTime <= 10)
+
+        if (remainTime <= 10)
         {
             if (!player.IsModClient()) player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
         }
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
-        var now = Utils.GetTimeStamp();
+        var now = GetTimeStamp();
         if (IsInvis())
         {
             LastTime = now;
             InvisTime = -1;
             SendRPC();
-            NameNotifyManager.Notify(Player, GetString("SwooperInvisStateOut"));
+            Player.Notify(GetString("SwooperInvisStateOut"));
             return false;
         }
-        else
+
+        new LateTask(() =>
         {
-            new LateTask(() =>
+            if (CanGoInvis())
             {
-                if (CanGoInvis())
-                {
-                    VentedId = ventId;
+                VentedId = ventId;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34, SendOption.Reliable, Player.GetClientId());
-                    writer.WritePacked(ventId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34, SendOption.Reliable, Player.GetClientId());
+                writer.WritePacked(ventId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
 
-                    InvisTime = now;
-                    SendRPC();
+                InvisTime = now;
+                SendRPC();
 
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisState"), SwooperDuration.GetFloat());
-                }
-                else
-                {
-                    physics.RpcBootFromVent(ventId);
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisInCooldown"));
-                }
-            }, 0.5f, "Swooper Vent");
-            return true;
-        }
+                Player.Notify(GetString("SwooperInvisState"), SwooperDuration.GetFloat());
+            }
+            else
+            {
+                physics.RpcBootFromVent(ventId);
+                Player.Notify(GetString("SwooperInvisInCooldown"));
+            }
+        }, 0.5f, "Swooper Vent");
+        return true;
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
@@ -137,12 +135,12 @@ public sealed class Swooper : RoleBase, IImpostor
         var str = new StringBuilder();
         if (IsInvis())
         {
-            var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - Utils.GetTimeStamp();
+            var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - GetTimeStamp();
             str.Append(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
         }
         else if (LastTime != -1)
         {
-            var cooldown = LastTime + (long)SwooperCooldown.GetFloat() - Utils.GetTimeStamp();
+            var cooldown = LastTime + (long)SwooperCooldown.GetFloat() - GetTimeStamp();
             str.Append(string.Format(GetString("SwooperInvisCooldownRemain"), cooldown));
         }
         else
@@ -156,7 +154,7 @@ public sealed class Swooper : RoleBase, IImpostor
         if (!IsInvis()) return;
         var (killer, target) = info.AttemptTuple;
 
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        TP(killer.NetTransform, target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         killer.SetKillCooldownV2();
 
@@ -173,7 +171,7 @@ public sealed class Swooper : RoleBase, IImpostor
     }
     public override void OnGameStart()
     {
-        LastTime = Utils.GetTimeStamp();
+        LastTime = GetTimeStamp();
         SendRPC();
     }
 }

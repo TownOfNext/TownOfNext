@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Watcher
 {
     private static readonly int Id = 80300;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Watcher);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Watcher);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

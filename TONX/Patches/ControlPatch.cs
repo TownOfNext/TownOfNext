@@ -1,10 +1,10 @@
+using System;
+using System.Linq;
 using HarmonyLib;
 using Hazel;
-using System.Linq;
+using Rewired;
 using TONX.Modules;
-using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -12,7 +12,7 @@ namespace TONX;
 internal class ControllerManagerUpdatePatch
 {
     private static readonly (int, int)[] resolutions = { (480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080) };
-    private static int resolutionIndex = 0;
+    private static int resolutionIndex;
 
     public static void Postfix(ControllerManager __instance)
     {
@@ -71,30 +71,30 @@ internal class ControllerManagerUpdatePatch
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
         {
             Logger.Info("加载自定义翻译文件", "KeyCommand");
-            Translator.LoadLangs();
+            LoadLangs();
             Logger.SendInGame("Reloaded Custom Translation File");
         }
         if (GetKeysDown(KeyCode.F5, KeyCode.X))
         {
             Logger.Info("导出自定义翻译文件", "KeyCommand");
-            Translator.ExportCustomTranslation();
+            ExportCustomTranslation();
             Logger.SendInGame("Exported Custom Translation File");
         }
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
         {
             Logger.Info("输出日志", "KeyCommand");
-            Utils.DumpLog();
+            DumpLog();
         }
         //将当前设置复制为文本
         if (GetKeysDown(KeyCode.LeftAlt, KeyCode.C) && !Input.GetKey(KeyCode.LeftShift) && !GameStates.IsNotJoined)
         {
-            Utils.CopyCurrentSettings();
+            CopyCurrentSettings();
         }
         //打开游戏目录
         if (GetKeysDown(KeyCode.F10))
         {
-            Utils.OpenDirectory(System.Environment.CurrentDirectory);
+            OpenDirectory(Environment.CurrentDirectory);
         }
 
         //-- 下面是主机专用的命令--//
@@ -131,12 +131,12 @@ internal class ControllerManagerUpdatePatch
         //显示当前有效设置的说明
         if (GetKeysDown(KeyCode.N, KeyCode.LeftShift, KeyCode.LeftControl))
         {
-            Utils.ShowActiveSettingsHelp();
+            ShowActiveSettingsHelp();
         }
         //显示当前有效设置
         if (GetKeysDown(KeyCode.N, KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
-            Utils.ShowActiveSettings();
+            ShowActiveSettings();
         }
         //将 TONX 选项设置为默认值
         if (GetKeysDown(KeyCode.Delete, KeyCode.LeftControl))
@@ -145,7 +145,7 @@ internal class ControllerManagerUpdatePatch
             Logger.SendInGame(GetString("RestTONXSetting"));
             if (!(!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)))
             {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RestTONXSetting, SendOption.Reliable, -1);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RestTONXSetting, SendOption.Reliable);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
             OptionShower.BuildText();
@@ -158,7 +158,7 @@ internal class ControllerManagerUpdatePatch
             state.DeathReason = CustomDeathReason.etc;
             PlayerControl.LocalPlayer.RpcExileV2();
             state.SetDead();
-            Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
+            SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
         //切换日志是否也在游戏中输出
         if (GetKeysDown(KeyCode.F2, KeyCode.LeftControl))
@@ -173,7 +173,7 @@ internal class ControllerManagerUpdatePatch
         //杀戮闪烁
         if (GetKeysDown(KeyCode.Return, KeyCode.F, KeyCode.LeftShift))
         {
-            Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
+            FlashColor(new(1f, 0f, 0f, 0.3f));
             if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
         }
 
@@ -215,7 +215,7 @@ internal class ControllerManagerUpdatePatch
         if (Input.GetKeyDown(KeyCode.Equals))
         {
             Main.VisibleTasksCount = !Main.VisibleTasksCount;
-            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("VisibleTaskCountが" + Main.VisibleTasksCount.ToString() + "に変更されました。");
+            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("VisibleTaskCountが" + Main.VisibleTasksCount + "に変更されました。");
         }
 
         //获取现在的坐标
@@ -288,7 +288,7 @@ internal class KeyboardJoystickHandleHUDPatch
 
 internal class HandleHUDPatch
 {
-    public static void Postfix(Rewired.Player player)
+    public static void Postfix(Player player)
     {
         if (player.GetButtonDown(8) && // 8:キルボタンのactionId
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&

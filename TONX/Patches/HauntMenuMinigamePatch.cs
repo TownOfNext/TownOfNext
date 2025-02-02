@@ -10,7 +10,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
         if (__instance.HauntTarget != null && Options.GhostCanSeeOtherRoles.GetBool())
         {
             // 役職表示をカスタムロール名で上書き
-            __instance.FilterText.text = Utils.GetDisplayRoleName(PlayerControl.LocalPlayer, __instance.HauntTarget);
+            __instance.FilterText.text = GetDisplayRoleName(PlayerControl.LocalPlayer, __instance.HauntTarget);
             return false;
         }
         return true;

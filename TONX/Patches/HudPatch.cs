@@ -1,10 +1,10 @@
-using HarmonyLib;
 using System.Linq;
 using System.Text;
+using HarmonyLib;
+using TMPro;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -18,7 +18,7 @@ class HudManagerPatch
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
-    public static TMPro.TextMeshPro LowerInfoText;
+    public static TextMeshPro LowerInfoText;
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost) return;
@@ -46,7 +46,7 @@ class HudManagerPatch
         //ゲーム中でなければ以下は実行されない
         if (!AmongUsClient.Instance.IsGameStarted) return;
 
-        Utils.CountAlivePlayers();
+        CountAlivePlayers();
 
         if (SetHudActivePatch.IsActive)
         {
@@ -73,11 +73,11 @@ class HudManagerPatch
                 //バウンティハンターのターゲットテキスト
                 if (LowerInfoText == null)
                 {
-                    LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
-                    LowerInfoText.alignment = TMPro.TextAlignmentOptions.Center;
-                    LowerInfoText.overflowMode = TMPro.TextOverflowModes.Overflow;
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
                     LowerInfoText.color = Palette.EnabledColor;
                     LowerInfoText.fontSizeMin = 2.0f;
@@ -124,7 +124,7 @@ class HudManagerPatch
 
         if (Input.GetKeyDown(KeyCode.Y) && AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay)
         {
-            __instance.ToggleMapVisible(new MapOptions()
+            __instance.ToggleMapVisible(new MapOptions
             {
                 Mode = MapOptions.Modes.Sabotage,
                 AllowMovementWhileMapOpen = true
@@ -168,7 +168,7 @@ class ToggleHighlightPatch
 
         if (player.CanUseKillButton())
         {
-            __instance.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
+            __instance.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", GetRoleColor(player.GetCustomRole()));
         }
     }
 }
@@ -183,10 +183,10 @@ class SetVentOutlinePatch
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
     }
 }
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), new System.Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool))]
 class SetHudActivePatch
 {
-    public static bool IsActive = false;
+    public static bool IsActive;
     public static void Prefix(HudManager __instance, [HarmonyArgument(2)] ref bool isActive)
     {
         isActive &= !GameStates.IsMeeting;
@@ -257,7 +257,7 @@ class TaskPanelBehaviourPatch
             var RoleWithInfo = $"{player.GetTrueRoleName()}:\r\n";
             RoleWithInfo += player.GetRoleInfo();
 
-            var AllText = Utils.ColorString(player.GetRoleColor(), RoleWithInfo);
+            var AllText = ColorString(player.GetRoleColor(), RoleWithInfo);
 
             switch (Options.CurrentGameMode)
             {
@@ -274,8 +274,8 @@ class TaskPanelBehaviourPatch
                     if (sb.Length > 1)
                     {
                         var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 2)
-                            text = $"{Utils.ColorString(new Color32(255, 20, 147, byte.MaxValue), GetString("FakeTask"))}\r\n{text}";
+                        if (!HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 2)
+                            text = $"{ColorString(new Color32(255, 20, 147, byte.MaxValue), GetString("FakeTask"))}\r\n{text}";
                         AllText += $"\r\n\r\n<size=85%>{text}</size>";
                     }
 
@@ -296,8 +296,8 @@ class TaskPanelBehaviourPatch
 
 class RepairSender
 {
-    public static bool enabled = false;
-    public static bool TypingAmount = false;
+    public static bool enabled;
+    public static bool TypingAmount;
 
     public static int SystemType;
     public static int amount;
@@ -343,6 +343,6 @@ class RepairSender
     }
     public static string GetText()
     {
-        return SystemType.ToString() + "(" + ((SystemTypes)SystemType).ToString() + ")\r\n" + amount;
+        return SystemType + "(" + ((SystemTypes)SystemType) + ")\r\n" + amount;
     }
 }

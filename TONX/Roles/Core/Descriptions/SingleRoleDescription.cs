@@ -15,8 +15,8 @@ public class SingleRoleDescription : RoleDescription
     public string BlurbKey { get; }
     /// <summary>長い説明文の翻訳キー</summary>
     public string DescriptionKey { get; }
-    public override string Blurb => Translator.GetString(BlurbKey);
-    public override string Description => Translator.GetString(DescriptionKey);
+    public override string Blurb => GetString(BlurbKey);
+    public override string Description => GetString(DescriptionKey);
 
     public const string BlurbSuffix = "Info";
     public const string DescriptionSuffix = "InfoLong";

@@ -29,6 +29,6 @@ public static class HudOverrideSystemTypeUpdateSystemPatch
     public static void Postfix()
     {
         Camouflage.CheckCamouflage();
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
 }

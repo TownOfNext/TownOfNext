@@ -57,7 +57,7 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton
     {
         if (Player.IsAlive() && seen.IsAlive() && isForMeeting)
         {
-            nameText = Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilGuesser), seen.PlayerId.ToString()) + " " + nameText;
+            nameText = ColorString(GetRoleColor(CustomRoles.EvilGuesser), seen.PlayerId.ToString()) + " " + nameText;
         }
     }
     public string ButtonName { get; private set; } = "Target";

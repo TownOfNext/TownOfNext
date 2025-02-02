@@ -1,12 +1,11 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class BountyHunter : RoleBase, IImpostor
@@ -84,7 +83,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
         byte targetId = reader.ReadByte();
 
-        Target = Utils.GetPlayerById(targetId);
+        Target = GetPlayerById(targetId);
         if (ShowTargetArrow) TargetArrow.Add(Player.PlayerId, targetId);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{Target.GetNameWithRole()}に変更", "BountyHunter");
     }
@@ -123,7 +122,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
                 if (ChangeTimer >= TargetChangeTime)//時間経過でターゲットをリセットする処理
                 {
                     ResetTarget();//ターゲットの選びなおし
-                    Utils.NotifyRoles(SpecifySeer: Player);
+                    NotifyRoles(SpecifySeer: Player);
                 }
                 if (ChangeTimer >= 0)
                     ChangeTimer += Time.fixedDeltaTime;
@@ -133,7 +132,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
                 {
                     ResetTarget();
                     Logger.Info($"{Player.GetNameWithRole()}のターゲットが無効だったため、ターゲットを更新しました", "BountyHunter");
-                    Utils.NotifyRoles(SpecifySeer: Player);
+                    NotifyRoles(SpecifySeer: Player);
                 }
             }
         }

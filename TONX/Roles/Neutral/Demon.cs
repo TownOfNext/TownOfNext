@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System;
+using System.Collections.Generic;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using System;
-using System.Collections.Generic;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -118,7 +118,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
         SendRPC(target.PlayerId);
 
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-        Utils.NotifyRoles(killer);
+        NotifyRoles(killer);
 
         Logger.Info($"{killer.GetNameWithRole()} 对玩家 {target.GetNameWithRole()} 造成了 {OptionDamage.GetInt()} 点伤害", "Demon");
         return false;
@@ -135,7 +135,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
 
         RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
         killer.SetKillCooldownV2(target: target, forceAnime: true);
-        Utils.NotifyRoles(target);
+        NotifyRoles(target);
 
         Logger.Info($"{killer.GetNameWithRole()} 对玩家 {target.GetNameWithRole()} 造成了 {OptionSelfDamage.GetInt()} 点伤害", "Demon");
         return false;
@@ -150,7 +150,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
             max = OptionHealthMax.GetInt();
             now = Math.Max(1, PlayerHP.TryGetValue(seen.PlayerId, out var hp) ? hp : 1);
         }
-        return Utils.ColorString(GetColor(now, seen == null), $"【{now}/{max}】");
+        return ColorString(GetColor(now, seen == null), $"【{now}/{max}】");
     }
     private static Color32 GetColor(float Health, bool self = false)
     {
@@ -159,7 +159,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("DemonButtonText");
+        text = GetString("DemonButtonText");
         return true;
     }
 }

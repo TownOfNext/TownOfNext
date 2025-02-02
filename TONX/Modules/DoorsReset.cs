@@ -4,7 +4,7 @@ namespace TONX.Modules;
 
 public static class DoorsReset
 {
-    private static bool isEnabled = false;
+    private static bool isEnabled;
     private static ResetMode mode;
     private static DoorsSystemType DoorsSystem => ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Doors, out var system) ? system.TryCast<DoorsSystemType>() : null;
     private static readonly LogHandler logger = Logger.Handler(nameof(DoorsReset));

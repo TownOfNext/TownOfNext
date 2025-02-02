@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Crewmate;
 public static class YouTuber
 {
     private static readonly int Id = 80700;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.YouTuber);
+    private static Color RoleColor = GetRoleColor(CustomRoles.YouTuber);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

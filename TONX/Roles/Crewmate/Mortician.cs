@@ -1,9 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Collections.Generic;
+using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
 using TONX.Roles.Core;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Mortician : RoleBase
@@ -86,13 +85,13 @@ public sealed class Mortician : RoleBase
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
         if (MsgToSend != null)
-            msgToSend.Add((MsgToSend, Player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MorticianCheckTitle"))));
+            msgToSend.Add((MsgToSend, Player.PlayerId, ColorString(RoleInfo.RoleColor, GetString("MorticianCheckTitle"))));
         MsgToSend = null;
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
         if (!Is(seer) || !(seen) || isForMeeting) return "";
-        return (Utils.ColorString(Color.white, LocateArrow.GetArrows(seer)));
+        return (ColorString(Color.white, LocateArrow.GetArrows(seer)));
     }
 }

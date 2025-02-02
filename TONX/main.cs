@@ -1,22 +1,24 @@
-using AmongUs.GameOptions;
-using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
-using Il2CppInterop.Runtime.Injection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AmongUs.GameOptions;
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
+using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
+using TONX;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.Core;
 using UnityEngine;
 
-[assembly: AssemblyFileVersion(TONX.Main.PluginVersion)]
-[assembly: AssemblyInformationalVersion(TONX.Main.PluginVersion)]
-[assembly: AssemblyVersion(TONX.Main.PluginVersion)]
+[assembly: AssemblyFileVersion(Main.PluginVersion)]
+[assembly: AssemblyInformationalVersion(Main.PluginVersion)]
+[assembly: AssemblyVersion(Main.PluginVersion)]
 namespace TONX;
 
 [BepInPlugin(PluginGuid, "TONX", PluginVersion)]
@@ -44,7 +46,7 @@ public class Main : BasePlugin
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
+    public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
     public static readonly bool ShowQQButton = false;
     public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6"; // QQ群的群号甚至已经重分配了=(
     public static readonly bool ShowDiscordButton = false;
@@ -75,10 +77,10 @@ public class Main : BasePlugin
         }
     }
     private static Color? _unityModColor;
-    public static BepInEx.Logging.ManualLogSource Logger;
-    public static bool hasArgumentException = false;
+    public static ManualLogSource Logger;
+    public static bool hasArgumentException;
     public static string ExceptionMessage;
-    public static bool ExceptionMessageIsShown = false;
+    public static bool ExceptionMessageIsShown;
     public static string CredentialsText;
     public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
@@ -235,7 +237,7 @@ public class Main : BasePlugin
         ExceptionMessage = "";
         try
         {
-            roleColors = new Dictionary<CustomRoles, string>()
+            roleColors = new Dictionary<CustomRoles, string>
             {
                 //GM
                 {CustomRoles.GM, "#ff5b70"},

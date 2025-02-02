@@ -1,9 +1,7 @@
 using AmongUs.GameOptions;
-
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
@@ -33,7 +31,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
     {
         MafiaCanKillNum,
     }
-    public int RevengeLimit = 0;
+    public int RevengeLimit;
     private static void SetupOptionItem()
     {
         OptionRevengeNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MafiaCanKillNum, new(0, 15, 1), 1, false)
@@ -71,8 +69,8 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + Utils.GetTrueRoleName(npc.PlayerId, false) + ") " + npc.GetRealName();
-            Utils.SendMessage(text, Player.PlayerId);
+                text += "\n" + npc.PlayerId + " → (" + GetTrueRoleName(npc.PlayerId, false) + ") " + npc.GetRealName();
+            SendMessage(text, Player.PlayerId);
             return true;
         }
 
@@ -81,17 +79,17 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         try
         {
             targetId = int.Parse(msg.Replace("/rv", string.Empty));
-            target = Utils.GetPlayerById(targetId);
+            target = GetPlayerById(targetId);
         }
         catch
         {
-            Utils.SendMessage(GetString("MafiaKillDead"), Player.PlayerId);
+            SendMessage(GetString("MafiaKillDead"), Player.PlayerId);
             return true;
         }
 
         if (!CanRevenge(target, out var reason))
         {
-            Utils.SendMessage(reason, Player.PlayerId);
+            SendMessage(reason, Player.PlayerId);
             return true;
         }
 
@@ -114,14 +112,14 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
             {
                 target.RpcSuicideWithAnime();
                 //死者检查
-                Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+                NotifyRoles(isForMeeting: true, NoCache: true);
             }
             else
             {
                 target.RpcMurderPlayer(target);
                 state.SetDead();
             }
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
+            _ = new LateTask(() => { SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
         }, 0.2f, "Mafia Kill");
     }
     private bool CanRevenge(PlayerControl target, out string reason)

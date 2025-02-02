@@ -11,7 +11,7 @@ class CanUsePatch
     {
         canUse = couldUse = false;
         //こいつをfalseでreturnしても、タスク(サボ含む)以外の使用可能な物は使えるまま(ボタンなど)
-        return __instance.AllowImpostor || Utils.HasTasks(PlayerControl.LocalPlayer.Data, false);
+        return __instance.AllowImpostor || HasTasks(PlayerControl.LocalPlayer.Data, false);
     }
 }
 [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Update))]

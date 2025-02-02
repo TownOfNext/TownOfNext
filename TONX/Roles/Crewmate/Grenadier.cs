@@ -1,10 +1,8 @@
-﻿using AmongUs.GameOptions;
+﻿using System.Linq;
+using AmongUs.GameOptions;
 using HarmonyLib;
-using System.Linq;
 using TONX.Modules;
 using TONX.Roles.Core;
-
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Grenadier : RoleBase
@@ -71,36 +69,36 @@ public sealed class Grenadier : RoleBase
     {
         if (Player.Is(CustomRoles.Madmate))
         {
-            MadBlindingStartTime = Utils.GetTimeStamp();
+            MadBlindingStartTime = GetTimeStamp();
             Main.AllPlayerControls.Where(x => x.IsModClient()).Where(x => !x.IsImp() && !x.Is(CustomRoles.Madmate)).Do(x => x.RPCPlayCustomSound("FlashBang"));
         }
         else
         {
-            BlindingStartTime = Utils.GetTimeStamp();
+            BlindingStartTime = GetTimeStamp();
             Main.AllPlayerControls.Where(x => x.IsModClient()).Where(x => x.IsImp() || (x.IsNeutral() && OptionCanAffectNeutral.GetBool())).Do(x => x.RPCPlayCustomSound("FlashBang"));
         }
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer();
         Player.RPCPlayCustomSound("FlashBang");
         Player.Notify(GetString("GrenadierSkillInUse"), OptionSkillDuration.GetFloat());
-        Utils.MarkEveryoneDirtySettings();
+        MarkEveryoneDirtySettings();
         return true;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (BlindingStartTime != 0 && BlindingStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        if (BlindingStartTime != 0 && BlindingStartTime + OptionSkillDuration.GetFloat() < GetTimeStamp())
         {
             BlindingStartTime = 0;
             Player.RpcProtectedMurderPlayer();
             Player.Notify(GetString("GrenadierSkillStop"));
-            Utils.MarkEveryoneDirtySettings();
+            MarkEveryoneDirtySettings();
         }
-        if (MadBlindingStartTime != 0 && MadBlindingStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        if (MadBlindingStartTime != 0 && MadBlindingStartTime + OptionSkillDuration.GetFloat() < GetTimeStamp())
         {
             MadBlindingStartTime = 0;
             Player.RpcProtectedMurderPlayer();
             Player.Notify(GetString("GrenadierSkillStop"));
-            Utils.MarkEveryoneDirtySettings();
+            MarkEveryoneDirtySettings();
         }
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)

@@ -1,8 +1,9 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using HarmonyLib;
+using InnerNet;
 using TONX.Attributes;
 using TONX.Roles.Core;
 using TONX.Roles.Neutral;
@@ -49,7 +50,7 @@ public class PlayerState
     }
     public CustomRoles GetCustomRole()
     {
-        var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
+        var RoleInfo = GetPlayerInfoById(PlayerId);
         return RoleInfo.Role == null
             ? MainRole
             : RoleInfo.Role.Role switch
@@ -67,7 +68,7 @@ public class PlayerState
     {
         MainRole = role;
 
-        CountType = CustomRoleManager.GetRoleInfo(role) is SimpleRoleInfo roleInfo ?
+        CountType = role.GetRoleInfo() is SimpleRoleInfo roleInfo ?
                roleInfo.CountType :
                role switch
                {
@@ -172,16 +173,16 @@ public class TaskState
     public bool IsTaskFinished => RemainingTasksCount <= 0 && hasTasks;
     public TaskState()
     {
-        this.AllTasksCount = -1;
-        this.CompletedTasksCount = 0;
-        this.hasTasks = false;
+        AllTasksCount = -1;
+        CompletedTasksCount = 0;
+        hasTasks = false;
     }
 
     public void Init(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole()}: InitTask", "TaskState.Init");
         if (player == null || player.Data == null || player.Data.Tasks == null) return;
-        if (!Utils.HasTasks(player.Data, false))
+        if (!HasTasks(player.Data, false))
         {
             AllTasksCount = 0;
             return;
@@ -233,10 +234,10 @@ public static class GameStates
     public static bool InGame = false;
     public static bool AlreadyDied = false;
     public static bool IsModHost => PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(x => x.PlayerId == 0 && x.IsModClient());
-    public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
+    public static bool IsLobby => AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Joined;
     public static bool IsInGame => InGame;
-    public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;
-    public static bool IsNotJoined => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.NotJoined;
+    public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Ended;
+    public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;

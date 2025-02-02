@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class FortuneTeller : RoleBase
@@ -57,7 +55,7 @@ public sealed class FortuneTeller : RoleBase
         {
             string notice1 = GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow");
             Player.ShowPopUp(notice1);
-            Utils.SendMessage(notice1, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+            SendMessage(notice1, Player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
             return false;
         }
 
@@ -198,7 +196,7 @@ public sealed class FortuneTeller : RoleBase
 
         string notice2 = GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow");
         Player.ShowPopUp(notice2);
-        Utils.SendMessage(notice2, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        SendMessage(notice2, Player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
 
         return false;
     }

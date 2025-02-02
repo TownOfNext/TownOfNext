@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using TONX.Modules;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace TONX;
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 public static class Zoom
 {
-    private static bool ResetButtons = false;
+    private static bool ResetButtons;
     public static void Postfix()
     {
         // 我为什么之前要加一行代码来不让大厅使用千里眼？这很奇怪

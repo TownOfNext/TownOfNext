@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -26,7 +25,7 @@ public sealed class Miner : RoleBase, IImpostor
 
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Translator.GetString("MinerTeleButtonText");
+        text = GetString("MinerTeleButtonText");
         return Main.LastEnteredVent.ContainsKey(Player.PlayerId);
     }
     public override void OnShapeshift(PlayerControl target)
@@ -35,7 +34,7 @@ public sealed class Miner : RoleBase, IImpostor
 
         if (Main.LastEnteredVent.ContainsKey(Player.PlayerId))
         {
-            Utils.TP(Player.NetTransform, Main.LastEnteredVentLocation[Player.PlayerId]);
+            TP(Player.NetTransform, Main.LastEnteredVentLocation[Player.PlayerId]);
             Logger.Msg($"矿工传送：{Player.GetNameWithRole()}", "Miner.OnShapeshift");
         }
     }

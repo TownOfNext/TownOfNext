@@ -1,13 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TONX.Modules;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -16,7 +15,7 @@ class OnGameJoinedPatch
 {
     public static void Postfix(AmongUsClient __instance)
     {
-        while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
+        while (!Options.IsLoaded) Task.Delay(1);
         Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
         Logger.Info($"{__instance.GameId} 加入房间", "OnGameJoined");
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
@@ -85,20 +84,20 @@ class OnPlayerJoinedPatch
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}) 加入房间", "Session");
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
         {
-            Utils.KickPlayer(client.Id, false, "NotLogin");
+            KickPlayer(client.Id, false, "NotLogin");
             RPC.NotificationPop(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
             Logger.Info($"フレンドコードがないプレイヤーを{client?.PlayerName}をキックしました。", "Kick");
         }
         if (AmongUsClient.Instance.AmHost && client.PlatformData.Platform == Platforms.Android && Options.KickAndroidPlayer.GetBool())
         {
-            Utils.KickPlayer(client.Id, false, "Andriod");
+            KickPlayer(client.Id, false, "Andriod");
             string msg = string.Format(GetString("KickAndriodPlayer"), client?.PlayerName);
             RPC.NotificationPop(msg);
             Logger.Info(msg, "Android Kick");
         }
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
-            Utils.KickPlayer(client.Id, true, "BanList");
+            KickPlayer(client.Id, true, "BanList");
             Logger.Info($"ブロック済みのプレイヤー{client?.PlayerName}({client.FriendCode})をBANしました。", "BAN");
         }
         BanManager.CheckBanPlayer(client);
@@ -230,7 +229,7 @@ class CreatePlayerPatch
         _ = new LateTask(() =>
         {
             if (client.Character == null) return;
-            if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
+            if (Main.OverrideWelcomeMsg != "") SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
             else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
         }, 3f, "Welcome Message");
         if (Main.OverrideWelcomeMsg == "" && PlayerState.AllPlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
@@ -241,7 +240,7 @@ class CreatePlayerPatch
                 {
                     if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
                     {
-                        Utils.ShowKillLog(client.Character.PlayerId);
+                        ShowKillLog(client.Character.PlayerId);
                     }
                 }, 3f, "DisplayKillLog");
             }
@@ -251,7 +250,7 @@ class CreatePlayerPatch
                 {
                     if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
                     {
-                        Utils.ShowLastResult(client.Character.PlayerId);
+                        ShowLastResult(client.Character.PlayerId);
                     }
                 }, 3.1f, "DisplayLastResult");
             }
@@ -261,7 +260,7 @@ class CreatePlayerPatch
                 {
                     if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
                     {
-                        Utils.SendMessage($"{GetString("Message.DirectorModeNotice")}", client.Character.PlayerId);
+                        SendMessage($"{GetString("Message.DirectorModeNotice")}", client.Character.PlayerId);
                     }
                 }, 3.2f, "DisplayDirectorModeWarnning");
             }

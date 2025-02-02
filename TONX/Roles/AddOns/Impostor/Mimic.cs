@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Impostor;
 public static class Mimic
 {
     private static readonly int Id = 82000;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Mimic);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Mimic);
     private static List<byte> playerIdList = new();
 
     public static void SetupCustomOption()

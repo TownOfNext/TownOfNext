@@ -1,11 +1,10 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using static TONX.NameTagManager;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX.Modules.NameTagInterface;
@@ -17,7 +16,7 @@ public static class NameTagPanel
     public static GameObject Slider { get; private set; }
     public static Dictionary<string, GameObject> Items { get; private set; }
 
-    private static int numItems = 0;
+    private static int numItems;
     public static void Hide()
     {
         if (CustomBackground != null)
@@ -61,12 +60,10 @@ public static class NameTagPanel
             TagOptionsButton.Background.color = Palette.DisabledGrey;
             return;
         }
-        else
-        {
-            TagOptionsButton.Text.text = GetString("NameTagOptions");
-            TagOptionsButton.GetComponent<PassiveButton>().enabled = true;
-            TagOptionsButton.Background.color = Main.ModColor32;
-        }
+
+        TagOptionsButton.Text.text = GetString("NameTagOptions");
+        TagOptionsButton.GetComponent<PassiveButton>().enabled = true;
+        TagOptionsButton.Background.color = Main.ModColor32;
 
         if (CustomBackground == null)
         {

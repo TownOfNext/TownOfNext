@@ -1,9 +1,8 @@
-using HarmonyLib;
 using System;
+using HarmonyLib;
 using TMPro;
 using TONX.Templates;
 using UnityEngine;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX;
@@ -41,9 +40,9 @@ public class MainMenuManagerPatch
         Instance.OpenGameModeMenu();
     }
 
-    private static bool isOnline = false;
-    public static bool ShowedBak = false;
-    private static bool ShowingPanel = false;
+    private static bool isOnline;
+    public static bool ShowedBak;
+    private static bool ShowingPanel;
     [HarmonyPatch(typeof(SignInStatusComponent), nameof(SignInStatusComponent.SetOnline)), HarmonyPostfix]
     public static void SetOnline_Postfix() { _ = new LateTask(() => { isOnline = true; NameTagManager.Init(); }, 0.1f, "Set Online Status"); }
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]

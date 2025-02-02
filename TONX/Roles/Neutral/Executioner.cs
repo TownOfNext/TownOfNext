@@ -1,11 +1,10 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TONX.Roles.Neutral;
 public sealed class Executioner : RoleBase, IAdditionalWinner
@@ -80,8 +79,8 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         foreach (var target in Main.AllPlayerControls)
         {
             if (playerId == target.PlayerId) continue;
-            else if (!CanTargetImpostor && target.Is(CustomRoleTypes.Impostor)) continue;
-            else if (!CanTargetNeutralKiller && target.IsNeutralKiller()) continue;
+            if (!CanTargetImpostor && target.Is(CustomRoleTypes.Impostor)) continue;
+            if (!CanTargetNeutralKiller && target.IsNeutralKiller()) continue;
             if (target.Is(CustomRoles.GM)) continue;
 
             targetList.Add(target);
@@ -129,7 +128,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         //seenが省略の場合seer
         seen ??= seer;
 
-        return TargetId == seen.PlayerId ? Utils.ColorString(RoleInfo.RoleColor, "♦") : "";
+        return TargetId == seen.PlayerId ? ColorString(RoleInfo.RoleColor, "♦") : "";
     }
     public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText)
     {
@@ -138,7 +137,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         if (exiled.PlayerId != TargetId) return null;
 
         TargetExiled = true;
-        WinDescriptionText.Add(Translator.GetString("ExiledExeTarget"));
+        WinDescriptionText.Add(GetString("ExiledExeTarget"));
         DecidedWinner = true;
 
         return () =>
@@ -154,7 +153,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
     public void ChangeRole()
     {
         Player.RpcSetCustomRole(ChangeRolesAfterTargetKilled);
-        Utils.NotifyRoles();
+        NotifyRoles();
     }
 
     public static void ChangeRoleByTarget(byte targetId)

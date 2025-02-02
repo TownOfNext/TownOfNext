@@ -14,6 +14,6 @@ public class LobbyStartPatch
         Paint.name = "TONX Lobby Paint";
         Paint.transform.localPosition = new Vector3(0.042f, -2.59f, -10.5f);
         SpriteRenderer renderer = Paint.GetComponent<SpriteRenderer>();
-        renderer.sprite = Utils.LoadSprite("TONX.Resources.Images.LobbyPaint.png", 290f);
+        renderer.sprite = LoadSprite("TONX.Resources.Images.LobbyPaint.png", 290f);
     }
 }

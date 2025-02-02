@@ -8,7 +8,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Flashman
 {
     private static readonly int Id = 80500;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Flashman);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Flashman);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionSpeed;

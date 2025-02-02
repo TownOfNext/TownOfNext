@@ -1,7 +1,7 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -48,7 +48,7 @@ public sealed class Stealth : RoleBase, IImpostor
     /// <summary>今暗転させているプレイヤー 暗転効果が発生してないときはnull</summary>
     private PlayerControl[] darkenedPlayers;
     /// <summary>暗くしている部屋</summary>
-    private SystemTypes? darkenedRoom = null;
+    private SystemTypes? darkenedRoom;
 
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
@@ -146,7 +146,7 @@ public sealed class Stealth : RoleBase, IImpostor
         }
         darkenTimer = darkenDuration;
         RpcDarken(null);
-        Utils.NotifyRoles(SpecifySeer: Player);
+        NotifyRoles(SpecifySeer: Player);
     }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -157,6 +157,6 @@ public sealed class Stealth : RoleBase, IImpostor
         {
             return base.GetSuffix(seer, seen, isForMeeting);
         }
-        return string.Format(Translator.GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
+        return string.Format(GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }
 }

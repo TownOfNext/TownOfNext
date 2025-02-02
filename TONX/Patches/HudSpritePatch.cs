@@ -7,7 +7,7 @@ namespace TONX;
 
 public static class CustomButton
 {
-    public static Sprite GetSprite(string name) => Utils.LoadSprite($"TONX.Resources.Images.Skills.{name}.png", 115f);
+    public static Sprite GetSprite(string name) => LoadSprite($"TONX.Resources.Images.Skills.{name}.png", 115f);
 }
 
 #nullable enable
@@ -69,4 +69,3 @@ public static class HudSpritePatch
         __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
     }
 }
-#nullable disable

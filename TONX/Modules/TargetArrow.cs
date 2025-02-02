@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Attributes;
@@ -116,7 +115,7 @@ static class TargetArrow
         foreach (var arrowInfo in arrowList)
         {
             var targetId = arrowInfo.To;
-            var target = Utils.GetPlayerById(targetId);
+            var target = GetPlayerById(targetId);
             if (seerIsDead || !target.IsAlive())
             {
                 TargetArrows.Remove(arrowInfo);
@@ -149,7 +148,7 @@ static class TargetArrow
         }
         if (update)
         {
-            Utils.NotifyRoles(SpecifySeer: seer);
+            NotifyRoles(SpecifySeer: seer);
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -83,16 +83,16 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
     public bool CanEat(byte id)
     {
         if (GameStates.IsMeeting) return false;
-        var target = Utils.GetPlayerById(id);
+        var target = GetPlayerById(id);
         return target != null && target.IsAlive() && !target.inVent && !target.Is(CustomRoles.GM) && !IsEaten(id);
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(EatenPlayers.Count >= 1 ? Utils.ShadeColor(RoleInfo.RoleColor, 0.25f) : Color.gray, $"({EatenPlayers.Count})");
+    public override string GetProgressText(bool comms = false) => ColorString(EatenPlayers.Count >= 1 ? RoleInfo.RoleColor.ShadeColor(0.25f) : Color.gray, $"({EatenPlayers.Count})");
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
         if (!CanEat(target.PlayerId)) return false;
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        TP(killer.NetTransform, target.GetTruePosition());
         EatPlayer(killer, target);
         killer.SetKillCooldownV2();
         killer.RPCPlayCustomSound("Eat");
@@ -105,13 +105,13 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         EatenPlayers.Add(target.PlayerId);
         SendRPC();
 
-        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
+        TP(target.NetTransform, GetBlackRoomPS());
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
 
-        Utils.NotifyRoles(target);
-        Utils.NotifyRoles(target);
+        NotifyRoles(target);
+        NotifyRoles(target);
         Logger.Info($"{killer.GetRealName()} 吞掉了 {target.GetRealName()}", "Pelican.OnCheckMurderAsKiller");
         return;
     }
@@ -119,7 +119,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
     {
         foreach (var id in EatenPlayers)
         {
-            var target = Utils.GetPlayerById(id);
+            var target = GetPlayerById(id);
             if (target == null) continue;
 
             Main.AllPlayerSpeed[id] = Main.AllPlayerSpeed[id] - 0.5f + OriginalSpeed[id];
@@ -140,16 +140,16 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         if (!Is(player)) return;
         foreach (var id in EatenPlayers)
         {
-            var target = Utils.GetPlayerById(id);
+            var target = GetPlayerById(id);
             if (target == null) continue;
 
-            Utils.TP(target.NetTransform, MyLastPos);
+            TP(target.NetTransform, MyLastPos);
             Main.AllPlayerSpeed[id] = Main.AllPlayerSpeed[id] - 0.5f + OriginalSpeed[id];
             ReportDeadBodyPatch.CanReport[id] = true;
 
             target.MarkDirtySettings();
             RPC.PlaySoundRPC(id, Sounds.TaskComplete);
-            Utils.NotifyRoles(SpecifySeer: target);
+            NotifyRoles(SpecifySeer: target);
             Logger.Info($"{Player.GetNameWithRole()} 吐出了 {target.GetRealName()}", "Pelican.OnPlayerDeath");
         }
         EatenPlayers = new();
@@ -173,13 +173,13 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
 
         foreach (var id in EatenPlayers)
         {
-            var target = Utils.GetPlayerById(id);
+            var target = GetPlayerById(id);
             if (target == null) continue;
-            var pos = Utils.GetBlackRoomPS();
+            var pos = GetBlackRoomPS();
             var dis = Vector2.Distance(pos, target.GetTruePosition());
             if (dis < 1f) continue;
-            Utils.TP(target.NetTransform, pos);
-            Utils.NotifyRoles(SpecifySeer: target);
+            TP(target.NetTransform, pos);
+            NotifyRoles(SpecifySeer: target);
         }
     }
     public bool OverrideKillButtonSprite(out string buttonName)
@@ -189,7 +189,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("PelicanButtonText");
+        text = GetString("PelicanButtonText");
         return true;
     }
 }

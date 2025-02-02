@@ -1,12 +1,11 @@
-using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Sniper : RoleBase, IImpostor
@@ -249,7 +248,7 @@ public sealed class Sniper : RoleBase, IImpostor
             foreach (var otherPc in targets.Keys)
             {
                 snList.Add(otherPc.PlayerId);
-                Utils.NotifyRoles(SpecifySeer: otherPc);
+                NotifyRoles(SpecifySeer: otherPc);
             }
             SendRPC();
             _ = new LateTask(
@@ -260,7 +259,7 @@ public sealed class Sniper : RoleBase, IImpostor
                     {
                         foreach (var otherPc in targets.Keys)
                         {
-                            Utils.NotifyRoles(SpecifySeer: otherPc);
+                            NotifyRoles(SpecifySeer: otherPc);
                         }
                         SendRPC();
                     }
@@ -294,7 +293,7 @@ public sealed class Sniper : RoleBase, IImpostor
         else
         {
             AimTime += Time.fixedDeltaTime;
-            Utils.NotifyRoles(SpecifySeer: Player);
+            NotifyRoles(SpecifySeer: Player);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -303,7 +302,7 @@ public sealed class Sniper : RoleBase, IImpostor
     }
     public override string GetProgressText(bool comms = false)
     {
-        return Utils.ColorString(Color.yellow, $"({BulletCount})");
+        return ColorString(Color.yellow, $"({BulletCount})");
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -317,7 +316,7 @@ public sealed class Sniper : RoleBase, IImpostor
             {
                 if (GetSnipeTargets().Count > 0)
                 {
-                    return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "◎")}</size>";
+                    return $"<size=200%>{ColorString(Palette.ImpostorRed, "◎")}</size>";
                 }
             }
         }
@@ -332,7 +331,7 @@ public sealed class Sniper : RoleBase, IImpostor
             var snList = sniper.ShotNotify;
             if (snList.Count > 0 && snList.Contains(seer.PlayerId))
             {
-                return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "!")}</size>";
+                return $"<size=200%>{ColorString(Palette.ImpostorRed, "!")}</size>";
             }
         }
         return "";

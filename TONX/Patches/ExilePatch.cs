@@ -1,7 +1,7 @@
-using AmongUs.Data;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using AmongUs.Data;
+using HarmonyLib;
 using TONX.Roles.Core;
 using TONX.Roles.Neutral;
 
@@ -110,10 +110,10 @@ class ExileControllerWrapUpPatch
             }
         }
         FallFromLadder.Reset();
-        Utils.CountAlivePlayers(true);
-        Utils.AfterMeetingTasks();
-        Utils.SyncAllSettings();
-        Utils.NotifyRoles();
+        CountAlivePlayers(true);
+        AfterMeetingTasks();
+        SyncAllSettings();
+        NotifyRoles();
     }
 
     static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
@@ -136,7 +136,7 @@ class ExileControllerWrapUpPatch
             {
                 Main.AfterMeetingDeathPlayers.Do(x =>
                 {
-                    var player = Utils.GetPlayerById(x.Key);
+                    var player = GetPlayerById(x.Key);
                     var roleClass = CustomRoleManager.GetByPlayerId(x.Key);
                     var requireResetCam = player?.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true;
                     var state = PlayerState.GetByPlayerId(x.Key);
@@ -155,7 +155,7 @@ class ExileControllerWrapUpPatch
             }, 0.5f, "AfterMeetingDeathPlayers Task");
         }
 
-        GameStates.AlreadyDied |= !Utils.IsAllAlive;
+        GameStates.AlreadyDied |= !IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
         Logger.Info("タスクフェイズ開始", "Phase");

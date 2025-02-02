@@ -1,13 +1,12 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Descriptions;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Modules;
 
@@ -27,7 +26,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         {
             new(["dump"], CommandAccess.LocalMod, mc =>
             {
-                Utils.DumpLog();
+                DumpLog();
                 return (MsgRecallMode.Block, null);
             }),
             new(["v", "ver", "version"], CommandAccess.LocalMod, mc =>
@@ -56,8 +55,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["l", "lastresult"], CommandAccess.All, mc =>
             {
-                Utils.ShowKillLog(mc.Player.PlayerId);
-                Utils.ShowLastResult(mc.Player.PlayerId);
+                ShowKillLog(mc.Player.PlayerId);
+                ShowLastResult(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
             }),
             new(["rn", "rename"], CommandAccess.Host, mc =>
@@ -84,10 +83,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 {
                     case "r":
                     case "roles":
-                        Utils.ShowActiveRoles(mc.Player.PlayerId);
+                        ShowActiveRoles(mc.Player.PlayerId);
                         break;
                     default:
-                        Utils.ShowActiveSettings(mc.Player.PlayerId);
+                        ShowActiveSettings(mc.Player.PlayerId);
                         break;
                 }
                 return (MsgRecallMode.Block, null);
@@ -105,7 +104,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                         break;
                     default:
-                        Utils.AddChatMessage("crew | imp");
+                        AddChatMessage("crew | imp");
                         break;
                 }
                 return (MsgRecallMode.Block, null);
@@ -118,7 +117,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["h", "help"], CommandAccess.All, mc =>
             {
-                Utils.ShowHelp(mc.Player.PlayerId);
+                ShowHelp(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
             }),
             new(["m", "myrole"], CommandAccess.All, mc =>
@@ -136,7 +135,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             new(["t", "template"], CommandAccess.LocalMod, mc =>
             {
                 if (mc.HasValidArgs) TemplateManager.SendTemplate(mc.Args);
-                else Utils.AddChatMessage($"{GetString("ForExample")}:\nt test");
+                else AddChatMessage($"{GetString("ForExample")}:\nt test");
                 return (MsgRecallMode.Block, null);
             }),
             new(["mw", "messagewait"], CommandAccess.Host, mc =>
@@ -155,7 +154,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (GameStates.IsInGame)
                 {
                     if (!mc.HasValidArgs || !int.TryParse(mc.Args, out int id)) return (MsgRecallMode.Block, null);
-                    var target = Utils.GetPlayerById(id);
+                    var target = GetPlayerById(id);
                     if (target != null)
                     {
                         target.Data.IsDead = true;
@@ -164,7 +163,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         target.RpcExileV2();
                         state.SetDead();
                         text = target.AmOwner
-                            ? Utils.ColorString(Color.red, GetString("HostKillSelfByCommand"))
+                            ? ColorString(Color.red, GetString("HostKillSelfByCommand"))
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
@@ -176,14 +175,14 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (GameStates.IsInGame)
                 {
                     if (!mc.HasValidArgs || !int.TryParse(mc.Args, out int id)) return (MsgRecallMode.Block, null);
-                    var target = Utils.GetPlayerById(id);
+                    var target = GetPlayerById(id);
                     if (target != null)
                     {
                         var state = PlayerState.GetByPlayerId(target.PlayerId);
                         state.DeathReason = CustomDeathReason.etc;
                         target.RpcMurderPlayer(target);
                         text = target.AmOwner
-                            ? Utils.ColorString(Color.red, GetString("HostKillSelfByCommand"))
+                            ? ColorString(Color.red, GetString("HostKillSelfByCommand"))
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
@@ -195,7 +194,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (GameStates.IsLobby )
                 {
                     text = GetString("IllegalColor");
-                    var color = Utils.MsgToColor(mc.Args, mc.IsFromSelf);
+                    var color = MsgToColor(mc.Args, mc.IsFromSelf);
                     if (color != byte.MaxValue)
                     {
                         mc.Player.RpcSetColor(color);
@@ -215,7 +214,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     {
                         string name = mc.Player.GetRealName();
                         text = string.Format(GetString("Message.PlayerQuitForever"), name);
-                        Utils.KickPlayer(mc.Player.GetClientId(), true, "VoluntarilyQuit");
+                        KickPlayer(mc.Player.GetClientId(), true, "VoluntarilyQuit");
                     }
                     else
                     {
@@ -228,7 +227,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             {
                 string text = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
-                    text += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                    text += "\n" + pc.PlayerId + " → " + Main.AllPlayerNames[pc.PlayerId];
                 return (MsgRecallMode.Block, text);
             }),
             new(["end", "endgame"], CommandAccess.Host, mc =>
@@ -297,56 +296,57 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            Utils.ShowActiveRoles(playerId);
+            ShowActiveRoles(playerId);
             return;
         }
-        else if (!GetRoleByInputName(input, out var role))
+
+        if (!GetRoleByInputName(input, out var role))
         {
-            Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+            SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
             return;
+        }
+
+        if (role.IsAddon())
+        {
+            SendMessage(AddonDescription.FullFormatHelpBySubRole(role),playerId);
         }
         else
         {
-            if (role.IsAddon())
-            {
-                Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role),playerId);
-            }
-            else
-            {
-                Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp,playerId);
-            }
-            // var roleinfo = role.GetRoleInfo();
-            // if (!role.IsAddon())
-            // {
+            SendMessage(role.GetRoleInfo().Description.FullFormatHelp,playerId);
+        }
+        // var roleinfo = role.GetRoleInfo();
+        // if (!role.IsAddon())
+        // {
 
-                // var roleDescription = roleinfo.Description;
-                // var rff = roleDescription.FullFormatHelp;
-                // Utils.SendMessage(rff, playerId);
-            // }
-            // Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role) ??
+        // var roleDescription = roleinfo.Description;
+        // var rff = roleDescription.FullFormatHelp;
+        // Utils.SendMessage(rff, playerId);
+        // }
+        // Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role) ??
         // roleInfoがない役職
         // $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{AddonDescription.FullFormatHelpBySubRole(role)}", playerId);
-        }
     }
     public static void SpecifyRole(string input, byte playerId)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            Utils.ShowActiveRoles(playerId);
+            ShowActiveRoles(playerId);
             return;
         }
-        else if (!GetRoleByInputName(input, out var role))
+
+        if (!GetRoleByInputName(input, out var role))
         {
-            Utils.SendMessage(GetString("Message.DirectorModeCanNotFindRoleThePlayerEnter"), playerId);
+            SendMessage(GetString("Message.DirectorModeCanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-        else if (!Options.EnableDirectorMode.GetBool())
+
+        if (!Options.EnableDirectorMode.GetBool())
         {
-            Utils.SendMessage(string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableDirectorMode")));
+            SendMessage(string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableDirectorMode")));
         }
         else if (!GameStates.IsLobby)
         {
-            Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), playerId);
+            SendMessage(GetString("Message.OnlyCanUseInLobby"), playerId);
         }
         else
         {
@@ -358,7 +358,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 || role is CustomRoles.GM or CustomRoles.NotAssigned
                 || !Options.CustomRoleSpawnChances.ContainsKey(role))
             {
-                Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);
+                SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);
             }
             else
             {
@@ -366,7 +366,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 Main.DevRole.Remove(pid);
                 Main.DevRole.Add(pid, role);
 
-                Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelected"), roleName), playerId);
+                SendMessage(string.Format(GetString("Message.DirectorModeSelected"), roleName), playerId);
             }
         }
     }

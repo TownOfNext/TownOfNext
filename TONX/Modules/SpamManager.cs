@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TONX.Attributes;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -81,11 +80,11 @@ public static class SpamManager
                         kick = true;
                     }
                 }
-                if (msg != "") Utils.SendMessage(msg);
+                if (msg != "") SendMessage(msg);
                 if (kick)
                 {
                     RPC.NotificationPop(msg);
-                    Utils.KickPlayer(player.GetClientId(), Options.AutoKickStartAsBan.GetBool(), "SayStart");
+                    KickPlayer(player.GetClientId(), Options.AutoKickStartAsBan.GetBool(), "SayStart");
                 }
                 return true;
             }
@@ -110,17 +109,17 @@ public static class SpamManager
 
         if (msg != "")
         {
-            if (kick || !GameStates.IsInGame) Utils.SendMessage(msg);
+            if (kick || !GameStates.IsInGame) SendMessage(msg);
             else
             {
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.IsAlive() == player.IsAlive()))
-                    Utils.SendMessage(msg, pc.PlayerId);
+                    SendMessage(msg, pc.PlayerId);
             }
         }
         if (kick)
         {
             RPC.NotificationPop(msg);
-            Utils.KickPlayer(player.GetClientId(), Options.AutoKickStopWordsAsBan.GetBool(), "BanWords");
+            KickPlayer(player.GetClientId(), Options.AutoKickStopWordsAsBan.GetBool(), "BanWords");
         }
         return true;
     }

@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -16,7 +15,7 @@ public sealed class TimeThief : RoleBase, IMeetingTimeAlterable, IImpostor
             CustomRoleTypes.Impostor,
             2700,
             SetupOptionItem,
-            "tt|�g�r��|ʴʱ|͵ʱ"
+            "tt|�g�r��|ʴʱ|͵ʱ"
         );
     public TimeThief(PlayerControl player)
     : base(
@@ -65,6 +64,6 @@ public sealed class TimeThief : RoleBase, IMeetingTimeAlterable, IImpostor
     public override string GetProgressText(bool comms = false)
     {
         var time = CalculateMeetingTimeDelta();
-        return time < 0 ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{time}s") : "";
+        return time < 0 ? ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{time}s") : "";
     }
 }

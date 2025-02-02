@@ -1,17 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
-using static TONX.MeetingHudPatch;
 
 namespace TONX.Roles.Core;
 
@@ -78,7 +77,7 @@ public static class CustomRoleManager
             // 凶杀检查击杀
             if (!killer.OnCheckMurderAsKiller(info))
             {
-                Logger.Info($"凶手阻塞了击杀", "CheckMurder");
+                Logger.Info("凶手阻塞了击杀", "CheckMurder");
                 return false;
             }
             if (killer.IsKiller && targetRole != null)
@@ -86,7 +85,7 @@ public static class CustomRoleManager
                 // 被害者检查击杀
                 if (!targetRole.OnCheckMurderAsTarget(info))
                 {
-                    Logger.Info($"被害者阻塞了击杀", "CheckMurder");
+                    Logger.Info("被害者阻塞了击杀", "CheckMurder");
                     return false;
                 }
             }
@@ -109,7 +108,7 @@ public static class CustomRoleManager
             {
                 attemptTarget.RpcSetCustomRole(CustomRoles.Madmate);
                 Logger.Info($"注册附加职业：{attemptTarget.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
-                attemptTarget.ShowPopUp(Translator.GetString("MadmateSelfVoteModeSuccessfulMutiny"));
+                attemptTarget.ShowPopUp(GetString("MadmateSelfVoteModeSuccessfulMutiny"));
             }
             return false;
         }
@@ -132,12 +131,10 @@ public static class CustomRoleManager
             actionAfterAll?.Invoke();
             return true;
         }
-        else
-        {
-            if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()} 无法被击杀", "CheckMurder");
-            if (!info.DoKill) Logger.Info($"{appearanceKiller.GetNameWithRole()} 无法击杀", "CheckMurder");
-            return false;
-        }
+
+        if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()} 无法被击杀", "CheckMurder");
+        if (!info.DoKill) Logger.Info($"{appearanceKiller.GetNameWithRole()} 无法击杀", "CheckMurder");
+        return false;
 
     }
     /// <summary>
@@ -195,12 +192,12 @@ public static class CustomRoleManager
         targetState.SetDead();
         attemptTarget.SetRealKiller(attemptKiller, true);
 
-        Utils.CountAlivePlayers(true);
+        CountAlivePlayers(true);
 
-        Utils.TargetDies(info);
+        TargetDies(info);
 
-        Utils.SyncAllSettings();
-        Utils.NotifyRoles();
+        SyncAllSettings();
+        NotifyRoles();
     }
     /// <summary>
     /// 其他玩家视角下的 MurderPlayer 事件
@@ -227,7 +224,7 @@ public static class CustomRoleManager
     {
         if (GameStates.IsInTask)
         {
-            var now = Utils.GetTimeStamp();
+            var now = GetTimeStamp();
             LastSecondsUpdate.TryAdd(player.PlayerId, 0);
             if (LastSecondsUpdate[player.PlayerId] != now)
             {
@@ -455,7 +452,7 @@ public static class CustomRoleManager
     /// </summary>
     public static void Dispose()
     {
-        Logger.Info($"Dispose ActiveRoles", "CustomRoleManager");
+        Logger.Info("Dispose ActiveRoles", "CustomRoleManager");
         MarkOthers.Clear();
         LowerOthers.Clear();
         SuffixOthers.Clear();

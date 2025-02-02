@@ -1,6 +1,5 @@
-﻿using AmongUs.GameOptions;
-using System;
-
+﻿using System;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 

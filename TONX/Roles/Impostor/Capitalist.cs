@@ -1,9 +1,7 @@
-﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Capitalist : RoleBase, IImpostor
@@ -55,7 +53,7 @@ public sealed class Capitalist : RoleBase, IImpostor
     {
         if (!CustomRoles.Capitalist.IsExist(true)) return true;
         if (pc.Is(CustomRoles.Workhorse)) return true;
-        if (!Utils.HasTasks(pc.Data) || pc.AllTasksCompleted()) return true;
+        if (!HasTasks(pc.Data) || pc.AllTasksCompleted()) return true;
         if (TasksWaitToAdd == null || !TasksWaitToAdd.ContainsKey(pc.PlayerId)) return true;
 
         var taskNum = NumShortTasks.TryGetValue(pc.PlayerId, out var x) ? x : Main.NormalOptions.NumShortTasks;
@@ -70,7 +68,7 @@ public sealed class Capitalist : RoleBase, IImpostor
         {
             pc.Data.RpcSetTasks(new byte[0]);
             pc.SyncSettings();
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
 
         return false;
@@ -79,7 +77,7 @@ public sealed class Capitalist : RoleBase, IImpostor
     {
         var target = info.AttemptTarget;
         if (target.Is(CustomRoles.Workhorse)) return false;
-        if (!Utils.HasTasks(target.Data)) return false;
+        if (!HasTasks(target.Data)) return false;
         if (target.AllTasksCompleted()) return false;
 
         TasksWaitToAdd.TryAdd(target.PlayerId, 0);

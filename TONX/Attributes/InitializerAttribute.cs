@@ -10,7 +10,7 @@ namespace TONX.Attributes;
 public abstract class InitializerAttribute<T> : Attribute
 {
     /// <summary>全初期化メソッド</summary>
-    private static MethodInfo[] allInitializers = null;
+    private static MethodInfo[] allInitializers;
     private static LogHandler logger = Logger.Handler(nameof(InitializerAttribute<T>));
 
     public InitializerAttribute() : this(InitializePriority.Normal) { }

@@ -9,7 +9,7 @@ namespace TONX.Roles.AddOns.Common;
 public static class Avenger
 {
     private static readonly int Id = 81400;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Avenger);
+    private static Color RoleColor = GetRoleColor(CustomRoles.Avenger);
     private static List<byte> playerIdList = new();
 
     public static OptionItem OptionRevengeMode;

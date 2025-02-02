@@ -1,6 +1,5 @@
-﻿using AmongUs.GameOptions;
-using System.Linq;
-
+﻿using System.Linq;
+using AmongUs.GameOptions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -41,7 +40,7 @@ public sealed class Concealer : RoleBase, IImpostor
         AURoleOptions.ShapeshifterCooldown = OptionShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = OptionShapeshiftDuration.GetFloat();
     }
-    private bool Shapeshifting = false;
+    private bool Shapeshifting;
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);

@@ -1,7 +1,7 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -52,7 +52,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     /// <summary>
     /// 自分をキルしてきた人のロール
     /// </summary>
-    private ISchrodingerCatOwner owner = null;
+    private ISchrodingerCatOwner owner;
     private TeamType _team = TeamType.None;
     /// <summary>
     /// 現在の所属陣営<br/>
@@ -115,8 +115,8 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
 
         RevealNameColors(killer);
 
-        Utils.NotifyRoles();
-        Utils.MarkEveryoneDirtySettings();
+        NotifyRoles();
+        MarkEveryoneDirtySettings();
     }
     /// <summary>
     /// キルしてきた人とオプションに応じて名前の色を開示する
@@ -257,21 +257,21 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         Color? color = catType switch
         {
             TeamType.None => RoleInfo.RoleColor,
-            TeamType.Mad => Utils.GetRoleColor(CustomRoles.Madmate),
-            TeamType.Crew => Utils.GetRoleColor(CustomRoles.Crewmate),
-            TeamType.Jackal => Utils.GetRoleColor(CustomRoles.Jackal),
-            TeamType.Pelican => Utils.GetRoleColor(CustomRoles.Pelican),
-            TeamType.BloodKnight => Utils.GetRoleColor(CustomRoles.BloodKnight),
-            TeamType.Demon => Utils.GetRoleColor(CustomRoles.Demon),
-            TeamType.Hater => Utils.GetRoleColor(CustomRoles.Hater),
-            TeamType.Stalker => Utils.GetRoleColor(CustomRoles.Stalker),
+            TeamType.Mad => GetRoleColor(CustomRoles.Madmate),
+            TeamType.Crew => GetRoleColor(CustomRoles.Crewmate),
+            TeamType.Jackal => GetRoleColor(CustomRoles.Jackal),
+            TeamType.Pelican => GetRoleColor(CustomRoles.Pelican),
+            TeamType.BloodKnight => GetRoleColor(CustomRoles.BloodKnight),
+            TeamType.Demon => GetRoleColor(CustomRoles.Demon),
+            TeamType.Hater => GetRoleColor(CustomRoles.Hater),
+            TeamType.Stalker => GetRoleColor(CustomRoles.Stalker),
 
             _ => null,
         };
         if (!color.HasValue)
         {
             logger.Warn($"不明な猫に対する色の取得: {catType}");
-            return Utils.GetRoleColor(CustomRoles.Crewmate);
+            return GetRoleColor(CustomRoles.Crewmate);
         }
         return color.Value;
     }

@@ -51,7 +51,7 @@ public static class Camouflage
 
         var oldIsCamouflage = IsCamouflage;
 
-        IsCamouflage = Utils.IsActive(SystemTypes.Comms) || Concealer.IsHidding;
+        IsCamouflage = IsActive(SystemTypes.Comms) || Concealer.IsHidding;
 
         if (oldIsCamouflage != IsCamouflage)
         {
@@ -65,7 +65,7 @@ public static class Camouflage
                     pc.RpcSetPet("");
                 }
             }
-            Utils.NotifyRoles(NoCache: true);
+            NotifyRoles(NoCache: true);
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false)

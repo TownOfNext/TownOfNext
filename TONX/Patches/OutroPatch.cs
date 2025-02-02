@@ -1,14 +1,14 @@
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HarmonyLib;
 using TMPro;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Templates;
 using UnityEngine;
-using static TONX.Translator;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 
@@ -26,7 +26,7 @@ class EndGamePatch
         if (!GameStates.IsModHost) return;
         SummaryText = new();
         foreach (var id in PlayerState.AllPlayerStates.Keys)
-            SummaryText[id] = Utils.SummaryTexts(id, false);
+            SummaryText[id] = SummaryTexts(id, false);
 
         var sb = new StringBuilder(GetString("KillLog"));
         sb.Append("<size=70%>");
@@ -36,9 +36,9 @@ class EndGamePatch
             if (date == DateTime.MinValue) continue;
             var killerId = kvp.Value.GetRealKiller();
             var targetId = kvp.Key;
-            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({Utils.GetTrueRoleName(targetId, false)}{Utils.GetSubRolesText(targetId, summary: true)}) [{Utils.GetVitalText(kvp.Key)}]".RemoveHtmlTags());
+            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({GetTrueRoleName(targetId, false)}{GetSubRolesText(targetId, summary: true)}) [{GetVitalText(kvp.Key)}]".RemoveHtmlTags());
             if (killerId != byte.MaxValue && killerId != targetId)
-                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({Utils.GetTrueRoleName(targetId, false)}{Utils.GetSubRolesText(killerId, summary: true)})".RemoveHtmlTags());
+                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({GetTrueRoleName(targetId, false)}{GetSubRolesText(killerId, summary: true)})".RemoveHtmlTags());
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = string.Empty;
@@ -94,45 +94,45 @@ class SetEverythingUpPatch
         //          ==勝利陣営表示==
         //#######################################
 
-        var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
+        var WinnerTextObject = Object.Instantiate(__instance.WinText.gameObject);
         WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
         WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
-        var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
+        var WinnerText = WinnerTextObject.GetComponent<TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
         WinnerText.fontSizeMin = 3f;
         WinnerText.text = "";
 
         string CustomWinnerText = "";
         var AdditionalWinnerText = new StringBuilder(32);
-        string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
+        string CustomWinnerColor = GetRoleColorCode(CustomRoles.Crewmate);
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
         if (winnerRole >= 0)
         {
-            CustomWinnerText = Utils.GetRoleName(winnerRole);
-            CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
+            CustomWinnerText = GetRoleName(winnerRole);
+            CustomWinnerColor = GetRoleColorCode(winnerRole);
             if (winnerRole.IsNeutral())
             {
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
+                __instance.BackgroundBar.material.color = GetRoleColor(winnerRole);
             }
         }
         if (AmongUsClient.Instance.AmHost && PlayerState.GetByPlayerId(0).MainRole == CustomRoles.GM)
         {
             __instance.WinText.text = GetString("GameOver");
-            __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);
-            __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.GM);
+            __instance.WinText.color = GetRoleColor(CustomRoles.GM);
+            __instance.BackgroundBar.material.color = GetRoleColor(CustomRoles.GM);
         }
         switch (CustomWinnerHolder.WinnerTeam)
         {
             //通常勝利
             case CustomWinner.Crewmate:
-                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Engineer);
+                CustomWinnerColor = GetRoleColorCode(CustomRoles.Engineer);
                 break;
             //特殊勝利
             case CustomWinner.Terrorist:
                 __instance.Foreground.material.color = Color.red;
                 break;
             case CustomWinner.Lovers:
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Lovers);
+                __instance.BackgroundBar.material.color = GetRoleColor(CustomRoles.Lovers);
                 break;
             //引き分け処理
             case CustomWinner.Draw:
@@ -161,7 +161,7 @@ class SetEverythingUpPatch
 
         foreach (var role in CustomWinnerHolder.AdditionalWinnerRoles)
         {
-            AdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)));
+            AdditionalWinnerText.Append('＆').Append(ColorString(GetRoleColor(role), GetRoleName(role)));
         }
         if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
         {
@@ -206,7 +206,7 @@ class SetEverythingUpPatch
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+            sb.Append("\n\u3000 ").Append(EndGamePatch.SummaryText[id]);
         }
         roleSummary = TMPTemplate.Create(
                 "RoleSummaryText",
