@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using TONX.Attributes;
+using TONX.Modules;
 using TONX.Roles.Core;
 using UnityEngine;
 
@@ -311,6 +313,8 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
+        Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
+        
         Harmony.PatchAll();
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
