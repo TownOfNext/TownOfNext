@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 
-using TONX.Roles.Core;
-
 namespace TONX.Roles.Vanilla;
 
 public sealed class Engineer : RoleBase

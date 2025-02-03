@@ -1,11 +1,9 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using static TONX.NameTagManager;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX.Modules.NameTagInterface;

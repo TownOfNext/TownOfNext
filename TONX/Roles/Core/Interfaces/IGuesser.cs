@@ -1,6 +1,4 @@
-﻿using static TONX.Translator;
-
-namespace TONX.Roles.Core.Interfaces;
+﻿namespace TONX.Roles.Core.Interfaces;
 
 /// <summary>
 /// 持有赌怪能力的接口

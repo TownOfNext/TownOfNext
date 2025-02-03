@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using LibCpp2IL;
 using System.Collections.Generic;
@@ -9,11 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX;
+﻿namespace TONX;
 
 [HarmonyPatch]
 public class EngGamePatch

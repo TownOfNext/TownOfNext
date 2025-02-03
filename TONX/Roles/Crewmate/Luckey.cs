@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Luckey : RoleBase

@@ -1,8 +1,6 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using TONX.Attributes;
 using TONX.Modules;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Patches.ISystemType;

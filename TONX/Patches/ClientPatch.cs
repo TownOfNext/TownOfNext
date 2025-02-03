@@ -1,10 +1,8 @@
-using HarmonyLib;
 using Hazel;
 using InnerNet;
 using System.Linq;
 using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX.Patches;
+﻿namespace TONX.Patches;
 
 [HarmonyPatch(typeof(Constants), nameof(Constants.GetBroadcastVersion))]
 public static class ConstantsGetBroadcastVersionPatch

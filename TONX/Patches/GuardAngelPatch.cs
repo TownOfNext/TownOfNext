@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX;
+﻿namespace TONX;
 internal class GuardAngelPatch
 {
     [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.Start))]

@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
@@ -15,7 +14,7 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
             CustomRoleTypes.Crewmate,
             21600,
             SetupOptionItem,
-            "tm|•rég²Ù¿ØÕß|Ê±¼ä²Ù¿ØÈË|Ê±¼ä²Ù¿Ø|Ê±¼ä¹ÜÀí|Ê±¼ä¹ÜÀí´óÊ¦|Ê±¼ä¹ÜÀíÕß|Ê±¼ä¹ÜÀíÈË",
+            "tm|ï¿½rï¿½gï¿½Ù¿ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½Ù¿ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",
             "#6495ed"
         );
     public TimeManager(PlayerControl player)

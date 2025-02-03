@@ -1,9 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
 
-using TONX.Roles.Core;
-using static TONX.Translator;
-
 namespace TONX.Roles.Crewmate;
 public sealed class Detective : RoleBase
 {

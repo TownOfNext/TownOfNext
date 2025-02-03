@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -16,7 +15,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             CustomRoleTypes.Neutral,
             51700,
             null,
-            "ht|fffˆF|fff|fffÍÅ",
+            "ht|fffï¿½F|fff|fffï¿½ï¿½",
             "#414b66",
             true
         );
@@ -47,7 +46,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
         {
             killer.RpcMurderPlayer(killer);
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Sacrifice;
-            Logger.Info($"{killer.GetRealName()} »÷É±ÁË·ÇÄ¿±êÍæ¼Ò£¬×³ÁÒÎþÉüÁË£¨bushi£©", "FFF");
+            Logger.Info($"{killer.GetRealName()} ï¿½ï¿½É±ï¿½Ë·ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ò£ï¿½×³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½bushiï¿½ï¿½", "FFF");
         }
     }
     public bool CheckWin(ref CustomRoles winnerRole)

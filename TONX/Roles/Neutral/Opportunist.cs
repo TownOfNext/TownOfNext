@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -16,7 +14,7 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner
             CustomRoleTypes.Neutral,
             50100,
             null,
-            "op|投機者|投机",
+            "op|投锟紺锟斤拷|投锟斤拷",
             "#00ff00"
         );
     public Opportunist(PlayerControl player)

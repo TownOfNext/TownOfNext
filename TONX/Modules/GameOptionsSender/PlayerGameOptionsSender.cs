@@ -5,7 +5,6 @@ using Il2CppSystem.Linq;
 using InnerNet;
 using System.Linq;
 using TONX.Roles.AddOns.Common;
-using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using Mathf = UnityEngine.Mathf;
 
@@ -115,7 +114,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
 
-        // ÎªÃÔ»óÕßµÄÐ×ÊÖ
+        // Îªï¿½Ô»ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
@@ -123,7 +122,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
         }
 
-        // Í¶ÖÀÉµ¹Ïµ°À²£¡£¡£¡£¡£¡
+        // Í¶ï¿½ï¿½Éµï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (Grenadier.IsBlinding(player))
         {
             opt.SetVision(false);

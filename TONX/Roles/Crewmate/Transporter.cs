@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Modules;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Transporter : RoleBase

@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ public sealed class Collector : RoleBase
             CustomRoleTypes.Neutral,
             75_1_2_1200,
              SetupCustomOption,
-            "colle|¼¯Æ±|¼ÄÆ±",
+            "colle|ï¿½ï¿½Æ±|ï¿½ï¿½Æ±",
             "#9d8892"
 
         );

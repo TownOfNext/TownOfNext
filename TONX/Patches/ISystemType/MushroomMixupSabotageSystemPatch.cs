@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 
 namespace TONX.Patches.ISystemType;
 

@@ -1,9 +1,8 @@
 using AmongUs.Data;
-using HarmonyLib;
 
 namespace TONX;
 
-// ²Î¿¼£ºhttps://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
+// ï¿½Î¿ï¿½ï¿½ï¿½https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
 public static class TONXOnlySearch
 {
     public const string FilterText = "TONX";

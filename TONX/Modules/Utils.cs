@@ -15,13 +15,11 @@ using System.Text.RegularExpressions;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

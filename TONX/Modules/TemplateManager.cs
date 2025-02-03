@@ -1,5 +1,4 @@
 using AmongUs.Data;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Attributes;
-using static TONX.Translator;
 
 namespace TONX;
 

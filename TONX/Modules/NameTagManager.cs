@@ -1,5 +1,4 @@
 ﻿using AmongUs.Data;
-using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Sentry.Internal.Extensions;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
@@ -11,7 +10,6 @@ using TONX.Roles.Crewmate;
 using UnityEngine;
 using UnityEngine.UI;
 using YamlDotNet.Serialization;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX

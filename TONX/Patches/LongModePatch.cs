@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX;
+﻿namespace TONX;
 
 //来源：https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/LongModePatch.cs
 [HarmonyPatch(typeof(AprilFoolsMode), nameof(AprilFoolsMode.ShouldLongAround))]

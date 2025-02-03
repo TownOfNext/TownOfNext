@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Neutral;
 public sealed class Jester : RoleBase
@@ -15,7 +14,7 @@ public sealed class Jester : RoleBase
             CustomRoleTypes.Neutral,
             50000,
             SetupOptionItem,
-            "je|Ð¡³ó|³ó»Ê",
+            "je|Ð¡ï¿½ï¿½|ï¿½ï¿½ï¿½",
             "#ec62a5"
         );
     public Jester(PlayerControl player)
@@ -49,7 +48,7 @@ public sealed class Jester : RoleBase
     {
         if (Is(reporter) && target == null && !OptionCanUseButton.GetBool())
         {
-            Logger.Info("Òò½ûÖ¹Ð¡³óÅÄµÆÈ¡Ïû»áÒé", "Jester.OnCheckReportDeadBody");
+            Logger.Info("ï¿½ï¿½ï¿½Ö¹Ð¡ï¿½ï¿½ï¿½Äµï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", "Jester.OnCheckReportDeadBody");
             return false;
         }
         return true;

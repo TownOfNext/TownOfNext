@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using System;
-
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;

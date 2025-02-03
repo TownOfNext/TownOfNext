@@ -1,8 +1,5 @@
 ﻿using AmongUs.GameOptions;
 
-using TONX.Roles.Core;
-using static TONX.Translator;
-
 namespace TONX.Roles.Crewmate;
 public sealed class FortuneTeller : RoleBase
 {

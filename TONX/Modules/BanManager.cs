@@ -1,4 +1,3 @@
-using HarmonyLib;
 using InnerNet;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Attributes;
-using static TONX.Translator;
 
 namespace TONX;
 

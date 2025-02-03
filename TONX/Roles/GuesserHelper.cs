@@ -1,16 +1,13 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using TONX.Modules;
-using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 public static class GuesserHelper

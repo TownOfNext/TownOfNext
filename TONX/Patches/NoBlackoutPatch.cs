@@ -1,5 +1,3 @@
-using HarmonyLib;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]

@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
@@ -16,7 +14,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
            CustomRoleTypes.Neutral,
            50923,
            SetupOptionItem,
-           "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
+           "bn|ï¿½ï¿½Ñªï¿½TÊ¿|Ñªï¿½ï¿½|ï¿½ï¿½Ê¿",
            "#630000",
            true,
            countType: CountTypes.BloodKnight

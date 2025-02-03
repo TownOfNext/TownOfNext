@@ -3,8 +3,6 @@ using Hazel;
 using Mono.Cecil.Mdb;
 using System;
 using System.Linq;
-using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX;
 

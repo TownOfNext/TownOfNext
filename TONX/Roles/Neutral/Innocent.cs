@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ public sealed class Innocent : RoleBase
             CustomRoleTypes.Neutral,
             75_1_2_0800,
             null,
-            "inno|Ô©×ï|Ô­×ï",
+            "inno|Ô©ï¿½ï¿½|Ô­ï¿½ï¿½",
             "#8f815e",
            true
            

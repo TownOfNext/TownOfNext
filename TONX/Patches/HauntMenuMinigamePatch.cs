@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX.Patches;
+﻿namespace TONX.Patches;
 
 [HarmonyPatch(typeof(HauntMenuMinigame), nameof(HauntMenuMinigame.SetFilterText))]
 public static class HauntMenuMinigameSetFilterTextPatch

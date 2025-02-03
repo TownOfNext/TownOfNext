@@ -1,8 +1,5 @@
-﻿using HarmonyLib;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-
-using static TONX.Translator;
 
 namespace TONX;
 

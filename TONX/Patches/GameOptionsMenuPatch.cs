@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
 using UnityEngine;
 using UnityEngine.UI;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX

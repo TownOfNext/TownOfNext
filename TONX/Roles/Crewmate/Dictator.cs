@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Dictator : RoleBase
@@ -14,7 +13,7 @@ public sealed class Dictator : RoleBase
             CustomRoleTypes.Crewmate,
             21200,
             null,
-            "dic|ªš²ÃÕß|¶À²Ã",
+            "dic|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½",
             "#df9b00"
         );
     public Dictator(PlayerControl player)

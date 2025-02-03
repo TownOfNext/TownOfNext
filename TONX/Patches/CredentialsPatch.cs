@@ -1,11 +1,8 @@
-using HarmonyLib;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using TONX.Templates;
 using UnityEngine;
-
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -1,13 +1,10 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

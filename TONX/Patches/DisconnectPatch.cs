@@ -1,6 +1,3 @@
-using HarmonyLib;
-using static TONX.Translator;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnDisconnected))]

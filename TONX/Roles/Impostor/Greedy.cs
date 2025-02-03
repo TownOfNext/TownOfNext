@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
