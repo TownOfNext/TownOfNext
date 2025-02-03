@@ -25,11 +25,13 @@ public class CreditsControllerPatch
                 $"天寸梦初 - {GetString("PullRequester")}",
                 $"喜 - {GetString("PullRequester")}",
                 $"Tommy-XL - {GetString("PullRequester")}",
+                $"Slok7565 - {GetString("PullRequester")}",
+                $"Mousse - {GetString("PullRequester")}",
 
                 $"Commandf1 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
                 $"SolarFlare - {GetString("Contributor")}",
-                $"Mousse - {GetString("Contributor")}",
+                
             };
         var translatorList = new List<string>()
             {
