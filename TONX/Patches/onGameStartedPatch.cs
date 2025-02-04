@@ -64,7 +64,6 @@ internal class ChangeRoleSettings
 
             Main.PlayerColors = new();
             //名前の記録
-            Logger.Info($"{Main.AllPlayerNames.Count}", "CoStartGame");
             Main.AllPlayerNames = new();
 
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
