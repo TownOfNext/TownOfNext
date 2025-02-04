@@ -307,25 +307,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
-            if (role.IsAddon())
-            {
-                Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role),playerId);
-            }
-            else
-            {
-                Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp,playerId);
-            }
-            // var roleinfo = role.GetRoleInfo();
-            // if (!role.IsAddon())
-            // {
-
-                // var roleDescription = roleinfo.Description;
-                // var rff = roleDescription.FullFormatHelp;
-                // Utils.SendMessage(rff, playerId);
-            // }
-            // Utils.SendMessage(AddonDescription.FullFormatHelpBySubRole(role) ??
-        // roleInfoがない役職
-        // $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{AddonDescription.FullFormatHelpBySubRole(role)}", playerId);
+            Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
         }
     }
     public static void SpecifyRole(string input, byte playerId)

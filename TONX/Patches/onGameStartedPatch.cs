@@ -64,7 +64,8 @@ internal class ChangeRoleSettings
 
             Main.PlayerColors = new();
             //名前の記録
-            RPC.SyncAllPlayerNames();
+            Logger.Info($"{Main.AllPlayerNames.Count}", "CoStartGame");
+            Main.AllPlayerNames = new();
 
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             //if (invalidColor.Any())
@@ -91,7 +92,7 @@ internal class ChangeRoleSettings
                 var colorId = pc.Data.DefaultOutfit.ColorId;
                 if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
                 PlayerState.Create(pc.PlayerId);
-                //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
+                Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
                 Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
@@ -106,6 +107,7 @@ internal class ChangeRoleSettings
             if (__instance.AmHost)
             {
                 RPC.SyncCustomSettingsRPC();
+                RPC.SyncAllPlayerNames();
             }
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());

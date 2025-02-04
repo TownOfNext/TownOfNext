@@ -14,7 +14,6 @@ public static class Zoom
     private static bool ResetButtons = false;
     public static void Postfix()
     {
-        // 我为什么之前要加一行代码来不让大厅使用千里眼？这很奇怪
         if ((GameStates.IsShip || GameStates.IsLobby) && !GameStates.IsMeeting && GameStates.IsCanMove && !InGameRoleInfoMenu.Showing)
         {
             if (Camera.main.orthographicSize > 3.0f) ResetButtons = true;

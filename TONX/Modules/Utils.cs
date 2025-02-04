@@ -765,11 +765,13 @@ public static class Utils
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
+            Logger.Info($"Winner:{id}", "ShowLastResult");
             sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, true));
             cloneRoles.Remove(id);
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
+            Logger.Info($"Player:{id}", "ShowLastResult");
             sb.Append($"\n　 ").Append(SummaryTexts(id, true));
         }
         SendMessage(sb.ToString(), PlayerId);
@@ -872,7 +874,7 @@ public static class Utils
             + $"\n  ○ /exe {GetString("Command.exe")}"
             + $"\n  ○ /level {GetString("Command.level")}"
             + $"\n  ○ /id {GetString("Command.idlist")}"
-          //  + $"\n  ○ /qq {GetString("Command.qq")}"
+            //  + $"\n  ○ /qq {GetString("Command.qq")}"
             + $"\n  ○ /dump {GetString("Command.dump")}"
             + $"\n  ○ /up {GetString("Command.up")}"
             , ID);
@@ -1196,14 +1198,14 @@ public static class Utils
         };
         Process.Start(startInfo);
     }
-    public static string ChatSummary;
+    public static List<string> ChatSummary = Enumerable.Repeat(string.Empty, 15).ToList();
     public static string SummaryTexts(byte id, bool isForChat)
     {
         var builder = new StringBuilder();
         // チャットならposタグを使わない(文字数削減)
         if (isForChat)
         {
-            return ChatSummary ?? "";
+            return ChatSummary[id] ?? "";
         }
         else
         {
@@ -1212,7 +1214,7 @@ public static class Utils
             builder.Append(' ').Append(GetVitalText(id));
             builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
             builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
-            ChatSummary = builder.ToString();
+            ChatSummary[id] = builder.ToString();
             builder = new StringBuilder();
             // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
             // 1em ≒ 半角2文字

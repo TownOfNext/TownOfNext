@@ -31,7 +31,6 @@ public class CreditsControllerPatch
                 $"Commandf1 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
                 $"SolarFlare - {GetString("Contributor")}",
-                
             };
         var translatorList = new List<string>()
             {
