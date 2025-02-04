@@ -7,19 +7,19 @@ namespace TONX;
 public class TextBoxPatch
 {
     static Dictionary<string, string> replaceDic = new()
-            {
-                { "£®", " (" },
-                { "£©", ") " },
-                { "£¨", ", " },
-                { "£∫", ": " },
-                { "[", "°æ" },
-                { "]", "°ø" },
-                { "°Æ", " '" },
-                { "°Ø", "' " },
-                { "°∞", " ''" },
-                { "°±", "'' " },
-                { "£°", "! " },
-            };
+    {
+        { "Ôºà", " (" },
+        { "Ôºâ", ") " },
+        { "Ôºå", ", " },
+        { "Ôºö", ": " },
+        { "[", "„Äê" },
+        { "]", "„Äë" },
+        { "‚Äò", " '" },
+        { "‚Äô", "' " },
+        { "‚Äú", " ''" },
+        { "‚Äù", "'' " },
+        { "ÔºÅ", "! " },
+    };
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
     public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
     {
