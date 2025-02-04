@@ -687,64 +687,64 @@ public static class Utils
         sb.Append($"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         ClipboardHelper.PutClipboardString(sb.ToString());
     }
-public static void ShowActiveRoles(byte playerId = byte.MaxValue)
-{
-    if (Options.HideGameSettings.GetBool() && playerId != byte.MaxValue)
+    public static void ShowActiveRoles(byte playerId = byte.MaxValue)
     {
-        SendMessage(GetString("Message.HideGameSettings"), playerId);
-        return;
+        if (Options.HideGameSettings.GetBool() && playerId != byte.MaxValue)
+        {
+            SendMessage(GetString("Message.HideGameSettings"), playerId);
+            return;
+        }
+
+        var builders = new List<StringBuilder>(5);
+        var hasRole = new HashSet<int>();
+        for (var i = 0; i < builders.Capacity; i++)
+        {
+            builders.Add(new StringBuilder());
+        }
+
+        var tabs = EnumHelper.GetAllValues<CustomRoleTypes>();
+        for (var i = 0; i < tabs.Length; i++)
+        {
+            var index = i + 1;
+            var tab = tabs[i];
+            var tabName = tab == CustomRoleTypes.Addon ? tab + "s" : tab + "Roles";
+            builders[index].Append(ColorString(
+                GetCustomRoleTypeColor(tab),
+                $"● {GetString($"TabGroup.{tabName}")}"));
+        }
+
+        builders[0] = new StringBuilder(GetString("Roles")).Append(':');
+        builders[0].Append($"\n<color=#ff5b70>{GetRoleName(CustomRoles.GM)}</color>:{Options.EnableGM.GetString()}");
+
+        ProcessRoles(CustomRolesHelper.AllStandardRoles, builders, hasRole);
+        ProcessRoles(CustomRolesHelper.AllAddOns, builders, hasRole, 4);
+
+        for (var i = 0; i < builders.Count; i++)
+        {
+            if (i == 0 || hasRole.Contains(i))
+                SendMessage(builders[i].ToString(), playerId);
+        }
     }
 
-    var builders = new List<StringBuilder>(5);
-    var hasRole = new HashSet<int>();
-    for (var i = 0; i < builders.Capacity; i++)
+    private static void ProcessRoles(IEnumerable<CustomRoles> roles, List<StringBuilder> builders, HashSet<int> hasRole, int customRoleTypeIndex = -1)
     {
-        builders.Add(new StringBuilder());
-    }
+        foreach (var role in roles)
+        {
+            if (!role.IsEnable()) continue;
 
-    var tabs = EnumHelper.GetAllValues<CustomRoleTypes>();
-    for (var i = 0; i < tabs.Length; i++)
-    {
-        var index = i + 1;
-        var tab = tabs[i];
-        var tabName = tab == CustomRoleTypes.Addon ? tab + "s" : tab + "Roles";
-        builders[index].Append(ColorString(
-            GetCustomRoleTypeColor(tab),
-            $"● {GetString($"TabGroup.{tabName}")}"));
-    }
+            var roleInfo = role.GetRoleInfo();
+            var index = customRoleTypeIndex == -1 ? (int)roleInfo.CustomRoleType + 1 : customRoleTypeIndex;
 
-    builders[0] = new StringBuilder(GetString("Roles")).Append(':');
-    builders[0].Append($"\n<color=#ff5b70>{GetRoleName(CustomRoles.GM)}</color>:{Options.EnableGM.GetString()}");
+            builders[index].Append(
+                $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
+                $"{Utils.GetRoleDisplaySpawnMode(role, false, false)}" +
+                $"x{ColorString(
+                    GetCustomRoleTypeColor(customRoleTypeIndex == -1 ? roleInfo.CustomRoleType : CustomRoleTypes.Addon),
+                    role.GetCount().ToString())}");
 
-    ProcessRoles(CustomRolesHelper.AllStandardRoles, builders, hasRole);
-    ProcessRoles(CustomRolesHelper.AllAddOns, builders, hasRole, 4);
-
-    for (var i = 0; i < builders.Count; i++)
-    {
-        if (i == 0 || hasRole.Contains(i))
-            SendMessage(builders[i].ToString(), playerId);
-    }
-}
-
-private static void ProcessRoles(IEnumerable<CustomRoles> roles, List<StringBuilder> builders, HashSet<int> hasRole, int customRoleTypeIndex = -1)
-{
-    foreach (var role in roles)
-    {
-        if (!role.IsEnable()) continue;
-
-        var roleInfo = role.GetRoleInfo();
-        var index = customRoleTypeIndex == -1 ? (int)roleInfo.CustomRoleType + 1 : customRoleTypeIndex;
-
-        builders[index].Append(
-            $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
-            $"{Utils.GetRoleDisplaySpawnMode(role, false, false)}" +
-            $"x{ColorString(
-                GetCustomRoleTypeColor(customRoleTypeIndex == -1 ? roleInfo.CustomRoleType : CustomRoleTypes.Addon),
-                role.GetCount().ToString())}");
-
-        hasRole.Add(index);
-    }
-}public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
+            hasRole.Add(index);
+        }
+    }public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
     {
         foreach (var opt in option.Children.Select((v, i) => new { Value = v, Index = i + 1 }))
         {
