@@ -463,14 +463,15 @@ public static class Utils
         }
         return deathReason;
     }
-    public static string GetRoleDisplaySpawnMode(CustomRoles role, bool parentheses = true)
+
+    public static string GetRoleDisplaySpawnMode(CustomRoles role, bool parentheses = true, bool removeHTMLTags = true)
     {
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Count() > 1)
             return string.Empty;
         string mode;
-        if (role.IsVanilla()) return role.GetChance().ToString() + "%";
-        else if (!Options.CustomRoleSpawnChances.ContainsKey(role)) mode = GetString("HidenRole");
-        else mode = Options.CustomRoleSpawnChances[role].GetString().RemoveHtmlTags();
+        if (role.IsVanilla()) return role.GetChance() + "%";
+        if (!Options.CustomRoleSpawnChances.ContainsKey(role)) mode = GetString("HidenRole");
+        else mode = removeHTMLTags ? Options.CustomRoleSpawnChances[role].GetString().RemoveHtmlTags() :Options.CustomRoleSpawnChances[role].GetString() ;
         return parentheses ? $"({mode})" : mode;
     }
 
@@ -686,38 +687,64 @@ public static class Utils
         sb.Append($"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         ClipboardHelper.PutClipboardString(sb.ToString());
     }
-    public static void ShowActiveRoles(byte PlayerId = byte.MaxValue)
+public static void ShowActiveRoles(byte playerId = byte.MaxValue)
+{
+    if (Options.HideGameSettings.GetBool() && playerId != byte.MaxValue)
     {
-        if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
-        {
-            SendMessage(GetString("Message.HideGameSettings"), PlayerId);
-            return;
-        }
-        var sb = new StringBuilder(GetString("Roles")).Append(':');
-        sb.AppendFormat("\n{0}:{1}", GetRoleName(CustomRoles.GM), Options.EnableGM.GetString().RemoveHtmlTags());
-        int headCount = -1;
-        foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles)
-        {
-            headCount++;
-            if (role.IsImpostor() && headCount == 0) sb.Append("\n\n● " + GetString("TabGroup.ImpostorRoles"));
-            else if (role.IsCrewmate() && headCount == 1) sb.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
-            else if (role.IsNeutral() && headCount == 2) sb.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
-            // else if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
-            else headCount--;
-
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
-        }
-        foreach (CustomRoles role in CustomRolesHelper.AllAddOns)
-        {
-            headCount++;
-            if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
-            else headCount--;
-
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
-        }
-        SendMessage(sb.ToString(), PlayerId);
+        SendMessage(GetString("Message.HideGameSettings"), playerId);
+        return;
     }
-    public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
+
+    var builders = new List<StringBuilder>(5);
+    var hasRole = new HashSet<int>();
+    for (var i = 0; i < builders.Capacity; i++)
+    {
+        builders.Add(new StringBuilder());
+    }
+
+    var tabs = EnumHelper.GetAllValues<CustomRoleTypes>();
+    for (var i = 0; i < tabs.Length; i++)
+    {
+        var index = i + 1;
+        var tab = tabs[i];
+        var tabName = tab == CustomRoleTypes.Addon ? tab + "s" : tab + "Roles";
+        builders[index].Append(ColorString(
+            GetCustomRoleTypeColor(tab),
+            $"● {GetString($"TabGroup.{tabName}")}"));
+    }
+
+    builders[0] = new StringBuilder(GetString("Roles")).Append(':');
+    builders[0].Append($"\n<color=#ff5b70>{GetRoleName(CustomRoles.GM)}</color>:{Options.EnableGM.GetString()}");
+
+    ProcessRoles(CustomRolesHelper.AllStandardRoles, builders, hasRole);
+    ProcessRoles(CustomRolesHelper.AllAddOns, builders, hasRole, 4);
+
+    for (var i = 0; i < builders.Count; i++)
+    {
+        if (i == 0 || hasRole.Contains(i))
+            SendMessage(builders[i].ToString(), playerId);
+    }
+}
+
+private static void ProcessRoles(IEnumerable<CustomRoles> roles, List<StringBuilder> builders, HashSet<int> hasRole, int customRoleTypeIndex = -1)
+{
+    foreach (var role in roles)
+    {
+        if (!role.IsEnable()) continue;
+
+        var roleInfo = role.GetRoleInfo();
+        var index = customRoleTypeIndex == -1 ? (int)roleInfo.CustomRoleType + 1 : customRoleTypeIndex;
+
+        builders[index].Append(
+            $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
+            $"{Utils.GetRoleDisplaySpawnMode(role, false, false)}" +
+            $"x{ColorString(
+                GetCustomRoleTypeColor(customRoleTypeIndex == -1 ? roleInfo.CustomRoleType : CustomRoleTypes.Addon),
+                role.GetCount().ToString())}");
+
+        hasRole.Add(index);
+    }
+}public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
     {
         foreach (var opt in option.Children.Select((v, i) => new { Value = v, Index = i + 1 }))
         {
