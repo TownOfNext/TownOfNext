@@ -30,7 +30,7 @@
     <p>一切基于 TOH</p>
   <h3>:v: <a href="https://github.com/Yumenopai/TownOfHost_Y">TownOfHost_Y</a> :v:</h3>
     <p>众多职业创意</p>
-    <p>提供的职业：AntiAdminer、CursedWolf、Workaholic、Greedier、DarkHide</p>
+    <p>提供的职业：监管者、呪狼、工作狂、贪婪者、潜藏者</p>
     <p>参考：修改游戏公告</p>
   <h3>:collision: <a href="https://github.com/music-discussion/TownOfHost-TheOtherRoles">TownOfHost-TheOtherRoles</a> :collision:</h3>
     <p>众多职业创意</p>
