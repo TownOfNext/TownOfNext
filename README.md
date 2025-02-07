@@ -30,7 +30,7 @@
     <p>Everything is based on TOH</p>
   <h3>:v: <a href="https://github.com/Yumenopai/TownOfHost_Y">TownOfHost_Y</a> :v:</h3>
     <p>Many Role Ideas</p>
-    <p>Provided Roles: AntiAdminer, CursedWolf, Workaholic, Greedier, DarkHide</p>
+    <p>Provided Roles: AntiAdminer, CursedWolf, Workaholic, Greedy, Stalker</p>
     <p>Reference: Modify Game Announcement</p>
   <h3>:collision: <a href="https://github.com/music-discussion/TownOfHost-TheOtherRoles">TownOfHost-TheOtherRoles</a> :collision:</h3>
     <p>Many Role Ideas</p>
