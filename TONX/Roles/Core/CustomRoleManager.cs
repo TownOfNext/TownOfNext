@@ -114,13 +114,16 @@ public static class CustomRoleManager
             return false;
         }
 
-        if (Main.ShieldPlayer == byte.MaxValue)
+        if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == attemptTarget.PlayerId && Utils.IsAllAlive)
         {
-            Main.ShieldPlayer = attemptTarget.PlayerId;
+            Main.ShieldPlayer = byte.MaxValue;
+            attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
+            // attemptTarget.RpcProtectPlayer();
             return false;
         }
-            //キル可能だった場合のみMurderPlayerに進む
-            if (info.CanKill && info.DoKill)
+
+        //キル可能だった場合のみMurderPlayerに進む
+        if (info.CanKill && info.DoKill)
         {
             // 调用职业类对击杀发生前进行预处理如设置冷却等操作
             if (killerRole is IKiller killer2) killer2?.BeforeMurderPlayerAsKiller(info);

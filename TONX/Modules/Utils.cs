@@ -705,17 +705,14 @@ public static class Utils
             sbs[customRoleTypes.IndexOf(role.GetCustomRoleTypes())] +=
                 $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
                 $"{GetRoleDisplaySpawnMode(role, false, false)}" +
-                $"x{ColorString(
-                    GetCustomRoleTypeColor(role.GetCustomRoleTypes()),
-                    role.GetCount().ToString())}";
+                $"x{ColorString(GetCustomRoleTypeColor(role.GetCustomRoleTypes()),role.GetCount().ToString())}";
         }
 
         SendMessage(titlesb, PlayerId);
         for (var i = 0; i < sbs.Count; i++)
         {
-            if (sbs[i] != "") SendMessage(ColorString(GetCustomRoleTypeColor(customRoleTypes[i]), "● "
-                + GetString($"TabGroup.{(i == 3 ? "Addons" : (customRoleTypes[i].ToString() + "Roles"))}"))
-                + sbs[i], PlayerId);
+            if (sbs[i] != "") SendMessage(ColorString(GetCustomRoleTypeColor(customRoleTypes[i]),
+                "● " + GetString($"TabGroup.{(i == 3 ? "Addons" : (customRoleTypes[i].ToString() + "Roles"))}")) + sbs[i], PlayerId);
         }
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
