@@ -2,7 +2,11 @@
   <img width="160" src="Assets/LOGO.png" alt="logo"></br>
   <img width="160" src="Assets/Title.svg" alt="title"></br>
 
-  </br></br>
+  </br>
+
+  <h3>👉 <a href="https://github.com/TownOfNext/TownOfNext/blob/TONX-unofficial/README.md">English</a> | <a href="https://github.com/TownOfNext/TownOfNext/blob/TONX-unofficial/README_zh.md">中文</a> 👈</h3>
+  
+  </br>
 
   <h1>:fire: 𝓐𝓷𝓷𝓸𝓾𝓷𝓬𝓮𝓶𝓮𝓷𝓽 :fire:</h1>
   <p>The TOHE project ceased development on May 20, 2023, with its final release being <a href="https://github.com/KARPED1EM/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>.</p>
