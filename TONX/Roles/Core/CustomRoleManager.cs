@@ -118,7 +118,6 @@ public static class CustomRoleManager
         {
             Main.ShieldPlayer = byte.MaxValue;
             attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
-            // attemptTarget.RpcProtectPlayer();
             return false;
         }
 
