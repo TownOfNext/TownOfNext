@@ -234,6 +234,12 @@ internal class SelectRolesPatch
                 SetColorPatch.IsAntiGlitchDisabled = false;
             }
 
+            foreach (var pair in PlayerState.AllPlayerStates)
+            {
+                ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+            }
+            CustomRoleManager.CreateInstance();
+
             if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
             else if (CustomRoles.Lovers.IsEnable() && rd.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
             if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
@@ -241,13 +247,11 @@ internal class SelectRolesPatch
 
             foreach (var pair in PlayerState.AllPlayerStates)
             {
-                ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-
                 foreach (var subRole in pair.Value.SubRoles)
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
+            CustomRoleManager.CreateInstance(true);
 
-            CustomRoleManager.CreateInstance();
             foreach (var pc in Main.AllPlayerControls)
             {
                 HudManager.Instance.SetHudActive(true);

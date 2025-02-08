@@ -103,15 +103,16 @@ public static class CustomRoleManager
                 }
             }
         }
-        if (Options.MadmateSpawnMode.GetInt() == 1)
+        if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 1)
         {
             if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && attemptTarget.CanBeMadmate())
             {
                 attemptTarget.RpcSetCustomRole(CustomRoles.Madmate);
                 Logger.Info($"注册附加职业：{attemptTarget.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
-                attemptTarget.ShowPopUp(Translator.GetString("MadmateSelfVoteModeSuccessfulMutiny"));
+                attemptTarget.ShowPopUp(Translator.GetString("BecomeMadmateCuzMadmateMode"));
+                attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
+                return false;
             }
-            return false;
         }
 
         if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == attemptTarget.PlayerId && Utils.IsAllAlive)
@@ -283,14 +284,22 @@ public static class CustomRoleManager
         OnCheckMurderPlayerOthers_After.Clear();
         OnFixedUpdateOthers.Clear();
     }
-    public static void CreateInstance()
+    public static void CreateInstance(bool forSubRoles = false)
     {
-        foreach (var pc in Main.AllPlayerControls)
+        if (forSubRoles)
         {
-            CreateInstance(pc.GetCustomRole(), pc);
-
-            foreach (var subRole in PlayerState.GetByPlayerId(pc.PlayerId).SubRoles)
-                CreateInstance(subRole, pc);
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                foreach (var subRole in PlayerState.GetByPlayerId(pc.PlayerId).SubRoles)
+                    CreateInstance(subRole, pc);
+            }
+        }
+        else
+        {
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                CreateInstance(pc.GetCustomRole(), pc);
+            }
         }
     }
     public static void CreateInstance(CustomRoles role, PlayerControl player)

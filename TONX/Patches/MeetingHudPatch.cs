@@ -36,7 +36,7 @@ public static class MeetingHudPatch
             if (voter != null)
             {
                 //主动叛变模式
-                if (Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
+                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
                 {
                     if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && voter.CanBeMadmate())
                     {

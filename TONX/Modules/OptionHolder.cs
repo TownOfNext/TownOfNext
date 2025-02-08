@@ -604,7 +604,7 @@ public static class Options
             .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
 
         #region Options of Lover
-        SetupRoleOptions(80100, TabGroup.Addons, CustomRoles.Lovers, Utils.GetRoleColor(CustomRoles.Lovers), assignCountRule: new(2, 2, 2));
+        SetupAddonOptions(80100, TabGroup.Addons, CustomRoles.Lovers, Rates, false);
         LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
             .SetGameMode(CustomGameMode.Standard);
         LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
@@ -1072,11 +1072,14 @@ public static class Options
         => SetupAddonOptions(id, tab, role, Rates, true, customGameMode);
     public static void SetupAddonOptions(int id, TabGroup tab, CustomRoles role, string[] selections, bool canSetNum, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
+        IntegerValueRule assignCountRule = role is CustomRoles.Lovers ? new(2, 2, 2) : new(1, canSetNum ? 15 : 1, 1);
+
         var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, Utils.GetRoleColor(role))
             .SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 15 : 1, 1), 1, tab, false).SetParent(spawnOption)
+
+        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false).SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);

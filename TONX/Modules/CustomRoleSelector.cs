@@ -291,7 +291,7 @@ internal static class CustomRoleSelector
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAddon()) continue;
             //if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
-            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
+            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse or CustomRoles.Madmate) continue;
             AddonRolesList.Add(role);
         }
     }
