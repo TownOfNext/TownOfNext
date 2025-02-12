@@ -49,13 +49,13 @@ static class CustomRolesHelper
     {
         return
             role is CustomRoles.Crewmate or
-CustomRoles.Engineer or
+                CustomRoles.Engineer or
                 CustomRoles.Scientist or
                 CustomRoles.Tracker or
                 CustomRoles.Noisemaker or
                 CustomRoles.GuardianAngel or
                 CustomRoles.Impostor or
-CustomRoles.Shapeshifter or
+                CustomRoles.Shapeshifter or
                 CustomRoles.Phantom;
     }
 
