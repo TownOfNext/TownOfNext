@@ -374,6 +374,8 @@ class ReportDeadBodyPatch
         Main.AllPlayerControls
                     .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId))
                     .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
+        Main.AllPlayerControls
+                    .Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true)); // 会议开始前强制解除小黑人
         MeetingTimeManager.OnReportDeadBody();
 
         Utils.NotifyRoles(isForMeeting: true, NoCache: true);
