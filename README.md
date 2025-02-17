@@ -21,13 +21,13 @@
   <p>We are sorry that there are no translators at present, so part of the translations cannot be maintained.</p>
   <p>Supported languages are shown below.</p>
   
-  | Language Name      | Progress         | Status                |
-  | :----------------: | :--------------: | :-------------------: |
-  | English            | Fully Translated | Not Maintained        |
-  | Português (Brasil) | Fully Translated | Not Maintained        |
-  | Pусский            | Fully Translated | Not Maintained        |
-  | 简体中文           | Fully Translated | Maintaining (Default) |
-  | 繁體中文           | Fully Translated | Not Maintained        |
+  | Language Name      | Progress             | Status                |
+  | :----------------: | :------------------: | :-------------------: |
+  | English            | Fully Translated     | Not Maintained        |
+  | Português (Brasil) | Fully Translated     | Not Maintained        |
+  | Pусский            | Partially Translated | Not Maintained        |
+  | 简体中文           | Fully Translated     | Maintaining (Default) |
+  | 繁體中文           | Fully Translated     | Not Maintained        |
 
   </br></br>
 
