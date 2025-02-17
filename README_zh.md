@@ -16,6 +16,21 @@
 
   </br></br>
 
+  <h1>:memo: 翻译 :memo:</h1>
+
+  <p>我们很抱歉，当前没有翻译人员，部分翻译无法被维护。</p>
+  <p>本模组支持的语言如下表所示。</p>
+  
+  | 语言名称           | 翻译进度 | 状态         |
+  | :----------------: | :-----: | :---------: |
+  | English            | 完全翻译 | 停止维护     |
+  | Português (Brasil) | 完全翻译 | 停止维护     |
+  | Pусский            | 完全翻译 | 停止维护     |
+  | 简体中文           | 完全翻译 | 维护中 (默认) |
+  | 繁體中文           | 完全翻译 | 停止维护     |
+
+  </br></br>
+
   <h1>:sparkling_heart: 鸣谢 :sparkling_heart:</h1>
   <h3>:muscle: <a href="https://github.com/tukasa0001/TownOfHost">TownOfHost</a> :muscle:</h3>
     <p>一切基于 TOH</p>
