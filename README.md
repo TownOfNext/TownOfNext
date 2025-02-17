@@ -17,11 +17,17 @@
   </br></br>
 
   <h1>:memo: 𝓣𝓻𝓪𝓷𝓼𝓵𝓪𝓽𝓲𝓸𝓷𝓼 :memo:</h1>
-  <a href="https://crowdin.com/translate/tohe/all/zhcn-zhtw"><img alt="zh-TW translation" src="https://img.shields.io/badge/dynamic/json?color=blue&label=Traditional Chinese&style=for-the-badge&logo=crowdin&query=%24.progress[?(@.data.languageId==%27zh-TW%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15439024-581283.json" ></crowdin-copy-button></a>
-  <a href="https://crowdin.com/translate/tohe/all/zhcn-en"><img alt="en translation" src="https://img.shields.io/badge/dynamic/json?color=blue&label=English&style=for-the-badge&logo=crowdin&query=%24.progress[?(@.data.languageId==%27en%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15439024-581283.json" ></crowdin-copy-button></a>
-  <a href="https://crowdin.com/translate/tohe/all/zhcn-ru"><img alt="ru translation" src="https://img.shields.io/badge/dynamic/json?color=blue&label=Russian&style=for-the-badge&logo=crowdin&query=%24.progress[?(@.data.languageId==%27ru%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15439024-581283.json" ></crowdin-copy-button></a>
-  <a href="https://crowdin.com/translate/toeh-2/all/zhcn-ptbr"><img alt="pt-BR translation" src="https://img.shields.io/badge/dynamic/json?color=blue&label=Brazilian&style=for-the-badge&logo=crowdin&query=%24.progress[?(@.data.languageId==%27pt-BR%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15789641-581493.json" ></crowdin-copy-button></a>
 
+  <p>We are sorry that there are no translators at present, so part of the translations cannot be maintained.</p>
+  <p>Supported languages are shown below.</p>
+  
+  | Language Name      | Progress         | Status                |
+  | :----------------: | :--------------: | :-------------------: |
+  | English            | Fully Translated | Not Maintained        |
+  | Português (Brasil) | Fully Translated | Not Maintained        |
+  | Pусский            | Fully Translated | Not Maintained        |
+  | 简体中文           | Fully Translated | Maintaining (Default) |
+  | 繁體中文           | Fully Translated | Not Maintained        |
 
   </br></br>
 
