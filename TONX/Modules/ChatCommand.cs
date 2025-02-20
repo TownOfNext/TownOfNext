@@ -77,7 +77,6 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 GameStartManagerPatch.HideName.text = Main.HideName.Value;
                 return (MsgRecallMode.Block, null);
             }),
-
             new(["now", "n" ], CommandAccess.All, mc =>
             {
                 switch (mc.Args)
@@ -110,7 +109,6 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 }
                 return (MsgRecallMode.Block, null);
             }),
-
             new(["up", "specify"], CommandAccess.Host, mc =>
             {
                 SpecifyRole(mc.Args, mc.Player.PlayerId);

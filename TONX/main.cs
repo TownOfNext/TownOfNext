@@ -244,7 +244,7 @@ public class Main : BasePlugin
                 {CustomRoles.Crewmate, "#ffffff"},
                 {CustomRoles.Engineer, "#8cffff"},
                 {CustomRoles.Scientist, "#8cffff"},
-                  {CustomRoles.Noisemaker, "#8cffff"},
+                {CustomRoles.Noisemaker, "#8cffff"},
                 {CustomRoles.Tracker, "#8cffff"},
                 {CustomRoles.Phantom, "#ff1919"},
                 {CustomRoles.GuardianAngel, "#ffffff"},

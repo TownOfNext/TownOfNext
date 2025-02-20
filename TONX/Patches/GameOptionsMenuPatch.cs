@@ -42,6 +42,18 @@ namespace TONX
             {
                 Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
                 Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
+                Color32 buttonColor = tab switch
+                {
+                    TabGroup.SystemSettings => Main.UnityModColor,
+                    TabGroup.GameSettings => new Color32(89, 239, 131, 255),
+                    TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
+                    TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
+                    TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
+                    TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
+                    TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
+                    _ => Color.white,
+                };
+
                 var SettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
                 SettingsTab.name = tab.ToString() + " TAB";
                 TONXMenuName.Add(SettingsTab.name);
@@ -55,21 +67,11 @@ namespace TONX
                 SettingsButton.name = tab.ToString() + " BUTTON";
                 SettingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
                 SettingsButton.buttonText.DestroyTranslator();
-                SettingsButton.buttonText.text = GetString($"TabGroup.{tab}");
+                SettingsButton.buttonText.text = Utils.ColorString(buttonColor, GetString($"TabGroup.{tab}"));
                 var activeSprite = SettingsButton.activeSprites.GetComponent<SpriteRenderer>();
                 var selectedSprite = SettingsButton.selectedSprites.GetComponent<SpriteRenderer>();
-                Color32 buttonColor = tab switch
-                {
-                    TabGroup.SystemSettings => Main.UnityModColor,
-                    TabGroup.GameSettings => new Color32(89, 239, 131, 255),
-                    TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
-                    TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
-                    TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
-                    TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
-                    TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
-                    _ => Color.white,
-                };
-                activeSprite.color = selectedSprite.color = buttonColor;
+                var inactiveSprite = SettingsButton.inactiveSprites.GetComponent<SpriteRenderer>();
+                activeSprite.color = selectedSprite.color = inactiveSprite.color = buttonColor;
                 SettingsButton.OnClick.AddListener((Action)(() =>
                 {
                     __instance.ChangeTab((int)tab+3, false);  // バニラタブを閉じる

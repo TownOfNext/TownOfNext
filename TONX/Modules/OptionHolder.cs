@@ -523,7 +523,7 @@ public static class Options
             .SetValueFormat(OptionFormat.Players);
         NeutralRoleWinTogether = BooleanOptionItem.Create(1_003_003, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetHeader(true);
+            .SetHeader(true);
         NeutralWinTogether = BooleanOptionItem.Create(1_003_004, "NeutralWinTogether", false, TabGroup.NeutralRoles, false).SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
@@ -756,8 +756,8 @@ public static class Options
         CheatResponses = StringOptionItem.Create(2_004_006, "CheatResponses", CheatResponsesNames, 0, TabGroup.SystemSettings, false)
             .SetColor(new Color32(147, 118, 224, byte.MaxValue));
         RoleAssigningAlgorithm = StringOptionItem.Create(2_004_007, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
-           .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
-           .SetColor(new Color32(147, 118, 224, byte.MaxValue));
+            .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
+            .SetColor(new Color32(147, 118, 224, byte.MaxValue));
 
         DebugModeManager.SetupCustomOption();
 
@@ -864,7 +864,7 @@ public static class Options
         DisableAirshipVital = BooleanOptionItem.Create(3_004_016, "DisableAirshipVital", false, TabGroup.GameSettings, false).SetParent(DisableAirshipDevices)
             .SetGameMode(CustomGameMode.Standard);
         DisableFungleDevices = BooleanOptionItem.Create(3_004_017, "DisableFungleDevices", false, TabGroup.GameSettings, false).SetParent(DisableDevices)
-                .SetGameMode(CustomGameMode.Standard);
+            .SetGameMode(CustomGameMode.Standard);
         DisableFungleVital = BooleanOptionItem.Create(3_004_018, "DisableFungleVital", false, TabGroup.GameSettings, false).SetParent(DisableFungleDevices)
             .SetGameMode(CustomGameMode.Standard);
         DisableDevicesIgnoreConditions = BooleanOptionItem.Create(3_005_001, "IgnoreConditions", false, TabGroup.GameSettings, false).SetParent(DisableDevices)
@@ -942,7 +942,7 @@ public static class Options
 
         // 破坏时间设定
         SabotageTimeControl = BooleanOptionItem.Create(3_021_001, "SabotageTimeControl", false, TabGroup.GameSettings, false)
-           .SetColor(new Color32(241, 212, 227, byte.MaxValue))
+            .SetColor(new Color32(241, 212, 227, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
         PolusReactorTimeLimit = FloatOptionItem.Create(3_021_002, "PolusReactorTimeLimit", new(1f, 60f, 1f), 30f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
@@ -951,8 +951,8 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         FungleReactorTimeLimit = FloatOptionItem.Create(3_021_004, "FungleReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
-               .SetValueFormat(OptionFormat.Seconds)
-               .SetGameMode(CustomGameMode.Standard);
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetGameMode(CustomGameMode.Standard);
         FungleMushroomMixupDuration = FloatOptionItem.Create(3_021_005, "FungleMushroomMixupDuration", new(1f, 20f, 1f), 10f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
@@ -1017,23 +1017,23 @@ public static class Options
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(3_042_001, "LadderDeath", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         LadderDeathChance = StringOptionItem.Create(3_042_002, "LadderDeathChance", Rates[1..], 0, TabGroup.GameSettings, false).SetParent(LadderDeath)
             .SetGameMode(CustomGameMode.Standard);
 
         // 修正首刀时间
         FixFirstKillCooldown = BooleanOptionItem.Create(3_043_001, "FixFirstKillCooldown", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 首刀保护
         ShieldPersonDiedFirst = BooleanOptionItem.Create(3_044_001, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 杀戮闪烁持续
         KillFlashDuration = FloatOptionItem.Create(3_045_001, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)
-           .SetColor(new Color32(193, 255, 209, byte.MaxValue))
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
 
@@ -1051,14 +1051,14 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeOtherTasks = BooleanOptionItem.Create(3_050_003, "GhostCanSeeOtherTasks", true, TabGroup.GameSettings, false)
-                .SetGameMode(CustomGameMode.Standard)
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeOtherVotes = BooleanOptionItem.Create(3_050_004, "GhostCanSeeOtherVotes", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeDeathReason = BooleanOptionItem.Create(3_050_005, "GhostCanSeeDeathReason", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-           .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
 
         #endregion 
 
