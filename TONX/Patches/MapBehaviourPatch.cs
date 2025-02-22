@@ -13,13 +13,11 @@ public class MapBehaviourPatch
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowNormalMap)), HarmonyPostfix]
     public static void ShowNormalMapPostfix(MapBehaviour __instance)
     {
-        if (!ShouldShowRealTime) return;
         InitializeCustomHerePoints(__instance);
     }
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowSabotageMap)), HarmonyPostfix]
     public static void ShowSabotageMapPostfix(MapBehaviour __instance)
     {
-        if (!ShouldShowRealTime) return;
         InitializeCustomHerePoints(__instance);
     }
 
@@ -40,6 +38,7 @@ public class MapBehaviourPatch
             if (!pc.AmOwner && pc != null)
             {
                 var herePoint = Object.Instantiate(__instance.HerePoint, __instance.HerePoint.transform.parent);
+                herePoint.gameObject.SetActive(false);
                 herePoints.Add(pc, herePoint);
             }
         }
