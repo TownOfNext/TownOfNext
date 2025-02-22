@@ -54,31 +54,34 @@ namespace TONX
                     _ => Color.white,
                 };
 
-                var SettingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
-                SettingsTab.name = tab.ToString() + " TAB";
-                TONXMenuName.Add(SettingsTab.name);
-                var vanillaOptions = SettingsTab.GetComponentsInChildren<OptionBehaviour>();
+                var settingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
+                settingsTab.name = tab.ToString() + " TAB";
+                TONXMenuName.Add(settingsTab.name);
+                var vanillaOptions = settingsTab.GetComponentsInChildren<OptionBehaviour>();
                 foreach (var vanillaOption in vanillaOptions)
                 {
                     Object.Destroy(vanillaOption.gameObject);
                 }
 
-                var SettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
-                SettingsButton.name = tab.ToString() + " BUTTON";
-                SettingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
-                SettingsButton.buttonText.DestroyTranslator();
-                SettingsButton.buttonText.text = Utils.ColorString(buttonColor, GetString($"TabGroup.{tab}"));
-                var activeSprite = SettingsButton.activeSprites.GetComponent<SpriteRenderer>();
-                var selectedSprite = SettingsButton.selectedSprites.GetComponent<SpriteRenderer>();
-                var inactiveSprite = SettingsButton.inactiveSprites.GetComponent<SpriteRenderer>();
+                var settingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
+                settingsButton.name = tab.ToString() + " BUTTON";
+                settingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
+                settingsButton.buttonText.DestroyTranslator();
+                settingsButton.buttonText.text = Utils.ColorString(buttonColor, GetString($"TabGroup.{tab}"));
+                var activeSprite = settingsButton.activeSprites.GetComponent<SpriteRenderer>();
+                var selectedSprite = settingsButton.selectedSprites.GetComponent<SpriteRenderer>();
+                var inactiveSprite = settingsButton.inactiveSprites.GetComponent<SpriteRenderer>();
                 activeSprite.color = selectedSprite.color = inactiveSprite.color = buttonColor;
-                SettingsButton.OnClick.AddListener((Action)(() =>
+                settingsButton.OnClick.AddListener((Action)(() =>
                 {
                     __instance.ChangeTab((int)tab+3, false);  // バニラタブを閉じる
-                    SettingsTab.gameObject.SetActive(true);
+                    settingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
-                    SettingsButton.SelectButton(true);
+                    settingsButton.SelectButton(true);
                 }));
+
+                // 生成Tab图标
+                var settingsImage = CreateTabImage(__instance, settingsTab, $"TONX.Resources.Images.TabIcon_{tab}.png");
 
                 // 各設定スイッチを作成
                 var template = __instance.GameSettingsTab.stringOptionOrigin;
@@ -90,10 +93,10 @@ namespace TONX
                     {
                         if (option.IsText) 
                         {
-                            CategoryHeaders.Add(CreateCategoryHeader(__instance, SettingsTab, option));
+                            CategoryHeaders.Add(CreateCategoryHeader(__instance, settingsTab, option));
                             continue;
                         }
-                        var stringOption = Object.Instantiate(template, SettingsTab.settingsContainer);
+                        var stringOption = Object.Instantiate(template, settingsTab.settingsContainer);
                         scOptions.Add(stringOption);
                         stringOption.SetClickMask(__instance.GameSettingsButton.ClickMask);
                         stringOption.SetUpFromData(stringOption.data, GameOptionsMenu.MASK_LAYER);
@@ -120,17 +123,25 @@ namespace TONX
                     }
                     option.OptionBehaviour.gameObject.SetActive(true);
                 }
-                SettingsTab.Children = scOptions;
-                SettingsTab.gameObject.SetActive(false);
+                settingsTab.Children = scOptions;
+                settingsTab.gameObject.SetActive(false);
 
                 // 存储模组设置按钮
-                tonxSettingsTab.Add(SettingsTab);
-                tonxSettingsButton.Add(SettingsButton);
+                tonxSettingsTab.Add(settingsTab);
+                tonxSettingsButton.Add(settingsButton);
             }
         }
-        private const float JumpButtonSpacing = 0.6f;
-        // ジャンプしたカテゴリヘッダのScrollerとの相対Y座標がこの値になる
-        private const float CategoryJumpY = 2f;
+        private static MapSelectButton CreateTabImage(GameSettingMenu __instance, GameOptionsMenu tonxTab, string resourcePath)
+        {
+            var image = Utils.LoadSprite(resourcePath, 100f);
+            var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
+            tabImage.SetImage(image, GameOptionsMenu.MASK_LAYER);
+            tabImage.transform.localPosition = new(7.1f, -0.6f, -10f);
+            Object.Destroy(tabImage.Button.ClickSound);
+            tabImage.Button.activeSprites.transform.GetChild(0).gameObject.SetActive(false);
+            tabImage.Button.activeSprites.GetComponent<SpriteRenderer>().sprite = tabImage.Button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = null;
+            return tabImage;
+        }
         private static CategoryHeaderMasked CreateCategoryHeader(GameSettingMenu __instance, GameOptionsMenu tonxTab, OptionItem option)
         {
             var categoryHeader = Object.Instantiate(__instance.GameSettingsTab.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, tonxTab.settingsContainer);

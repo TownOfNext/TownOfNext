@@ -4,13 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
-using Sentry.Internal.Extensions;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
-using TONX.Roles.Crewmate;
 using UnityEngine;
 using UnityEngine.UI;
-using YamlDotNet.Serialization;
 using static TONX.Translator;
 using Object = UnityEngine.Object;
 
@@ -46,23 +43,23 @@ namespace TONX
             tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
         }
 
-        public static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset, string buttonText, int targetMenu)
+        private static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset, string buttonText, int targetMenu)
         {
-            var SettingsButton = Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
-            SettingsButton.name = buttonName;
-            SettingsButton.transform.localPosition = buttonPosition + offset;
-            SettingsButton.transform.localScale = buttonSize;
-            SettingsButton.buttonText.DestroyTranslator();
-            SettingsButton.buttonText.text = buttonText;
-            SettingsButton.OnClick.RemoveAllListeners();
-            SettingsButton.OnClick.AddListener((Action)(() => 
+            var settingsButton = Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
+            settingsButton.name = buttonName;
+            settingsButton.transform.localPosition = buttonPosition + offset;
+            settingsButton.transform.localScale = buttonSize;
+            settingsButton.buttonText.DestroyTranslator();
+            settingsButton.buttonText.text = buttonText;
+            settingsButton.OnClick.RemoveAllListeners();
+            settingsButton.OnClick.AddListener((Action)(() => 
             {
                 __instance.ChangeTab((StringNames)targetMenu);
-                SettingsButton.SelectButton(true);
+                settingsButton.SelectButton(true);
             }));
-            SettingsButton.OnMouseOut.RemoveAllListeners();
-            SettingsButton.OnMouseOver.RemoveAllListeners();
-            return SettingsButton;
+            settingsButton.OnMouseOut.RemoveAllListeners();
+            settingsButton.OnMouseOver.RemoveAllListeners();
+            return settingsButton;
         }
 
         [HarmonyPatch(nameof(LobbyViewSettingsPane.ChangeTab)), HarmonyPostfix]
@@ -77,7 +74,7 @@ namespace TONX
             CreateCustomOptions(__instance, (int)__instance.currentTab == 3558);
         }
 
-        public static void CreateCustomOptions(LobbyViewSettingsPane __instance, bool isRolesOverview)
+        private static void CreateCustomOptions(LobbyViewSettingsPane __instance, bool isRolesOverview)
         {
             // 删除原版gameobject
             foreach (var vanillaOption in __instance.settingsInfo)
@@ -136,7 +133,7 @@ namespace TONX
             return categoryHeader;
         }
 
-        public static ViewSettingsInfoPanel CreateOption(LobbyViewSettingsPane __instance, OptionItem option, ViewSettingsInfoPanel template, string settingText)
+        private static ViewSettingsInfoPanel CreateOption(LobbyViewSettingsPane __instance, OptionItem option, ViewSettingsInfoPanel template, string settingText)
         {
             var infoPanelOption = Object.Instantiate(template, __instance.settingsContainer);
             infoPanelOption.SetMaskLayer(LobbyViewSettingsPane.MASK_LAYER);
