@@ -9,6 +9,7 @@ namespace TONX;
 public class MapBehaviourPatch
 {
     private static Dictionary<PlayerControl, SpriteRenderer> herePoints = new Dictionary<PlayerControl, SpriteRenderer>();
+    private static Dictionary<PlayerControl, Vector3> preMeetingPostions = new Dictionary<PlayerControl, Vector3>();
     private static bool ShouldShowRealTime => !PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(Roles.Core.CustomRoles.GM) || Main.GodMode.Value;
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowNormalMap)), HarmonyPostfix]
     public static void ShowNormalMapPostfix(MapBehaviour __instance)
@@ -65,7 +66,7 @@ public class MapBehaviourPatch
             herePoint.material.SetColor(PlayerMaterial.VisorColor, Palette.VisorColor);
 
             // 设置图标位置
-            var vector = pc.transform.position;
+            var vector = GameStates.IsMeeting && preMeetingPostions.TryGetValue(pc, out var pmp) ? pmp : pc.transform.position;
             vector /= ShipStatus.Instance.MapScale;
             vector.x *= Mathf.Sign(ShipStatus.Instance.transform.localScale.x);
             vector.z = -1f;
@@ -82,6 +83,20 @@ public class MapBehaviourPatch
             var herePoint = kvp.Value;
             if (herePoint == null) continue;
             herePoint.gameObject.SetActive(false);
+        }
+    }
+
+    [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.SetPreMeetingPosition)), HarmonyPostfix]
+    public static void SetPreMeetingPositionPosfix()
+    {
+        preMeetingPostions.Clear();
+        foreach (var pc in PlayerControl.AllPlayerControls)
+        {
+            if (!pc.AmOwner && pc != null)
+            {
+                // 记录玩家在开会前的位置
+                preMeetingPostions.Add(pc, pc.transform.position);
+            }
         }
     }
 }
