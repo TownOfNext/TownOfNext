@@ -17,11 +17,11 @@ public sealed class Collector : RoleBase
             typeof(Collector),
             player => new Collector(player),
             CustomRoles.Collector,
-         () => RoleTypes.Scientist,
+            () => RoleTypes.Scientist,
             CustomRoleTypes.Neutral,
             75_1_2_1200,
              SetupCustomOption,
-            "colle|¼¯Æ±|¼ÄÆ±",
+            "colle|é›†ç¥¨è€…|é›†ç¥¨",
             "#9d8892"
 
         );
