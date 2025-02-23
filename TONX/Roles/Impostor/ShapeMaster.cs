@@ -15,7 +15,7 @@ public sealed class ShapeMaster : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             1300,
             SetupOptionItem,
-            "sha|Ç§Ãæ¹í|Ç§Ãæ"
+            "sha|åƒé¢é¬¼|åƒé¢"
         );
     public ShapeMaster(PlayerControl player)
     : base(

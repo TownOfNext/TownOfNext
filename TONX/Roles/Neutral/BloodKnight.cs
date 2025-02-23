@@ -16,7 +16,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
            CustomRoleTypes.Neutral,
            50923,
            SetupOptionItem,
-           "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
+           "bn|å—œè¡€éª‘å£«|éª‘å£«",
            "#630000",
            true,
            countType: CountTypes.BloodKnight

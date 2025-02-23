@@ -15,7 +15,7 @@ public sealed class Jester : RoleBase
             CustomRoleTypes.Neutral,
             50000,
             SetupOptionItem,
-            "je|Ğ¡³ó|³ó»Ê",
+            "je|å°ä¸‘",
             "#ec62a5"
         );
     public Jester(PlayerControl player)
@@ -49,7 +49,7 @@ public sealed class Jester : RoleBase
     {
         if (Is(reporter) && target == null && !OptionCanUseButton.GetBool())
         {
-            Logger.Info("Òò½ûÖ¹Ğ¡³óÅÄµÆÈ¡Ïû»áÒé", "Jester.OnCheckReportDeadBody");
+            Logger.Info("ï¿½ï¿½ï¿½Ö¹Ğ¡ï¿½ï¿½ï¿½Äµï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", "Jester.OnCheckReportDeadBody");
             return false;
         }
         return true;

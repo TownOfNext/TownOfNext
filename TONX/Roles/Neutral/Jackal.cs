@@ -16,7 +16,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             CustomRoleTypes.Neutral,
             50900,
             SetupOptionItem,
-            "jac|²òÀÇ",
+            "jac|è±ºç‹¼",
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,

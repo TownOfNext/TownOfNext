@@ -16,7 +16,7 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner
             CustomRoleTypes.Neutral,
             50100,
             null,
-            "op|投機者|投机",
+            "op|鎶曟満涓讳箟鑰厊鎶曟満",
             "#00ff00"
         );
     public Opportunist(PlayerControl player)
