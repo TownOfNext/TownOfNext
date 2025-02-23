@@ -21,8 +21,7 @@ public sealed class Innocent : RoleBase
             null,
             "inno|冤罪师|冤罪",
             "#8f815e",
-           true
-           
+            true
         );
     public Innocent(PlayerControl player)
     : base(

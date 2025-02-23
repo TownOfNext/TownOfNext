@@ -17,7 +17,7 @@ public sealed class Workaholic : RoleBase
             SetupOptionItem,
             "wk|工作狂|工作",
             "#008b8b",
-             introSound: () => DestroyableSingleton<HudManager>.Instance.TaskCompleteSound
+            introSound: () => DestroyableSingleton<HudManager>.Instance.TaskCompleteSound
         );
     public Workaholic(PlayerControl player)
     : base(

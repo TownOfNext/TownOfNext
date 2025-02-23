@@ -20,10 +20,9 @@ public sealed class Collector : RoleBase
             () => RoleTypes.Scientist,
             CustomRoleTypes.Neutral,
             75_1_2_1200,
-             SetupCustomOption,
+            SetupOptionItem,
             "colle|集票者|集票",
             "#9d8892"
-
         );
     public Collector(PlayerControl player)
     : base(
@@ -51,7 +50,7 @@ public sealed class Collector : RoleBase
         CollectorCollectAmount,
     }
     public static OptionItem CollectorCollectAmount;
-    private static void SetupCustomOption()
+    private static void SetupOptionItem()
     {
         CollectorCollectAmount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.CollectorCollectAmount, new(1, 999, 1), 20, false)
             .SetValueFormat(OptionFormat.Votes);

@@ -21,8 +21,7 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
             null,
             "prov|自爆卡车",
             "#74ba43",
-           true
-
+            true
         );
     public Provocateur(PlayerControl player)
     : base(

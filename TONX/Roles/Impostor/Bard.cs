@@ -16,8 +16,8 @@ public sealed class Bard : RoleBase, IImpostor
             4900,
             null,
             "ba|吟游詩人|诗人"
-            #if RELEASE
-,
+#if RELEASE
+            ,
             Hidden: true // For Debug
 #endif
 
