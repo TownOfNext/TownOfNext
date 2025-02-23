@@ -16,7 +16,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             CustomRoleTypes.Neutral,
             51700,
             null,
-            "ht|fff团|fff",
+            "ht|fff團|fff|fff团",
             "#414b66",
             true
         );
@@ -47,7 +47,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
         {
             killer.RpcMurderPlayer(killer);
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Sacrifice;
-            Logger.Info($"{killer.GetRealName()} ��ɱ�˷�Ŀ����ң�׳�������ˣ�bushi��", "FFF");
+            Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
         }
     }
     public bool CheckWin(ref CustomRoles winnerRole)

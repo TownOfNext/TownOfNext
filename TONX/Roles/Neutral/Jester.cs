@@ -15,7 +15,7 @@ public sealed class Jester : RoleBase
             CustomRoleTypes.Neutral,
             50000,
             SetupOptionItem,
-            "je|小丑",
+            "je|小丑|丑皇",
             "#ec62a5"
         );
     public Jester(PlayerControl player)
@@ -49,7 +49,7 @@ public sealed class Jester : RoleBase
     {
         if (Is(reporter) && target == null && !OptionCanUseButton.GetBool())
         {
-            Logger.Info("���ֹС���ĵ�ȡ������", "Jester.OnCheckReportDeadBody");
+            Logger.Info("因禁止小丑拍灯取消会议", "Jester.OnCheckReportDeadBody");
             return false;
         }
         return true;
