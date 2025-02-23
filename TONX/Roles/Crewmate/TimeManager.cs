@@ -15,7 +15,7 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
             CustomRoleTypes.Crewmate,
             21600,
             SetupOptionItem,
-            "tm|时间操控者",
+            "tm|時間操控者|时间操控人|时间操控|时间管理|时间管理大师|时间管理者|时间管理人",
             "#6495ed"
         );
     public TimeManager(PlayerControl player)
