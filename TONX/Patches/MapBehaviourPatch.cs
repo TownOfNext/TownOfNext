@@ -86,8 +86,8 @@ public class MapBehaviourPatch
         }
     }
 
-    [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.SetPreMeetingPosition)), HarmonyPostfix]
-    public static void SetPreMeetingPositionPosfix()
+    [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.SetPreMeetingPosition)), HarmonyPrefix]
+    public static void SetPreMeetingPositionPrefix()
     {
         preMeetingPostions.Clear();
         foreach (var pc in PlayerControl.AllPlayerControls)
