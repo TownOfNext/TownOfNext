@@ -42,7 +42,6 @@ public static class MeetingStartNotify
         }
 
         msgToSend = new();
-        CustomRoleManager.AllActiveRoles.Values.Do(x => x.NotifyOnMeetingStart(ref msgToSend));
 
         //Mimic Msg Combine
         var mimicSb = new StringBuilder();

@@ -33,6 +33,7 @@ public sealed class Paranoia : RoleBase
     }
 
     private int SkillLimit;
+    private int oldSkillLimit;
     private static void SetupOptionItem()
     {
         OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.ParanoiaNumOfUseButton, new(1, 99, 1), 3, false)
@@ -40,7 +41,7 @@ public sealed class Paranoia : RoleBase
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.ParanoiaVentCooldown, new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Add() => SkillLimit = OptionSkillNums.GetInt();
+    public override void Add() => oldSkillLimit = SkillLimit = OptionSkillNums.GetInt();
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -76,7 +77,11 @@ public sealed class Paranoia : RoleBase
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
-        msgToSend.Add((Translator.GetString("SkillUsedLeft") + SkillLimit.ToString(), Player.PlayerId, null));
+        if (SkillLimit != oldSkillLimit)
+        {
+            oldSkillLimit = SkillLimit;
+            msgToSend.Add((Translator.GetString("SkillUsedLeft") + SkillLimit.ToString(), Player.PlayerId, "<color=#aaaaff>" + Translator.GetString("DefaultSystemMessageTitle") + "</color>"));
+        }
     }
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner) => Player.RpcResetAbilityCooldown();
 }
