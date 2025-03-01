@@ -65,7 +65,6 @@ public sealed class Paranoia : RoleBase
         if (SkillLimit >= 1)
         {
             var user = physics.myPlayer;
-            physics.RpcBootFromVent(ventId);
             user?.NoCheckStartMeeting(user?.Data);
             SkillLimit--;
         }
@@ -83,5 +82,8 @@ public sealed class Paranoia : RoleBase
             msgToSend.Add((Translator.GetString("SkillUsedLeft") + SkillLimit.ToString(), Player.PlayerId, "<color=#aaaaff>" + Translator.GetString("DefaultSystemMessageTitle") + "</color>"));
         }
     }
-    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner) => Player.RpcResetAbilityCooldown();
+    public override void AfterMeetingTasks()
+    {
+        Player.RpcResetAbilityCooldown();
+    }
 }

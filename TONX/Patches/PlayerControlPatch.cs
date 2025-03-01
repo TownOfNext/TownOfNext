@@ -701,10 +701,9 @@ class CoEnterVentPatch
                 !user.CanUseImpostorVentButton()) //インポスターベントも使えない
         )
         {
-
             _ = new LateTask(() =>
             {
-                __instance.RpcBootFromVent(id);
+                if (!GameStates.IsMeeting && user.inVent) __instance.RpcBootFromVent(id);
             }, 0.5f, "Cancel Vent");
             return false;
         }
