@@ -66,7 +66,7 @@ public sealed class Mayor : RoleBase
         {
             var user = physics.myPlayer;
             user?.ReportDeadBody(null);
-            if (MeetingHud.Instance.isActiveAndEnabled) LeftButtonCount--;
+            if (GameStates.IsMeeting) LeftButtonCount--;
         }
         return false;
     }

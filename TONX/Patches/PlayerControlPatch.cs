@@ -696,18 +696,10 @@ class CoEnterVentPatch
 
         var user = __instance.myPlayer;
 
-        if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
-                    (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
-                !user.CanUseImpostorVentButton()) //インポスターベントも使えない
-        )
-        {
-            // _ = new LateTask(() =>
-            // {
-                // if (!GameStates.IsMeeting && user.inVent) __instance.RpcBootFromVent(id);
-            // }, 0.5f, "Cancel Vent");
-            return false; // 返回false后玩家不会进入管道
-        }
-        return true;
+        return !((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
+            (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
+            !user.CanUseImpostorVentButton()) //インポスターベントも使えない
+        );
     }
 }
 
