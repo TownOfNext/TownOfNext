@@ -50,8 +50,8 @@ public sealed class Insider : RoleBase, IImpostor
     {
         optionCanSeeAllGhostsRoles = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeAllGhostsRoles, false, false);
         optionCanSeeImpostorAbilities = BooleanOptionItem.Create(RoleInfo, 11, OptionName.InsiderCanSeeImpostorAbilities, true, false);
-        optionCanSeeMadmates = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeMadmates, false, false);
-        optionKillCountToSeeMadmates = IntegerOptionItem.Create(RoleInfo, 11, OptionName.InsiderKillCountToSeeMadmates, new(0, 15, 1), 2, false, optionCanSeeMadmates)
+        optionCanSeeMadmates = BooleanOptionItem.Create(RoleInfo, 12, OptionName.InsiderCanSeeMadmates, false, false);
+        optionKillCountToSeeMadmates = IntegerOptionItem.Create(RoleInfo, 13, OptionName.InsiderKillCountToSeeMadmates, new(0, 15, 1), 2, false, optionCanSeeMadmates)
             .SetValueFormat(OptionFormat.Times);
     }
 
