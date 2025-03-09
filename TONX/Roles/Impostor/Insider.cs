@@ -25,21 +25,31 @@ public sealed class Insider : RoleBase, IImpostor
         player
     )
     {
+        canSeeImpostorAbilities = optionCanSeeImpostorAbilities.GetBool();
+        canSeeAllGhostsRoles = optionCanSeeAllGhostsRoles.GetBool();
         canSeeMadmates = optionCanSeeMadmates.GetBool();
         killCountToSeeMadmates = optionKillCountToSeeMadmates.GetInt();
     }
+    private static OptionItem optionCanSeeAllGhostsRoles;
+    private static OptionItem optionCanSeeImpostorAbilities;
     private static OptionItem optionCanSeeMadmates;
     private static OptionItem optionKillCountToSeeMadmates;
     private enum OptionName
     {
+        InsiderCanSeeAllGhostsRoles,
+        InsiderCanSeeImpostorAbilities,
         InsiderCanSeeMadmates,
         InsiderKillCountToSeeMadmates,
     }
+    private static bool canSeeAllGhostsRoles;
+    private static bool canSeeImpostorAbilities;
     private static bool canSeeMadmates;
     private static int killCountToSeeMadmates;
 
     private static void SetupOptionItem()
     {
+        optionCanSeeAllGhostsRoles = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeAllGhostsRoles, false, false);
+        optionCanSeeImpostorAbilities = BooleanOptionItem.Create(RoleInfo, 11, OptionName.InsiderCanSeeImpostorAbilities, true, false);
         optionCanSeeMadmates = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeMadmates, false, false);
         optionKillCountToSeeMadmates = IntegerOptionItem.Create(RoleInfo, 11, OptionName.InsiderKillCountToSeeMadmates, new(0, 15, 1), 2, false, optionCanSeeMadmates)
             .SetValueFormat(OptionFormat.Times);
@@ -56,14 +66,34 @@ public sealed class Insider : RoleBase, IImpostor
         if (!Player.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return false;
         return true;
     }
+    ///<summary>
+    ///Impostor, Madmateの内通能力
+    ///</summary>
+    private bool KnowAllyRole(PlayerControl target)
+        => IsAbilityAvailable(target)
+        && ((target.Is(CustomRoleTypes.Impostor) && canSeeImpostorAbilities) 
+        || (target.Is(CustomRoles.Madmate) && canSeeMadmates && MyState.GetKillCount(true) >= killCountToSeeMadmates));
+    ///<summary>
+    ///幽霊の役職が見えるケース
+    ///</summary>
+    private bool KnowDeadRole(PlayerControl target)
+        => IsAbilityAvailable(target)
+        && !target.IsAlive()
+        && (canSeeAllGhostsRoles //全員見える
+        || target.GetRealKiller() == Player); //自分でキルした相手
+    ///<summary>
+    ///内通or幽霊
+    ///</summary>
+    private bool KnowTargetRole(PlayerControl target)
+        => KnowDeadRole(target) || KnowAllyRole(target);
 
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
     {
-        enabled |= IsAbilityAvailable(seen);
+        enabled |= KnowTargetRole(seen);
     }
     public override void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
     {
-        enabled |= IsAbilityAvailable(seen);
+        enabled |= KnowAllyRole(seen);
     }
     public override string GetProgressText(bool isComms = false)
     {
@@ -83,12 +113,14 @@ public sealed class Insider : RoleBase, IImpostor
         if (seen.Is(CustomRoles.Lovers) && !seer.Is(CustomRoles.Lovers) && IsAbilityAvailable(seen))
             mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
 
-        foreach (var impostor in Main.AllPlayerControls)
+        if (canSeeImpostorAbilities)
         {
-            if (seer == impostor || impostor.Is(CustomRoles.Insider) || !impostor.Is(CustomRoleTypes.Impostor)) continue;
-            mark.Append(impostor.GetRoleClass()?.GetMark(impostor, seen, isForMeeting));
+            foreach (var impostor in Main.AllPlayerControls)
+            {
+                if (seer == impostor || impostor.Is(CustomRoles.Insider) || !impostor.Is(CustomRoleTypes.Impostor)) continue;
+                mark.Append(impostor.GetRoleClass()?.GetMark(impostor, seen, isForMeeting));
+            }
         }
-
         return mark.ToString();
     }
 }
