@@ -638,25 +638,24 @@ public static class Utils
             return;
         }
 
+        var sbs = new List<StringBuilder>();
         var sb = new StringBuilder().AppendFormat("<line-height={0}>", ActiveSettingsLineHeight);
         sb.AppendFormat("<size={0}>", ActiveSettingsSize);
         sb.Append("<size=100%>").Append(GetString("Settings")).Append('\n').Append("</size>");
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.Id is >= 2000000 and < 3000000 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null))
+        foreach (var opt in OptionItem.AllOptions.Where(x => x.Id is >= 2000000 and < 5000000 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null))
         {
             if (opt.IsHeader) sb.Append('\n');
-            if (opt.IsText) sb.Append($"   {opt.GetName()}\n");
+            if (opt.IsText)
+            {
+                sbs.Add(sb);
+                sb = new StringBuilder().AppendFormat("<line-height={0}>", ActiveSettingsLineHeight);;
+                sb.AppendFormat("<size={0}>", ActiveSettingsSize);
+                sb.Append($"   {opt.GetName()}\n");
+            }
             else sb.Append($"{opt.GetName()}: {opt.GetString()}\n");
             if (opt.GetBool()) OptionShower.ShowChildren(opt, ref sb, Color.white, 1);
         }
-        foreach (var opt in OptionItem.AllOptions.Where(x => x.Id is >= 3000000 and < 5000000 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null))
-        {
-            if (opt.IsHeader) sb.Append('\n');
-            if (opt.IsText) sb.Append($"   {opt.GetName()}\n");
-            else sb.Append($"{opt.GetName()}: {opt.GetString()}\n");
-            if (opt.GetBool()) OptionShower.ShowChildren(opt, ref sb, Color.white, 1);
-        }
-
-        SendMessage(sb.ToString().TrimStart('\n'), PlayerId);
+        for (var i = 0; i < sbs.Count; i++) SendMessage(sbs[i].ToString(), PlayerId);
     }
     public static void CopyCurrentSettings()
     {
@@ -697,22 +696,22 @@ public static class Utils
 
         var titlesb = $"{GetString("Roles")}\n<color=#ff5b70>{GetRoleName(CustomRoles.GM)}</color>:{Options.EnableGM.GetString()}";
         var customRoleTypes = new List<CustomRoleTypes> {CustomRoleTypes.Impostor, CustomRoleTypes.Crewmate, CustomRoleTypes.Neutral, CustomRoleTypes.Addon};
-        var sbs = Enumerable.Repeat(string.Empty, 4).ToList();
+        var sbs = Enumerable.Range(0, 4).Select(_ => new StringBuilder()).ToList();
 
         foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles.Concat(CustomRolesHelper.AllAddOns))
         {
             if (!role.IsEnable()) continue;
-            sbs[customRoleTypes.IndexOf(role.GetCustomRoleTypes())] +=
+            sbs[customRoleTypes.IndexOf(role.GetCustomRoleTypes())].Append(
                 $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
                 $"{GetRoleDisplaySpawnMode(role, false, false)}" +
-                $"x{ColorString(GetCustomRoleTypeColor(role.GetCustomRoleTypes()),role.GetCount().ToString())}";
+                $"x{ColorString(GetCustomRoleTypeColor(role.GetCustomRoleTypes()),role.GetCount().ToString())}");
         }
 
         SendMessage(titlesb, PlayerId);
         for (var i = 0; i < sbs.Count; i++)
         {
-            if (sbs[i] != "") SendMessage(ColorString(GetCustomRoleTypeColor(customRoleTypes[i]),
-                "● " + GetString($"TabGroup.{(i == 3 ? "Addons" : (customRoleTypes[i].ToString() + "Roles"))}")) + sbs[i], PlayerId);
+            if (sbs[i].ToString() != "") SendMessage(ColorString(GetCustomRoleTypeColor(customRoleTypes[i]),
+                "● " + GetString($"TabGroup.{(i == 3 ? "Addons" : (customRoleTypes[i].ToString() + "Roles"))}")) + sbs[i].ToString(), PlayerId);
         }
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
