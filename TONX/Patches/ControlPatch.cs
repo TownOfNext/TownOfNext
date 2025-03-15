@@ -51,13 +51,15 @@ internal class ControllerManagerUpdatePatch
         //职业介绍
         if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
         {
-            if (Input.GetKey(KeyCode.F1))
+            if (Input.GetKeyDown(KeyCode.F1))
             {
-                if (!InGameRoleInfoMenu.Showing)
+                if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
+                else
+                {
                     InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
-                InGameRoleInfoMenu.Show();
+                    InGameRoleInfoMenu.Show();
+                }
             }
-            else InGameRoleInfoMenu.Hide();
         }
         else InGameRoleInfoMenu.Hide();
         //更改分辨率

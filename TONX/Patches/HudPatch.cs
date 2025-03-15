@@ -1,12 +1,40 @@
 using HarmonyLib;
 using System.Linq;
 using System.Text;
+using TONX.Attributes;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
+using TONX.Modules;
 using static TONX.Translator;
+using System;
 
 namespace TONX;
+
+class HudManagerInitializePatch
+{
+    public static PassiveButton RoleInfoButton;
+    [GameModuleInitializer]
+    public static void CreateRoleInfoButton()
+    {
+        if (!GameStates.IsModHost) return;
+        var template = HudManager.Instance.MapButton;
+        RoleInfoButton = UnityEngine.Object.Instantiate(template, template.transform.parent);
+        RoleInfoButton.OnClick.AddListener((Action)(() =>
+        {
+            if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
+            {
+                if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
+                else
+                {
+                    InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
+                    InGameRoleInfoMenu.Show();
+                }
+            }
+        }));
+        RoleInfoButton.gameObject.SetActive(true);
+    }
+}
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 class HudManagerPatch
@@ -22,6 +50,15 @@ class HudManagerPatch
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        if (HudManagerInitializePatch.RoleInfoButton != null) 
+        {
+            var template = HudManager.Instance.MapButton;
+            var RoleInfoButton = HudManagerInitializePatch.RoleInfoButton;
+            RoleInfoButton.gameObject.SetActive(template.isActiveAndEnabled);
+            RoleInfoButton.transform.localPosition = template.transform.localPosition - new Vector3(0f, 0.8f, 0f);
+        }
+
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
         var TaskTextPrefix = "";
