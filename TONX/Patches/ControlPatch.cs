@@ -59,9 +59,14 @@ internal class ControllerManagerUpdatePatch
                     InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
+                HudManagerInitializePatch.RoleInfoButton?.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }
-        else InGameRoleInfoMenu.Hide();
+        else if (InGameRoleInfoMenu.Showing)
+        {
+            InGameRoleInfoMenu.Hide();
+            HudManagerInitializePatch.RoleInfoButton?.SelectButton(false);
+        }
         //更改分辨率
         if (Input.GetKeyDown(KeyCode.F11))
         {

@@ -30,8 +30,12 @@ class HudManagerInitializePatch
                     InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
+                RoleInfoButton.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }));
+        RoleInfoButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-inactive.png", 100f);
+        RoleInfoButton.activeSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-active.png", 100f);
+        RoleInfoButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-selected.png", 100f);
         RoleInfoButton.gameObject.SetActive(true);
     }
 }
