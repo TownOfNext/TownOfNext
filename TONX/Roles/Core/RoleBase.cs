@@ -300,6 +300,16 @@ public abstract class RoleBase : IDisposable
     { }
 
     /// <summary>
+    /// 在任务切换时调用的函数
+    /// 运行后总是调用SyncSettings()和RpcResetAbilityCooldown()
+    /// </summary>
+    /// <param name="initialState">是否是游戏刚开始第一轮出生</param>
+    public virtual void OnSpawn(bool initialState = false)
+    {
+
+    }
+
+    /// <summary>
     /// 玩家发送消息后调用的函数
     /// </summary>
     /// <param name="msg">玩家发送的消息</param>

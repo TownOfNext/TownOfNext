@@ -65,8 +65,15 @@ public sealed class Mayor : RoleBase
         if (LeftButtonCount > 0)
         {
             var user = physics.myPlayer;
-            user?.ReportDeadBody(null);
-            if (GameStates.IsMeeting) LeftButtonCount--;
+            //ホスト視点、vent処理中に会議を呼ぶとベントの矢印が残るので遅延させる
+            _ = new LateTask(() => 
+            {
+                user?.ReportDeadBody(null);
+                if (GameStates.IsMeeting) LeftButtonCount--;
+            }, 0.1f, "MayorPortableButton");
+
+            //ポータブルボタン時はベントから追い出す必要はない
+            return true;
         }
         return false;
     }
