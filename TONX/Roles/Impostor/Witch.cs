@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TONX.Modules;
@@ -8,7 +9,7 @@ using TONX.Roles.Core.Interfaces;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
-public sealed class Witch : RoleBase, IImpostor
+public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -62,7 +63,7 @@ public sealed class Witch : RoleBase, IImpostor
         SpelledPlayer.Clear();
         NowSwitchTrigger = (SwitchTrigger)OptionModeSwitchAction.GetValue();
         Witches.Add(this);
-        Player.AddDoubleTrigger();
+        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble) Player.AddDoubleTrigger();
 
     }
     private void SendRPC(bool doSpell, byte target = 255)
@@ -147,20 +148,14 @@ public sealed class Witch : RoleBase, IImpostor
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (NowSwitchTrigger == SwitchTrigger.TriggerDouble)
-        {
-            info.DoKill = killer.CheckDoubleTrigger(target, () => { SetSpelled(target); });
+
+        if (IsSpellMode)
+        {//呪いならキルしない
+            info.DoKill = false;
+            SetSpelled(target);
         }
-        else
-        {
-            if (IsSpellMode)
-            {//呪いならキルしない
-                info.DoKill = false;
-                SetSpelled(target);
-            }
-            SwitchSpellMode(true);
-        }
-        //切れない相手ならキルキャンセル
+        SwitchSpellMode(true);
+
         return info.DoKill;
     }
     public override void AfterMeetingTasks()
@@ -225,6 +220,17 @@ public sealed class Witch : RoleBase, IImpostor
         {
             SwitchSpellMode(false);
         }
+        return true;
+    }
+
+    public bool SingleAction(PlayerControl killer, PlayerControl target)
+    {
+        SetSpelled(target);
+        return false;
+    }
+
+    public bool DoubleAction(PlayerControl killer, PlayerControl target)
+    {
         return true;
     }
 }
