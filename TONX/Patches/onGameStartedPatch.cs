@@ -55,7 +55,7 @@ internal class ChangeRoleSettings
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
 
-            Main.introDestroyed = false;
+            Main.isFirstTurn = false;
 
             Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
             Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);

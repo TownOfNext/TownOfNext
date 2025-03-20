@@ -308,8 +308,6 @@ namespace TONX
                     offset,
                     -2f);
 
-                stringOption.ValueText.text = item.GetString();
-
                 isOdd = !isOdd;
             }
         }

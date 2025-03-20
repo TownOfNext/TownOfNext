@@ -241,7 +241,7 @@ class IntroCutscenePatch
     public static void OnDestroy_Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsInGame) return;
-        Main.introDestroyed = true;
+        Main.isFirstTurn = true;
         var mapId = Main.NormalOptions.MapId;
         // エアシップではまだ湧かない
         if ((MapNames)mapId != MapNames.Airship)
@@ -256,7 +256,12 @@ class IntroCutscenePatch
         {
             if (mapId != 4)
             {
-                Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
+                Main.AllPlayerControls.Do(pc =>
+                {
+                    pc.GetRoleClass().OnSpawn(true);
+                    pc.SyncSettings();
+                    pc.RpcResetAbilityCooldown();
+                });
                 if (Options.FixFirstKillCooldown.GetBool())
                     _ = new LateTask(() =>
                     {
@@ -302,5 +307,8 @@ class IntroCutscenePatch
             }
         }
         Logger.Info("OnDestroy", "IntroCutscene");
+
+        GameStates.InTask = true;
+        Logger.Info("タスクフェイズ開始", "Phase");
     }
 }

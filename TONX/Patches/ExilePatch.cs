@@ -112,7 +112,15 @@ class ExileControllerWrapUpPatch
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
-        Utils.SyncAllSettings();
+        if (mapId != 4)
+        {
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                pc.GetRoleClass().OnSpawn();
+                pc.SyncSettings();
+                pc.RpcResetAbilityCooldown();
+            }
+        }
         if (Camouflage.IsCamouflage && Utils.IsActive(SystemTypes.Comms)) foreach (var pc in Main.AllPlayerControls) Camouflage.RpcSetSkin(pc); // 会议结束后恢复小黑人
         Utils.NotifyRoles();
     }
@@ -130,7 +138,7 @@ class ExileControllerWrapUpPatch
                     exiled != null && //exiledがnullでない
                     exiled.Object != null) //exiled.Objectがnullでない
                 {
-                    exiled.Object.RpcExileV2();
+                    exiled.Object.RpcExile();
                 }
             }, 0.5f, "Restore IsDead Task");
             _ = new LateTask(() =>
@@ -144,7 +152,7 @@ class ExileControllerWrapUpPatch
                     Logger.Info($"{player.GetNameWithRole()}を{x.Value}で死亡させました", "AfterMeetingDeath");
                     state.DeathReason = x.Value;
                     state.SetDead();
-                    player?.RpcExileV2();
+                    player?.RpcExile();
                     if (x.Value == CustomDeathReason.Suicide)
                         player?.SetRealKiller(player, true);
                     if (requireResetCam)
@@ -159,6 +167,8 @@ class ExileControllerWrapUpPatch
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
+
+        GameStates.InTask = true;
         Logger.Info("タスクフェイズ開始", "Phase");
     }
 }

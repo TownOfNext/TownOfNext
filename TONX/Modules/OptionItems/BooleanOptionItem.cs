@@ -43,7 +43,7 @@ public class BooleanOptionItem : OptionItem
     // Getter
     public override string GetString()
     {
-        return Translator.GetString(GetBool() ? TEXT_true : TEXT_false);
+        return Translator.GetString(GetValue() % 2 == 1 ? TEXT_true : TEXT_false);
     }
 
     // Setter

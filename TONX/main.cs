@@ -133,7 +133,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, byte> ShapeshiftTarget = new();
     public static bool VisibleTasksCount = false;
     public static string HostNickName = "";
-    public static bool introDestroyed = false;
+    public static bool isFirstTurn = false;
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;

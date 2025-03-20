@@ -186,11 +186,9 @@ public static class SpawnInMinigameSpawnAtPatch
         Logger.Info($"Spawn: {player.GetRealName()}", "RandomSpawn");
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.Is(CustomRoles.Penguin))
-            {
-                var penguin = player.GetRoleClass() as Penguin;
-                penguin?.OnSpawnAirship();
-            }
+            //初期スポーンとリスポーンを判定
+            player.GetRoleClass().OnSpawn(Main.isFirstTurn);
+            player.SyncSettings();
             player.RpcResetAbilityCooldown();
             if (Options.FixFirstKillCooldown.GetBool() && !MeetingStates.MeetingCalled) player.SetKillCooldown(Main.AllPlayerKillCooldown[player.PlayerId]);
             if (IsRandomSpawn())
