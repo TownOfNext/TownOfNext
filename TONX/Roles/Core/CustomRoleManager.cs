@@ -76,10 +76,13 @@ public static class CustomRoleManager
                 }
             }
             // 凶杀检查击杀
-            if (!killer.OnCheckMurderAsKiller(info))
+            if (!DoubleTrigger.OnCheckMurderAsKiller(info))
             {
-                Logger.Info($"凶手阻塞了击杀", "CheckMurder");
-                return false;
+                if (!killer.OnCheckMurderAsKiller(info))
+                {
+                    Logger.Info($"凶手阻塞了击杀", "CheckMurder");
+                    return false;
+                }
             }
             if (killer.IsKiller && targetRole != null)
             {

@@ -54,7 +54,7 @@ public abstract class RoleBase : IDisposable
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
             RoleTypes.Shapeshifter or
-             RoleTypes.Phantom or
+            RoleTypes.Phantom or
             RoleTypes.Engineer or
             RoleTypes.Scientist or
             RoleTypes.Tracker or
