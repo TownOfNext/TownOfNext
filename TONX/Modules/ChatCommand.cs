@@ -147,7 +147,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 }
                 return (MsgRecallMode.Block, text);
             }),
-            new(["exe", "execute"], CommandAccess.Host, mc =>
+            new(["exile"], CommandAccess.Host, mc =>
             {
                 string text = GetString("Message.CanNotUseInLobby");
                 if (GameStates.IsInGame)
@@ -159,7 +159,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         target.Data.IsDead = true;
                         var state = PlayerState.GetByPlayerId(target.PlayerId);
                         state.DeathReason = CustomDeathReason.etc;
-                        target.RpcExileV2();
+                        target.RpcExile();
                         state.SetDead();
                         text = target.AmOwner
                             ? Utils.ColorString(Color.red, GetString("HostKillSelfByCommand"))

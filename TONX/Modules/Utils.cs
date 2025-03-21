@@ -866,7 +866,7 @@ public static class Utils
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
             + $"\n  ○ /kill {GetString("Command.kill")}"
-            + $"\n  ○ /exe {GetString("Command.exe")}"
+            + $"\n  ○ /exile {GetString("Command.exe")}"
             + $"\n  ○ /level {GetString("Command.level")}"
             + $"\n  ○ /id {GetString("Command.idlist")}"
             // + $"\n  ○ /qq {GetString("Command.qq")}"
