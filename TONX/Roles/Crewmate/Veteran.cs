@@ -109,8 +109,4 @@ public sealed class Veteran : RoleBase
         }
         return true;
     }
-    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
-    {
-        Player.RpcResetAbilityCooldown();
-    }
 }

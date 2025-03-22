@@ -195,20 +195,18 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         Player.MarkDirtySettings();
         Utils.NotifyRoles();
     }
-    public override void AfterMeetingTasks()
+    public override void OnSpawn(bool initialState)
     {
+        if (initialState) return;
         if (CurrentTargetMode == TargetMode.EveryMeeting)
         {
             ReEnableTargeting();
-            Player.MarkDirtySettings();
         }
         var target = Utils.GetPlayerById(TargetId);
         if (!Player.IsAlive() || !target.IsAlive())
         {
             RemoveTarget();
         }
-        Player.SyncSettings();
-        Player.RpcResetAbilityCooldown();
     }
 
     // 表示系の関数群
