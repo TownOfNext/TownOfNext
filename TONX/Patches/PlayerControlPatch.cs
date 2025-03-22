@@ -714,15 +714,14 @@ class CoEnterVentPatch
         var user = __instance.myPlayer;
 
         if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
-                    (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
-                !user.CanUseImpostorVentButton()) //インポスターベントも使えない
+            (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
+            !user.CanUseImpostorVentButton()) //インポスターベントも使えない
         )
         {
             _ = new LateTask(() =>
             {
                 if (!GameStates.IsMeeting) __instance.RpcBootFromVent(id);
             }, 0.5f, "Cancel Vent");
-            return false;
         }
         return true;
     }

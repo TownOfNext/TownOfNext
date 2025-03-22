@@ -49,7 +49,7 @@ public sealed class Grenadier : RoleBase
         OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.GrenadierSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionCauseVision = FloatOptionItem.Create(RoleInfo, 12, OptionName.GrenadierCauseVision, new(0f, 5f, 0.05f), 0.3f, false)
-            .SetValueFormat(OptionFormat.Seconds);
+            .SetValueFormat(OptionFormat.Multiplier);
         OptionCanAffectNeutral = BooleanOptionItem.Create(RoleInfo, 13, OptionName.GrenadierCanAffectNeutral, false, false);
     }
     public override void Add()
@@ -83,7 +83,7 @@ public sealed class Grenadier : RoleBase
         Player.RPCPlayCustomSound("FlashBang");
         Player.Notify(GetString("GrenadierSkillInUse"), OptionSkillDuration.GetFloat());
         Utils.MarkEveryoneDirtySettings();
-        return true;
+        return false;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {

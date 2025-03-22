@@ -79,13 +79,12 @@ public sealed class Veteran : RoleBase
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.RPCPlayCustomSound("Gunload");
             Player.Notify(GetString("VeteranOnGuard"), SkillLimit);
-            return true;
         }
         else
         {
             Player.Notify(GetString("SkillMaxUsage"));
-            return false;
         }
+        return false;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
