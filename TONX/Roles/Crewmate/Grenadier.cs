@@ -103,10 +103,6 @@ public sealed class Grenadier : RoleBase
             Utils.MarkEveryoneDirtySettings();
         }
     }
-    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
-    {
-        Player.RpcResetAbilityCooldown();
-    }
     public static bool IsBlinding(PlayerControl target)
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Grenadier)))

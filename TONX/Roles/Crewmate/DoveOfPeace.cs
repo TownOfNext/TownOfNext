@@ -85,8 +85,4 @@ public sealed class DoveOfPeace : RoleBase
         }
         return false;
     }
-    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
-    {
-        Player.RpcResetAbilityCooldown();
-    }
 }

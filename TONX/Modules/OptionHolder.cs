@@ -276,7 +276,7 @@ public static class Options
     public static OptionItem RandomSpawnPolusLaboratory;
     public static OptionItem RandomSpawnPolusToilet;
     public static OptionItem RandomSpawnPolusSpecimens;
-    //AIrShip
+    //AirShip
     public static OptionItem RandomSpawnAirship;
     public static OptionItem RandomSpawnAirshipBrig;
     public static OptionItem RandomSpawnAirshipEngine;
@@ -508,7 +508,7 @@ public static class Options
         MadmateCanKillImp = BooleanOptionItem.Create(1_001_003, "MadmateCanKillImp", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
-        DoubleTriggerThreshold = FloatOptionItem.Create(1_002_001, "DoubleTriggerThreashould", new(0.3f, 1f, 0.1f), 0.5f, TabGroup.ImpostorRoles, false)
+        DoubleTriggerThreshold = FloatOptionItem.Create(1_002_001, "DoubleTriggerThreshold", new(0.3f, 1f, 0.1f), 0.5f, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Seconds);

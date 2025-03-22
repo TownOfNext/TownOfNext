@@ -89,5 +89,4 @@ public sealed class Bomber : RoleBase, IImpostor
         }, 1.5f, "Bomber Suiscide");
 
     }
-    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner) => Player.RpcResetAbilityCooldown();
 }
