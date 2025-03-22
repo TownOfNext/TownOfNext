@@ -720,7 +720,12 @@ class CoEnterVentPatch
         {
             _ = new LateTask(() =>
             {
-                if (!GameStates.IsMeeting) __instance.RpcBootFromVent(id);
+                if (!GameStates.IsMeeting)
+                {
+                    __instance.RpcBootFromVent(id);
+                    if (__instance.myPlayer.walkingToVent == true)
+                        __instance.myPlayer.walkingToVent = false;
+                }
             }, 0.5f, "Cancel Vent");
         }
         return true;
