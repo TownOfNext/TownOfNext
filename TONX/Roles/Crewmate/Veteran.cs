@@ -76,9 +76,9 @@ public sealed class Veteran : RoleBase
             SkillLimit--;
             SkillTimer = 0f;
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-            Player.SyncSettings();
             Player.RPCPlayCustomSound("Gunload");
             Player.Notify(GetString("VeteranOnGuard"), OptionSkillDuration.GetFloat());
+            Player.MarkDirtySettings();
         }
         else
         {
