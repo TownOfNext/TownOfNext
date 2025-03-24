@@ -268,6 +268,7 @@ public static class GuesserHelper
     static void GuesserSelectRole(CustomRoleTypes Role, bool SetPage = true)
     {
         currentTeamType = Role;
+        Logger.Info($"{Role.ToString()}-1", "GuesserHelper");
         if (SetPage) Page = 1;
         foreach (var RoleButton in RoleButtons)
         {
@@ -347,16 +348,17 @@ public static class GuesserHelper
             Transform selectedButton = null;
 
             int tabCount = 0;
+            List<int> CustomRoleTypesIndex = new() {1, 0, 2, 3}; 
             for (int index = 0; index < 4; index++)
             {
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
                 {
-                    if (!EvilGuesser.OptionCanGuessImp.GetBool() && index == 1) continue;
+                    if (!EvilGuesser.OptionCanGuessImp.GetBool() && index == 0) continue;
                     if (!EvilGuesser.OptionCanGuessAddons.GetBool() && index == 3) continue;
                 }
                 else
                 {
-                    if (!NiceGuesser.OptionCanGuessCrew.GetBool() && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && index == 0) continue;
+                    if (!NiceGuesser.OptionCanGuessCrew.GetBool() && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && index == 1) continue;
                     if (!NiceGuesser.OptionCanGuessAddons.GetBool() && index == 3) continue;
                 }
                 Transform TeambuttonParent = new GameObject().transform;
@@ -367,12 +369,12 @@ public static class GuesserHelper
                 TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
                 Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.GetSprite("GuessPlateWithKPD");
                 Teambutton.GetComponent<SpriteRenderer>().color = myColor;
-                RoleSelectButtons.Add((CustomRoleTypes)index, Teambutton.GetComponent<SpriteRenderer>());
+                RoleSelectButtons.Add((CustomRoleTypes)CustomRoleTypesIndex[index], Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-2.75f + tabCount++ * 1.73f, 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
-                Teamlabel.color = Utils.GetCustomRoleTypeColor((CustomRoleTypes)index);
-                Logger.Info(Teamlabel.color.ToString(), ((CustomRoleTypes)index).ToString());
-                Teamlabel.text = GetString("Type" + ((CustomRoleTypes)index).ToString());
+                Teamlabel.color = Utils.GetCustomRoleTypeColor((CustomRoleTypes)CustomRoleTypesIndex[index]);
+                Logger.Info(Teamlabel.color.ToString(), ((CustomRoleTypes)CustomRoleTypesIndex[index]).ToString());
+                Teamlabel.text = GetString("Type" + ((CustomRoleTypes)CustomRoleTypesIndex[index]).ToString());
                 Teamlabel.alignment = TextAlignmentOptions.Center;
                 Teamlabel.transform.localPosition = new Vector3(0, 0, Teamlabel.transform.localPosition.z);
                 Teamlabel.transform.localScale *= 1.6f;
@@ -382,11 +384,14 @@ public static class GuesserHelper
                 {
                     Teambutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                     {
-                        GuesserSelectRole(type);
-                        ReloadPage();
+                        if (type != currentTeamType)
+                        {
+                            GuesserSelectRole(type);
+                            ReloadPage();
+                        }
                     }));
                 }
-                if (PlayerControl.LocalPlayer.IsAlive()) CreateTeamButton(Teambutton, (CustomRoleTypes)index);
+                if (PlayerControl.LocalPlayer.IsAlive()) CreateTeamButton(Teambutton, (CustomRoleTypes)CustomRoleTypesIndex[index]);
             }
             static void ReloadPage()
             {
@@ -521,7 +526,8 @@ public static class GuesserHelper
                 ind++;
             }
             container.transform.localScale *= 0.75f;
-            GuesserSelectRole(CustomRoleTypes.Crewmate);
+            GuesserSelectRole(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessImp.GetBool() ?
+                CustomRoleTypes.Crewmate : CustomRoleTypes.Impostor);
             ReloadPage();
         }
         catch (Exception ex)
