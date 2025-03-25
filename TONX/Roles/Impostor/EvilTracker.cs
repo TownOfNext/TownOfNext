@@ -114,8 +114,6 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
     }
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         var operation = (TargetOperation)reader.ReadByte();
 
         switch (operation)
@@ -184,16 +182,17 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         && (target.Is(CustomRoleTypes.Impostor) || TargetId == target.PlayerId);
 
     // 各所で呼ばれる処理
-    public override void OnShapeshift(PlayerControl target)
+    public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
     {
-        var shapeshifting = !Is(target);
-        if (!CanTarget() || !shapeshifting) return;
-        if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
+        //ターゲット出来ない、もしくはターゲットが味方の場合は処理しない
+        //※どちらにしろシェイプシフトは出来ない
+        if (!CanTarget() || target.Is(CustomRoleTypes.Impostor)) return false;
 
         SetTarget(target.PlayerId);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
         Player.MarkDirtySettings();
         Utils.NotifyRoles();
+        return false;
     }
     public override void OnSpawn(bool initialState)
     {
