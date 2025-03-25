@@ -268,7 +268,6 @@ public static class GuesserHelper
     static void GuesserSelectRole(CustomRoleTypes Role, bool SetPage = true)
     {
         currentTeamType = Role;
-        Logger.Info($"{Role.ToString()}-1", "GuesserHelper");
         if (SetPage) Page = 1;
         foreach (var RoleButton in RoleButtons)
         {
