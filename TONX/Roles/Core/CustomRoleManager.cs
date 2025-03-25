@@ -131,6 +131,7 @@ public static class CustomRoleManager
             // 调用职业类对击杀发生前进行预处理如设置冷却等操作
             if (killerRole is IKiller killer2) killer2?.BeforeMurderPlayerAsKiller(info);
             targetRole?.BeforeMurderPlayerAsTarget(info);
+            if (!info.CanKill || !info.DoKill) goto StopMurder;
 
             //MurderPlayer用にinfoを保存
             CheckMurderInfos[appearanceKiller.PlayerId] = info;
@@ -140,11 +141,14 @@ public static class CustomRoleManager
         }
         else
         {
+            goto StopMurder;
+        }
+        StopMurder:
+        {
             if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()} 无法被击杀", "CheckMurder");
             if (!info.DoKill) Logger.Info($"{appearanceKiller.GetNameWithRole()} 无法击杀", "CheckMurder");
             return false;
         }
-
     }
     /// <summary>
     /// MurderPlayer 事件的处理
