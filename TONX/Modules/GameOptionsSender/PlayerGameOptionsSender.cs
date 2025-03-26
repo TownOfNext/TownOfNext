@@ -115,7 +115,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
 
-        // Ϊ�Ի��ߵ�����
+        // 为迷惑者的凶手
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
@@ -123,7 +123,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
         }
 
-        // Ͷ��ɵ�ϵ�������������
+        // 投掷傻瓜蛋啦！！！！！
         if (Grenadier.IsBlinding(player))
         {
             opt.SetVision(false);
