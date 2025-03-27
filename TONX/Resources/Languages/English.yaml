@@ -1316,12 +1316,12 @@ ExiledJester: "The <color=#ec62a5>Jester</color> laughing out loud tricked you i
 ExiledExeTarget: "But they were also the <color=#611c3a>Executioner's</color> target!"
 ExiledInnocentTarget: "Looking back at the <color=#8f815e>Innocent</color> counts the money in their hands"
 #游戏结束原因 / Game Over Reasons
-GameOverReason.HumansByTask: "The Crewmates completed all tasks"
-GameOverReason.HumansByVote: "All Impostors and Neutral Killers were ejected or killed"
-GameOverReason.HumansDisconnect: "Crewmates disconnected"
-GameOverReason.ImpostorByKill: "The Impostors killed everyone"
-GameOverReason.ImpostorBySabotage: "Crewmates failed to fix a critical sabotage."
-GameOverReason.ImpostorByVote: "The Crewmates were ejected"
+GameOverReason.CrewmatesByTask: "The Crewmates completed all tasks"
+GameOverReason.CrewmatesByVote: "All Impostors and Neutral Killers were ejected or killed"
+GameOverReason.CrewmateDisconnect: "Crewmates disconnected"
+GameOverReason.ImpostorsByKill: "The Impostors killed everyone"
+GameOverReason.ImpostorsBySabotage: "Crewmates failed to fix a critical sabotage."
+GameOverReason.ImpostorsByVote: "The Crewmates were ejected"
 GameOverReason.ImpostorDisconnect: "Impostors disconnected"
 #占卜师信息 / Fortune Teller Checks
 FortuneTellerCheck.HideMsg: "Looks like 【{0}】 hides secrets."

@@ -1313,12 +1313,12 @@ ExiledJester: "Você foi enganado!\n{0} era o {1} rindo da maneira que enganou v
 ExiledExeTarget: "{0} era o {1}.\nMas parece que era o alvo do <color=#611c3a>Executor</color>!\nGG!"
 ExiledInnocentTarget: "\nOlhando bem, o <color=#8f815e>Inocente</color> estava planejando isso"
 #游戏结束原因 / Game Over Reasons
-GameOverReason.HumansByTask: "Os Tripulantes completaram todas as Tarefas"
-GameOverReason.HumansByVote: "Todos os Impostores e Neutros Assassinos foram ejetados ou Mortos"
-GameOverReason.HumansDisconnect: "Tripulantes Desconectados"
-GameOverReason.ImpostorByKill: "Os Impostores matam Todos.\""
-GameOverReason.ImpostorBySabotage: "Os Tripulantes falharam em Consertar uma sabotagem Crítica."
-GameOverReason.ImpostorByVote: "Os Tripulantes foram Ejetados"
+GameOverReason.CrewmatesByTask: "Os Tripulantes completaram todas as Tarefas"
+GameOverReason.CrewmatesByVote: "Todos os Impostores e Neutros Assassinos foram ejetados ou Mortos"
+GameOverReason.CrewmateDisconnect: "Tripulantes Desconectados"
+GameOverReason.ImpostorsByKill: "Os Impostores matam Todos.\""
+GameOverReason.ImpostorsBySabotage: "Os Tripulantes falharam em Consertar uma sabotagem Crítica."
+GameOverReason.ImpostorsByVote: "Os Tripulantes foram Ejetados"
 GameOverReason.ImpostorDisconnect: "Impostores Desconectados"
 #占卜师信息 / Fortune Teller Checks
 FortuneTellerCheck.HideMsg: "Parece que [{0}] esconde segredos."

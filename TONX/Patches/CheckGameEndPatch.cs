@@ -26,7 +26,7 @@ class GameEndChecker
         if (Options.NoGameEnd.GetBool() && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         //廃村用に初期値を設定
-        var reason = GameOverReason.ImpostorByKill;
+        var reason = GameOverReason.ImpostorsByKill;
 
         //ゲーム終了判定
         predicate.CheckForEndGame(out reason);
@@ -37,9 +37,9 @@ class GameEndChecker
             //カモフラージュ強制解除
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true));
 
-            if (reason == GameOverReason.ImpostorBySabotage && CustomRoles.Jackal.IsExist() && Jackal.WinBySabotage && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
+            if (reason == GameOverReason.ImpostorsBySabotage && CustomRoles.Jackal.IsExist() && Jackal.WinBySabotage && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.WinnerIds.Clear();
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
@@ -135,7 +135,7 @@ class GameEndChecker
             }
             bool canWin = CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId) ||
                     CustomWinnerHolder.WinnerRoles.Contains(pc.GetCustomRole());
-            bool isCrewmateWin = reason.Equals(GameOverReason.HumansByVote) || reason.Equals(GameOverReason.HumansByTask);
+            bool isCrewmateWin = reason.Equals(GameOverReason.CrewmatesByVote) || reason.Equals(GameOverReason.CrewmatesByTask);
             SetGhostRole(ToGhostImpostor: canWin ^ isCrewmateWin);
 
             void SetGhostRole(bool ToGhostImpostor)
@@ -196,7 +196,7 @@ class GameEndChecker
     {
         public override bool CheckForEndGame(out GameOverReason reason)
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
             if (CheckGameEndByLivingPlayers(out reason)) return true;
             if (CheckGameEndByTask(out reason)) return true;
@@ -207,7 +207,7 @@ class GameEndChecker
 
         public bool CheckGameEndByLivingPlayers(out GameOverReason reason)
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
 
             if (CustomRoles.Sunnyboy.IsExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
 
@@ -228,51 +228,51 @@ class GameEndChecker
 
             if (Imp == 0 && Crew == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0) //全灭
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             }
             else if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) //恋人胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
             }
             else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= Imp) //内鬼胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             }
             else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= JK) //豺狼胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
             }
             else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pelican);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
             }
             else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && SC == 0 && Crew <= DM) //玩家胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Demon);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Demon);
             }
             else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && SC == 0 && Crew <= BK) //嗜血骑士胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
             }
             else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && Crew <= SC) //魅魔胜利
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);
             }
             else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0) //船员胜利
             {
-                reason = GameOverReason.HumansByVote;
+                reason = GameOverReason.CrewmatesByVote;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
             }
             else return false; //胜利条件未达成
@@ -292,12 +292,12 @@ public abstract class GameEndPredicate
     /// <summary>GameData.TotalTasksとCompletedTasksをもとにタスク勝利が可能かを判定します。</summary>
     public virtual bool CheckGameEndByTask(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (Options.DisableTaskWin.GetBool() || TaskState.InitialTotalTasks == 0) return false;
 
         if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
         {
-            reason = GameOverReason.HumansByTask;
+            reason = GameOverReason.CrewmatesByTask;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
             return true;
         }
@@ -306,7 +306,7 @@ public abstract class GameEndPredicate
     /// <summary>ShipStatus.Systems内の要素をもとにサボタージュ勝利が可能かを判定します。</summary>
     public virtual bool CheckGameEndBySabotage(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (ShipStatus.Instance.Systems == null) return false;
 
         // TryGetValueは使用不可
@@ -318,7 +318,7 @@ public abstract class GameEndPredicate
         {
             // 酸素サボタージュ
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
-            reason = GameOverReason.ImpostorBySabotage;
+            reason = GameOverReason.ImpostorsBySabotage;
             LifeSupp.Countdown = 10000f;
             return true;
         }
@@ -335,7 +335,7 @@ public abstract class GameEndPredicate
         {
             // リアクターサボタージュ
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
-            reason = GameOverReason.ImpostorBySabotage;
+            reason = GameOverReason.ImpostorsBySabotage;
             critical.ClearSabotage();
             return true;
         }

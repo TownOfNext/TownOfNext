@@ -1117,12 +1117,12 @@ NoImpRemain: "<color=#ff1919>Предателей</color> больше не ос
 ImpRemain: "<color=#ff1919>Предателей</color> осталось: {0}"
 NeutralRemain: "<color=#ffab1b>Злых Нейтралов</color> осталось: {0}"
 #游戏结束原因 / Game Over Reasons
-GameOverReason.HumansByTask: "Члены Экипажа выполнили задания"
-GameOverReason.HumansByVote: "Предатели были изгнаны"
-GameOverReason.HumansDisconnect: "Члены Экипажа вышли из игры"
-GameOverReason.ImpostorByKill: "Предатели убили всех"
-GameOverReason.ImpostorBySabotage: "Предатели саботировали обьект"
-GameOverReason.ImpostorByVote: "Члены Экипажа были изгнаны"
+GameOverReason.CrewmatesByTask: "Члены Экипажа выполнили задания"
+GameOverReason.CrewmatesByVote: "Предатели были изгнаны"
+GameOverReason.CrewmateDisconnect: "Члены Экипажа вышли из игры"
+GameOverReason.ImpostorsByKill: "Предатели убили всех"
+GameOverReason.ImpostorsBySabotage: "Предатели саботировали обьект"
+GameOverReason.ImpostorsByVote: "Члены Экипажа были изгнаны"
 GameOverReason.ImpostorDisconnect: "Предатели вышли из игры"
 #占卜师信息 / Fortune Teller Checks
 FortuneTellerCheck.HideMsg: "Похоже, 【{0}】 скрывает секреты."

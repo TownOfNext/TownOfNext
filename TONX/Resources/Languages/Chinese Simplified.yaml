@@ -1364,12 +1364,12 @@ ExiledExeTarget: "而他的背后传来<color=#611c3a>处刑人</color>阴沉的
 ExiledInnocentTarget: "回头一看，<color=#8f815e>冤罪师</color> 正数着手里的钱呢..."
 
 # 游戏结束原因 / Game Over Reasons
-GameOverReason.HumansByTask: "船员完成了任务"
-GameOverReason.HumansByVote: "内鬼被驱逐"
-GameOverReason.HumansDisconnect: "船员断线"
-GameOverReason.ImpostorByKill: "内鬼人数占优"
-GameOverReason.ImpostorBySabotage: "内鬼破坏了设施"
-GameOverReason.ImpostorByVote: "船员被驱逐"
+GameOverReason.CrewmatesByTask: "船员完成了任务"
+GameOverReason.CrewmatesByVote: "内鬼被驱逐"
+GameOverReason.CrewmateDisconnect: "船员断线"
+GameOverReason.ImpostorsByKill: "内鬼人数占优"
+GameOverReason.ImpostorsBySabotage: "内鬼破坏了设施"
+GameOverReason.ImpostorsByVote: "船员被驱逐"
 GameOverReason.ImpostorDisconnect: "内鬼断线"
 
 # 占卜师信息 / Fortune Teller Checks
