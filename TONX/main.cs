@@ -80,7 +80,7 @@ public class Main : BasePlugin
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
-    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }

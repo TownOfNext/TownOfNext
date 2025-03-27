@@ -97,7 +97,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 {
                     case "crew":
                         GameManager.Instance.enabled = false;
-                        GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
+                        GameManager.Instance.RpcEndGame(GameOverReason.CrewmateDisconnect, false);
                         break;
                     case "imp":
                         GameManager.Instance.enabled = false;
