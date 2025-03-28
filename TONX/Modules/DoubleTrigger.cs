@@ -26,12 +26,13 @@ public static class DoubleTrigger
     }
     static Dictionary<byte, DoubleTriggerData> DoubleTriggerList = new(15);
 
-    static readonly float DoubleTriggerTime = 0.3f;
+    static float DoubleTriggerTime = 0.3f;
 
     [GameModuleInitializer]
     public static void Init()
     {
         DoubleTriggerList.Clear();
+        DoubleTriggerTime = Options.DoubleTriggerThreshold.GetFloat();
     }
     public static void AddDoubleTrigger(this PlayerControl killer)
     {

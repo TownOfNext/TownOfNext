@@ -186,7 +186,7 @@ public static class SpawnInMinigameSpawnAtPatch
         if (AmongUsClient.Instance.AmHost)
         {
             //初期スポーンとリスポーンを判定
-            player.GetRoleClass().OnSpawn(Main.isFirstTurn);
+            player.GetRoleClass()?.OnSpawn(Main.isFirstTurn);
             player.SyncSettings();
             player.RpcResetAbilityCooldown();
             if (Options.FixFirstKillCooldown.GetBool() && !MeetingStates.MeetingCalled) player.SetKillCooldown(Main.AllPlayerKillCooldown[player.PlayerId]);
