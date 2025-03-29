@@ -40,39 +40,26 @@ class FindGameButtonOnClickPatch
 {
     public static bool Prefix(FindGameButton __instance)
     {
-        if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion))
+        if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)) return true;
+        string message = "";
+        if (ModUpdater.hasUpdate)
         {
-            return true;
+            message = GetString("CanNotJoinPublicRoomNoLatest");
         }
-        return false;
-        /*var obj = __instance.findGameButton.gameobject;
-        if (obj)
+        else if (ModUpdater.isBroken)
         {
-            obj?.SetActive(false);
-            var parentObj = obj.transform.parent.gameObject;
-            var textObj = Object.Instantiate(obj.transform.FindChild("Text_TMP").GetComponent<TMPro.TextMeshPro>());
-            textObj.transform.position = new Vector3(0.5f, -0.4f, 0f);
-            textObj.name = "CanNotJoinPublic";
-            textObj.DestroyTranslator();
-            string message = "";
-            if (ModUpdater.hasUpdate)
-            {
-                message = GetString("CanNotJoinPublicRoomNoLatest");
-            }
-            else if (ModUpdater.isBroken)
-            {
-                message = GetString("ModBrokenMessage");
-            }
-            else if (!VersionChecker.IsSupported)
-            {
-                message = GetString("UnsupportedVersion");
-            }
-            else if (!Main.IsPublicAvailableOnThisVersion)
-            {
-                message = GetString("PublicNotAvailableOnThisVersion");
-            }
-            textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>";
-        }*/
+            message = GetString("ModBrokenMessage");
+        }
+        else if (!VersionChecker.IsSupported)
+        {
+            message = GetString("UnsupportedVersion");
+        }
+        else if (!Main.IsPublicAvailableOnThisVersion)
+        {
+            message = GetString("PublicNotAvailableOnThisVersion");
+        }
+        DisconnectPopup.Instance.ShowCustom(message);
+        return false;
     }
 }
 [HarmonyPatch(typeof(SplashManager), nameof(SplashManager.Update))]

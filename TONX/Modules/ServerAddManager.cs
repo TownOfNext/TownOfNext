@@ -46,7 +46,6 @@ public static class ServerAddManager
             "Modded Asia (MAS)" => "MAS",
             "Modded NA (MNA)" => "MNA",
             "Modded EU (MEU)" => "MEU",
-            "North America" => "NA",
             "<color=#00FF00>新猫服</color><color=#ffff00>[宁波]</color>" => "猫服[宁波]",
             "<color=#9900CC>新猫服</color><color=#ffff00>[北京]</color>" => "猫服[北京]",
             "<color=#00ffff>方块</color><color=#FF44FF>宿迁私服</color>" => "方块[宿迁]",

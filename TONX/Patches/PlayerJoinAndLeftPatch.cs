@@ -17,7 +17,7 @@ class OnGameJoinedPatch
     public static void Postfix(AmongUsClient __instance)
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
-        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";// 为什么之前这个变量几乎不被赋值呢？TOH本家到底在干什么！
+        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
         Logger.Info($"{__instance.GameId} 加入房间", "OnGameJoined");
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
