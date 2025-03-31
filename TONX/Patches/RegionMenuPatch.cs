@@ -25,7 +25,4 @@ public static class RegionMenuPatch
         Scroller.SetYBoundsMax(4f);
         Scroller.allowY = true;
     }
-    [HarmonyPatch(nameof(ServerDropdown.ChooseOption)), HarmonyPostfix]
-    public static void ChooseOption_Postfix()
-        => ServerAddManager.SetServerName();
 }
