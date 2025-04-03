@@ -4,12 +4,29 @@ using HarmonyLib;
 using InnerNet;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TONX.Modules;
 using TONX.Roles.Core;
 using static TONX.Translator;
 
 namespace TONX;
+
+[HarmonyPatch(typeof(EnterCodeManager), nameof(EnterCodeManager.FindGameResult))]
+class FindGameResultPatch
+{
+    public static IRegionInfo CurrentFindGameByCodeClientRegion;
+    public static int CurrentFindGameByCodeClientGameId;
+    public static void Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
+    {
+        if (response == null) return;
+        CurrentFindGameByCodeClientRegion = response.Region == StringNames.NoTranslation ?
+            ServerManager.DefaultRegions.FirstOrDefault(x => x.TranslateName == response.Region) :
+            ServerManager.Instance.AvailableRegions.FirstOrDefault(x => x.Name == response.UntranslatedRegion);
+        if (CurrentFindGameByCodeClientRegion == null) return;
+        CurrentFindGameByCodeClientGameId = response.Game.GameId;
+    }
+}
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
 class OnGameJoinedPatch
@@ -28,7 +45,8 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
-        ServerAddManager.SetServerName();
+        ServerAddManager.SetServerName(AmongUsClient.Instance.GameId == FindGameResultPatch.CurrentFindGameByCodeClientGameId &&
+            FindGameResultPatch.CurrentFindGameByCodeClientRegion != null ? FindGameResultPatch.CurrentFindGameByCodeClientRegion : null);
 
         if (AmongUsClient.Instance.AmHost) //以下、ホストのみ実行
         {

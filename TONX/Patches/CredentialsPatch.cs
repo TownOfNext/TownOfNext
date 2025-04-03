@@ -14,6 +14,7 @@ internal class PingTrackerUpdatePatch
 {
     private static float deltaTime;
     public static string ServerName = "";
+    public static string ServerColor = "#ffffff";
     private static TextMeshPro pingTrackerCredential = null;
     private static AspectPosition pingTrackerCredentialAspectPos = null;
     private static void Postfix(PingTracker __instance)
@@ -49,7 +50,9 @@ internal class PingTrackerUpdatePatch
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = Mathf.Ceil(1.0f / deltaTime);
 
-        sb.Append($"\r\n").Append($"<color={color}>{ping}<size=40%> ms</size> <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>{(GameStates.IsOnlineGame ? "  " + ServerName : "")}");
+        if (!GameStates.IsOnlineGame) ServerColor = "#ffffff";
+
+        sb.Append($"\r\n").Append($"<color={color}>{ping} ms</size> <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>  <color={ServerColor}>{(GameStates.IsOnlineGame ? ServerName : GetString(StringNames.LocalButton))} <size=60%>Server</size></color>");
 
         if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
         else
