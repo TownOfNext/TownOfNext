@@ -80,7 +80,7 @@ public static class ServerAddManager
         if (server.TranslateName != StringNames.NoTranslation)
             name = Translator.GetString(ServerManager.DefaultRegions.FirstOrDefault(x => x.Name == name).TranslateName);
         PingTrackerUpdatePatch.ServerName = name;
-        PingTrackerUpdatePatch.ServerColor = $"#{color.r:X2}{color.g:X2}{color.b:X2}";
+        PingTrackerUpdatePatch.ServerColor = $"#{color.r:x2}{color.g:x2}{color.b:x2}";
     }
 
     public static IRegionInfo CreateHttp(string ip, string name, ushort port, bool ishttps)
