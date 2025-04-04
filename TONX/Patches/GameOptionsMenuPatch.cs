@@ -137,8 +137,7 @@ namespace TONX
             var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
             tabImage.SetImage(image, GameOptionsMenu.MASK_LAYER);
             tabImage.transform.localPosition = new(7.1f, -0.6f, -10f);
-            Object.Destroy(tabImage.Button.HoverSound);
-            Object.Destroy(tabImage.Button.ClickSound);
+            Object.Destroy(tabImage.Button.GetComponentInChildren<BoxCollider2D>());
             tabImage.Button.activeSprites.transform.GetChild(0).gameObject.SetActive(false);
             tabImage.Button.activeSprites.GetComponent<SpriteRenderer>().sprite = tabImage.Button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = null;
             return tabImage;
