@@ -23,7 +23,7 @@ public static class ServerDropdownPatch
             .Where(x => x.name != "PreviousPageButton" && x.name != "NextPageButton").OrderByDescending(x => x.transform.localPosition.y).ToList();
         // 调整背景大小和位置
         __instance.background.size = new Vector2(__instance.background.size.x, __instance.background.size.y / serverListButton.Count * (ButtonsPerPage + 2f));
-        __instance.background.transform.localPosition = new Vector3(0f, -(-1f + ButtonsPerPage * 0.5f) / 2, 0f);
+        __instance.background.transform.localPosition = new Vector3(0f, (1f - ButtonsPerPage * 0.5f) / 2, 0f);
         // 调整服务器选项按钮位置
         MaxPage = serverListButton.Count / ButtonsPerPage + 1;
         List<ServerListButton> currentPageButton = new();
@@ -39,10 +39,10 @@ public static class ServerDropdownPatch
         var template = serverListButton[0];
         if (PreviousPageButton == null || PreviousPageButton.gameObject == null) PreviousPageButton =
             CreateServerListButton(template, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, -0.5f, -1f), () =>
-            {if (CurrentPage > 1) {CurrentPage--; RefreshServerOptions(__instance);}});
+            { if (CurrentPage > 1) { CurrentPage--; RefreshServerOptions(__instance); } });
         if (NextPageButton == null || NextPageButton.gameObject == null) NextPageButton =
             CreateServerListButton(template, "NextPageButton", GetString("NextPage"), new Vector3(0f, -1f + ButtonsPerPage * -0.5f, -1f), () =>
-            {if (CurrentPage < MaxPage) {CurrentPage++; RefreshServerOptions(__instance);}});
+            { if (CurrentPage < MaxPage) { CurrentPage++; RefreshServerOptions(__instance); } });
     }
     public static ServerListButton CreateServerListButton(ServerListButton template, string name, string text, Vector3 position, Action onclickaction)
     {
