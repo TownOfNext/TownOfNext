@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
+using System.Data;
 using System.Linq;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core;
@@ -75,6 +76,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         AURoleOptions.SetOpt(opt);
         var state = PlayerState.GetByPlayerId(player.PlayerId);
         opt.BlackOut(state.IsBlackOut);
+        opt.SetInt(Int32OptionNames.RulePreset, (int)GameOptionsManager.Instance.CurrentGameOptions.RulesPreset);
 
         CustomRoles role = player.GetCustomRole();
         switch (role.GetCustomRoleTypes())
