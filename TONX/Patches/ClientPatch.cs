@@ -331,3 +331,17 @@ class InnerNetClientPatch
         }
     }
 }
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Connect))]
+public static class InnerNetClientConnectPatch
+{
+    public static IRegionInfo CurrentFindGameListFilteredClientRegion;
+    public static int CurrentFindGameListFilteredClientGameId;
+    public static void Postfix(InnerNetClient __instance)
+    {
+        if (FindAGameManager.Instance.isActiveAndEnabled)
+        {
+            CurrentFindGameListFilteredClientRegion = ServerManager.Instance.CurrentRegion;
+            CurrentFindGameListFilteredClientGameId = __instance.GameId;
+        }
+    }
+}
