@@ -359,20 +359,20 @@ public static class SpawnInMinigameSpawnAtPatch
     {
         public override Dictionary<OptionItem, Vector2> Positions { get; } = new()
         {
-            [Options.RandomSpawnSkeldCafeteria] = new(-1.0f, 3.0f),
-            [Options.RandomSpawnSkeldWeapons] = new(9.3f, 1.0f),
-            [Options.RandomSpawnSkeldLifeSupp] = new(6.5f, -3.8f),
-            [Options.RandomSpawnSkeldNav] = new(16.5f, -4.8f),
-            [Options.RandomSpawnSkeldShields] = new(9.3f, -12.3f),
-            [Options.RandomSpawnSkeldComms] = new(4.0f, -15.5f),
-            [Options.RandomSpawnSkeldStorage] = new(-1.5f, -15.5f),
-            [Options.RandomSpawnSkeldAdmin] = new(4.5f, -7.9f),
-            [Options.RandomSpawnSkeldElectrical] = new(-7.5f, -8.8f),
-            [Options.RandomSpawnSkeldLowerEngine] = new(-17.0f, -13.5f),
-            [Options.RandomSpawnSkeldUpperEngine] = new(-17.0f, -1.3f),
-            [Options.RandomSpawnSkeldSecurity] = new(-13.5f, -5.5f),
-            [Options.RandomSpawnSkeldReactor] = new(-20.5f, -5.5f),
-            [Options.RandomSpawnSkeldMedBay] = new(-9.0f, -4.0f)
+            [Options.RandomSpawnSkeldCafeteria] = AprilFoolsModePatch.FlipSkeld ? new(1.0f, 3.0f) : new(-1.0f, 3.0f),
+            [Options.RandomSpawnSkeldWeapons] = AprilFoolsModePatch.FlipSkeld ? new(-9.3f, 1.0f) : new(9.3f, 1.0f),
+            [Options.RandomSpawnSkeldLifeSupp] = AprilFoolsModePatch.FlipSkeld ? new(-6.5f, -3.8f) : new(6.5f, -3.8f),
+            [Options.RandomSpawnSkeldNav] = AprilFoolsModePatch.FlipSkeld ? new(-16.5f, -4.8f) : new(16.5f, -4.8f),
+            [Options.RandomSpawnSkeldShields] = AprilFoolsModePatch.FlipSkeld ? new(-9.3f, -12.3f) : new(9.3f, -12.3f),
+            [Options.RandomSpawnSkeldComms] = AprilFoolsModePatch.FlipSkeld ? new(-4.0f, -15.5f) : new(4.0f, -15.5f),
+            [Options.RandomSpawnSkeldStorage] = AprilFoolsModePatch.FlipSkeld ? new(1.5f, -15.5f) : new(-1.5f, -15.5f),
+            [Options.RandomSpawnSkeldAdmin] = AprilFoolsModePatch.FlipSkeld ? new(-4.5f, -7.9f) : new(4.5f, -7.9f),
+            [Options.RandomSpawnSkeldElectrical] = AprilFoolsModePatch.FlipSkeld ? new(7.5f, -8.8f) : new(-7.5f, -8.8f),
+            [Options.RandomSpawnSkeldLowerEngine] = AprilFoolsModePatch.FlipSkeld ? new(17.0f, -13.5f) : new(-17.0f, -13.5f),
+            [Options.RandomSpawnSkeldUpperEngine] = AprilFoolsModePatch.FlipSkeld ? new(17.0f, -1.3f) : new(-17.0f, -1.3f),
+            [Options.RandomSpawnSkeldSecurity] = AprilFoolsModePatch.FlipSkeld ? new(13.5f, -5.5f) : new(-13.5f, -5.5f),
+            [Options.RandomSpawnSkeldReactor] = AprilFoolsModePatch.FlipSkeld ? new(20.5f, -5.5f) : new(-20.5f, -5.5f),
+            [Options.RandomSpawnSkeldMedBay] = AprilFoolsModePatch.FlipSkeld ? new(9.0f, -4.0f) : new(-9.0f, -4.0f)
         };
     }
     public class MiraHQSpawnMap : SpawnMap

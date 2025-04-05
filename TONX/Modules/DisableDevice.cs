@@ -14,8 +14,8 @@ class DisableDevice
     private static int frame = 0;
     public static readonly Dictionary<string, Vector2> DevicePos = new()
     {
-        ["SkeldAdmin"] = new(3.48f, -8.62f),
-        ["SkeldCamera"] = new(-13.06f, -2.45f),
+        ["SkeldAdmin"] = AprilFoolsModePatch.FlipSkeld ? new(-3.48f, -8.62f) : new(3.48f, -8.62f),
+        ["SkeldCamera"] = AprilFoolsModePatch.FlipSkeld ? new(13.06f, -2.45f) : new(-13.06f, -2.45f),
         ["MiraHQAdmin"] = new(21.02f, 19.09f),
         ["MiraHQDoorLog"] = new(16.22f, 5.82f),
         ["PolusLeftAdmin"] = new(22.80f, -21.52f),
