@@ -250,7 +250,7 @@ namespace TONX
                         {
                             if (option.Name == categoryHeader.name)
                             {
-                                UpdateCategoryHeader(categoryHeader, ref offset);
+                                UpdateCategoryHeader(categoryHeader, option, ref offset);
                                 continue;
                             }
                         }
@@ -263,10 +263,16 @@ namespace TONX
                 __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
             }
         }
-        private static void UpdateCategoryHeader(CategoryHeaderMasked categoryHeader, ref float offset)
+        private static void UpdateCategoryHeader(CategoryHeaderMasked categoryHeader, OptionItem item, ref float offset)
         {
-            offset -= GameOptionsMenu.HEADER_HEIGHT;
-            categoryHeader.transform.localPosition = new(GameOptionsMenu.HEADER_X, offset, -2f);
+            var enabled = true;
+            enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
+            categoryHeader.gameObject.SetActive(enabled);
+            if (enabled)
+            {
+                offset -= GameOptionsMenu.HEADER_HEIGHT;
+                categoryHeader.transform.localPosition = new(GameOptionsMenu.HEADER_X, offset, -2f);
+            }
         }
         private static void UpdateOption(ref bool isOdd, OptionItem item, ref float offset)
         {

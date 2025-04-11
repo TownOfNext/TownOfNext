@@ -487,6 +487,7 @@ public static class Utils
         var States = PlayerState.GetByPlayerId(p.PlayerId);
         if (p.Role.IsImpostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return false;
         // 死んでいて，死人のタスク免除が有効なら確定でfalse
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool())
         {
@@ -563,16 +564,19 @@ public static class Utils
         var ProgressText = new StringBuilder();
         var State = PlayerState.GetByPlayerId(playerId);
         var role = State.MainRole;
-        var roleClass = CustomRoleManager.GetByPlayerId(playerId);
-        ProgressText.Append(GetTaskProgressText(playerId, comms));
-        if (roleClass != null)
+        if (GetPlayerById(playerId).GetCustomRole() == CustomRoles.KB_Normal) ProgressText.Append(SoloKombatManager.GetDisplayScore(playerId));
+        else
         {
-            ProgressText.Append(roleClass.GetProgressText(comms));
+            var roleClass = CustomRoleManager.GetByPlayerId(playerId);
+            ProgressText.Append(GetTaskProgressText(playerId, comms));
+            if (roleClass != null)
+            {
+                ProgressText.Append(roleClass.GetProgressText(comms));
+            }
+
+            //SubRoles
+            ProgressText.Append(TicketsStealer.GetProgressText(playerId, comms));
         }
-
-        //SubRoles
-        ProgressText.Append(TicketsStealer.GetProgressText(playerId, comms));
-
         return ProgressText.ToString();
     }
     public static string GetTaskProgressText(byte playerId, bool comms = false)
@@ -980,6 +984,10 @@ public static class Utils
                 //seerに関わらず発動するSuffix
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
+                //KB自身名字后缀
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                    SelfSuffix.Append(SoloKombatManager.GetDisplayHealth(seer));
+
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
@@ -997,7 +1005,12 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
-                SelfName = SelfRoleName + "\r\n" + SelfName;
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                {
+                    SoloKombatManager.GetNameNotify(seer, ref SelfName);
+                    SelfName = $"<size={fontSize}>{text}</size>\r\n{SelfName}";
+                }
+                else SelfName = SelfRoleName + "\r\n" + SelfName;
                 SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix.ToString();
                 if (!isForMeeting) SelfName += "\r\n";
 
@@ -1066,6 +1079,9 @@ public static class Utils
                         TargetSuffix.Insert(0, "\r\n");
                     }
 
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                        TargetRoleText = $"<size={fontSize}>{GetProgressText(target)}</size>\r\n";
+
                     //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                     string TargetPlayerName = target.GetRealName(isForMeeting);
 
@@ -1076,6 +1092,12 @@ public static class Utils
 
                     //ターゲットのプレイヤー名の色を書き換えます。
                     TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, isForMeeting);
+
+                    //KB目标玩家名字后缀
+                    TargetSuffix.Clear();
+
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                        TargetSuffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                     string TargetDeathReason = "";
                     if (seer.KnowDeathReason(target))

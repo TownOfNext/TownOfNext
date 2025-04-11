@@ -276,6 +276,9 @@ public class Main : BasePlugin
                 {CustomRoles.Charmed, "#ff00ff"},
                 {CustomRoles.Bait, "#00f7ff"},
                 {CustomRoles.Beartrap, "#5a8fd0"},
+
+                //SoloKombat
+                {CustomRoles.KB_Normal, "#f55252"}
             };
             var type = typeof(RoleBase);
             var roleClassArray =

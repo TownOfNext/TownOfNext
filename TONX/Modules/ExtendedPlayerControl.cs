@@ -398,6 +398,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.IsEaten()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) roleCanUse = pc.SoloAlive();
 
         return roleCanUse ?? pc.Is(CustomRoleTypes.Impostor);
     }
@@ -406,6 +407,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseImpostorVentButton();
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) roleCanUse = true;
 
         return roleCanUse ?? false;
     }

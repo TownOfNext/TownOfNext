@@ -108,7 +108,6 @@ internal class ChangeRoleSettings
                 RPC.SyncCustomSettingsRPC();
                 RPC.SyncAllPlayerNames();
             }
-
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
             MeetingStates.MeetingCalled = false;
@@ -152,21 +151,24 @@ internal class SelectRolesPatch
             SelectAddonRoles();
             CalculateVanillaRoleCount();
 
-            //指定原版特殊职业数量
-            RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Shapeshifter, RoleTypes.Phantom]; foreach (var roleTypes in RoleTypesList)
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat) foreach (var kv in RoleResult) AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
+            else
             {
-                var roleOpt = Main.NormalOptions.roleOptions;
-                int numRoleTypes = GetRoleTypesCount(roleTypes);
-                roleOpt.SetRoleRate(roleTypes, numRoleTypes, numRoleTypes > 0 ? 100 : 0);
+                // 指定原版特殊职业数量
+                RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Shapeshifter, RoleTypes.Phantom]; foreach (var roleTypes in RoleTypesList)
+                {
+                    var roleOpt = Main.NormalOptions.roleOptions;
+                    int numRoleTypes = GetRoleTypesCount(roleTypes);
+                    roleOpt.SetRoleRate(roleTypes, numRoleTypes, numRoleTypes > 0 ? 100 : 0);
+                }
+
+                // 注册反职业
+                foreach (var kv in RoleResult.Where(x => x.Value.GetRoleInfo().IsDesyncImpostor))
+                    AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: kv.Value.GetRoleInfo().BaseRoleType.Invoke());
+
+                foreach (var cp in RoleResult.Where(x => x.Value == CustomRoles.CrewPostor))
+                    AssignDesyncRole(cp.Value, cp.Key, senders, BaseRole: RoleTypes.Crewmate, hostBaseRole: RoleTypes.Impostor);
             }
-
-
-            // 注册反职业
-            foreach (var kv in RoleResult.Where(x => x.Value.GetRoleInfo().IsDesyncImpostor))
-                AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: kv.Value.GetRoleInfo().BaseRoleType.Invoke());
-
-            foreach (var cp in RoleResult.Where(x => x.Value == CustomRoles.CrewPostor))
-                AssignDesyncRole(cp.Value, cp.Key, senders, BaseRole: RoleTypes.Crewmate, hostBaseRole: RoleTypes.Impostor);
 
         }
         catch (Exception ex)
@@ -187,6 +189,7 @@ internal class SelectRolesPatch
             foreach (var sd in RpcSetRoleReplacer.StoragedData)
             {
                 var kp = RoleResult.Where(x => x.Key.PlayerId == sd.Item1.PlayerId).FirstOrDefault();
+                if (kp.Value == CustomRoles.KB_Normal) continue;
                 if (kp.Value.GetRoleInfo().IsDesyncImpostor || kp.Value == CustomRoles.CrewPostor)
                 {
                     Logger.Warn($"反向原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
@@ -224,6 +227,13 @@ internal class SelectRolesPatch
                 state.SetMainRole(role);
             }
 
+            // 个人竞技模式用
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+            {
+                foreach (var pair in PlayerState.AllPlayerStates) ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                goto EndOfSelectRolePatch;
+            }
+
             foreach (var (player, role) in RoleResult.Where(kvp => !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
             {
                 SetColorPatch.IsAntiGlitchDisabled = true;
@@ -252,6 +262,8 @@ internal class SelectRolesPatch
             }
             CustomRoleManager.CreateInstance(true);
 
+        EndOfSelectRolePatch:
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 HudManager.Instance.SetHudActive(true);
@@ -268,6 +280,9 @@ internal class SelectRolesPatch
             {
                 case CustomGameMode.Standard:
                     GameEndChecker.SetPredicateToNormal();
+                    break;
+                case CustomGameMode.SoloKombat:
+                    GameEndChecker.SetPredicateToSoloKombat();
                     break;
             }
 
@@ -301,8 +316,7 @@ internal class SelectRolesPatch
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
     {
-        if (!role.IsEnable())
-return;
+        if (!role.IsEnable() && role is not CustomRoles.KB_Normal) return;
 
         var hostId = PlayerControl.LocalPlayer.PlayerId;
 

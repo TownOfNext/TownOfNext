@@ -31,6 +31,18 @@ class GameEndChecker
         //ゲーム終了判定
         predicate.CheckForEndGame(out reason);
 
+        // SoloKombat
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+        {
+            if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            {
+                ShipStatus.Instance.enabled = false;
+                StartEndGame(reason);
+                predicate = null;
+            }
+            return false;
+        }
+
         //ゲーム終了時
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
@@ -189,6 +201,7 @@ class GameEndChecker
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
+    public static void SetPredicateToSoloKombat() => predicate = new SoloKombatGameEndPredicate();
 
     // ===== ゲーム終了条件 =====
     // 通常ゲーム用
@@ -276,6 +289,37 @@ class GameEndChecker
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
             }
             else return false; //胜利条件未达成
+
+            return true;
+        }
+    }
+
+    // 个人竞技模式用
+    class SoloKombatGameEndPredicate : GameEndPredicate
+    {
+        public override bool CheckForEndGame(out GameOverReason reason)
+        {
+            reason = GameOverReason.ImpostorsByKill;
+            if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
+            if (CheckGameEndByLivingPlayers(out reason)) return true;
+            return false;
+        }
+
+        public bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+        {
+            reason = GameOverReason.ImpostorsByKill;
+
+            if (SoloKombatManager.RoundTime > 0) return false;
+
+            var list = Main.AllPlayerControls.Where(x => !x.Is(CustomRoles.GM) && SoloKombatManager.GetRankOfScore(x.PlayerId) == 1);
+            var winner = list.FirstOrDefault();
+
+            CustomWinnerHolder.WinnerIds = new()
+            {
+                winner.PlayerId
+            };
+
+            Main.DoBlockNameChange = true;
 
             return true;
         }

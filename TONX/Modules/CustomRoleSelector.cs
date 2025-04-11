@@ -37,11 +37,18 @@ internal static class CustomRoleSelector
         List<CustomRoles> ImpRateList = new();
         List<CustomRoles> NeutralRateList = new();
 
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+        {
+            RoleResult = new();
+            foreach (var pc in Main.AllAlivePlayerControls) RoleResult.Add(pc, CustomRoles.KB_Normal);
+            return;
+        }
+
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAddon() || !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) || option.Selections.Length != 3) continue;
-            if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
+            if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
             if (role is CustomRoles.Mare or CustomRoles.Concealer && Main.NormalOptions.MapId == 5) continue;
             for (int i = 0; i < role.GetAssignCount(); i++)
                 roleList.Add(role);
@@ -213,7 +220,7 @@ internal static class CustomRoleSelector
             AllPlayer.RemoveAt(0);
             rolesToAssign.RemoveAt(roleId);
 
-        EndOfWhile:;
+        EndOfWhile:
             if (delPc != null)
             {
                 AllPlayer.Remove(delPc);
@@ -236,6 +243,8 @@ internal static class CustomRoleSelector
     public static int addShapeshifterNum = 0;
     public static void CalculateVanillaRoleCount()
     {
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
+
         // 计算原版特殊职业数量
         addEngineerNum = 0;
         addScientistNum = 0;
@@ -285,6 +294,8 @@ internal static class CustomRoleSelector
     public static List<CustomRoles> AddonRolesList = new();
     public static void SelectAddonRoles()
     {
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
+
         AddonRolesList = new();
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {

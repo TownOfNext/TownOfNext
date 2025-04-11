@@ -68,12 +68,13 @@ public class PlayerState
         MainRole = role;
 
         CountType = CustomRoleManager.GetRoleInfo(role) is SimpleRoleInfo roleInfo ?
-               roleInfo.CountType :
-               role switch
-               {
-                   CustomRoles.GM => CountTypes.OutOfGame,
-                   _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
-               };
+            roleInfo.CountType :
+            role switch
+            {
+                CustomRoles.KB_Normal => CountTypes.Impostor,
+                CustomRoles.GM => CountTypes.OutOfGame,
+                _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
+            };
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false)
     {

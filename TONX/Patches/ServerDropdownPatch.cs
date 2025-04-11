@@ -26,6 +26,7 @@ public static class ServerDropdownPatch
         __instance.background.transform.localPosition = new Vector3(0f, (1f - ButtonsPerPage * 0.5f) / 2, 0f);
         // 调整服务器选项按钮位置
         MaxPage = serverListButton.Count / ButtonsPerPage + 1;
+        if (CurrentPage > MaxPage) CurrentPage = MaxPage;
         List<ServerListButton> currentPageButton = new();
         var max = CurrentPage * ButtonsPerPage > serverListButton.Count ? serverListButton.Count : CurrentPage * ButtonsPerPage;
         for (var i = (CurrentPage - 1) * ButtonsPerPage; i < max; i++) currentPageButton.Add(serverListButton[i]);
@@ -37,12 +38,12 @@ public static class ServerDropdownPatch
         }
         // 创建翻页按钮
         var template = serverListButton[0];
-        if (PreviousPageButton == null || PreviousPageButton.gameObject == null) PreviousPageButton =
-            CreateServerListButton(template, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, -0.5f, -1f), () =>
-            { if (CurrentPage > 1) { CurrentPage--; RefreshServerOptions(__instance); } });
-        if (NextPageButton == null || NextPageButton.gameObject == null) NextPageButton =
-            CreateServerListButton(template, "NextPageButton", GetString("NextPage"), new Vector3(0f, -1f + ButtonsPerPage * -0.5f, -1f), () =>
-            { if (CurrentPage < MaxPage) { CurrentPage++; RefreshServerOptions(__instance); } });
+        if (PreviousPageButton == null || PreviousPageButton.gameObject == null) PreviousPageButton = CreateServerListButton(template, "PreviousPageButton", GetString("PreviousPage"),
+            new Vector3(0f, -0.5f, -1f), () => { if (CurrentPage > 1) { CurrentPage--; RefreshServerOptions(__instance); } });
+        PreviousPageButton.gameObject.SetActive(true);
+        if (NextPageButton == null || NextPageButton.gameObject == null) NextPageButton = CreateServerListButton(template, "NextPageButton", GetString("NextPage"),
+            new Vector3(0f, -1f + ButtonsPerPage * -0.5f, -1f), () => { if (CurrentPage < MaxPage) { CurrentPage++; RefreshServerOptions(__instance); } });
+        NextPageButton.gameObject.SetActive(true);
     }
     public static ServerListButton CreateServerListButton(ServerListButton template, string name, string text, Vector3 position, Action onclickaction)
     {
@@ -52,13 +53,11 @@ public static class ServerDropdownPatch
         button.transform.localPosition = position;
         button.Button.OnClick = new();
         button.Button.OnClick.AddListener(onclickaction);
-        button.gameObject.SetActive(true);
         return button;
     }
     public static void RefreshServerOptions(ServerDropdown __instance)
     {
         foreach (ServerListButton button in __instance.ButtonPool.GetComponentsInChildren<ServerListButton>()) button.gameObject.SetActive(false);
-        PreviousPageButton = NextPageButton = null;
         __instance.FillServerOptions();
     }
 }
