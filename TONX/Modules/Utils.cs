@@ -700,7 +700,7 @@ public static class Utils
         }
 
         var titlesb = $"{GetString("Roles")}\n<color=#ff5b70>{GetRoleName(CustomRoles.GM)}</color>:{Options.EnableGM.GetString()}";
-        var customRoleTypes = new List<CustomRoleTypes> {CustomRoleTypes.Impostor, CustomRoleTypes.Crewmate, CustomRoleTypes.Neutral, CustomRoleTypes.Addon};
+        var customRoleTypes = new List<CustomRoleTypes> { CustomRoleTypes.Impostor, CustomRoleTypes.Crewmate, CustomRoleTypes.Neutral, CustomRoleTypes.Addon };
         var sbs = Enumerable.Range(0, 4).Select(_ => new StringBuilder()).ToList();
 
         foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles.Concat(CustomRolesHelper.AllAddOns))

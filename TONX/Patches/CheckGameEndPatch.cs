@@ -313,12 +313,7 @@ class GameEndChecker
 
             var list = Main.AllPlayerControls.Where(x => !x.Is(CustomRoles.GM) && SoloKombatManager.GetRankOfScore(x.PlayerId) == 1);
             var winner = list.FirstOrDefault();
-
-            CustomWinnerHolder.WinnerIds = new()
-            {
-                winner.PlayerId
-            };
-
+            if (winner != null) CustomWinnerHolder.WinnerIds = new() { winner.PlayerId };
             Main.DoBlockNameChange = true;
 
             return true;

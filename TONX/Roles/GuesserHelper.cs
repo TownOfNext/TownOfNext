@@ -347,7 +347,7 @@ public static class GuesserHelper
             Transform selectedButton = null;
 
             int tabCount = 0;
-            List<int> CustomRoleTypesIndex = new() {1, 0, 2, 3}; 
+            List<int> CustomRoleTypesIndex = new() { 1, 0, 2, 3 }; 
             for (int index = 0; index < 4; index++)
             {
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
