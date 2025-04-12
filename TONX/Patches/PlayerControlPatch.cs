@@ -57,6 +57,7 @@ class CheckMurderPatch
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
         {
             SoloKombatManager.OnPlayerAttack(__instance, target);
+            __instance.RpcMurderPlayer(target, false);
             return false;
         }
 
@@ -566,10 +567,10 @@ class FixedUpdatePatch
                 { //targetが自分自身
                     if (seer.IsEaten())
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        SoloKombatManager.GetNameNotify(target, ref RealName);
                     if (NameNotifyManager.GetNameNotify(target, out var name))
                         RealName = name;
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
+                        SoloKombatManager.GetNameNotify(target, ref RealName);
                 }
 
                 //NameColorManager準拠の処理

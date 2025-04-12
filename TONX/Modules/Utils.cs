@@ -551,7 +551,7 @@ public static class Utils
         seen ??= seer;
         var comms = IsActive(SystemTypes.Comms) || Concealer.IsHidding;
         bool enabled = seer == seen
-                    || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool());
+            || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool()) || seen.GetCustomRole() == CustomRoles.KB_Normal;
         string text = GetProgressText(seen.PlayerId, comms);
 
         //seer側による変更
@@ -1074,6 +1074,11 @@ public static class Utils
                     TargetSuffix.Append(seerRole?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                     //seerに関わらず発動するSuffix
                     TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+
+                    //KB目标玩家名字后缀
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
+                        TargetSuffix.Append(SoloKombatManager.GetDisplayHealth(target));
+
                     // 空でなければ先頭に改行を挿入
                     if (TargetSuffix.Length > 0)
                     {
@@ -1081,7 +1086,7 @@ public static class Utils
                     }
 
                     if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        TargetRoleText = $"<size={fontSize}>{GetProgressText(target)}</size>\r\n";
+                        TargetRoleText = $"<size={fontSize}>{GetProgressText(seer, target)}</size>\r\n";
 
                     //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                     string TargetPlayerName = target.GetRealName(isForMeeting);
@@ -1093,11 +1098,6 @@ public static class Utils
 
                     //ターゲットのプレイヤー名の色を書き換えます。
                     TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, isForMeeting);
-
-                    //KB目标玩家名字后缀
-                    TargetSuffix.Clear();
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        TargetSuffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                     string TargetDeathReason = "";
                     if (seer.KnowDeathReason(target))

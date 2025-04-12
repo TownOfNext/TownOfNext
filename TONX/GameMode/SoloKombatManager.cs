@@ -99,14 +99,14 @@ internal static class SoloKombatManager
         KBScore = new();
         RoundTime = KB_GameTime.GetInt() + 8;
 
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.AllPlayerControls)
         {
             PlayerHPMax.TryAdd(pc.PlayerId, KB_HPMax.GetFloat());
             PlayerHP.TryAdd(pc.PlayerId, KB_HPMax.GetFloat());
             PlayerHPReco.TryAdd(pc.PlayerId, KB_RecoverPerSecond.GetFloat());
             PlayerATK.TryAdd(pc.PlayerId, KB_ATK.GetFloat());
             PlayerDF.TryAdd(pc.PlayerId, 0f);
-            KBScore.TryAdd(pc.PlayerId, Options.EnableGM.GetBool() && pc.PlayerId == 0 ? -1 : 0);
+            KBScore.TryAdd(pc.PlayerId, Options.EnableGM.GetBool() && pc.AmOwner ? -1 : 0);
             LastHurt.TryAdd(pc.PlayerId, Utils.GetTimeStamp());
         }
     }
