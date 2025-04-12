@@ -151,7 +151,7 @@ internal class SelectRolesPatch
             SelectAddonRoles();
             CalculateVanillaRoleCount();
 
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat) foreach (var kv in RoleResult) AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat) foreach (var kv in RoleResult.Where(x => x.Value == CustomRoles.KB_Normal)) AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
             else
             {
                 // 指定原版特殊职业数量

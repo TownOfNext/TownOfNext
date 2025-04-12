@@ -293,6 +293,11 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
     }
     public static void SendRolesInfo(string input, byte playerId)
     {
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
+            return;
+        }
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);
@@ -310,6 +315,11 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
     }
     public static void SpecifyRole(string input, byte playerId)
     {
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
+            return;
+        }
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);
@@ -335,7 +345,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 !role.IsEnable()
                 || role.IsAddon()
                 || role.IsVanilla()
-                || role is CustomRoles.GM or CustomRoles.NotAssigned
+                || role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal
                 || !Options.CustomRoleSpawnChances.ContainsKey(role))
             {
                 Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);

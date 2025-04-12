@@ -75,7 +75,7 @@ namespace TONX
                 settingsButton.OnClick.AddListener((Action)(() =>
                 {
                     ControllerManager.Instance.OpenOverlayMenu(settingsTab.name, GameSettingMenu.Instance.BackButton);
-                    __instance.ChangeTab((int)tab+3, false);  // バニラタブを閉じる
+                    __instance.ChangeTab((int)tab + 3, false);  // バニラタブを閉じる
                     settingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
                     settingsButton.SelectButton(true);

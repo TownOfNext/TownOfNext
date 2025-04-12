@@ -542,7 +542,8 @@ public static class Options
         // GM
         EnableGM = BooleanOptionItem.Create(100, "GM", false, TabGroup.GameSettings, false)
             .SetColor(Utils.GetRoleColor(CustomRoles.GM))
-            .SetHeader(true);
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.All);
 
         bool setupExpNow = false;
 
@@ -719,20 +720,25 @@ public static class Options
 
         // 游戏信息相关设定
         TextOptionItem.Create(2_100_003, "MenuTitle.GameInfo", TabGroup.SystemSettings)
+            .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
 
         AutoDisplayKillLog = BooleanOptionItem.Create(2_002_001, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
             .SetHeader(true)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         AutoDisplayLastResult = BooleanOptionItem.Create(2_002_002, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         ChangeNameToRoleInfo = BooleanOptionItem.Create(2_002_003, "ChangeNameToRoleInfo", false, TabGroup.SystemSettings, false)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         SendRoleDescriptionFirstMeeting = BooleanOptionItem.Create(2_002_004, "SendRoleDescriptionFirstMeeting", false, TabGroup.SystemSettings, false)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         HideGameSettings = BooleanOptionItem.Create(2_002_005, "HideGameSettings", false, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         DIYGameSettings = BooleanOptionItem.Create(2_002_006, "DIYGameSettings", false, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
 
         // 个性化相关设定

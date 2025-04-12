@@ -273,7 +273,7 @@ class IntroCutscenePatch
                     pc.SyncSettings();
                     pc.RpcResetAbilityCooldown();
                 });
-                if (Options.FixFirstKillCooldown.GetBool())
+                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.SoloKombat)
                     _ = new LateTask(() =>
                     {
                         if (GameStates.IsInTask)

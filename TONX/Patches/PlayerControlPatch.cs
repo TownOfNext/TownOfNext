@@ -566,7 +566,7 @@ class FixedUpdatePatch
                 { //targetが自分自身
                     if (seer.IsEaten())
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
                         SoloKombatManager.GetNameNotify(target, ref RealName);
                     if (NameNotifyManager.GetNameNotify(target, out var name))
                         RealName = name;
@@ -607,7 +607,7 @@ class FixedUpdatePatch
                 //seerに関わらず発動するSuffix
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
                     Suffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {

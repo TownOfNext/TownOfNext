@@ -97,7 +97,7 @@ internal static class SoloKombatManager
         originalSpeed = new();
         BackCountdown = new();
         KBScore = new();
-        // RoundTime = KB_GameTime.GetInt() + 8;
+        RoundTime = KB_GameTime.GetInt() + 8;
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
@@ -106,7 +106,7 @@ internal static class SoloKombatManager
             PlayerHPReco.TryAdd(pc.PlayerId, KB_RecoverPerSecond.GetFloat());
             PlayerATK.TryAdd(pc.PlayerId, KB_ATK.GetFloat());
             PlayerDF.TryAdd(pc.PlayerId, 0f);
-            KBScore.TryAdd(pc.PlayerId, 0);
+            KBScore.TryAdd(pc.PlayerId, Options.EnableGM.GetBool() && pc.PlayerId == 0 ? -1 : 0);
             LastHurt.TryAdd(pc.PlayerId, Utils.GetTimeStamp());
         }
     }
@@ -233,7 +233,7 @@ internal static class SoloKombatManager
 
         LastHurt[target.PlayerId] = Utils.GetTimeStamp();
 
-        killer.SetKillCooldownV2(1f, target);
+        killer.SetKillCooldownV2(KB_ATKCooldown.GetFloat(), target);
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
         if (!target.IsModClient() && !target.AmOwner)
@@ -368,7 +368,7 @@ internal static class SoloKombatManager
 
             if (AmongUsClient.Instance.AmHost)
             {
-                foreach (var pc in Main.AllPlayerControls.Where(x => !x.SoloAlive()))
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetCustomRole() == CustomRoles.KB_Normal && !x.SoloAlive()))
                 {
                     // 锁定死亡玩家在小黑屋
                     var pos = Utils.GetBlackRoomPS();
@@ -384,7 +384,7 @@ internal static class SoloKombatManager
 
                 if (!AmongUsClient.Instance.AmHost) return;
 
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetCustomRole() == CustomRoles.KB_Normal))
                 {
                     bool notifyRoles = false;
                     // 每秒回复血量

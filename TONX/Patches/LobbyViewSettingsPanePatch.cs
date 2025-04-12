@@ -71,7 +71,7 @@ namespace TONX
             }
             if ((int)category < 3551) return;
             __instance.taskTabButton.SelectButton(false);
-            CreateCustomOptions(__instance, (int)__instance.currentTab == 3558);
+            CreateCustomOptions(__instance, (int)category == 3558);
         }
 
         private static void CreateCustomOptions(LobbyViewSettingsPane __instance, bool isRolesOverview)

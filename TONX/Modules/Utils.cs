@@ -487,7 +487,7 @@ public static class Utils
         var States = PlayerState.GetByPlayerId(p.PlayerId);
         if (p.Role.IsImpostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
-        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return false;
+        if (p.GetCustomRole() == CustomRoles.KB_Normal) return false;
         // 死んでいて，死人のタスク免除が有効なら確定でfalse
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool())
         {
@@ -652,13 +652,14 @@ public static class Utils
             if (opt.IsText)
             {
                 sbs.Add(sb);
-                sb = new StringBuilder().AppendFormat("<line-height={0}>", ActiveSettingsLineHeight);;
+                sb = new StringBuilder().AppendFormat("<line-height={0}>", ActiveSettingsLineHeight);
                 sb.AppendFormat("<size={0}>", ActiveSettingsSize);
                 sb.Append($"   {opt.GetName()}\n");
             }
             else sb.Append($"{opt.GetName()}: {opt.GetString()}\n");
             if (opt.GetBool()) OptionShower.ShowChildren(opt, ref sb, Color.white, 1);
         }
+        sbs.Add(sb);
         for (var i = 0; i < sbs.Count; i++) SendMessage(sbs[i].ToString(), PlayerId);
     }
     public static void CopyCurrentSettings()
@@ -985,7 +986,7 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
                 //KB自身名字后缀
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && seer.GetCustomRole() == CustomRoles.KB_Normal)
                     SelfSuffix.Append(SoloKombatManager.GetDisplayHealth(seer));
 
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
@@ -1005,7 +1006,7 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && seer.GetCustomRole() == CustomRoles.KB_Normal)
                 {
                     SoloKombatManager.GetNameNotify(seer, ref SelfName);
                     SelfName = $"<size={fontSize}>{text}</size>\r\n{SelfName}";
@@ -1079,7 +1080,7 @@ public static class Utils
                         TargetSuffix.Insert(0, "\r\n");
                     }
 
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
                         TargetRoleText = $"<size={fontSize}>{GetProgressText(target)}</size>\r\n";
 
                     //RealNameを取得 なければ現在の名前をRealNamesに書き込む
@@ -1095,8 +1096,7 @@ public static class Utils
 
                     //KB目标玩家名字后缀
                     TargetSuffix.Clear();
-
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
                         TargetSuffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                     string TargetDeathReason = "";
@@ -1243,7 +1243,7 @@ public static class Utils
         {
             builder.Append(Main.AllPlayerNames[id]);
             builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            builder.Append(' ').Append(GetVitalText(id));
+            if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));
             builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
             builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
             ChatSummary[id] = builder.ToString();
@@ -1259,7 +1259,7 @@ public static class Utils
             builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
             // "(00/00) " = 4em
             pos += 4f;
-            builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
+            if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
             // "Lover's Suicide " = 8em
             // "回線切断 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;

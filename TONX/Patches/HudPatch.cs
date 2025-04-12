@@ -110,6 +110,7 @@ class HudManagerPatch
                         else __instance.AbilityButton.SetInfiniteUses();
                     }
                 }
+                else if (player.GetCustomRole() == CustomRoles.KB_Normal) __instance.KillButton.OverrideText(GetString("DemonButtonText"));
 
                 //バウンティハンターのターゲットテキスト
                 if (LowerInfoText == null)
