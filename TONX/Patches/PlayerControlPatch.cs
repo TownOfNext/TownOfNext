@@ -891,36 +891,38 @@ public static class PlayerControlCheckSporeTriggerPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckName))]
-class CmdCheckNameVersionCheckPatch
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
+class CheckNamePatch
 {
-    public static void Postfix(PlayerControl __instance, ref string name)
+    public static void Postfix(PlayerControl __instance, ref string playerName)
     {
         //规范昵称
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
         if (Options.FormatNameMode.GetInt() == 2 && __instance.GetClientId() != AmongUsClient.Instance.ClientId)
-            name = Main.Get_TName_Snacks;
+            playerName = Main.Get_TName_Snacks;
         else
         {
             // 删除非法字符
-            name = name.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\0", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
+            playerName = playerName.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\0", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
             // 删除超出10位的字符
-            if (name.Length > 10) name = name[..10];
+            if (playerName.Length > 10) playerName = playerName[..10];
             // 删除Emoji
-            if (Options.DisableEmojiName.GetBool()) name = Regex.Replace(name, @"\p{Cs}", string.Empty);
+            if (Options.DisableEmojiName.GetBool()) playerName = Regex.Replace(playerName, @"\p{Cs}", string.Empty);
             // 若无有效字符则随机取名
-            if (Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
+            if (Regex.Replace(Regex.Replace(playerName, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) playerName = Main.Get_TName_Snacks;
             // 替换重名
-            string fixedName = name;
+            string fixedName = playerName;
             int suffixNumber = 0;
             while (Main.AllPlayerNames.ContainsValue(fixedName))
             {
                 suffixNumber++;
-                fixedName = $"{name} {suffixNumber}";
+                fixedName = $"{playerName} {suffixNumber}";
             }
-            if (!fixedName.Equals(name)) name = fixedName;
+            if (!fixedName.Equals(playerName)) playerName = fixedName;
         }
+        Logger.Info($"{__instance.PlayerId}|{playerName}", "CheckName");
         Main.AllPlayerNames.Remove(__instance.PlayerId);
-        Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+        Main.AllPlayerNames.TryAdd(__instance.PlayerId, playerName);
+        RPC.SyncAllPlayerNames();
     }
 }
