@@ -236,8 +236,8 @@ internal static class SoloKombatManager
         killer.SetKillCooldownV2(KB_ATKCooldown.GetFloat(), target);
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
-        if (!target.IsModClient() && !target.AmOwner)
-            target.SetKillCooldown();
+        // if (!target.IsModClient() && !target.AmOwner)
+        //     target.SetKillCooldown();
 
         SendRPCSyncKBPlayer(target.PlayerId);
         Utils.NotifyRoles(killer);
