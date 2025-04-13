@@ -212,7 +212,7 @@ internal class SelectRolesPatch
 
             var rd = IRandom.Instance;
 
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in Main.AllPlayerControls)
             {
                 pc.Data.IsDead = false; //プレイヤーの死を解除する
                 var state = PlayerState.GetByPlayerId(pc.PlayerId);

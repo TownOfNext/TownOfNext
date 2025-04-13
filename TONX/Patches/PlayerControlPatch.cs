@@ -921,7 +921,6 @@ class CheckNamePatch
             }
             if (!fixedName.Equals(playerName)) playerName = fixedName;
         }
-        Logger.Info($"{__instance.PlayerId}|{playerName}", "CheckName");
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, playerName);
         RPC.SyncAllPlayerNames();
