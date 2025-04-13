@@ -232,7 +232,7 @@ class CreatePlayerPatch
 
         _ = new LateTask(() =>
         {
-            if (client.Character == null) return;
+            if (AmongUsClient.Instance.IsGameStarted || client.Character == null) return;
             if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
             else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
         }, 3f, "Welcome Message");

@@ -19,9 +19,9 @@ public static class ChatBubblePatch
     {
         bool modded = IsModdedMsg(__instance.playerInfo.PlayerName);
         var sr = __instance.transform.FindChild("Background").GetComponent<SpriteRenderer>();
-        sr.color = modded ? new Color(0, 0, 0) : new Color(1, 1, 1);
         if (modded)
         {
+            sr.color = new Color(0, 0, 0);
             chatText = Utils.ColorString(Color.white, chatText.TrimEnd('\0'));
             __instance.SetLeft();
         }

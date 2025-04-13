@@ -157,18 +157,12 @@ class GameEndChecker
                 if (ToGhostImpostor)
                 {
                     Logger.Info($"{pc.GetNameWithRole()}: ImpostorGhostに変更", "ResetRoleAndEndGame");
-                    sender.StartRpc(pc.NetId, RpcCalls.SetRole)
-                        .Write((ushort)RoleTypes.ImpostorGhost)
-                        .EndRpc();
-                    pc.SetRole(RoleTypes.ImpostorGhost);
+                    pc.RpcSetRole(RoleTypes.ImpostorGhost);
                 }
                 else
                 {
                     Logger.Info($"{pc.GetNameWithRole()}: CrewmateGhostに変更", "ResetRoleAndEndGame");
-                    sender.StartRpc(pc.NetId, RpcCalls.SetRole)
-                        .Write((ushort)RoleTypes.CrewmateGhost)
-                        .EndRpc();
-                    pc.SetRole(RoleTypes.Crewmate);
+                    pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
                 pc.Data.IsDead = isDead;
             }
@@ -314,6 +308,7 @@ class GameEndChecker
             var list = Main.AllPlayerControls.Where(x => !x.Is(CustomRoles.GM) && SoloKombatManager.GetRankOfScore(x.PlayerId) == 1);
             var winner = list.FirstOrDefault();
             if (winner != null) CustomWinnerHolder.WinnerIds = new() { winner.PlayerId };
+            else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
             Main.DoBlockNameChange = true;
 
             return true;
