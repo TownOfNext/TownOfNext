@@ -36,7 +36,7 @@ internal class EAC
             switch (rpc)
             {
                 case RpcCalls.SetName:
-                    reader.ReadUInt32();
+                    sr.ReadUInt32();
                     string name = sr.ReadString();
                     if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
                     if (
