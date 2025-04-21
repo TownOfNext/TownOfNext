@@ -57,7 +57,7 @@ class CloseDoorsPatch
 {
     public static bool Prefix(ShipStatus __instance)
     {
-        return !(Options.DisableSabotage.GetBool());
+        return !Options.DisableSabotage.GetBool() && Options.CurrentGameMode != CustomGameMode.SoloKombat;
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
