@@ -98,22 +98,25 @@ internal class VersionShowerStartPatch
         {
             VisitText = Object.Instantiate(__instance.text);
             VisitText.name = "TONX User Counter";
-            VisitText.alignment = TextAlignmentOptions.Left;
             VisitText.text = ModUpdater.visit > 0
                 ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, ModUpdater.visit)
                 : GetString("ConnectToTONXServerFailed");
             VisitText.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-            VisitText.transform.localPosition = new Vector3(-3.92f, -2.9f, 0f);
             VisitText.enabled = GameObject.Find("TONX Background") != null;
-
-            __instance.text.alignment = TextAlignmentOptions.Left;
-            OVersionShower.transform.localPosition = new Vector3(-4.92f, -3.3f, 0f);
-
-            var ap1 = OVersionShower.GetComponent<AspectPosition>();
-            if (ap1 != null) Object.Destroy(ap1);
-            var ap2 = VisitText.GetComponent<AspectPosition>();
-            if (ap2 != null) Object.Destroy(ap2);
         };
+
+        var ap1 = OVersionShower.GetComponent<AspectPosition>();
+        var IsForMainMenu = ap1.Alignment == AspectPosition.EdgeAlignments.Center;
+        ap1.Alignment = IsForMainMenu ? AspectPosition.EdgeAlignments.LeftBottom : AspectPosition.EdgeAlignments.RightBottom;
+        if (IsForMainMenu) ap1.DistanceFromEdge = new(0.4f, -0.3f);
+        __instance.text.alignment = IsForMainMenu ? TextAlignmentOptions.Left : TextAlignmentOptions.Right;
+        
+        if (VisitText == null || !VisitText.enabled) return;
+        var ap2 = VisitText.gameObject.GetComponent<AspectPosition>() ?? VisitText.gameObject.AddComponent<AspectPosition>();
+        ap2.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
+        ap2.DistanceFromEdge = new(1.4f, 0.1f);
+        ap2.updateAlways = true;
+        VisitText.alignment = TextAlignmentOptions.Left;
     }
 }
 
@@ -132,7 +135,7 @@ internal class TitleLogoPatch
     public static GameObject AULogo;
     public static GameObject BottomButtonBounds;
 
-    public static Vector3 RightPanelOp;
+    public static Vector3 RightPanelOp = new(2.8f, -0.4f, -5.0f);
 
     private static void Postfix(MainMenuManager __instance)
     {
@@ -190,7 +193,6 @@ internal class TitleLogoPatch
         foreach (var kvp in mainButtons)
             kvp.Key.Do(button => FormatButtonColor(button, kvp.Value.Item1, kvp.Value.Item2, kvp.Value.Item3, kvp.Value.Item4, kvp.Value.Item5));
 
-
         try
         {
             mainButtons?.Keys?.Flatten()?.DoIf(x => x != null, x => x.buttonText.color = Color.white);
@@ -202,13 +204,12 @@ internal class TitleLogoPatch
         if (!(RightPanel = GameObject.Find("RightPanel"))) return;
         var rpap = RightPanel.GetComponent<AspectPosition>();
         if (rpap) Object.Destroy(rpap);
-        RightPanelOp = RightPanel.transform.localPosition;
         RightPanel.transform.localPosition = RightPanelOp + new Vector3(10f, 0f, 0f);
         RightPanel.GetComponent<SpriteRenderer>().color = new(1f, 0.78f, 0.9f, 1f);
 
         CloseRightButton = new GameObject("CloseRightPanelButton");
         CloseRightButton.transform.SetParent(RightPanel.transform);
-        CloseRightButton.transform.localPosition = new Vector3(-4.78f, 1.3f, 1f);
+        CloseRightButton.transform.localPosition = new Vector3(-4.78f * MainMenuManagerPatch.ResolutionOffset(), 1.3f, 1f);
         CloseRightButton.transform.localScale = new(1f, 1f, 1f);
         CloseRightButton.AddComponent<BoxCollider2D>().size = new(0.6f, 1.5f);
         var closeRightSpriteRenderer = CloseRightButton.AddComponent<SpriteRenderer>();
@@ -226,7 +227,7 @@ internal class TitleLogoPatch
         var ttap = Tint.GetComponent<AspectPosition>();
         if (ttap) Object.Destroy(ttap);
         Tint.transform.SetParent(RightPanel.transform);
-        Tint.transform.localPosition = new Vector3(-0.0824f, 0.0513f, Tint.transform.localPosition.z);
+        Tint.transform.localPosition = new Vector3(-0.0824f * MainMenuManagerPatch.ResolutionOffset(), 0.0513f, Tint.transform.localPosition.z);
         Tint.transform.localScale = new Vector3(1f, 1f, 1f);
 
         if (!DebugModeManager.AmDebugger)
