@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
+using UnityEngine;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Templates;
-using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX;
@@ -108,34 +108,15 @@ class SetEverythingUpPatch
         var AdditionalWinnerText = new StringBuilder(32);
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
-        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat && CustomWinnerHolder.WinnerTeam is not CustomWinner.Error and not CustomWinner.None and not CustomWinner.Draw)
         {
             var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
-            switch (CustomWinnerHolder.WinnerTeam)
-            {
-                case CustomWinner.Draw:
-                    __instance.WinText.text = GetString("ForceEnd");
-                    __instance.WinText.color = Color.white;
-                    __instance.BackgroundBar.material.color = Color.gray;
-                    WinnerText.text = GetString("ForceEndText");
-                    WinnerText.color = Color.gray;
-                    break;
-                case CustomWinner.None:
-                    __instance.WinText.text = "";
-                    __instance.WinText.color = Color.black;
-                    __instance.BackgroundBar.material.color = Color.gray;
-                    WinnerText.text = GetString("EveryoneDied");
-                    WinnerText.color = Color.gray;
-                    break;
-                default:
-                    __instance.WinText.text = Main.AllPlayerNames[winnerId] + GetString("Win");
-                    __instance.WinText.fontSize -= 5f;
-                    __instance.WinText.color = Main.PlayerColors[winnerId];
-                    __instance.BackgroundBar.material.color = new Color32(245, 82, 82, 255);
-                    WinnerText.text = $"<color=#f55252>{GetString("ModeSoloKombat")}</color>";
-                    WinnerText.color = Color.red;
-                    break;
-            }
+            __instance.WinText.text = Main.AllPlayerNames[winnerId] + GetString("Win");
+            __instance.WinText.fontSize -= 5f;
+            __instance.WinText.color = Main.PlayerColors[winnerId];
+            __instance.BackgroundBar.material.color = new Color32(245, 82, 82, 255);
+            WinnerText.text = $"<color=#f55252>{GetString("ModeSoloKombat")}</color>";
+            WinnerText.color = Color.red;
             goto EndOfText;
         }
 
@@ -216,7 +197,7 @@ class SetEverythingUpPatch
         showHideButton = new SimpleButton(
             __instance.transform,
             "ShowHideResultsButton",
-            new(-4.5f * MainMenuManagerPatch.ResolutionOffset(), 2.6f, -14f),  // BackgroundLayer(z=-13)より手前
+            new(-4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 2.6f, -14f),  // BackgroundLayer(z=-13)より手前
             new(0, 136, 209, byte.MaxValue),
             new(0, 196, byte.MaxValue, byte.MaxValue),
             () =>

@@ -209,7 +209,7 @@ internal class TitleLogoPatch
 
         CloseRightButton = new GameObject("CloseRightPanelButton");
         CloseRightButton.transform.SetParent(RightPanel.transform);
-        CloseRightButton.transform.localPosition = new Vector3(-4.78f * MainMenuManagerPatch.ResolutionOffset(), 1.3f, 1f);
+        CloseRightButton.transform.localPosition = new Vector3(-4.78f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.3f, 1f);
         CloseRightButton.transform.localScale = new(1f, 1f, 1f);
         CloseRightButton.AddComponent<BoxCollider2D>().size = new(0.6f, 1.5f);
         var closeRightSpriteRenderer = CloseRightButton.AddComponent<SpriteRenderer>();
@@ -227,7 +227,7 @@ internal class TitleLogoPatch
         var ttap = Tint.GetComponent<AspectPosition>();
         if (ttap) Object.Destroy(ttap);
         Tint.transform.SetParent(RightPanel.transform);
-        Tint.transform.localPosition = new Vector3(-0.0824f * MainMenuManagerPatch.ResolutionOffset(), 0.0513f, Tint.transform.localPosition.z);
+        Tint.transform.localPosition = new Vector3(-0.0824f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.0513f, Tint.transform.localPosition.z);
         Tint.transform.localScale = new Vector3(1f, 1f, 1f);
 
         if (!DebugModeManager.AmDebugger)
@@ -247,7 +247,7 @@ internal class TitleLogoPatch
 
         if (!(Sizer = GameObject.Find("Sizer"))) return;
         if (!(AULogo = GameObject.Find("LOGO-AU"))) return;
-        Sizer.transform.localPosition += new Vector3(0f, 0.12f, 0f);
+        Sizer.transform.localPosition = new Vector3(-4.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.4f, -1.0f);
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
@@ -255,6 +255,9 @@ internal class TitleLogoPatch
 
         if (!(BottomButtonBounds = GameObject.Find("BottomButtonBounds"))) return;
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);
+
+        var mainButtonsobj = GameObject.Find("Main Buttons");
+        mainButtonsobj.transform.position = new Vector3(-3.4f * Utils.GetResolutionOffset(Screen.width, Screen.height), mainButtonsobj.transform.position.y, mainButtonsobj.transform.position.z);
     }
 }
 [HarmonyPatch(typeof(ModManager), nameof(ModManager.LateUpdate))]
@@ -282,5 +285,21 @@ internal class CreditsScreenPopUpPatch
     public static void Postfix(CreditsScreenPopUp __instance)
     {
         __instance.BackButton.transform.parent.FindChild("Background").gameObject.SetActive(false);
+    }
+}
+[HarmonyPatch(typeof(ResolutionManager))]
+internal class ResolutionManagerPatch
+{
+    [HarmonyPatch(nameof(ResolutionManager.SetResolution))]
+    public static void Postfix(int width, int height)
+    {
+        if (GameObject.Find("MainUI") == null) return;
+        var offset = Utils.GetResolutionOffset(width, height);
+        TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * offset, 1.3f, 1.0f);
+        TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
+        TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * offset, 1.4f, -1.0f);
+        var mainButtons = GameObject.Find("Main Buttons");
+        mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y, mainButtons.transform.position.z);
+        MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
     }
 }

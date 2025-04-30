@@ -9,22 +9,28 @@ namespace TONX;
 [HarmonyPatch]
 public class MainMenuButtonHoverAnimation
 {
-
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
     [HarmonyPriority(Priority.Last)]
     private static void Start_Postfix(MainMenuManager __instance)
     {
         var mainButtons = GameObject.Find("Main Buttons");
         mainButtons.ForEachChild((Il2CppSystem.Action<GameObject>)Init);
-        static void Init(GameObject obj)
-        {
-            if (obj.name is "BottomButtonBounds" or "Divider") return;
-            if (AllButtons.ContainsKey(obj)) return;
-            SetButtonStatus(obj, false);
-            var pb = obj.GetComponent<PassiveButton>();
-            pb.OnMouseOver.AddListener((Action)(() => SetButtonStatus(obj, true)));
-            pb.OnMouseOut.AddListener((Action)(() => SetButtonStatus(obj, false)));
-        }
+    }
+    public static void RefreshButtons(GameObject obj)
+    {
+        AllButtons = new();
+        obj.ForEachChild((Il2CppSystem.Action<GameObject>)Init);
+    }
+    static void Init(GameObject obj)
+    {
+        if (obj.name is "BottomButtonBounds" or "Divider") return;
+        if (AllButtons.ContainsKey(obj)) return;
+        SetButtonStatus(obj, false);
+        var pb = obj.GetComponent<PassiveButton>();
+        pb.OnMouseOver = new();
+        pb.OnMouseOver.AddListener((Action)(() => SetButtonStatus(obj, true)));
+        pb.OnMouseOut = new();
+        pb.OnMouseOut.AddListener((Action)(() => SetButtonStatus(obj, false)));
     }
 
     private static Dictionary<GameObject, (Vector3, bool)> AllButtons = new();
