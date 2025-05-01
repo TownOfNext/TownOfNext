@@ -134,6 +134,11 @@ class HudManagerPatch
                     LowerInfoText.enabled = false;
                 }
 
+                if (player.Is(CustomRoles.Madmate) || player.GetCustomRole() is CustomRoles.Jester)
+                {
+                    TaskTextPrefix += GetString(StringNames.FakeTasks);
+                }
+
                 if (player.CanUseKillButton())
                 {
                     __instance.KillButton.ToggleVisible(player.IsAlive() && GameStates.IsInTask);
@@ -144,11 +149,7 @@ class HudManagerPatch
                     __instance.KillButton.SetDisabled();
                     __instance.KillButton.ToggleVisible(false);
                 }
-                if (player.Is(CustomRoles.Madmate) || player.GetCustomRole() is CustomRoles.Jester)
-                {
-                    TaskTextPrefix += GetString(StringNames.FakeTasks);
-                }
-
+                
                 bool CanUseVent = player.CanUseImpostorVentButton();
                 __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
                 player.Data.Role.CanVent = CanUseVent;
@@ -160,6 +161,7 @@ class HudManagerPatch
                 __instance.KillButton.Hide();
                 __instance.AbilityButton.Show();
                 __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                __instance.AbilityButton.SetInfiniteUses();
                 if (LowerInfoText != null) LowerInfoText.enabled = false;
             }
         }

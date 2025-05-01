@@ -55,29 +55,10 @@ public sealed class Butcher : RoleBase, IImpostor
             {
                 Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100), ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
                 location += new Vector2(0, 0.3636f);
-
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, -1);
-                NetHelpers.WriteVector2(location, writer);
-                writer.Write(target.NetTransform.lastSequenceId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-
                 target.NetTransform.SnapTo(location);
-                killer.MurderPlayer(target);
-
-                if (target.Is(CustomRoles.Avenger))
-                {
-                    var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToList();
-                    var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
-                    var state = PlayerState.GetByPlayerId(rp.PlayerId).DeathReason = CustomDeathReason.Revenge;
-                    rp.SetRealKiller(target);
-                    rp.RpcMurderPlayerV2(rp);
-                }
-
-                MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
-                messageWriter.WriteNetObject(target);
-                AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+                killer.RpcMurderPlayerV2(target);
             }
-            Utils.TP(killer.NetTransform, ops);
+            target.NetTransform.SnapTo(ops);
         }, 0.05f, "Butcher Murder");
 
         return;

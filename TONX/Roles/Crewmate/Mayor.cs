@@ -87,4 +87,5 @@ public sealed class Mayor : RoleBase
         }
         return (votedForId, numVotes, doVote);
     }
+    public override int OverrideAbilityButtonUsesRemaining() => LeftButtonCount;
 }

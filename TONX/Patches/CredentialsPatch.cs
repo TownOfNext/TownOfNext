@@ -2,9 +2,8 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
-using TONX.Templates;
 using UnityEngine;
-
+using TONX.Templates;
 using static TONX.Translator;
 
 namespace TONX;
@@ -72,8 +71,6 @@ internal class PingTrackerUpdatePatch
 [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
 internal class VersionShowerStartPatch
 {
-    public static GameObject OVersionShower;
-    private static TextMeshPro VisitText;
     private static void Postfix(VersionShower __instance)
     {
         TMPTemplate.SetBase(__instance.text);
@@ -94,29 +91,16 @@ internal class VersionShowerStartPatch
         if (Main.hasArgumentException && ErrorText.Instance != null)
             ErrorText.Instance.AddError(ErrorCode.Main_DictionaryError);
 
-        if ((OVersionShower = GameObject.Find("VersionShower")) != null && VisitText == null)
-        {
-            VisitText = Object.Instantiate(__instance.text);
-            VisitText.name = "TONX User Counter";
-            VisitText.text = ModUpdater.visit > 0
-                ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, ModUpdater.visit)
-                : GetString("ConnectToTONXServerFailed");
-            VisitText.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-            VisitText.enabled = GameObject.Find("TONX Background") != null;
-        };
+        __instance.text.text += "\n" + $"{(ModUpdater.visit > 0
+            ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, ModUpdater.visit)
+            : GetString("ConnectToTONXServerFailed"))}";
 
-        var ap1 = OVersionShower.GetComponent<AspectPosition>();
-        var IsForMainMenu = ap1.Alignment == AspectPosition.EdgeAlignments.Center;
-        ap1.Alignment = IsForMainMenu ? AspectPosition.EdgeAlignments.LeftBottom : AspectPosition.EdgeAlignments.RightBottom;
-        if (IsForMainMenu) ap1.DistanceFromEdge = new(0.4f, -0.3f);
-        __instance.text.alignment = IsForMainMenu ? TextAlignmentOptions.Left : TextAlignmentOptions.Right;
-        
-        if (VisitText == null || !VisitText.enabled) return;
-        var ap2 = VisitText.gameObject.GetComponent<AspectPosition>() ?? VisitText.gameObject.AddComponent<AspectPosition>();
-        ap2.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
-        ap2.DistanceFromEdge = new(1.4f, 0.1f);
-        ap2.updateAlways = true;
-        VisitText.alignment = TextAlignmentOptions.Left;
+        if (GameObject.Find("MainUI") == null) return;
+        __instance.text.alignment = TextAlignmentOptions.Left;
+        __instance.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        var ap1 = __instance.GetComponent<AspectPosition>();
+        ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
+        ap1.DistanceFromEdge = new(1.0f, -0.4f);
     }
 }
 

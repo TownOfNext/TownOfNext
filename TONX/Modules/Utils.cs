@@ -486,7 +486,7 @@ public static class Utils
 
         var hasTasks = true;
         var States = PlayerState.GetByPlayerId(p.PlayerId);
-        if (p.Role.IsImpostor)
+        if (p.Role.IsImpostor && p.GetCustomRole() is not CustomRoles.CrewPostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
         if (p.GetCustomRole() == CustomRoles.KB_Normal) return false;
         // 死んでいて，死人のタスク免除が有効なら確定でfalse
@@ -517,7 +517,7 @@ public static class Utils
                 hasTasks = false;
                 break;
             default:
-                if (role.IsImpostor()) hasTasks = false;
+                if (role.IsImpostor() && role is not CustomRoles.CrewPostor) hasTasks = false;
                 break;
         }
 
@@ -1235,7 +1235,7 @@ public static class Utils
     public static string SummaryTexts(byte id, bool isForChat)
     {
         var builder = new StringBuilder();
-        // チャットならposタグを使わない(文字数削減)
+        // 发送消息不使用pos标签(减少文字数)
         if (isForChat)
         {
             return ChatSummary[id] ?? "";
@@ -1249,20 +1249,20 @@ public static class Utils
             builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
             ChatSummary[id] = builder.ToString();
             builder = new StringBuilder();
-            // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
-            // 1em ≒ 半角2文字
-            // 空白は0.5emとする
-            // SJISではアルファベットは1バイト，日本語は基本的に2バイト
+            // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
+            // 1em ≒ 2个半角字符
+            // 空格是0.5em
+            // SJIS的字母是一个字节，日语、汉语基本上是两个字节
             var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
             //最大11.5emとする(★+日本語10文字分+半角空白)
-            var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
+            var pos = Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
             builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
             builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
             // "(00/00) " = 4em
             pos += 4f;
             if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
             // "Lover's Suicide " = 8em
-            // "回線切断 " = 4.5em
+            // "断开连接 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
             builder.AppendFormat("<pos={0}em>", pos);
             builder.Append(GetTrueRoleName(id, false));

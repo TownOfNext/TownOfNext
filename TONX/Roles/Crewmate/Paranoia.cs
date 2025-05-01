@@ -89,4 +89,5 @@ public sealed class Paranoia : RoleBase
             msgToSend.Add((Translator.GetString("SkillUsedLeft") + SkillLimit.ToString(), Player.PlayerId, "<color=#aaaaff>" + Translator.GetString("DefaultSystemMessageTitle") + "</color>"));
         }
     }
+    public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
 }

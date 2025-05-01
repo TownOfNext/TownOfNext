@@ -14,7 +14,7 @@ public sealed class CrewPostor : RoleBase, IImpostor
             typeof(CrewPostor),
             player => new CrewPostor(player),
             CustomRoles.CrewPostor,
-            () => RoleTypes.Crewmate,
+            () => RoleTypes.Engineer,
             CustomRoleTypes.Impostor,
             4800,
             SetupOptionItem,
@@ -32,6 +32,13 @@ public sealed class CrewPostor : RoleBase, IImpostor
     static OptionItem OptionCanKillAllies;
 
     public bool CanKill { get; private set; } = false;
+    public bool CanUseSabotageButton() => false;
+    public override bool CanUseAbilityButton() => !Player.IsModClient(); // 仅对有内鬼跳管按钮的模组端玩家生效
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
     private static void SetupOptionItem()
     {
         OptionCanKillAllies = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanKillAllies, false, false);

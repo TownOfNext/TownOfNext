@@ -22,7 +22,7 @@ public class MapBehaviourPatch
         InitializeCustomHerePoints(__instance);
     }
 
-    public static void InitializeCustomHerePoints(MapBehaviour __instance)
+    private static void InitializeCustomHerePoints(MapBehaviour __instance)
     {
         __instance.DisableTrackerOverlays();
         // 删除旧图标

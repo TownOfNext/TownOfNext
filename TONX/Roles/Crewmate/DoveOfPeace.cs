@@ -85,4 +85,5 @@ public sealed class DoveOfPeace : RoleBase
         }
         return false;
     }
+    public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
 }

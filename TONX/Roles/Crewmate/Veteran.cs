@@ -112,4 +112,5 @@ public sealed class Veteran : RoleBase
         }
         return true;
     }
+    public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
 }
