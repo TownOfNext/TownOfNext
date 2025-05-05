@@ -68,9 +68,6 @@ public enum SpawnPoint
 }
 class RandomSpawn
 {
-    public static Dictionary<byte, bool> FirstTP = new();
-    public static Dictionary<PlayerControl, Vector2> FastSpawnPosition = new();
-    public static bool hostReady;
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.HandleRpc))]
     public class CustomNetworkTransformHandleRpcPatch
     {

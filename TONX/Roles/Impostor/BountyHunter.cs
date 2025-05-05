@@ -219,7 +219,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
     {
         if (GetTarget() == schrodingerCat.Player)
         {
-            ResetTarget();  // ターゲットの選びなおし
+            ResetTarget(); // ターゲットの選びなおし
         }
     }
 }

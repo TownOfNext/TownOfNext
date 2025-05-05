@@ -42,7 +42,7 @@ public sealed class Mare : RoleBase, IImpostor
     private float KillCooldownInLightsOut;
     private float SpeedInLightsOut;
     private static bool IsActivateKill;
-    private bool IsAccelerated;  //加速済みかフラグ
+    private bool IsAccelerated; // 加速済みかフラグ
 
     public static void SetupCustomOption()
     {

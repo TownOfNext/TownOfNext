@@ -27,7 +27,7 @@ class HudManagerInitializePatch
                 if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
                 else
                 {
-                    InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
+                    InGameRoleInfoMenu.SetRoleInfoRefByPlayer(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
                 RoleInfoButton.SelectButton(InGameRoleInfoMenu.Showing);

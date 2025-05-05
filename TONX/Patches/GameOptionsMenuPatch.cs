@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using TONX.Modules;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
 using UnityEngine;
@@ -37,14 +38,14 @@ namespace TONX
             __instance.GamePresetsButton.transform.parent.localPosition = buttonPosition;
             __instance.GamePresetsButton.transform.parent.localScale = buttonSize;
 
-            // TONX設定ボタン
+            // TONX设置按钮
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
                 Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
                 Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
                 Color32 buttonColor = tab switch
                 {
-                    TabGroup.SystemSettings => Main.UnityModColor,
+                    TabGroup.SystemSettings => Main.ModColor32,
                     TabGroup.GameSettings => new Color32(89, 239, 131, 255),
                     TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
                     TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
@@ -75,7 +76,7 @@ namespace TONX
                 settingsButton.OnClick.AddListener((Action)(() =>
                 {
                     ControllerManager.Instance.OpenOverlayMenu(settingsTab.name, GameSettingMenu.Instance.BackButton);
-                    __instance.ChangeTab((int)tab + 3, false);  // バニラタブを閉じる
+                    __instance.ChangeTab((int)tab + 3, false); // 关闭原版标签页
                     settingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
                     settingsButton.SelectButton(true);
@@ -84,7 +85,7 @@ namespace TONX
                 // 生成Tab图标
                 var settingsImage = CreateTabImage(__instance, settingsTab, $"TONX.Resources.Images.TabIcon_{tab}.png");
 
-                // 各設定スイッチを作成
+                // 创建每个设置项的设置按钮
                 var template = __instance.GameSettingsTab.stringOptionOrigin;
                 var scOptions = new Il2CppSystem.Collections.Generic.List<OptionBehaviour>();
                 foreach (var option in OptionItem.AllOptions)
@@ -107,8 +108,8 @@ namespace TONX
                         stringOption.ValueText.text = option.GetString();
                         stringOption.name = option.Name;
 
-                        // タイトルの枠をデカくする
-                        var indent = 0f;  // 親オプションがある場合枠の左を削ってインデントに見せる
+                        // 放大标题框
+                        var indent = 0f; // 如果有父项则使边框左侧缩进
                         var parent = option.Parent;
                         while (parent != null)
                         {
@@ -160,7 +161,7 @@ namespace TONX
             return categoryHeader;
         }
 
-        // 初めてロール設定を表示したときに発生する例外(バニラバグ)の影響を回避するためPrefix
+        // 为了避免首次显示角色设置时出现的异常（原版Bug）的Prefix
         [HarmonyPatch(nameof(GameSettingMenu.ChangeTab)), HarmonyPrefix]
         public static bool ChangeTabPrefix(bool previewOnly)
         {
@@ -281,7 +282,7 @@ namespace TONX
             var enabled = true;
             var parent = item.Parent;
 
-            // 親オプションの値を見て表示するか決める
+            // 查看父选项值并决定是否显示
             enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
             var stringOption = item.OptionBehaviour;
             while (parent != null && enabled)
@@ -294,13 +295,13 @@ namespace TONX
 
             if (enabled)
             {
-                // 見やすさのため交互に色を変える  
+                // 交替改变颜色以方便查看
                 stringOption.LabelBackground.color = item is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
 
                 offset -= GameOptionsMenu.SPACING_Y;
                 if (item.IsHeader)
                 {
-                    // IsHeaderなら隙間を広くする
+                    // Header间隙增大
                     offset -= HeaderSpacingY;
                 }
                 item.OptionBehaviour.transform.localPosition = new Vector3(
@@ -327,8 +328,20 @@ namespace TONX
             __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
             __instance.Value = __instance.oldValue = option.CurrentValue;
             __instance.ValueText.text = option.GetString();
+            if (option is RoleSpawnChanceOptionItem item) CreateInfoButton(__instance, item.RoleId);
 
             return false;
+        }
+        public static void CreateInfoButton(StringOption __instance, Roles.Core.CustomRoles role)
+        {
+            var infoButton = Object.Instantiate(__instance.PlusBtn, __instance.PlusBtn.transform.parent);
+            infoButton.name = role + "InfoButton";
+            infoButton.transform.localPosition += new Vector3(1.0f, 0f, 0f);
+            infoButton.gameObject.GetComponentInChildren<TMPro.TextMeshPro>().text = "?";
+            infoButton.interactableHoveredColor = Main.ModColor32;
+            infoButton.OnMouseOver.AddListener((Action)(() => { Logger.Info($"{infoButton.name}|I'm Hovered", "OnMouseOver"); }));
+            infoButton.OnClick = new();
+            infoButton.OnClick.AddListener((Action)(() => { InGameRoleInfoMenu.SetRoleInfoRefByRole(role); InGameRoleInfoMenu.Show(); }));
         }
     }
 

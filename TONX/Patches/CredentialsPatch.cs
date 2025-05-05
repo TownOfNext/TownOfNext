@@ -24,7 +24,7 @@ internal class PingTrackerUpdatePatch
             Object.Destroy(uselessPingTracker);
             pingTrackerCredential.alignment = TextAlignmentOptions.TopRight;
             pingTrackerCredential.color = new(1f, 1f, 1f, 0.7f);
-            pingTrackerCredential.rectTransform.pivot = new(1f, 1f);  // 中心を右上角に設定
+            pingTrackerCredential.rectTransform.pivot = new(1f, 1f); // 中心を右上角に設定
             pingTrackerCredentialAspectPos = pingTrackerCredential.GetComponent<AspectPosition>();
             pingTrackerCredentialAspectPos.Alignment = AspectPosition.EdgeAlignments.RightTop;
         }
