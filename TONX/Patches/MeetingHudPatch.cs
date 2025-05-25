@@ -25,10 +25,12 @@ public static class MeetingHudPatch
             return false;
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
-        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId /* 投票者 */ , [HarmonyArgument(1)] byte suspectPlayerId /* 被票者 */ )
+        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId /* 投票者 */,
+            [HarmonyArgument(1)] byte suspectPlayerId /* 被票者 */)
         {
             if (!AmongUsClient.Instance.AmHost) return true;
 
@@ -38,14 +40,17 @@ public static class MeetingHudPatch
             if (voter != null)
             {
                 //主动叛变模式
-                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
+                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 &&
+                    srcPlayerId == suspectPlayerId)
                 {
                     if (FirstCastVote[srcPlayerId])
                     {
-                        if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && voter.CanBeMadmate())
+                        if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) <
+                            CustomRoles.Madmate.GetCount() && voter.CanBeMadmate())
                         {
                             voter.RpcSetCustomRole(CustomRoles.Madmate);
-                            Logger.Info($"注册附加职业：{voter.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
+                            Logger.Info($"注册附加职业：{voter.GetNameWithRole()} => {CustomRoles.Madmate}",
+                                "AssignCustomSubRoles");
                             voter.ShowPopUp(GetString("MadmateSelfVoteModeSuccessfulMutiny"));
                             Utils.SendMessage(GetString("MadmateSelfVoteModeSuccessfulMutiny"), voter.PlayerId);
                         }
@@ -54,12 +59,14 @@ public static class MeetingHudPatch
                             voter.ShowPopUp(GetString("MadmateSelfVoteModeMutinyFailed"));
                             Utils.SendMessage(GetString("MadmateSelfVoteModeMutinyFailed"), voter.PlayerId);
                         }
+
                         __instance.RpcClearVote(voter.GetClientId());
                         Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
                         FirstCastVote[srcPlayerId] = false;
                         return false;
                     }
                 }
+
                 if (voter.GetRoleClass()?.CheckVoteAsVoter(voted) == false)
                 {
                     __instance.RpcClearVote(voter.GetClientId());
@@ -72,6 +79,7 @@ public static class MeetingHudPatch
             return true;
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     [HarmonyPriority(Priority.First)]
     class StartPatch
@@ -85,6 +93,7 @@ public static class MeetingHudPatch
             FirstCastVote = Enumerable.Repeat(true, 15).ToList();
             MeetingStates.MeetingCalled = true;
         }
+
         public static void Postfix(MeetingHud __instance)
         {
             MeetingVoteManager.Start();
@@ -111,7 +120,9 @@ public static class MeetingHudPatch
                 {
                     suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
                 }
-                suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+
+                suffixBuilder.Append(
+                    CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
                 if (suffixBuilder.Length > 0)
                 {
                     roleTextMeeting.text = suffixBuilder.ToString();
@@ -121,16 +132,22 @@ public static class MeetingHudPatch
 
             if (Options.SyncButtonMode.GetBool())
             {
-                Utils.SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
-                Logger.Info("紧急会议剩余 " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + " 次使用次数", "SyncButtonMode");
+                Utils.SendMessage(string.Format(GetString("Message.SyncButtonLeft"),
+                    Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
+                Logger.Info("紧急会议剩余 " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + " 次使用次数",
+                    "SyncButtonMode");
             }
+
             if (AntiBlackout.OverrideExiledPlayer && !Options.NoGameEnd.GetBool())
             {
-                _ = new LateTask(() =>
-                {
-                    Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")));
-                }, 5f, "Warning OverrideExiledPlayer");
+                _ = new LateTask(
+                    () =>
+                    {
+                        Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255,
+                            Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")));
+                    }, 5f, "Warning OverrideExiledPlayer");
             }
+
             if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
             TemplateManager.SendTemplate("OnMeeting", noErr: true);
 
@@ -150,8 +167,10 @@ public static class MeetingHudPatch
                             var coloredName = Utils.ColorString(seen.GetRoleColor(), seenName);
                             sender.RpcSetName(seen, seer == seen ? coloredName : seenName, seer);
                         }
+
                         sender.SendMessage();
                     }
+
                     ChatUpdatePatch.DoBlockChat = false;
                 }, 3f, "SetName To Chat");
             }
@@ -189,7 +208,8 @@ public static class MeetingHudPatch
                 //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
                 if (seer.KnowDeathReason(target))
-                    sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
+                    sb.Append(
+                        $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
 
                 sb.Append(seerRole?.GetMark(seer, target, true));
                 sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
@@ -205,6 +225,7 @@ public static class MeetingHudPatch
                                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
                                 isLover = true;
                             }
+
                             break;
                     }
                 }
@@ -222,12 +243,14 @@ public static class MeetingHudPatch
             }
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
     class UpdatePatch
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || __instance == null || __instance.IsDestroyedOrNull()) return;
+            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || __instance == null ||
+                __instance.IsDestroyedOrNull()) return;
             if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
@@ -244,6 +267,7 @@ public static class MeetingHudPatch
             }
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class OnDestroyPatch
     {
@@ -256,6 +280,7 @@ public static class MeetingHudPatch
                 AntiBlackout.SetIsDead();
                 EAC.MeetingTimes = 0;
             }
+
             // MeetingVoteManagerを通さずに会議が終了した場合の後処理
             MeetingVoteManager.Instance?.Destroy();
         }
@@ -269,12 +294,14 @@ public static class MeetingHudPatch
                 AddedIdList.Add(playerId);
         CheckForDeathOnExile(deathReason, AddedIdList.ToArray());
     }
+
     public static void CheckForDeathOnExile(CustomDeathReason deathReason, params byte[] playerIds)
     {
         foreach (var playerId in playerIds)
         {
             //Loversの後追い
-            if (CustomRoles.Lovers.IsExist(true) && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
+            if (CustomRoles.Lovers.IsExist(true) && !Main.isLoversDead &&
+                Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
                 FixedUpdatePatch.LoversSuicide(playerId, true);
         }
     }

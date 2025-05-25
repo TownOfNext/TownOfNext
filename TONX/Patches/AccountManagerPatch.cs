@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using TMPro;
 using UnityEngine;
-
 using static TONX.Translator;
 
 namespace TONX;
@@ -10,10 +9,11 @@ namespace TONX;
 public static class UpdateFriendCodeUIPatch
 {
     private static GameObject VersionShower;
+
     public static void Prefix(AccountTab __instance)
     {
-
-        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>KARPED1EM</color>");
+        string credentialsText =
+            string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>KARPED1EM</color>");
         credentialsText += "\t\t\t";
         string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
 

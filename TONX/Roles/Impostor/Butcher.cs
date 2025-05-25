@@ -8,6 +8,7 @@ using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Butcher : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,21 +23,25 @@ public sealed class Butcher : RoleBase, IImpostor
             "bu|肢解",
             experimental: true
         );
+
     public Butcher(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     private List<byte> ButcherKilledPlayers;
     public override void OnDestroy() => ButcherKilledPlayers.Clear();
     public override void Add() => ButcherKilledPlayers = new();
+
     public bool OverrideKillButtonText(out string text)
     {
         text = Translator.GetString("ButcherButtonText");
         return true;
     }
+
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return;
@@ -53,11 +58,13 @@ public sealed class Butcher : RoleBase, IImpostor
             var rd = IRandom.Instance;
             for (int i = 0; i < 20; i++)
             {
-                Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100), ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
+                Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100),
+                    ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
                 location += new Vector2(0, 0.3636f);
                 target.NetTransform.SnapTo(location);
                 killer.RpcMurderPlayerV2(target);
             }
+
             target.NetTransform.SnapTo(ops);
         }, 0.05f, "Butcher Murder");
 

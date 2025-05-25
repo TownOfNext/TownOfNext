@@ -4,6 +4,7 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -19,11 +20,12 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             "#0000ff",
             introSound: () => ShipStatus.Instance.SabotageSound
         );
+
     public Repairman(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         SkillLimit = OptionSkillLimit.GetInt();
         FixesDoors = OptionFixesDoors.GetBool();
@@ -41,6 +43,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
     public static OptionItem OptionFixesOxygens;
     public static OptionItem OptionFixesComms;
     public static OptionItem OptionFixesElectrical;
+
     enum OptionName
     {
         RepairmanSkillLimit,
@@ -50,6 +53,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
         RepairmanFixesCommunications,
         RepairmanFixesElectrical,
     }
+
     private int SkillLimit;
     private bool FixesDoors;
     private bool FixesReactors;
@@ -63,19 +67,24 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
 
     public static void SetupOptionItem()
     {
-        OptionSkillLimit = IntegerOptionItem.Create(RoleInfo, 10, OptionName.RepairmanSkillLimit, new(0, 99, 1), 1, false)
+        OptionSkillLimit = IntegerOptionItem
+            .Create(RoleInfo, 10, OptionName.RepairmanSkillLimit, new(0, 99, 1), 1, false)
             .SetValueFormat(OptionFormat.Times);
         OptionFixesDoors = BooleanOptionItem.Create(RoleInfo, 11, OptionName.RepairmanFixesDoors, false, false);
         OptionFixesReactors = BooleanOptionItem.Create(RoleInfo, 12, OptionName.RepairmanFixesReactors, false, false);
         OptionFixesOxygens = BooleanOptionItem.Create(RoleInfo, 13, OptionName.RepairmanFixesOxygens, false, false);
-        OptionFixesComms = BooleanOptionItem.Create(RoleInfo, 14, OptionName.RepairmanFixesCommunications, false, false);
-        OptionFixesElectrical = BooleanOptionItem.Create(RoleInfo, 15, OptionName.RepairmanFixesElectrical, false, false);
+        OptionFixesComms =
+            BooleanOptionItem.Create(RoleInfo, 14, OptionName.RepairmanFixesCommunications, false, false);
+        OptionFixesElectrical =
+            BooleanOptionItem.Create(RoleInfo, 15, OptionName.RepairmanFixesElectrical, false, false);
     }
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown = 0f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
+
     bool ISystemTypeUpdateHook.UpdateReactorSystem(ReactorSystemType reactorSystem, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -83,11 +92,15 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
         if (amount.HasAnyBit(ReactorSystemType.AddUserOp))
         {
             //片方を直したタイミング
-            ShipStatus.Instance.UpdateSystem((MapNames)Main.NormalOptions.MapId == MapNames.Polus ? SystemTypes.Laboratory : SystemTypes.Reactor, Player, ReactorSystemType.ClearCountdown);
+            ShipStatus.Instance.UpdateSystem(
+                (MapNames)Main.NormalOptions.MapId == MapNames.Polus ? SystemTypes.Laboratory : SystemTypes.Reactor,
+                Player, ReactorSystemType.ClearCountdown);
             UsedSkillCount++;
         }
+
         return true;
     }
+
     bool ISystemTypeUpdateHook.UpdateHeliSabotageSystem(HeliSabotageSystem heliSabotageSystem, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -98,12 +111,16 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             //片方の入力が正解したタイミング
             var consoleId = amount & HeliSabotageSystem.IdMask;
             var otherConsoleId = (consoleId + 1) % 2;
-            ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player, (byte)(consoleId | (int)HeliSabotageSystem.Tags.FixBit));
-            ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player, (byte)(otherConsoleId | (int)HeliSabotageSystem.Tags.FixBit));
+            ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player,
+                (byte)(consoleId | (int)HeliSabotageSystem.Tags.FixBit));
+            ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player,
+                (byte)(otherConsoleId | (int)HeliSabotageSystem.Tags.FixBit));
             UsedSkillCount++;
         }
+
         return true;
     }
+
     bool ISystemTypeUpdateHook.UpdateLifeSuppSystem(LifeSuppSystemType lifeSuppSystem, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -114,8 +131,10 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             ShipStatus.Instance.UpdateSystem(SystemTypes.LifeSupp, Player, LifeSuppSystemType.ClearCountdown);
             UsedSkillCount++;
         }
+
         return true;
     }
+
     bool ISystemTypeUpdateHook.UpdateHqHudSystem(HqHudSystemType hqHudSystemType, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -126,11 +145,13 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             //パネル開いたタイミング
             fixedSabotage = false;
         }
+
         if (!fixedSabotage && tags == HqHudSystemType.Tags.FixBit)
         {
             //パネル開いたタイミング
             fixedSabotage = false;
         }
+
         if (!fixedSabotage && tags == HqHudSystemType.Tags.FixBit)
         {
             //片方の入力が正解したタイミング
@@ -141,8 +162,10 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             //もう一方のパネルの完了報告
             UsedSkillCount++;
         }
+
         return true;
     }
+
     bool ISystemTypeUpdateHook.UpdateSwitchSystem(SwitchSystem switchSystem, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -156,6 +179,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
         UsedSkillCount++;
         return true;
     }
+
     bool ISystemTypeUpdateHook.UpdateDoorsSystem(DoorsSystemType doorsSystem, byte amount)
     {
         if (!IsSkillAvailable()) return true;
@@ -207,8 +231,10 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
                 }
             }
         }
+
         DoorsProgressing = false;
         return true;
     }
+
     private bool IsSkillAvailable() => SkillLimit <= 0 || UsedSkillCount < SkillLimit;
 }

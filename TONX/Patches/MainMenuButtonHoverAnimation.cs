@@ -16,11 +16,13 @@ public class MainMenuButtonHoverAnimation
         var mainButtons = GameObject.Find("Main Buttons");
         mainButtons.ForEachChild((Il2CppSystem.Action<GameObject>)Init);
     }
+
     public static void RefreshButtons(GameObject obj)
     {
         AllButtons = new();
         obj.ForEachChild((Il2CppSystem.Action<GameObject>)Init);
     }
+
     static void Init(GameObject obj)
     {
         if (obj.name is "BottomButtonBounds" or "Divider") return;
@@ -34,6 +36,7 @@ public class MainMenuButtonHoverAnimation
     }
 
     private static Dictionary<GameObject, (Vector3, bool)> AllButtons = new();
+
     private static void SetButtonStatus(GameObject obj, bool active)
     {
         AllButtons.TryAdd(obj, (obj.transform.position, active));

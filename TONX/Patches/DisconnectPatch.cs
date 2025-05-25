@@ -18,6 +18,7 @@ internal class ShowDisconnectPopupPatch
     public static DisconnectReasons Reason;
     public static string StringReason;
     public static string ReasonByHost = string.Empty;
+
     public static void Postfix(DisconnectPopup __instance)
     {
         _ = new LateTask(() =>
@@ -25,7 +26,6 @@ internal class ShowDisconnectPopupPatch
             if (__instance == null) return;
             try
             {
-
                 void SetText(string text)
                 {
                     if (__instance?._textArea?.text != null)
@@ -34,7 +34,8 @@ internal class ShowDisconnectPopupPatch
 
                 if (!string.IsNullOrEmpty(ReasonByHost))
                     SetText(string.Format(GetString("DCNotify.Describtion"), ReasonByHost));
-                else switch (Reason)
+                else
+                    switch (Reason)
                     {
                         case DisconnectReasons.Hacking:
                             SetText(GetString("DCNotify.Hacking"));
@@ -58,15 +59,19 @@ internal class ShowDisconnectPopupPatch
                             SetText(GetString("DCNotify.IncorrectVersion"));
                             break;
                         case DisconnectReasons.Error:
-                            if (StringReason.Contains("Failed to send message")) SetText(GetString("DCNotify.DCFromServer"));
+                            if (StringReason.Contains("Failed to send message"))
+                                SetText(GetString("DCNotify.DCFromServer"));
                             break;
                         case DisconnectReasons.Custom:
                             if (StringReason.Contains("Reliable packet")) SetText(GetString("DCNotify.DCFromServer"));
-                            else if (StringReason.Contains("remote has not responded to")) SetText(GetString("DCNotify.DCFromServer"));
+                            else if (StringReason.Contains("remote has not responded to"))
+                                SetText(GetString("DCNotify.DCFromServer"));
                             break;
                     }
             }
-            catch { }
+            catch
+            {
+            }
         }, 0.01f, "Override Disconnect Text");
     }
 }

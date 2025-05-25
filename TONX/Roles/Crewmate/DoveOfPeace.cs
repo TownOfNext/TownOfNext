@@ -1,13 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
 using System.Linq;
-
 using TONX.Modules;
 using TONX.Roles.Core;
-
 using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class DoveOfPeace : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,15 +21,18 @@ public sealed class DoveOfPeace : RoleBase
             "dp|和平之鴿|和平的鸽子|和平|鸽子|和平鸟",
             "#FFFFFF"
         );
+
     public DoveOfPeace(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     static OptionItem OptionSkillCooldown;
     static OptionItem OptionSkillNums;
+
     enum OptionName
     {
         DoveOfPeaceCooldown,
@@ -38,27 +40,34 @@ public sealed class DoveOfPeace : RoleBase
     }
 
     private int SkillLimit;
+
     private static void SetupOptionItem()
     {
-        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoveOfPeaceCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        OptionSkillCooldown = FloatOptionItem
+            .Create(RoleInfo, 10, OptionName.DoveOfPeaceCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 12, OptionName.DoveOfPeaceMaxOfUseage, new(1, 99, 1), 3, false)
+        OptionSkillNums = IntegerOptionItem
+            .Create(RoleInfo, 12, OptionName.DoveOfPeaceMaxOfUseage, new(1, 99, 1), 3, false)
             .SetValueFormat(OptionFormat.Times);
     }
+
     public override void Add() => SkillLimit = OptionSkillNums.GetInt();
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
             SkillLimit <= 0
-            ? 255f
-            : OptionSkillCooldown.GetFloat();
+                ? 255f
+                : OptionSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("DoveOfPeaceVentButtonText");
         return true;
     }
+
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
         if (SkillLimit >= 1)
@@ -66,15 +75,16 @@ public sealed class DoveOfPeace : RoleBase
             SkillLimit--;
             Player.RpcProtectedMurderPlayer();
             Main.AllAlivePlayerControls.Where(x =>
-            Player.Is(CustomRoles.Madmate) ?
-            (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate()) :
-            (x.CanUseKillButton())
+                Player.Is(CustomRoles.Madmate)
+                    ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate())
+                    : (x.CanUseKillButton())
             ).Do(x =>
             {
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldownV2();
-                x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoveOfPeace), GetString("DoveOfPeaceSkillNotify")));
+                x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoveOfPeace),
+                    GetString("DoveOfPeaceSkillNotify")));
             });
             Player.RPCPlayCustomSound("Dove");
             Player.Notify(string.Format(GetString("DoveOfPeaceOnGuard"), SkillLimit));
@@ -83,7 +93,9 @@ public sealed class DoveOfPeace : RoleBase
         {
             Player.Notify(GetString("DoveOfPeaceMaxUsage"));
         }
+
         return false;
     }
+
     public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
 }

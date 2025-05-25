@@ -22,7 +22,9 @@ internal class MakePublicPatch
             Logger.SendInGame(message);
             return false;
         }
-        if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
+
+        if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported ||
+            !Main.IsPublicAvailableOnThisVersion)
         {
             var message = "";
             if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
@@ -32,15 +34,18 @@ internal class MakePublicPatch
             Logger.SendInGame(message);
             return false;
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(FindGameButton), nameof(FindGameButton.OnClick))]
 class FindGameButtonOnClickPatch
 {
     public static bool Prefix(FindGameButton __instance)
     {
-        if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)) return true;
+        if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported ||
+              !Main.IsPublicAvailableOnThisVersion)) return true;
         string message = "";
         if (ModUpdater.hasUpdate)
         {
@@ -58,10 +63,12 @@ class FindGameButtonOnClickPatch
         {
             message = GetString("PublicNotAvailableOnThisVersion");
         }
+
         DisconnectPopup.Instance.ShowCustom(message);
         return false;
     }
 }
+
 [HarmonyPatch(typeof(SplashManager), nameof(SplashManager.Update))]
 internal class SplashLogoAnimatorPatch
 {
@@ -74,6 +81,7 @@ internal class SplashLogoAnimatorPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(EOSManager), nameof(EOSManager.IsAllowedOnline))]
 internal class RunLoginPatch
 {
@@ -92,6 +100,7 @@ internal class RunLoginPatch
 #endif
     }
 }
+
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
 internal class BanMenuSetVisiblePatch
 {
@@ -105,6 +114,7 @@ internal class BanMenuSetVisiblePatch
         return false;
     }
 }
+
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.CanBan))]
 internal class InnerNetClientCanBanPatch
 {
@@ -114,16 +124,19 @@ internal class InnerNetClientCanBanPatch
         return false;
     }
 }
+
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.KickPlayer))]
 internal class KickPlayerPatch
 {
     public static bool Prefix(InnerNetClient __instance, int clientId, bool ban)
     {
-        if (Main.AllPlayerControls.Where(p => p.IsDev()).Any(p => AmongUsClient.Instance.GetRecentClient(clientId).FriendCode == p.FriendCode))
+        if (Main.AllPlayerControls.Where(p => p.IsDev()).Any(p =>
+                AmongUsClient.Instance.GetRecentClient(clientId).FriendCode == p.FriendCode))
         {
             Logger.SendInGame(GetString("Warning.CantKickDev"));
             return false;
         }
+
         if (!AmongUsClient.Instance.AmHost) return true;
 
         if (!OnPlayerLeftPatch.ClientsProcessed.Contains(clientId))
@@ -132,16 +145,20 @@ internal class KickPlayerPatch
             if (ban)
             {
                 BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));
-                RPC.NotificationPop(string.Format(GetString("PlayerBanByHost"), AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
+                RPC.NotificationPop(string.Format(GetString("PlayerBanByHost"),
+                    AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
             }
             else
             {
-                RPC.NotificationPop(string.Format(GetString("PlayerKickByHost"), AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
+                RPC.NotificationPop(string.Format(GetString("PlayerKickByHost"),
+                    AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
             }
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
 internal class InnerNetObjectSerializePatch
 {
@@ -151,6 +168,7 @@ internal class InnerNetObjectSerializePatch
             GameOptionsSender.SendAllGameOptions();
     }
 }
+
 [HarmonyPatch]
 class InnerNetClientPatch
 {
@@ -165,12 +183,15 @@ class InnerNetClientPatch
         {
             Logger.Info($"HandleMessagePatch:Large Packet({reader.Length})", "InnerNetClient");
         }
+
         return true;
     }
+
     static Dictionary<int, int> messageCount = new(10);
     const int warningThreshold = 100;
     static int peak = warningThreshold;
     static float timer = 0f;
+
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.FixedUpdate)), HarmonyPrefix]
     public static void FixedUpdatePatch(InnerNetClient __instance)
     {
@@ -188,7 +209,7 @@ class InnerNetClientPatch
     {
         //分割するサイズ。大きすぎるとリトライ時不利、小さすぎると受信パケット取りこぼしが発生しうる。
         var limitSize = 1000;
- 
+
         if (DebugModeManager.IsDebugMode)
         {
             Logger.Info($"SendOrDisconnectPatch:Packet({msg.Length}) ,SendOption:{msg.SendOption}", "InnerNetClient");
@@ -197,7 +218,8 @@ class InnerNetClientPatch
         {
             Logger.Info($"SendOrDisconnectPatch:Large Packet({msg.Length})", "InnerNetClient");
         }
-    //メッセージピークのログ出力
+
+        //メッセージピークのログ出力
         if (msg.SendOption == SendOption.Reliable)
         {
             int last = (int)timer % 10;
@@ -207,6 +229,7 @@ class InnerNetClientPatch
             {
                 totalMessages += count;
             }
+
             if (totalMessages > warningThreshold)
             {
                 if (peak > totalMessages)
@@ -220,6 +243,7 @@ class InnerNetClientPatch
                 }
             }
         }
+
         if (!Options.FixSpawnPacketSize.GetBool()) return true;
 
         //ラージパケットを分割(9人以上部屋で落ちる現象の対策コード)
@@ -271,8 +295,10 @@ class InnerNetClientPatch
             reader.Recycle();
             return false;
         }
+
         return true;
     }
+
     private static void DivideLargeMessage(InnerNetClient __instance, MessageWriter writer, MessageReader partMsg)
     {
         var tag = partMsg.Tag;
@@ -308,9 +334,11 @@ class InnerNetClientPatch
                     writer.WritePacked(ClientId);
                 }
             }
+
             //メッセージの出力
             WriteMessage(writer, subMsg);
         }
+
         writer.EndMessage();
     }
 
@@ -331,11 +359,13 @@ class InnerNetClientPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Connect))]
 public static class InnerNetClientConnectPatch
 {
     public static IRegionInfo CurrentFindGameListFilteredClientRegion;
     public static int CurrentFindGameListFilteredClientGameId;
+
     public static void Postfix(InnerNetClient __instance)
     {
         if (FindAGameManager.Instance.isActiveAndEnabled)

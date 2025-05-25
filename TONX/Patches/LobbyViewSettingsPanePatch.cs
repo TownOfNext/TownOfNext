@@ -36,23 +36,28 @@ namespace TONX
             tonxSettingsButton = new List<PassiveButton>();
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
-                Vector3 offset_up = new (1.6f * ((int)tab + 2), 0.18f, 0f);
-                Vector3 offset_down = new (1.6f * ((int)tab - 2), -0.2f, 0f);
-                tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
+                Vector3 offset_up = new(1.6f * ((int)tab + 2), 0.18f, 0f);
+                Vector3 offset_down = new(1.6f * ((int)tab - 2), -0.2f, 0f);
+                tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON",
+                    ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
             }
-            tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
+
+            tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON",
+                new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
         }
 
-        private static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset, string buttonText, int targetMenu)
+        private static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset,
+            string buttonText, int targetMenu)
         {
-            var settingsButton = Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
+            var settingsButton =
+                Object.Instantiate(__instance.taskTabButton, __instance.taskTabButton.transform.parent);
             settingsButton.name = buttonName;
             settingsButton.transform.localPosition = buttonPosition + offset;
             settingsButton.transform.localScale = buttonSize;
             settingsButton.buttonText.DestroyTranslator();
             settingsButton.buttonText.text = buttonText;
             settingsButton.OnClick.RemoveAllListeners();
-            settingsButton.OnClick.AddListener((Action)(() => 
+            settingsButton.OnClick.AddListener((Action)(() =>
             {
                 __instance.ChangeTab((StringNames)targetMenu);
                 settingsButton.SelectButton(true);
@@ -69,6 +74,7 @@ namespace TONX
             {
                 button.SelectButton(false);
             }
+
             if ((int)category < 3551) return;
             __instance.taskTabButton.SelectButton(false);
             CreateCustomOptions(__instance, (int)category == 3558);
@@ -81,6 +87,7 @@ namespace TONX
             {
                 Object.Destroy(vanillaOption.gameObject);
             }
+
             __instance.settingsInfo.Clear();
 
             // 模组设置
@@ -91,7 +98,8 @@ namespace TONX
                 foreach (var kvp in Options.CustomRoleSpawnChances)
                 {
                     var option = kvp.Value;
-                    var infoPanelOption = CreateOption(__instance, option, template, option.GetString() + " x " + kvp.Key.GetCount());
+                    var infoPanelOption = CreateOption(__instance, option, template,
+                        option.GetString() + " x " + kvp.Key.GetCount());
                     __instance.settingsInfo.Add(infoPanelOption.gameObject);
                     option.ViewOptionBehaviour = infoPanelOption;
                 }
@@ -100,8 +108,8 @@ namespace TONX
             {
                 foreach (var option in OptionItem.AllOptions)
                 {
-                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;  
-                    
+                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;
+
                     if (option.IsText)
                     {
                         var categoryHeader = CreateCategoryHeader(__instance, option);
@@ -119,7 +127,8 @@ namespace TONX
 
         private static CategoryHeaderMasked CreateCategoryHeader(LobbyViewSettingsPane __instance, OptionItem option)
         {
-            var categoryHeader = Object.Instantiate(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, __instance.settingsContainer);
+            var categoryHeader = Object.Instantiate(__instance.categoryHeaderOrigin, Vector3.zero, Quaternion.identity,
+                __instance.settingsContainer);
             categoryHeader.name = option.Name;
             categoryHeader.Title.text = option.GetName();
             var maskLayer = LobbyViewSettingsPane.MASK_LAYER;
@@ -128,12 +137,14 @@ namespace TONX
             {
                 categoryHeader.Divider.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);
             }
+
             categoryHeader.Title.fontMaterial.SetFloat("_StencilComp", 3f);
             categoryHeader.Title.fontMaterial.SetFloat("_Stencil", (float)maskLayer);
             return categoryHeader;
         }
 
-        private static ViewSettingsInfoPanel CreateOption(LobbyViewSettingsPane __instance, OptionItem option, ViewSettingsInfoPanel template, string settingText)
+        private static ViewSettingsInfoPanel CreateOption(LobbyViewSettingsPane __instance, OptionItem option,
+            ViewSettingsInfoPanel template, string settingText)
         {
             var infoPanelOption = Object.Instantiate(template, __instance.settingsContainer);
             infoPanelOption.SetMaskLayer(LobbyViewSettingsPane.MASK_LAYER);
@@ -179,7 +190,7 @@ namespace TONX
             {
                 foreach (var option in OptionItem.AllOptions)
                 {
-                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue; 
+                    if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;
                     if (option.IsText)
                     {
                         if (isFirst)
@@ -187,6 +198,7 @@ namespace TONX
                             offset += 0.3f;
                             isFirst = false;
                         }
+
                         foreach (var categoryHeader in CategoryHeaders)
                         {
                             if (option.Name == categoryHeader.name)
@@ -195,12 +207,15 @@ namespace TONX
                                 continue;
                             }
                         }
+
                         continue;
                     }
+
                     if (isFirst) isFirst = false;
                     UpdateOption(ref isOdd, option, ref offset, option.GetString());
                 }
             }
+
             __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
         }
 
@@ -208,7 +223,8 @@ namespace TONX
         {
             var enabled = true;
             // 检测是否隐藏设置
-            enabled = (!Options.HideGameSettings.GetBool() || AmongUsClient.Instance.AmHost) && GameStates.IsModHost && !item.IsHiddenOn(Options.CurrentGameMode);
+            enabled = (!Options.HideGameSettings.GetBool() || AmongUsClient.Instance.AmHost) && GameStates.IsModHost &&
+                      !item.IsHiddenOn(Options.CurrentGameMode);
             categoryHeader.gameObject.SetActive(enabled);
             if (enabled)
             {
@@ -225,7 +241,8 @@ namespace TONX
             var parent = option.Parent;
 
             // 检测是否隐藏设置
-            enabled = !option.IsHiddenOn(Options.CurrentGameMode) && (!Options.HideGameSettings.GetBool() || AmongUsClient.Instance.AmHost) && GameStates.IsModHost;
+            enabled = !option.IsHiddenOn(Options.CurrentGameMode) &&
+                      (!Options.HideGameSettings.GetBool() || AmongUsClient.Instance.AmHost) && GameStates.IsModHost;
             var infoPanelOption = option.ViewOptionBehaviour;
             while (parent != null && enabled)
             {
@@ -234,10 +251,12 @@ namespace TONX
             }
 
             infoPanelOption.gameObject.SetActive(enabled);
-            
+
             if (enabled)
             {
-                infoPanelOption.labelBackground.color = option is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
+                infoPanelOption.labelBackground.color = option is IRoleOptionItem roleOption
+                    ? roleOption.RoleColor
+                    : (isOdd ? Color.cyan : Color.white);
                 infoPanelOption.titleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
                 infoPanelOption.settingText.text = settingText;
 
@@ -246,6 +265,7 @@ namespace TONX
                 {
                     offset -= HeaderSpacingY;
                 }
+
                 infoPanelOption.transform.localPosition = new Vector3(
                     LobbyViewSettingsPane.START_POS_X + 2f,
                     offset,
@@ -254,6 +274,7 @@ namespace TONX
                 isOdd = !isOdd;
             }
         }
+
         private const float HeaderSpacingY = 0.2f;
     }
 }

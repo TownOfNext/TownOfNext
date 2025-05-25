@@ -57,7 +57,6 @@ public static class ModUnloaderScreen
                 Harmony.UnpatchAll();
                 Main.Instance.Unload();
             }, 1f);
-
         }));
     }
 
@@ -79,6 +78,7 @@ public static class ModUnloaderScreen
             }
         }
     }
+
     public static void Hide()
     {
         if (Popup != null)

@@ -5,6 +5,7 @@ using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Common;
+
 public static class Beartrap
 {
     private static readonly int Id = 81800;
@@ -17,27 +18,33 @@ public static class Beartrap
     {
         SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Beartrap);
         AddOnsAssignData.Create(Id + 10, CustomRoles.Beartrap, true, true, true);
-        OptionBlockMoveTime = FloatOptionItem.Create(Id + 20, "BeartrapBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Beartrap])
+        OptionBlockMoveTime = FloatOptionItem
+            .Create(Id + 20, "BeartrapBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Beartrap])
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     [GameModuleInitializer]
     public static void Init()
     {
         playerIdList = new();
     }
+
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
     }
+
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
+
     public static void OnMurderPlayerOthers(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (!playerIdList.Contains(target.PlayerId) || info.IsSuicide) return;
 
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeed¤Çáá¤Û¤É‚Ž¤ò‘ø¤¹¤Î¤Ç´úÈë¤·¤Æ¤¤¤Þ¤¹¡£
+        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed; //tmpSpeedï¿½ï¿½ï¿½ï¿½Û¤É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¤Ç´ï¿½ï¿½ë¤·ï¿½Æ¤ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>

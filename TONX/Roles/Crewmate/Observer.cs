@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class Observer : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -17,10 +17,12 @@ public sealed class Observer : RoleBase
             "ob|觀察者|观察",
             "#a8e0fa"
         );
+
     public Observer(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

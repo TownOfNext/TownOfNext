@@ -6,6 +6,7 @@ using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Crewmate;
+
 public static class Workhorse
 {
     private static readonly int Id = 80400;
@@ -19,16 +20,26 @@ public static class Workhorse
     public static bool SnitchCanBeWorkhorse;
     public static int NumLongTasks;
     public static int NumShortTasks;
+
     public static void SetupCustomOption()
     {
         SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Workhorse, RoleSpwanToggle, false);
-        OptionAssignOnlyToCrewmate = BooleanOptionItem.Create(Id + 10, "AssignOnlyToCrewmate", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
-        OptionSnitchCanBeWorkhorse = BooleanOptionItem.Create(Id + 13, "SnitchCanBeWorkhorse", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
-        OptionNumLongTasks = IntegerOptionItem.Create(Id + 11, "WorkhorseNumLongTasks", new(0, 5, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
+        OptionAssignOnlyToCrewmate = BooleanOptionItem
+            .Create(Id + 10, "AssignOnlyToCrewmate", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
+        OptionSnitchCanBeWorkhorse = BooleanOptionItem
+            .Create(Id + 13, "SnitchCanBeWorkhorse", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
+        OptionNumLongTasks = IntegerOptionItem
+            .Create(Id + 11, "WorkhorseNumLongTasks", new(0, 5, 1), 1, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
             .SetValueFormat(OptionFormat.Pieces);
-        OptionNumShortTasks = IntegerOptionItem.Create(Id + 12, "WorkhorseNumShortTasks", new(0, 5, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
+        OptionNumShortTasks = IntegerOptionItem
+            .Create(Id + 12, "WorkhorseNumShortTasks", new(0, 5, 1), 1, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
             .SetValueFormat(OptionFormat.Pieces);
     }
+
     [GameModuleInitializer]
     public static void Init()
     {
@@ -39,13 +50,16 @@ public static class Workhorse
         NumLongTasks = OptionNumLongTasks.GetInt();
         NumShortTasks = OptionNumShortTasks.GetInt();
     }
+
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
     }
+
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
     public static (bool, int, int) TaskData => (false, NumLongTasks, NumShortTasks);
+
     private static bool IsAssignTarget(PlayerControl pc)
     {
         if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
@@ -57,6 +71,7 @@ public static class Workhorse
             return pc.Is(CustomRoleTypes.Crewmate);
         return !OverrideTasksData.AllData.ContainsKey(pc.GetCustomRole()); //タスク上書きオプションが無い
     }
+
     public static bool OnCompleteTask(PlayerControl pc)
     {
         if (playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return true;

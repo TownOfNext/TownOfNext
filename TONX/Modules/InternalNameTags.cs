@@ -14,6 +14,7 @@ public static class InternalNameTags
         tags.Do(t => t.Value.Isinternal = true);
         return tags;
     }
+
     private static Dictionary<string, NameTag> GetAll() => new()
     {
         {
@@ -23,7 +24,8 @@ public static class InternalNameTags
                 UpperText = new()
                 {
                     Text = $"∞ {GetString("Creater")} ∞",
-                    Gradient = new(new Color32(198, 255, 221, 255), new Color32(251, 215, 134, 255), new Color32(247, 121, 125, 255)),
+                    Gradient = new(new Color32(198, 255, 221, 255), new Color32(251, 215, 134, 255),
+                        new Color32(247, 121, 125, 255)),
                     SizePercentage = 80
                 },
                 Prefix = new()
@@ -38,7 +40,8 @@ public static class InternalNameTags
                 },
                 Name = new()
                 {
-                    Gradient = new(new Color32(18, 194, 233, 255), new Color32(196, 113, 237, 255), new Color32(246, 79, 89, 255)),
+                    Gradient = new(new Color32(18, 194, 233, 255), new Color32(196, 113, 237, 255),
+                        new Color32(246, 79, 89, 255)),
                     SizePercentage = 90
                 }
             }

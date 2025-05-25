@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Vanilla;
@@ -13,10 +12,12 @@ public sealed class Engineer : RoleBase
             RoleTypes.Engineer,
             "#8cffff"
         );
+
     public Engineer(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

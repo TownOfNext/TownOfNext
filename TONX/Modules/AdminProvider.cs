@@ -37,6 +37,7 @@ public static class AdminProvider
             {
                 continue;
             }
+
             // 検出された当たり判定の数 検出された当たり判定はここでcollidersに格納される
             var numColliders = room.roomArea.OverlapCollider(filter, colliders);
             // 実際にアドミンで表示される，死体も含めた全部の数
@@ -89,6 +90,7 @@ public static class AdminProvider
                 NumImpostors = numImpostors,
             };
         }
+
         return allAdmins;
     }
 
@@ -96,10 +98,13 @@ public static class AdminProvider
     {
         /// <summary>対象の部屋</summary>
         public SystemTypes Room { get; init; }
+
         /// <summary>部屋の中にいるプレイヤーの合計
         public int TotalPlayers { get; init; }
+
         /// <summary>部屋の中にある死体の数</summary>
         public int NumDeadBodies { get; init; }
+
         /// <summary>部屋の中にインポスターがいるかどうか</summary>
         public int NumImpostors { get; init; }
     }

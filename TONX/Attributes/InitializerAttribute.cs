@@ -11,15 +11,20 @@ public abstract class InitializerAttribute<T> : Attribute
 {
     /// <summary>全初期化メソッド</summary>
     private static MethodInfo[] allInitializers = null;
+
     private static LogHandler logger = Logger.Handler(nameof(InitializerAttribute<T>));
 
-    public InitializerAttribute() : this(InitializePriority.Normal) { }
+    public InitializerAttribute() : this(InitializePriority.Normal)
+    {
+    }
+
     public InitializerAttribute(InitializePriority priority)
     {
         this.priority = priority;
     }
 
     private readonly InitializePriority priority = InitializePriority.Normal;
+
     /// <summary>初期化時に呼び出されるメソッド</summary>
     private MethodInfo targetMethod;
 
@@ -47,9 +52,12 @@ public abstract class InitializerAttribute<T> : Attribute
                 }
             }
         }
+
         // 見つかった初期化メソッドをpriority順に並べ替えて配列に変換
-        allInitializers = initializers.OrderBy(initializer => initializer.priority).Select(initializer => initializer.targetMethod).ToArray();
+        allInitializers = initializers.OrderBy(initializer => initializer.priority)
+            .Select(initializer => initializer.targetMethod).ToArray();
     }
+
     public static void InitializeAll()
     {
         // 初回の初期化時に初期化メソッドを探す
@@ -57,6 +65,7 @@ public abstract class InitializerAttribute<T> : Attribute
         {
             FindInitializers();
         }
+
         foreach (var initializer in allInitializers)
         {
             logger.Info($"初期化: {initializer.DeclaringType.Name}.{initializer.Name}");
@@ -69,12 +78,16 @@ public enum InitializePriority
 {
     /// <summary>一番最初に実行される</summary>
     VeryHigh,
+
     /// <summary>既定値より前に実行される</summary>
     High,
+
     /// <summary>既定値</summary>
     Normal,
+
     /// <summary>既定値より後に実行される</summary>
     Low,
+
     /// <summary>一番最後に実行される</summary>
     VeryLow,
 }

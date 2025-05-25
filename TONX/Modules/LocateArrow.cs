@@ -11,15 +11,18 @@ static class LocateArrow
     {
         public byte From;
         public Vector3 To;
+
         public ArrowInfo(byte from, Vector3 to)
         {
             From = from;
             To = to;
         }
+
         public bool Equals(ArrowInfo obj)
         {
             return From == obj.From && To == obj.To;
         }
+
         public override string ToString()
         {
             return $"(From:{From} To:{To})";
@@ -27,7 +30,9 @@ static class LocateArrow
     }
 
     static Dictionary<ArrowInfo, string> LocateArrows = new();
-    static readonly string[] Arrows = {
+
+    static readonly string[] Arrows =
+    {
         "↑",
         "↗",
         "→",
@@ -44,6 +49,7 @@ static class LocateArrow
     {
         LocateArrows.Clear();
     }
+
     /// <summary>
     /// 新たにターゲット矢印対象を登録
     /// </summary>
@@ -56,6 +62,7 @@ static class LocateArrow
         if (!LocateArrows.Any(a => a.Key.Equals(arrowInfo)))
             LocateArrows[arrowInfo] = "・";
     }
+
     /// <summary>
     /// ターゲットの削除
     /// </summary>
@@ -70,6 +77,7 @@ static class LocateArrow
             LocateArrows.Remove(a);
         }
     }
+
     /// <summary>
     /// タイプの同じターゲットの全削除
     /// </summary>
@@ -82,6 +90,7 @@ static class LocateArrow
             LocateArrows.Remove(arrowInfo);
         }
     }
+
     /// <summary>
     /// 見ることのできるすべてのターゲット矢印を取得
     /// </summary>
@@ -94,8 +103,10 @@ static class LocateArrow
         {
             arrows += LocateArrows[arrowInfo];
         }
+
         return arrows;
     }
+
     /// <summary>
     /// FixedUpdate毎にターゲット矢印を確認
     /// 更新があったらNotifyRolesを発行
@@ -121,6 +132,7 @@ static class LocateArrow
                 update = true;
                 continue;
             }
+
             //対象の方角ベクトルを取る
             var dir = loc - seer.transform.position;
             int index;
@@ -138,6 +150,7 @@ static class LocateArrow
                 var angle = Vector3.SignedAngle(Vector3.down, dir, Vector3.back) + 180 + 22.5;
                 index = ((int)(angle / 45)) % 8;
             }
+
             var arrow = Arrows[index];
             if (LocateArrows[arrowInfo] != arrow)
             {
@@ -145,6 +158,7 @@ static class LocateArrow
                 update = true;
             }
         }
+
         if (update)
         {
             Utils.NotifyRoles(SpecifySeer: seer);

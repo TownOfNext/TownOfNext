@@ -6,7 +6,8 @@ namespace TONX;
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.Serialize))]
 class GameManagerSerializeFix
 {
-    public static bool Prefix(GameManager __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
+    public static bool Prefix(GameManager __instance, [HarmonyArgument(0)] MessageWriter writer,
+        [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
         bool flag = false;
         for (int index = 0; index < __instance.LogicComponents.Count; ++index)
@@ -22,11 +23,13 @@ class GameManagerSerializeFix
                 logicComponent.ClearDirtyFlag();
             }
         }
+
         __instance.ClearDirtyBits();
         __result = flag;
         return false;
     }
 }
+
 [HarmonyPatch(typeof(LogicOptions), nameof(LogicOptions.Serialize))]
 class LogicOptionsSerializePatch
 {

@@ -11,6 +11,7 @@ public class VanillaRoleDescription : RoleDescription
     {
         this.vanillaRoleType = vanillaRoleType;
     }
+
     private readonly RoleTypes vanillaRoleType;
 
     public override string Blurb => DestroyableSingleton<RoleManager>.Instance.GetRole(vanillaRoleType).Blurb;

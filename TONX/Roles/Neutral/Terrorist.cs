@@ -17,23 +17,29 @@ public sealed class Terrorist : RoleBase
             SetupOptionItem,
             "te|恐怖",
             "#00ff00",
-            introSound: () => ShipStatus.Instance.CommonTasks.Where(task => task.TaskType == TaskTypes.FixWiring).FirstOrDefault().MinigamePrefab.OpenSound
+            introSound: () =>
+                ShipStatus.Instance.CommonTasks.Where(task => task.TaskType == TaskTypes.FixWiring).FirstOrDefault()
+                    .MinigamePrefab.OpenSound
         );
+
     public Terrorist(PlayerControl player)
-    : base(
-        RoleInfo,
-        player,
-        () => HasTask.ForRecompute
-    )
+        : base(
+            RoleInfo,
+            player,
+            () => HasTask.ForRecompute
+        )
     {
         canSuicideWin = OptionCanSuicideWin.GetBool();
     }
+
     private static OptionItem OptionCanSuicideWin;
     private static Options.OverrideTasksData Tasks;
+
     private enum OptionName
     {
         CanTerroristSuicideWin
     }
+
     private static bool canSuicideWin;
 
     private static void SetupOptionItem()
@@ -48,6 +54,7 @@ public sealed class Terrorist : RoleBase
         AURoleOptions.EngineerCooldown = 0;
         AURoleOptions.EngineerInVentMaxTime = 0;
     }
+
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         Logger.Info($"{Player.GetRealName()}はTerroristだった", nameof(Terrorist));
@@ -57,6 +64,7 @@ public sealed class Terrorist : RoleBase
             Win();
         }
     }
+
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
         if (exiled.PlayerId != Player.PlayerId)
@@ -70,14 +78,17 @@ public sealed class Terrorist : RoleBase
             DecidedWinner = true;
         }
     }
+
     public bool CanWin()
     {
         if (!canSuicideWin && MyState.IsSuicide())
         {
             return false;
         }
+
         return IsTaskFinished;
     }
+
     public void Win()
     {
         foreach (var otherPlayer in Main.AllAlivePlayerControls.Where(p => !Is(p)))
@@ -88,6 +99,7 @@ public sealed class Terrorist : RoleBase
             playerState.DeathReason = CustomDeathReason.Bombed;
             playerState.SetDead();
         }
+
         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
     }

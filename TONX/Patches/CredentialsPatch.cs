@@ -15,6 +15,7 @@ internal class PingTrackerUpdatePatch
     public static string ServerName = "";
     private static TextMeshPro pingTrackerCredential = null;
     private static AspectPosition pingTrackerCredentialAspectPos = null;
+
     private static void Postfix(PingTracker __instance)
     {
         if (pingTrackerCredential == null)
@@ -24,13 +25,16 @@ internal class PingTrackerUpdatePatch
             Object.Destroy(uselessPingTracker);
             pingTrackerCredential.alignment = TextAlignmentOptions.TopRight;
             pingTrackerCredential.color = new(1f, 1f, 1f, 0.7f);
-            pingTrackerCredential.rectTransform.pivot = new(1f, 1f);  // 中心を右上角に設定
+            pingTrackerCredential.rectTransform.pivot = new(1f, 1f); // 中心を右上角に設定
             pingTrackerCredentialAspectPos = pingTrackerCredential.GetComponent<AspectPosition>();
             pingTrackerCredentialAspectPos.Alignment = AspectPosition.EdgeAlignments.RightTop;
         }
+
         if (pingTrackerCredentialAspectPos)
         {
-            pingTrackerCredentialAspectPos.DistanceFromEdge = DestroyableSingleton<HudManager>.InstanceExists && DestroyableSingleton<HudManager>.Instance.Chat.chatButton.gameObject.active
+            pingTrackerCredentialAspectPos.DistanceFromEdge = DestroyableSingleton<HudManager>.InstanceExists &&
+                                                              DestroyableSingleton<HudManager>.Instance.Chat.chatButton
+                                                                  .gameObject.active
                 ? new(2.5f, 0f, -800f)
                 : new(1.8f, 0f, -800f);
         }
@@ -48,26 +52,39 @@ internal class PingTrackerUpdatePatch
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
         float fps = Mathf.Ceil(1.0f / deltaTime);
 
-        sb.Append($"\r\n").Append($"<color={color}>{ping} ms</size> <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>  {(GameStates.IsOnlineGame ? ServerName : GetString(StringNames.LocalButton) + " <size=60%>Server</size>")}");
+        sb.Append($"\r\n")
+            .Append(
+                $"<color={color}>{ping} ms</size> <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>  {(GameStates.IsOnlineGame ? ServerName : GetString(StringNames.LocalButton) + " <size=60%>Server</size>")}");
 
-        if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
+        if (!GameStates.IsModHost)
+            sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) +
+                                      "</size>");
         else
         {
-            if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
-            if (Options.AllowConsole.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("AllowConsole")));
-            if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("DebugMode")));
-            if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("LowLoadMode")));
-            if (Options.EnableDirectorMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
+            if (Options.NoGameEnd.GetBool())
+                sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
+            if (Options.AllowConsole.GetBool())
+                sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("AllowConsole")));
+            if (DebugModeManager.IsDebugMode)
+                sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("DebugMode")));
+            if (Options.LowLoadMode.GetBool())
+                sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("LowLoadMode")));
+            if (Options.EnableDirectorMode.GetBool())
+                sb.Append("\r\n")
+                    .Append(Utils.ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
         }
 
         var offset_x = 1.2f; //右端からのオフセット
-        if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.gameObject.active) offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
-        if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
+        if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.gameObject.active)
+            offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
+        if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active)
+            offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
         __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
 
         pingTrackerCredential.text = sb.ToString();
     }
 }
+
 [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
 internal class VersionShowerStartPatch
 {
@@ -152,15 +169,23 @@ internal class TitleLogoPatch
 
         Dictionary<List<PassiveButton>, (Sprite, Color, Color, Color, Color)> mainButtons = new()
         {
-            {new List<PassiveButton>() {__instance.playButton, __instance.inventoryButton, __instance.shopButton},
-                (standardActiveSprite, new(1f, 0.524f, 0.549f, 0.8f), shade, Color.white, Color.white) },
-            {new List<PassiveButton>() {__instance.newsButton, __instance.myAccountButton, __instance.settingsButton},
-                (minorActiveSprite, new(1f, 0.825f, 0.686f, 0.8f), shade, Color.white, Color.white) },
-            {new List<PassiveButton>() {__instance.creditsButton, __instance.quitButton},
-                (minorActiveSprite, new(0.526f, 1f, 0.792f, 0.8f), shade, Color.white, Color.white) },
+            {
+                new List<PassiveButton>() { __instance.playButton, __instance.inventoryButton, __instance.shopButton },
+                (standardActiveSprite, new(1f, 0.524f, 0.549f, 0.8f), shade, Color.white, Color.white)
+            },
+            {
+                new List<PassiveButton>()
+                    { __instance.newsButton, __instance.myAccountButton, __instance.settingsButton },
+                (minorActiveSprite, new(1f, 0.825f, 0.686f, 0.8f), shade, Color.white, Color.white)
+            },
+            {
+                new List<PassiveButton>() { __instance.creditsButton, __instance.quitButton },
+                (minorActiveSprite, new(0.526f, 1f, 0.792f, 0.8f), shade, Color.white, Color.white)
+            },
         };
 
-        void FormatButtonColor(PassiveButton button, Sprite borderType, Color inActiveColor, Color activeColor, Color inActiveTextColor, Color activeTextColor)
+        void FormatButtonColor(PassiveButton button, Sprite borderType, Color inActiveColor, Color activeColor,
+            Color inActiveTextColor, Color activeTextColor)
         {
             button.activeSprites.transform.FindChild("Shine")?.gameObject?.SetActive(false);
             button.inactiveSprites.transform.FindChild("Shine")?.gameObject?.SetActive(false);
@@ -168,20 +193,25 @@ internal class TitleLogoPatch
             var inActiveRenderer = button.inactiveSprites.GetComponent<SpriteRenderer>();
             activeRenderer.sprite = minorActiveSprite;
             inActiveRenderer.sprite = minorActiveSprite;
-            activeRenderer.color = activeColor.a == 0f ? new Color(inActiveColor.r, inActiveColor.g, inActiveColor.b, 1f) : activeColor;
+            activeRenderer.color = activeColor.a == 0f
+                ? new Color(inActiveColor.r, inActiveColor.g, inActiveColor.b, 1f)
+                : activeColor;
             inActiveRenderer.color = inActiveColor;
             button.activeTextColor = activeTextColor;
             button.inactiveTextColor = inActiveTextColor;
         }
 
         foreach (var kvp in mainButtons)
-            kvp.Key.Do(button => FormatButtonColor(button, kvp.Value.Item1, kvp.Value.Item2, kvp.Value.Item3, kvp.Value.Item4, kvp.Value.Item5));
+            kvp.Key.Do(button => FormatButtonColor(button, kvp.Value.Item1, kvp.Value.Item2, kvp.Value.Item3,
+                kvp.Value.Item4, kvp.Value.Item5));
 
         try
         {
             mainButtons?.Keys?.Flatten()?.DoIf(x => x != null, x => x.buttonText.color = Color.white);
         }
-        catch { }
+        catch
+        {
+        }
 
         GameObject.Find("Divider")?.SetActive(false);
 
@@ -193,7 +223,8 @@ internal class TitleLogoPatch
 
         CloseRightButton = new GameObject("CloseRightPanelButton");
         CloseRightButton.transform.SetParent(RightPanel.transform);
-        CloseRightButton.transform.localPosition = new Vector3(-4.78f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.3f, 1f);
+        CloseRightButton.transform.localPosition =
+            new Vector3(-4.78f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.3f, 1f);
         CloseRightButton.transform.localScale = new(1f, 1f, 1f);
         CloseRightButton.AddComponent<BoxCollider2D>().size = new(0.6f, 1.5f);
         var closeRightSpriteRenderer = CloseRightButton.AddComponent<SpriteRenderer>();
@@ -203,15 +234,18 @@ internal class TitleLogoPatch
         closeRightPassiveButton.OnClick = new();
         closeRightPassiveButton.OnClick.AddListener((System.Action)MainMenuManagerPatch.HideRightPanel);
         closeRightPassiveButton.OnMouseOut = new();
-        closeRightPassiveButton.OnMouseOut.AddListener((System.Action)(() => closeRightSpriteRenderer.color = new(1f, 0.78f, 0.9f, 1f)));
+        closeRightPassiveButton.OnMouseOut.AddListener((System.Action)(() =>
+            closeRightSpriteRenderer.color = new(1f, 0.78f, 0.9f, 1f)));
         closeRightPassiveButton.OnMouseOver = new();
-        closeRightPassiveButton.OnMouseOver.AddListener((System.Action)(() => closeRightSpriteRenderer.color = new(1f, 0.68f, 0.99f, 1f)));
+        closeRightPassiveButton.OnMouseOver.AddListener((System.Action)(() =>
+            closeRightSpriteRenderer.color = new(1f, 0.68f, 0.99f, 1f)));
 
         Tint = __instance.screenTint.gameObject;
         var ttap = Tint.GetComponent<AspectPosition>();
         if (ttap) Object.Destroy(ttap);
         Tint.transform.SetParent(RightPanel.transform);
-        Tint.transform.localPosition = new Vector3(-0.0824f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.0513f, Tint.transform.localPosition.z);
+        Tint.transform.localPosition = new Vector3(-0.0824f * Utils.GetResolutionOffset(Screen.width, Screen.height),
+            0.0513f, Tint.transform.localPosition.z);
         Tint.transform.localScale = new Vector3(1f, 1f, 1f);
 
         if (!DebugModeManager.AmDebugger)
@@ -231,7 +265,8 @@ internal class TitleLogoPatch
 
         if (!(Sizer = GameObject.Find("Sizer"))) return;
         if (!(AULogo = GameObject.Find("LOGO-AU"))) return;
-        Sizer.transform.localPosition = new Vector3(-4.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.4f, -1.0f);
+        Sizer.transform.localPosition =
+            new Vector3(-4.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.4f, -1.0f);
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
@@ -241,9 +276,11 @@ internal class TitleLogoPatch
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);
 
         var mainButtonsobj = GameObject.Find("Main Buttons");
-        mainButtonsobj.transform.position = new Vector3(-3.4f * Utils.GetResolutionOffset(Screen.width, Screen.height), mainButtonsobj.transform.position.y, mainButtonsobj.transform.position.z);
+        mainButtonsobj.transform.position = new Vector3(-3.4f * Utils.GetResolutionOffset(Screen.width, Screen.height),
+            mainButtonsobj.transform.position.y, mainButtonsobj.transform.position.z);
     }
 }
+
 [HarmonyPatch(typeof(ModManager), nameof(ModManager.LateUpdate))]
 internal class ModManagerLateUpdatePatch
 {
@@ -254,6 +291,7 @@ internal class ModManagerLateUpdatePatch
         LateTask.Update(Time.deltaTime);
         CheckMurderPatch.Update();
     }
+
     public static void Postfix(ModManager __instance)
     {
         var offset_y = HudManager.InstanceExists ? 1.6f : 0.9f;
@@ -262,6 +300,7 @@ internal class ModManagerLateUpdatePatch
             new Vector3(0.4f, offset_y, __instance.localCamera.nearClipPlane + 0.1f));
     }
 }
+
 [HarmonyPatch(typeof(CreditsScreenPopUp))]
 internal class CreditsScreenPopUpPatch
 {
@@ -271,6 +310,7 @@ internal class CreditsScreenPopUpPatch
         __instance.BackButton.transform.parent.FindChild("Background").gameObject.SetActive(false);
     }
 }
+
 [HarmonyPatch(typeof(ResolutionManager))]
 internal class ResolutionManagerPatch
 {
@@ -280,10 +320,12 @@ internal class ResolutionManagerPatch
         if (GameObject.Find("MainUI") == null) return;
         var offset = Utils.GetResolutionOffset(width, height);
         TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * offset, 1.3f, 1.0f);
-        TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
+        TitleLogoPatch.Tint.transform.localPosition =
+            new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
         TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * offset, 1.4f, -1.0f);
         var mainButtons = GameObject.Find("Main Buttons");
-        mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y, mainButtons.transform.position.z);
+        mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y,
+            mainButtons.transform.position.z);
         MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
     }
 }

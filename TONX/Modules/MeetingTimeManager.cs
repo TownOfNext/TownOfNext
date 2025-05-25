@@ -20,26 +20,31 @@ public class MeetingTimeManager
     {
         DefaultDiscussionTime = Main.RealOptionsData.GetInt(Int32OptionNames.DiscussionTime);
         DefaultVotingTime = Main.RealOptionsData.GetInt(Int32OptionNames.VotingTime);
-        Logger.Info($"DefaultDiscussionTime:{DefaultDiscussionTime}, DefaultVotingTime{DefaultVotingTime}", "MeetingTimeManager.Init");
+        Logger.Info($"DefaultDiscussionTime:{DefaultDiscussionTime}, DefaultVotingTime{DefaultVotingTime}",
+            "MeetingTimeManager.Init");
         ResetMeetingTime();
     }
+
     public static void ApplyGameOptions(IGameOptions opt)
     {
         opt.SetInt(Int32OptionNames.DiscussionTime, DiscussionTime);
         opt.SetInt(Int32OptionNames.VotingTime, VotingTime);
     }
+
     private static void ResetMeetingTime()
     {
         DiscussionTime = DefaultDiscussionTime;
         VotingTime = DefaultVotingTime;
     }
+
     public static void OnReportDeadBody()
     {
         if (Options.AllAliveMeeting.GetBool() && Utils.IsAllAlive)
         {
             DiscussionTime = 0;
             VotingTime = Options.AllAliveMeetingTime.GetInt();
-            Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
+            Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}",
+                "MeetingTimeManager.OnReportDeadBody");
             return;
         }
 
@@ -76,7 +81,8 @@ public class MeetingTimeManager
 
         int TotalMeetingTime = DiscussionTime + VotingTime;
         //時間の下限、上限で刈り込み
-        BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMin, MeetingTimeMax) - TotalMeetingTime;
+        BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMin, MeetingTimeMax) -
+                           TotalMeetingTime;
         if (BonusMeetingTime >= 0)
             VotingTime += BonusMeetingTime; //投票時間を延長
         else
@@ -88,6 +94,7 @@ public class MeetingTimeManager
                 DiscussionTime = 0;
             }
         }
+
         Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
     }
 }

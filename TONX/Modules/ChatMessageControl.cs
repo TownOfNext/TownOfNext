@@ -14,9 +14,21 @@ public class MessageControl
     public bool HasValidArgs { get; set; }
 
     public PlayerControl Player { get; set; }
-    public bool IsAlive { get => Player.IsAlive(); }
-    public bool IsFromMod { get => Player.IsModClient(); }
-    public bool IsFromSelf { get => Player.AmOwner; }
+
+    public bool IsAlive
+    {
+        get => Player.IsAlive();
+    }
+
+    public bool IsFromMod
+    {
+        get => Player.IsModClient();
+    }
+
+    public bool IsFromSelf
+    {
+        get => Player.AmOwner;
+    }
 
     public bool IsCommand { get; set; } = false;
     public bool ForceSend { get; set; } = false;
@@ -47,13 +59,13 @@ public class MessageControl
             foreach (var command in ChatCommand.AllCommands)
             {
                 if (command.Access switch
-                {
-                    CommandAccess.All => false,
-                    CommandAccess.LocalMod => !IsFromSelf,
-                    CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
-                    CommandAccess.Debugger => !DebugModeManager.AmDebugger,
-                    _ => true,
-                }) continue;
+                    {
+                        CommandAccess.All => false,
+                        CommandAccess.LocalMod => !IsFromSelf,
+                        CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
+                        CommandAccess.Debugger => !DebugModeManager.AmDebugger,
+                        _ => true,
+                    }) continue;
 
                 string keyword = command.KeyWords.Find(k => Message.ToLower().StartsWith("/" + k.ToLower()));
                 if (string.IsNullOrEmpty(keyword)) continue;
@@ -72,6 +84,7 @@ public class MessageControl
     }
 
     public static List<MessageControl> History;
+
     public static MessageControl Create(PlayerControl player, string message)
     {
         var mc = new MessageControl(player, message);
@@ -97,9 +110,11 @@ public class MessageControl
         for (int i = 0; i <= 20 - sendList.Count(); i++)
         {
             // The number of historical messages is not enough to cover all messages
-            var player = Main.AllAlivePlayerControls.ToArray()[IRandom.Instance.Next(0, Main.AllAlivePlayerControls.Count())];
+            var player =
+                Main.AllAlivePlayerControls.ToArray()[IRandom.Instance.Next(0, Main.AllAlivePlayerControls.Count())];
             SendMessageAsPlayerImmediately(player, "Hello " + Main.ModName, includeHost, includeModded);
         }
+
         foreach (var mc in sendList)
         {
             SendMessageAsPlayerImmediately(mc.Player, mc.Message, includeHost, includeModded);
@@ -110,7 +125,8 @@ public class MessageControl
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().Where(x => x is not CustomRoles.NotAssigned).ToList();
+        List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>()
+            .Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
         string[] command = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
@@ -131,12 +147,14 @@ public class MessageControl
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += Utils.GetRoleName(role);
             }
+
             var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
             SendMessageAsPlayerImmediately(player, msg, includeHost, includeModded);
         }
     }
 
-    public static void SendMessageAsPlayerImmediately(PlayerControl player, string text, bool hostCanSee = true, bool sendToModded = true)
+    public static void SendMessageAsPlayerImmediately(PlayerControl player, string text, bool hostCanSee = true,
+        bool sendToModded = true)
     {
         if (hostCanSee) DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, text);
         if (!sendToModded) text += "\0";

@@ -14,9 +14,11 @@ public abstract class ValueRule<T>
         MaxValue = maxValue;
         Step = step;
     }
+
     public ValueRule((T, T, T) tuple)
-    : this(tuple.Item1, tuple.Item2, tuple.Item3)
-    { }
+        : this(tuple.Item1, tuple.Item2, tuple.Item3)
+    {
+    }
 
     public abstract int RepeatIndex(int value);
     public abstract T GetValueByIndex(int index);
@@ -26,9 +28,14 @@ public abstract class ValueRule<T>
 public class IntegerValueRule : ValueRule<int>
 {
     public IntegerValueRule(int minValue, int maxValue, int step)
-    : base(minValue, maxValue, step) { }
+        : base(minValue, maxValue, step)
+    {
+    }
+
     public IntegerValueRule((int, int, int) tuple)
-    : base(tuple) { }
+        : base(tuple)
+    {
+    }
 
     public static implicit operator IntegerValueRule((int, int, int) tuple)
         => new(tuple);
@@ -53,9 +60,14 @@ public class IntegerValueRule : ValueRule<int>
 public class FloatValueRule : ValueRule<float>
 {
     public FloatValueRule(float minValue, float maxValue, float step)
-    : base(minValue, maxValue, step) { }
+        : base(minValue, maxValue, step)
+    {
+    }
+
     public FloatValueRule((float, float, float) tuple)
-    : base(tuple) { }
+        : base(tuple)
+    {
+    }
 
     public static implicit operator FloatValueRule((float, float, float) tuple)
         => new(tuple);
@@ -70,7 +82,7 @@ public class FloatValueRule : ValueRule<float>
 
     public override float GetValueByIndex(int index)
     {
-        //Íè¤áÕ`²îŒ²ß¤ÇdecimalĞÍ¤Ë¤·¤ÆÓ‹Ëã¤·¡¢floatĞÍ¤Ë¤·¤Æ·µ¤¹
+        //ï¿½ï¿½ï¿½ï¿½`ï¿½îŒï¿½ß¤ï¿½decimalï¿½Í¤Ë¤ï¿½ï¿½ï¿½Ó‹ï¿½ã¤·ï¿½ï¿½floatï¿½Í¤Ë¤ï¿½ï¿½Æ·ï¿½ï¿½ï¿½
         decimal ss = RepeatIndex(index) * (decimal)Step + (decimal)MinValue;
         return (float)ss;
     }

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.Core;
+
 namespace TONX;
 
 public static class AntiBlackout
@@ -13,11 +14,11 @@ public static class AntiBlackout
     ///追放処理を上書きするかどうか
     ///</summary>
     public static bool OverrideExiledPlayer => Options.NoGameEnd.GetBool()
-        || CustomRoles.Jackal.IsExist(true)
-        || CustomRoles.Pelican.IsExist(true)
-        || CustomRoles.Demon.IsExist(true)
-        || CustomRoles.BloodKnight.IsExist(true)
-        || CustomRoles.Succubus.IsExist(true);
+                                               || CustomRoles.Jackal.IsExist(true)
+                                               || CustomRoles.Pelican.IsExist(true)
+                                               || CustomRoles.Demon.IsExist(true)
+                                               || CustomRoles.BloodKnight.IsExist(true)
+                                               || CustomRoles.Succubus.IsExist(true);
 
     public static bool IsCached { get; private set; } = false;
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = new();
@@ -31,6 +32,7 @@ public static class AntiBlackout
             logger.Info("再度SetIsDeadを実行する前に、RestoreIsDeadを実行してください。");
             return;
         }
+
         isDeadCache.Clear();
         foreach (var info in GameData.Instance.AllPlayers)
         {
@@ -39,9 +41,11 @@ public static class AntiBlackout
             info.IsDead = false;
             info.Disconnected = false;
         }
+
         IsCached = true;
         if (doSend) SendGameData();
     }
+
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
@@ -54,6 +58,7 @@ public static class AntiBlackout
                 info.Disconnected = val.Disconnected;
             }
         }
+
         isDeadCache.Clear();
         IsCached = false;
         if (doSend) SendGameData();
@@ -73,7 +78,6 @@ public static class AntiBlackout
                 {
                     writer.WritePacked(playerinfo.NetId);
                     playerinfo.Serialize(writer, true);
-
                 }
                 writer.EndMessage();
             }
@@ -83,6 +87,7 @@ public static class AntiBlackout
             writer.Recycle();
         }
     }
+
     public static void OnDisconnect(NetworkedPlayerInfo player)
     {
         // 実行条件: クライアントがホストである, IsDeadが上書きされている, playerが切断済み

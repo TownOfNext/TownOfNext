@@ -20,8 +20,10 @@ public class TextBoxPatch
         { "”", "'' " },
         { "！", "! " },
     };
+
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
-    public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
+    public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input,
+        [HarmonyArgument(1)] string inputCompo = "")
     {
         __instance.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
         if (input.Length < 1) return true;
@@ -31,6 +33,7 @@ public class TextBoxPatch
             __instance.SetText(input.Replace(before, after));
             return false;
         }
+
         return true;
     }
 }

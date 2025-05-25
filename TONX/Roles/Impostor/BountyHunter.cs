@@ -9,6 +9,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class BountyHunter : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,11 +23,12 @@ public sealed class BountyHunter : RoleBase, IImpostor
             SetupOptionItem,
             "bo|賞金獵人|赏金"
         );
+
     public BountyHunter(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();
@@ -40,6 +42,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
     private static OptionItem OptionSuccessKillCooldown;
     private static OptionItem OptionFailureKillCooldown;
     private static OptionItem OptionShowTargetArrow;
+
     enum OptionName
     {
         BountyTargetChangeTime,
@@ -59,19 +62,24 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
     private static void SetupOptionItem()
     {
-        OptionTargetChangeTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.BountyTargetChangeTime, new(10f, 900f, 2.5f), 60f, false)
+        OptionTargetChangeTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.BountyTargetChangeTime,
+                new(10f, 900f, 2.5f), 60f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSuccessKillCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.BountySuccessKillCooldown, new(2.5f, 180f, 2.5f), 2.5f, false)
+        OptionSuccessKillCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.BountySuccessKillCooldown,
+                new(2.5f, 180f, 2.5f), 2.5f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionFailureKillCooldown = FloatOptionItem.Create(RoleInfo, 12, OptionName.BountyFailureKillCooldown, new(2.5f, 180f, 2.5f), 50f, false)
+        OptionFailureKillCooldown = FloatOptionItem.Create(RoleInfo, 12, OptionName.BountyFailureKillCooldown,
+                new(2.5f, 180f, 2.5f), 50f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionShowTargetArrow = BooleanOptionItem.Create(RoleInfo, 13, OptionName.BountyShowTargetArrow, false, false);
     }
+
     public override void Add()
     {
         if (AmongUsClient.Instance.AmHost)
             ResetTarget();
     }
+
     private void SendRPC(byte targetId)
     {
         using var sender = CreateSender();
@@ -80,14 +88,13 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         byte targetId = reader.ReadByte();
 
         Target = Utils.GetPlayerById(targetId);
         if (ShowTargetArrow) TargetArrow.Add(Player.PlayerId, targetId);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{Target.GetNameWithRole()}に変更", "BountyHunter");
     }
+
     //public static void SetKillCooldown(byte id, float amount) => Main.AllPlayerKillCooldown[id] = amount;
     public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = TargetChangeTime;
 
@@ -98,21 +105,24 @@ public sealed class BountyHunter : RoleBase, IImpostor
             (var killer, var target) = info.AttemptTuple;
 
             if (GetTarget() == target)
-            {//ターゲットをキルした場合
+            {
+                //ターゲットをキルした場合
                 Logger.Info($"{killer?.Data?.PlayerName}:ターゲットをキル", "BountyHunter");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = SuccessKillCooldown;
-                killer.SyncSettings();//キルクール処理を同期
+                killer.SyncSettings(); //キルクール処理を同期
                 ResetTarget();
             }
             else
             {
                 Logger.Info($"{killer?.Data?.PlayerName}:ターゲット以外をキル", "BountyHunter");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = FailureKillCooldown;
-                killer.SyncSettings();//キルクール処理を同期
+                killer.SyncSettings(); //キルクール処理を同期
             }
         }
+
         return;
     }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (AmongUsClient.Instance.AmHost)
@@ -120,11 +130,12 @@ public sealed class BountyHunter : RoleBase, IImpostor
             if (Player.IsAlive())
             {
                 var targetId = GetTarget().PlayerId;
-                if (ChangeTimer >= TargetChangeTime)//時間経過でターゲットをリセットする処理
+                if (ChangeTimer >= TargetChangeTime) //時間経過でターゲットをリセットする処理
                 {
-                    ResetTarget();//ターゲットの選びなおし
+                    ResetTarget(); //ターゲットの選びなおし
                     Utils.NotifyRoles(SpecifySeer: Player);
                 }
+
                 if (ChangeTimer >= 0)
                     ChangeTimer += Time.fixedDeltaTime;
 
@@ -138,6 +149,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
             }
         }
     }
+
     public PlayerControl GetTarget()
     {
         if (Target == null)
@@ -145,6 +157,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
         return Target;
     }
+
     public PlayerControl ResetTarget()
     {
         if (!AmongUsClient.Instance.AmHost) return null;
@@ -154,7 +167,8 @@ public sealed class BountyHunter : RoleBase, IImpostor
         ChangeTimer = 0f;
 
         Logger.Info($"{Player.GetNameWithRole()}:ターゲットリセット", "BountyHunter");
-        Player.RpcResetAbilityCooldown(); ;//タイマー（変身クールダウン）のリセットと
+        Player.RpcResetAbilityCooldown();
+        ; //タイマー（変身クールダウン）のリセットと
 
         var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CountTypes.Impostor)));
 
@@ -178,11 +192,13 @@ public sealed class BountyHunter : RoleBase, IImpostor
         SendRPC(targetId);
         return target;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("BountyHunterChangeButtonText");
         return true;
     }
+
     public override void OnSpawn(bool initialState)
     {
         if (Player.IsAlive())
@@ -190,7 +206,9 @@ public sealed class BountyHunter : RoleBase, IImpostor
             ChangeTimer = 0f;
         }
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false)
     {
         //seenが省略の場合seer
         seen ??= seer;
@@ -198,8 +216,11 @@ public sealed class BountyHunter : RoleBase, IImpostor
         if (!Is(seer) || !Is(seen)) return "";
 
         var target = GetTarget();
-        return target != null ? $"{(isForHud ? GetString("BountyCurrentTarget") : "Target")}:{Main.AllPlayerNames[target.PlayerId]}" : "";
+        return target != null
+            ? $"{(isForHud ? GetString("BountyCurrentTarget") : "Target")}:{Main.AllPlayerNames[target.PlayerId]}"
+            : "";
     }
+
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         //seenが省略の場合seer
@@ -215,11 +236,12 @@ public sealed class BountyHunter : RoleBase, IImpostor
         //矢印オプションがありミーティング以外で矢印表示
         return TargetArrow.GetArrows(Player, target.PlayerId);
     }
+
     public void OnSchrodingerCatKill(SchrodingerCat schrodingerCat)
     {
         if (GetTarget() == schrodingerCat.Player)
         {
-            ResetTarget();  // ターゲットの選びなおし
+            ResetTarget(); // ターゲットの選びなおし
         }
     }
 }

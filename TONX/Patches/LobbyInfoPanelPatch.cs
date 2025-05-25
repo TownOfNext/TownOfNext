@@ -8,6 +8,7 @@ namespace TONX.Patches;
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
+
     public static void Postfix(HostInfoPanel __instance)
     {
         if (AmongUsClient.Instance.AmHost)
@@ -19,7 +20,8 @@ public static class HostInfoPanelUpdatePatch
             var hostName = Main.HostNickName;
             var youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
 
-            HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">{youLabel}";
+            HostText.text =
+                $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">{youLabel}";
         }
     }
 }

@@ -21,6 +21,7 @@ public static class GameStartManagerUpdatePatch
         __instance.MinPlayers = 1;
     }
 }
+
 //タイマーとコード隠し
 public class GameStartManagerPatch
 {
@@ -45,8 +46,8 @@ public class GameStartManagerPatch
             HideName.gameObject.SetActive(true);
             HideName.name = "HideName";
             HideName.color =
-                    ColorUtility.TryParseHtmlString(Main.HideColor.Value, out var color) ? color :
-                    ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor) ? modColor : HideName.color;
+                ColorUtility.TryParseHtmlString(Main.HideColor.Value, out var color) ? color :
+                ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor) ? modColor : HideName.color;
             HideName.text = Main.HideName.Value;
 
             warningText = Object.Instantiate(__instance.GameStartText, __instance.transform);
@@ -60,7 +61,8 @@ public class GameStartManagerPatch
             timerText.name = "Timer";
             timerText.DestroyChildren();
             timerText.transform.localPosition += new Vector3(0.3f, -3.4f, 0f);
-            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && AmongUsClient.Instance.AmHost);
+            timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame &&
+                                           AmongUsClient.Instance.AmHost);
 
             cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
             cancelButton.name = "CancelButton";
@@ -77,6 +79,7 @@ public class GameStartManagerPatch
             {
                 cancelButtonInactiveShine.gameObject.SetActive(false);
             }
+
             cancelButton.activeTextColor = cancelButton.inactiveTextColor = Color.white;
             cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
             cancelButton.OnClick = new();
@@ -99,6 +102,7 @@ public class GameStartManagerPatch
     {
         private static int updateTimer = 0;
         public static float exitTimer = -1f;
+
         public static void Prefix(GameStartManager __instance)
         {
             // Lobby code
@@ -127,6 +131,7 @@ public class GameStartManagerPatch
                 }
             }
         }
+
         public static void Postfix(GameStartManager __instance)
         {
             if (!AmongUsClient.Instance) return;
@@ -145,14 +150,20 @@ public class GameStartManagerPatch
                     if (!MatchVersions(client.Character.PlayerId, true))
                     {
                         canStartGame = false;
-                        mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
+                        mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId],
+                            client.Character.Data.PlayerName));
                     }
                 }
+
                 if (!canStartGame)
                 {
                     __instance.StartButton.gameObject.SetActive(false);
-                    warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
+                    warningMessage = Utils.ColorString(Color.red,
+                        string.Format(GetString("Warning.MismatchedVersion"),
+                            string.Join(" ", mismatchedPlayerNameList),
+                            $"<color={Main.ModColor}>{Main.ModName}</color>"));
                 }
+
                 cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
                 __instance.StartButton.gameObject.SetActive(!cancelButton.gameObject.active);
             }
@@ -169,10 +180,15 @@ public class GameStartManagerPatch
                         AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
                         SceneChanger.ChangeScene("MainMenu");
                     }
+
                     if (exitTimer != 0)
-                        warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
+                        warningMessage = Utils.ColorString(Color.red,
+                            string.Format(GetString("Warning.AutoExitAtMismatchedVersion"),
+                                $"<color={Main.ModColor}>{Main.ModName}</color>",
+                                Math.Round(5 - exitTimer).ToString()));
                 }
             }
+
             if (warningMessage == "")
             {
                 warningText.gameObject.SetActive(false);
@@ -199,21 +215,24 @@ public class GameStartManagerPatch
             if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
+
         private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
         {
             if (!Main.playerVersion.TryGetValue(playerId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId
-                && Main.version.CompareTo(version.version) == 0
-                && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
+                   && Main.version.CompareTo(version.version) == 0
+                   && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
         }
     }
 }
+
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public static class GameStartManagerBeginGamePatch
 {
     public static bool Prefix(GameStartManager __instance)
     {
-        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+        var invalidColor = Main.AllPlayerControls.Where(p =>
+            p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
         if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
@@ -237,11 +256,13 @@ public static class GameStartManagerBeginGamePatch
         Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
         AURoleOptions.ShapeshifterCooldown = 0f;
 
-        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+        PlayerControl.LocalPlayer.RpcSyncSettings(
+            GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
 
         __instance.ReallyBegin(false);
         return false;
     }
+
     private static void SelectRandomMap()
     {
         if (Options.RandomMapsMode.GetBool())
@@ -276,11 +297,13 @@ class ResetStartStatePatch
         if (GameStates.IsCountDown)
         {
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(
+                GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
             SoundManager.Instance.StopSound(__instance.gameStartSound);
         }
     }
 }
+
 [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
 public static class HiddenTextPatch
 {

@@ -10,11 +10,12 @@ namespace TONX
 
         // コンストラクタ
         public TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
-        : base(id, name, defaultValue, tab, isSingleValue)
+            : base(id, name, defaultValue, tab, isSingleValue)
         {
             IsText = true;
-        IsHeader = true;
+            IsHeader = true;
         }
+
         public static TextOptionItem Create(
             int id, string name, TabGroup tab, bool isSingleValue = false
         )
@@ -23,6 +24,7 @@ namespace TONX
                 id, name, 0, tab, isSingleValue
             );
         }
+
         public static TextOptionItem Create(
             int id, Enum name, TabGroup tab, bool isSingleValue = false
         )
@@ -31,6 +33,7 @@ namespace TONX
                 id, name.ToString(), 0, tab, isSingleValue
             );
         }
+
         public static TextOptionItem Create(
             SimpleRoleInfo roleInfo, int idOffset, Enum name, bool isSingleValue = false, OptionItem parent = null
         )
@@ -45,6 +48,7 @@ namespace TONX
         // Getter
         public override int GetInt() => Rule.GetValueByIndex(CurrentValue);
         public override float GetFloat() => Rule.GetValueByIndex(CurrentValue);
+
         public override string GetString()
         {
             return Translator.GetString(Name);

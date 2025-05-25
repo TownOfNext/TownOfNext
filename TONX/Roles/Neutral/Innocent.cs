@@ -9,13 +9,13 @@ using Hazel;
 namespace TONX.Roles.Neutral;
 
 public sealed class Innocent : RoleBase
-{ 
+{
     public static readonly SimpleRoleInfo RoleInfo =
-       SimpleRoleInfo.Create(
+        SimpleRoleInfo.Create(
             typeof(Innocent),
             player => new Innocent(player),
             CustomRoles.Innocent,
-            () => RoleTypes.Impostor ,
+            () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             75_1_2_0800,
             null,
@@ -23,30 +23,34 @@ public sealed class Innocent : RoleBase
             "#8f815e",
             true
         );
+
     public Innocent(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
-        
     }
+
     private bool IsKilled;
+
     public override void Add()
     {
         var playerId = Player.PlayerId;
         IsKilled = false;
     }
+
     private void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(IsKilled);
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-
         IsKilled = reader.ReadBoolean();
     }
+
     public bool IsNK { get; private set; } = false;
 
     public float CalculateKillCooldown() => 1f;
@@ -54,6 +58,7 @@ public sealed class Innocent : RoleBase
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
@@ -64,9 +69,12 @@ public sealed class Innocent : RoleBase
         SendRPC();
         return false;
     }
-    public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText)
+
+    public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner,
+        ref List<string> WinDescriptionText)
     {
-        if (!AmongUsClient.Instance.AmHost || Player.GetRealKiller().PlayerId != exiled.PlayerId ||!IsKilled) return null;
+        if (!AmongUsClient.Instance.AmHost || Player.GetRealKiller().PlayerId != exiled.PlayerId ||
+            !IsKilled) return null;
 
         DecidedWinner = true;
         WinDescriptionText.Add(Translator.GetString("ExiledInnocentTarget"));

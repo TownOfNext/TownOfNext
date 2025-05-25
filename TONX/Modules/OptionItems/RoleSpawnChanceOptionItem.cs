@@ -19,6 +19,7 @@ public sealed class RoleSpawnChanceOptionItem : StringOptionItem, IRoleOptionIte
         RoleId = roleId;
         RoleColor = roleColor;
     }
+
     public RoleSpawnChanceOptionItem(
         int id,
         string name,
@@ -26,7 +27,10 @@ public sealed class RoleSpawnChanceOptionItem : StringOptionItem, IRoleOptionIte
         TabGroup tab,
         bool isSingleValue,
         string[] selections,
-        SimpleRoleInfo roleInfo) : this(id, name, defaultIndex, tab, isSingleValue, selections, roleInfo.RoleName, roleInfo.RoleColor) { }
+        SimpleRoleInfo roleInfo) : this(id, name, defaultIndex, tab, isSingleValue, selections, roleInfo.RoleName,
+        roleInfo.RoleColor)
+    {
+    }
 
     public CustomRoles RoleId { get; }
     public Color RoleColor { get; }

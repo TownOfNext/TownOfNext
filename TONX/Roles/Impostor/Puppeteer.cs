@@ -9,6 +9,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Puppeteer : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,23 +23,28 @@ public sealed class Puppeteer : RoleBase, IImpostor
             null,
             "pup|傀儡師|傀儡"
         );
+
     public Puppeteer(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
     }
+
     /// <summary>
     /// Key: ターゲットのPlayerId, Value: パペッティア
     /// </summary>
     private static Dictionary<byte, Puppeteer> Puppets = new(15);
+
     public bool IsKiller { get; private set; } = false;
+
     public override void OnDestroy()
     {
         Puppets.Clear();
     }
+
     private void SendRPC(byte targetId, byte typeId)
     {
         using var sender = CreateSender();
@@ -46,10 +52,9 @@ public sealed class Puppeteer : RoleBase, IImpostor
         sender.Writer.Write(typeId);
         sender.Writer.Write(targetId);
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         var typeId = reader.ReadByte();
         var targetId = reader.ReadByte();
 
@@ -66,6 +71,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
                 break;
         }
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (puppeteer, target) = info.AttemptTuple;
@@ -78,11 +84,13 @@ public sealed class Puppeteer : RoleBase, IImpostor
         Utils.NotifyRoles(SpecifySeer: puppeteer);
         return false;
     }
+
     public override void OnReportDeadBody(PlayerControl _, NetworkedPlayerInfo __)
     {
         Puppets.Clear();
         SendRPC(byte.MaxValue, 0);
     }
+
     public static void OnFixedUpdateOthers(PlayerControl puppet)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -90,6 +98,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
         if (Puppets.TryGetValue(puppet.PlayerId, out var puppeteer))
             puppeteer.CheckPuppetKill(puppet);
     }
+
     private void CheckPuppetKill(PlayerControl puppet)
     {
         if (!puppet.IsAlive())
@@ -99,7 +108,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
         }
         else
         {
-            var puppetPos = puppet.transform.position;//puppetの位置
+            var puppetPos = puppet.transform.position; //puppetの位置
             Dictionary<PlayerControl, float> targetDistance = new();
             foreach (var pc in Main.AllAlivePlayerControls.ToArray())
             {
@@ -109,9 +118,10 @@ public sealed class Puppeteer : RoleBase, IImpostor
                     targetDistance.Add(pc, dis);
                 }
             }
+
             if (targetDistance.Keys.Count <= 0) return;
 
-            var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();//一番値が小さい
+            var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault(); //一番値が小さい
             var target = min.Key;
             var KillRange = NormalGameOptionsV09.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
             if (min.Value <= KillRange && puppet.CanMove && target.CanMove)
@@ -126,16 +136,18 @@ public sealed class Puppeteer : RoleBase, IImpostor
             }
         }
     }
+
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
         seen ??= seer;
 
         if (!(Puppets.ContainsValue(this) &&
-            Puppets.ContainsKey(seen.PlayerId))) return "";
+              Puppets.ContainsKey(seen.PlayerId))) return "";
 
         return Utils.ColorString(RoleInfo.RoleColor, "◆");
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("PuppeteerOperateButtonText");

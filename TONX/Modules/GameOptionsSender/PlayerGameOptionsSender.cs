@@ -15,16 +15,19 @@ namespace TONX.Modules;
 public class PlayerGameOptionsSender : GameOptionsSender
 {
     public static void SetDirty(PlayerControl player) => SetDirty(player.PlayerId);
+
     public static void SetDirty(byte playerId) =>
         AllSenders.OfType<PlayerGameOptionsSender>()
-        .Where(sender => sender.player.PlayerId == playerId)
-        .ToList().ForEach(sender => sender.SetDirty());
+            .Where(sender => sender.player.PlayerId == playerId)
+            .ToList().ForEach(sender => sender.SetDirty());
+
     public static void SetDirtyToAll() =>
         AllSenders.OfType<PlayerGameOptionsSender>()
-        .ToList().ForEach(sender => sender.SetDirty());
+            .ToList().ForEach(sender => sender.SetDirty());
 
     public override IGameOptions BasedGameOptions =>
         Main.RealOptionsData.Restore(new NormalGameOptionsV09(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+
     public override bool IsDirty { get; protected set; }
 
     public PlayerControl player;
@@ -33,6 +36,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
     {
         this.player = player;
     }
+
     public void SetDirty() => IsDirty = true;
 
     public override void SendGameOptions()
@@ -45,6 +49,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 if (com.TryCast<LogicOptions>(out var lo))
                     lo.SetGameOptions(opt);
             }
+
             GameOptionsManager.Instance.CurrentGameOptions = opt;
         }
         else base.SendGameOptions();
@@ -60,14 +65,16 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
     }
+
     public static void RemoveSender(PlayerControl player)
     {
         var sender = AllSenders.OfType<PlayerGameOptionsSender>()
-        .FirstOrDefault(sender => sender.player.PlayerId == player.PlayerId);
+            .FirstOrDefault(sender => sender.player.PlayerId == player.PlayerId);
         if (sender == null) return;
         sender.player = null;
         AllSenders.Remove(sender);
     }
+
     public override IGameOptions BuildGameOptions()
     {
         Main.RealOptionsData ??= new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
@@ -85,10 +92,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
                 break;
         }
+
         if (!role.IsImpostor())
         {
             AURoleOptions.NoisemakerImpostorAlert = true;
         }
+
         var roleClass = player.GetRoleClass();
         roleClass?.ApplyGameOptions(opt);
         foreach (var subRole in player.GetCustomSubRoles())
@@ -118,7 +127,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
 
         // 为迷惑者的凶手
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
+        if (Main.AllPlayerControls.Any(x =>
+                x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId &&
+                !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
@@ -155,10 +166,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 Int32OptionNames.EmergencyCooldown,
                 Options.AdditionalEmergencyCooldownTime.GetInt());
         }
+
         if (Options.SyncButtonMode.GetBool() && Options.SyncedButtonCount.GetValue() <= Options.UsedButtonCount)
         {
             opt.SetInt(Int32OptionNames.EmergencyCooldown, 3600);
         }
+
         MeetingTimeManager.ApplyGameOptions(opt);
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);

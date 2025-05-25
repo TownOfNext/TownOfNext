@@ -6,7 +6,12 @@ public static class DoorsReset
 {
     private static bool isEnabled = false;
     private static ResetMode mode;
-    private static DoorsSystemType DoorsSystem => ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Doors, out var system) ? system.TryCast<DoorsSystemType>() : null;
+
+    private static DoorsSystemType DoorsSystem =>
+        ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Doors, out var system)
+            ? system.TryCast<DoorsSystemType>()
+            : null;
+
     private static readonly LogHandler logger = Logger.Handler(nameof(DoorsReset));
 
     [GameModuleInitializer]
@@ -18,6 +23,7 @@ public static class DoorsReset
             isEnabled = false;
             return;
         }
+
         isEnabled = Options.ResetDoorsEveryTurns.GetBool();
         mode = (ResetMode)Options.DoorsResetMode.GetValue();
         logger.Info($"初期化: [ {isEnabled}, {mode} ]");
@@ -30,6 +36,7 @@ public static class DoorsReset
         {
             return;
         }
+
         logger.Info("リセット");
 
         switch (mode)
@@ -40,6 +47,7 @@ public static class DoorsReset
             default: logger.Warn($"無効なモード: {mode}"); break;
         }
     }
+
     /// <summary>マップ上の全ドアを開放</summary>
     private static void OpenAllDoors()
     {
@@ -47,8 +55,10 @@ public static class DoorsReset
         {
             SetDoorOpenState(door, true);
         }
+
         DoorsSystem.IsDirty = true;
     }
+
     /// <summary>マップ上の全ドアを閉鎖</summary>
     private static void CloseAllDoors()
     {
@@ -56,8 +66,10 @@ public static class DoorsReset
         {
             SetDoorOpenState(door, false);
         }
+
         DoorsSystem.IsDirty = true;
     }
+
     /// <summary>マップ上の全ドアをランダムに開閉</summary>
     private static void OpenOrCloseAllDoorsRandomly()
     {
@@ -66,6 +78,7 @@ public static class DoorsReset
             var isOpen = IRandom.Instance.Next(2) > 0;
             SetDoorOpenState(door, isOpen);
         }
+
         DoorsSystem.IsDirty = true;
     }
 
@@ -79,6 +92,7 @@ public static class DoorsReset
             door.SetDoorway(isOpen);
         }
     }
+
     /// <summary>リセット対象のドアかどうか判定する</summary>
     /// <returns>リセット対象ならtrue</returns>
     private static bool IsValidDoor(OpenableDoor door)
@@ -88,8 +102,14 @@ public static class DoorsReset
         {
             return false;
         }
+
         return true;
     }
 
-    public enum ResetMode { AllOpen, AllClosed, RandomByDoor, }
+    public enum ResetMode
+    {
+        AllOpen,
+        AllClosed,
+        RandomByDoor,
+    }
 }

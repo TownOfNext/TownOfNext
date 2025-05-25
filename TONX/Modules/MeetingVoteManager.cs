@@ -38,6 +38,7 @@ public class MeetingVoteManager
             allVotes[voteArea.TargetPlayerId] = new(voteArea.TargetPlayerId);
         }
     }
+
     /// <summary>
     /// 删除到目前为止的所有票，并以对特定投票者的一票结束会议
     /// </summary>
@@ -52,6 +53,7 @@ public class MeetingVoteManager
         allVotes[voter] = vote;
         EndMeeting(false);
     }
+
     /// <summary>
     /// 玩家投票，如果已经投票，则覆盖先前投票
     /// </summary>
@@ -66,6 +68,7 @@ public class MeetingVoteManager
             logger.Warn($"ID: {voter} 没有存在的投票数据，创建新的投票数据");
             vote = new(voter);
         }
+
         if (vote.HasVoted)
         {
             logger.Info($"ID: {voter} 已经存在投票数据，覆盖原先的投票数据");
@@ -77,14 +80,18 @@ public class MeetingVoteManager
             var (roleVoteFor, roleNumVotes, roleDoVote) = role.ModifyVote(voter, voteFor, isIntentional);
             if (roleVoteFor.HasValue)
             {
-                logger.Info($"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票先を {GetVoteName(roleVoteFor.Value)} に変更します");
+                logger.Info(
+                    $"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票先を {GetVoteName(roleVoteFor.Value)} に変更します");
                 voteFor = roleVoteFor.Value;
             }
+
             if (roleNumVotes.HasValue)
             {
-                logger.Info($"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票数を {roleNumVotes.Value} に変更します");
+                logger.Info(
+                    $"{role.Player.GetNameWithRole()} が {Utils.GetPlayerById(voter).GetNameWithRole()} の投票数を {roleNumVotes.Value} に変更します");
                 numVotes = roleNumVotes.Value;
             }
+
             if (!roleDoVote)
             {
                 logger.Info($"{role.Player.GetNameWithRole()} によって投票は取り消されます");
@@ -100,16 +107,19 @@ public class MeetingVoteManager
             vote.DoVote(voteFor, numVotes);
         }
     }
+
     /// <summary>
     /// 如果会议时间耗尽或每个人都已投票，则结束会议
     /// </summary>
     public void CheckAndEndMeeting()
     {
-        if (meetingHud.discussionTimer - Main.NormalOptions.DiscussionTime >= Main.NormalOptions.VotingTime || AllVotes.Values.All(vote => vote.HasVoted))
+        if (meetingHud.discussionTimer - Main.NormalOptions.DiscussionTime >= Main.NormalOptions.VotingTime ||
+            AllVotes.Values.All(vote => vote.HasVoted))
         {
             EndMeeting();
         }
     }
+
     /// <summary>
     /// 无条件终止会议
     /// </summary>
@@ -129,6 +139,7 @@ public class MeetingVoteManager
                 logger.Warn($"{Utils.GetPlayerById(voteArea.TargetPlayerId).GetNameWithRole()} 没有投票数据");
                 continue;
             }
+
             for (var i = 0; i < voteData.NumVotes; i++)
             {
                 states.Add(new()
@@ -148,6 +159,7 @@ public class MeetingVoteManager
         {
             meetingHud.RpcVotingComplete(states.ToArray(), result.Exiled, result.IsTie);
         }
+
         if (result.Exiled != null)
         {
             MeetingHudPatch.CheckForDeathOnExile(CustomDeathReason.Vote, result.Exiled.PlayerId);
@@ -159,10 +171,13 @@ public class MeetingVoteManager
                 var action = roleClass.CheckExile(result.Exiled, ref DecidedWinner, ref WinDescriptionText);
                 if (action != null) ExileControllerWrapUpPatch.ActionsOnWrapUp.Add(action);
             }
+
             ConfirmEjections.Apply(result.Exiled, DecidedWinner, WinDescriptionText);
         }
+
         Destroy();
     }
+
     /// <summary>
     /// <see cref="AllVotes"/>から投票をカウントします
     /// </summary>
@@ -183,6 +198,7 @@ public class MeetingVoteManager
         {
             votes[voteArea.TargetPlayerId] = 0;
         }
+
         votes[Skip] = 0;
         foreach (var vote in AllVotes.Values)
         {
@@ -190,20 +206,26 @@ public class MeetingVoteManager
             {
                 continue;
             }
+
             votes[vote.VotedFor] += vote.NumVotes;
         }
 
         return new VoteResult(votes);
     }
+
     /// <summary>
     /// 根据跳过模式和无投票模式更改投票或杀死玩家
     /// </summary>
     private void ApplySkipAndNoVoteMode()
     {
-        var ignoreSkipModeDueToFirstMeeting = MeetingStates.FirstMeeting && Options.WhenSkipVoteIgnoreFirstMeeting.GetBool();
-        var ignoreSkipModeDueToNoDeadBody = !MeetingStates.IsExistDeadBody && Options.WhenSkipVoteIgnoreNoDeadBody.GetBool();
-        var ignoreSkipModeDueToEmergency = MeetingStates.IsEmergencyMeeting && Options.WhenSkipVoteIgnoreEmergency.GetBool();
-        var ignoreSkipMode = ignoreSkipModeDueToFirstMeeting || ignoreSkipModeDueToNoDeadBody || ignoreSkipModeDueToEmergency;
+        var ignoreSkipModeDueToFirstMeeting =
+            MeetingStates.FirstMeeting && Options.WhenSkipVoteIgnoreFirstMeeting.GetBool();
+        var ignoreSkipModeDueToNoDeadBody =
+            !MeetingStates.IsExistDeadBody && Options.WhenSkipVoteIgnoreNoDeadBody.GetBool();
+        var ignoreSkipModeDueToEmergency =
+            MeetingStates.IsEmergencyMeeting && Options.WhenSkipVoteIgnoreEmergency.GetBool();
+        var ignoreSkipMode = ignoreSkipModeDueToFirstMeeting || ignoreSkipModeDueToNoDeadBody ||
+                             ignoreSkipModeDueToEmergency;
 
         var skipMode = Options.GetWhenSkipVote();
         var noVoteMode = Options.GetWhenNonVote();
@@ -246,6 +268,7 @@ public class MeetingVoteManager
             }
         }
     }
+
     public void Destroy()
     {
         _instance = null;
@@ -288,11 +311,14 @@ public class MeetingVoteManager
         /// Value: 得票数
         /// </summary>
         public IReadOnlyDictionary<byte, int> VotedCounts => votedCounts;
+
         private readonly Dictionary<byte, int> votedCounts;
+
         /// <summary>
         /// 驱逐玩家
         /// </summary>
         public readonly NetworkedPlayerInfo Exiled;
+
         /// <summary>
         /// 是否平票
         /// </summary>
@@ -307,7 +333,8 @@ public class MeetingVoteManager
             // 得票最多的人的票数
             var maxVoteNum = orderedVotes.FirstOrDefault().Value;
             // 所有得票最多的玩家
-            var mostVotedPlayers = votedCounts.Where(vote => vote.Value == maxVoteNum).Select(vote => vote.Key).ToArray();
+            var mostVotedPlayers =
+                votedCounts.Where(vote => vote.Value == maxVoteNum).Select(vote => vote.Key).ToArray();
 
             // 存在相同最多票数的玩家
             if (mostVotedPlayers.Length > 1)
@@ -341,6 +368,7 @@ public class MeetingVoteManager
                         {
                             Utils.GetPlayerById(playerId)?.SetRealKiller(null);
                         }
+
                         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, toExile);
                         Exiled = null;
                         logger.Info("根据房间设定，平票玩家全部驱逐");

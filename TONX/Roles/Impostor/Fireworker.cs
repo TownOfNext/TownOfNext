@@ -8,6 +8,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Fireworker : RoleBase, IImpostor
 {
     public enum FireworkerState
@@ -31,11 +32,12 @@ public sealed class Fireworker : RoleBase, IImpostor
             SetupCustomOption,
             "fw|煙花商人|烟火商人|烟花|烟火"
         );
+
     public Fireworker(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         FireworkerCount = OptionFireworkerCount.GetInt();
         FireworkerRadius = OptionFireworkerRadius.GetFloat();
@@ -43,6 +45,7 @@ public sealed class Fireworker : RoleBase, IImpostor
 
     static OptionItem OptionFireworkerCount;
     static OptionItem OptionFireworkerRadius;
+
     enum OptionName
     {
         FireworkerMaxCount,
@@ -57,9 +60,11 @@ public sealed class Fireworker : RoleBase, IImpostor
 
     public static void SetupCustomOption()
     {
-        OptionFireworkerCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.FireworkerMaxCount, new(1, 99, 1), 3, false)
+        OptionFireworkerCount = IntegerOptionItem
+            .Create(RoleInfo, 10, OptionName.FireworkerMaxCount, new(1, 99, 1), 3, false)
             .SetValueFormat(OptionFormat.Pieces);
-        OptionFireworkerRadius = FloatOptionItem.Create(RoleInfo, 11, OptionName.FireworkerRadius, new(0.5f, 5f, 0.5f), 2f, false)
+        OptionFireworkerRadius = FloatOptionItem
+            .Create(RoleInfo, 11, OptionName.FireworkerRadius, new(0.5f, 5f, 0.5f), 2f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
@@ -75,6 +80,7 @@ public sealed class Fireworker : RoleBase, IImpostor
         if (!Player.IsAlive()) return false;
         return (State & FireworkerState.CanUseKill) != 0;
     }
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.ShapeshifterDuration = State != FireworkerState.FireEnd ? 1f : 30f;
@@ -124,6 +130,7 @@ public sealed class Fireworker : RoleBase, IImpostor
                             }
                         }
                     }
+
                     if (suicide)
                     {
                         var totalAlive = Main.AllAlivePlayerControls.Count();
@@ -134,17 +141,21 @@ public sealed class Fireworker : RoleBase, IImpostor
                             Player.RpcMurderPlayer(Player);
                         }
                     }
+
                     Player.MarkDirtySettings();
                 }
+
                 State = FireworkerState.FireEnd;
                 break;
             default:
                 break;
         }
+
         Utils.NotifyRoles();
     }
 
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false)
     {
         string retText = "";
 
@@ -154,6 +165,7 @@ public sealed class Fireworker : RoleBase, IImpostor
             State = FireworkerState.ReadyFire;
             Utils.NotifyRoles();
         }
+
         switch (State)
         {
             case FireworkerState.Initial:
@@ -169,8 +181,10 @@ public sealed class Fireworker : RoleBase, IImpostor
             case FireworkerState.FireEnd:
                 break;
         }
+
         return retText;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = State == FireworkerState.ReadyFire
@@ -178,6 +192,7 @@ public sealed class Fireworker : RoleBase, IImpostor
             : GetString("FireworkerInstallAtionButtonText");
         return true;
     }
+
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = State == FireworkerState.ReadyFire ? "FireworkD" : "FireworkP";

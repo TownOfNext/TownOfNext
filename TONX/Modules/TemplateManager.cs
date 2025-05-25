@@ -15,6 +15,7 @@ namespace TONX;
 public static class TemplateManager
 {
     private static readonly string TEMPLATE_FILE_PATH = "./TONX_Data/MsgTemplate.txt";
+
     private static Dictionary<string, Func<string>> _replaceDictionary = new()
     {
         ["HostName"] = () => PlayerControl.LocalPlayer.GetRealName(),
@@ -56,7 +57,8 @@ public static class TemplateManager
                 {
                     string fileName = GetUserLangByRegion().ToString();
                     Logger.Warn($"Create New Template: {fileName}", "TemplateManager");
-                    File.WriteAllText(TEMPLATE_FILE_PATH, GetResourcesTxt($"TONX.Resources.MsgTemplates.{fileName}.txt"));
+                    File.WriteAllText(TEMPLATE_FILE_PATH,
+                        GetResourcesTxt($"TONX.Resources.MsgTemplates.{fileName}.txt"));
                 }
             }
             catch (Exception ex)
@@ -93,22 +95,31 @@ public static class TemplateManager
             if (tmp.Length > 1 && tmp[1] != "")
             {
                 tags.Add(tmp[0]);
-                if (tmp[0].ToLower() == str.ToLower()) sendList.Add(tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n"));
+                if (tmp[0].ToLower() == str.ToLower())
+                    sendList.Add(tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n"));
             }
         }
+
         if (sendList.Count == 0 && !noErr)
         {
             if (playerId == 0xff)
-                Utils.AddChatMessage(string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
+                Utils.AddChatMessage(string.Format(GetString("Message.TemplateNotFoundHost"), str,
+                    tags.Join(delimiter: ", ")));
             else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
         }
-        else for (int i = 0; i < sendList.Count; i++)
+        else
+            for (int i = 0; i < sendList.Count; i++)
             {
                 if (str == "welcome" && playerId != 0xff)
                 {
                     var player = Utils.GetPlayerById(playerId);
                     if (player == null) continue;
-                    Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId, string.Format($"<color=#aaaaff>{GetString("OnPlayerJoinMsgTitle")}</color>", Utils.ColorString(Palette.PlayerColors.Length > player.cosmetics.ColorId ? Palette.PlayerColors[player.cosmetics.ColorId] : UnityEngine.Color.white, player.GetTrueName())));
+                    Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId,
+                        string.Format($"<color=#aaaaff>{GetString("OnPlayerJoinMsgTitle")}</color>",
+                            Utils.ColorString(
+                                Palette.PlayerColors.Length > player.cosmetics.ColorId
+                                    ? Palette.PlayerColors[player.cosmetics.ColorId]
+                                    : UnityEngine.Color.white, player.GetTrueName())));
                 }
                 else Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId);
             }
@@ -120,6 +131,7 @@ public static class TemplateManager
         {
             text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
         }
+
         return text;
     }
 }

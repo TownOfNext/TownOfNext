@@ -52,18 +52,22 @@ public class SimpleButton
         Label.text = label;
         Button.gameObject.SetActive(isActive);
     }
+
     public PassiveButton Button { get; }
     public TextMeshPro Label { get; }
     public SpriteRenderer NormalSprite { get; }
     public SpriteRenderer HoverSprite { get; }
     private readonly BoxCollider2D buttonCollider;
     private Vector2 _scale;
+
     public Vector2 Scale
     {
         get => _scale;
         set => _scale = NormalSprite.size = HoverSprite.size = buttonCollider.size = value;
     }
+
     private float _fontSize;
+
     public float FontSize
     {
         get => _fontSize;
@@ -71,12 +75,14 @@ public class SimpleButton
     }
 
     private static PassiveButton baseButton;
+
     public static void SetBase(PassiveButton passiveButton)
     {
         if (baseButton != null || passiveButton == null)
         {
             return;
         }
+
         // 複製
         baseButton = Object.Instantiate(passiveButton);
         var label = baseButton.transform.Find("FontPlacer/Text_TMP").GetComponent<TextMeshPro>();
@@ -95,5 +101,6 @@ public class SimpleButton
         buttonCollider.offset = new(0f, 0f);
         baseButton.OnClick = new();
     }
+
     public static bool IsNullOrDestroyed(SimpleButton button) => button == null || button.Button == null;
 }

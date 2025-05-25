@@ -20,12 +20,14 @@ class Penguin : RoleBase, IImpostor
             SetupOptionItem,
             "pe|企鵝"
         );
+
     public Penguin(PlayerControl player)
         : base(RoleInfo, player)
     {
         AbductTimerLimit = OptionAbductTimerLimit.GetFloat();
         MeetingKill = OptionMeetingKill.GetBool();
     }
+
     public override void OnDestroy()
     {
         AbductVictim = null;
@@ -48,18 +50,24 @@ class Penguin : RoleBase, IImpostor
 
     //拉致中にキルしそうになった相手の能力を使わせないための処置
     public bool IsKiller => AbductVictim == null;
+
     public static void SetupOptionItem()
     {
-        OptionAbductTimerLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.PenguinAbductTimerLimit, new(5f, 20f, 1f), 10f, false)
+        OptionAbductTimerLimit = FloatOptionItem.Create(RoleInfo, 11, OptionName.PenguinAbductTimerLimit,
+                new(5f, 20f, 1f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionMeetingKill = BooleanOptionItem.Create(RoleInfo, 12, OptionName.PenguinMeetingKill, false, false);
     }
+
     public override void Add()
     {
         AbductTimer = 255f;
         stopCount = false;
     }
-    public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = AbductVictim != null ? AbductTimer : 255f;
+
+    public override void ApplyGameOptions(IGameOptions opt) =>
+        AURoleOptions.ShapeshifterCooldown = AbductVictim != null ? AbductTimer : 255f;
+
     private void SendRPC()
     {
         using var sender = CreateSender();
@@ -69,8 +77,6 @@ class Penguin : RoleBase, IImpostor
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         var victim = reader.ReadByte();
         if (victim == 255)
         {
@@ -83,6 +89,7 @@ class Penguin : RoleBase, IImpostor
             AbductTimer = AbductTimerLimit;
         }
     }
+
     void AddVictim(PlayerControl target)
     {
         PlayerState.GetByPlayerId(target.PlayerId).CanUseMovingPlatform = MyState.CanUseMovingPlatform = false;
@@ -92,6 +99,7 @@ class Penguin : RoleBase, IImpostor
         Player.RpcResetAbilityCooldown();
         SendRPC();
     }
+
     void RemoveVictim()
     {
         if (AbductVictim != null)
@@ -99,12 +107,14 @@ class Penguin : RoleBase, IImpostor
             PlayerState.GetByPlayerId(AbductVictim.PlayerId).CanUseMovingPlatform = true;
             AbductVictim = null;
         }
+
         MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
         Player.SyncSettings();
         Player.RpcResetAbilityCooldown();
         SendRPC();
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var target = info.AttemptTarget;
@@ -118,6 +128,7 @@ class Penguin : RoleBase, IImpostor
                 info.DoKill = false;
                 return false;
             }
+
             RemoveVictim();
             return true;
         }
@@ -128,6 +139,7 @@ class Penguin : RoleBase, IImpostor
             return false;
         }
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         if (AbductVictim != null)
@@ -138,17 +150,21 @@ class Penguin : RoleBase, IImpostor
         {
             text = GetString("PenguinKillButtonText");
         }
+
         return true;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("PenguinTimerText");
         return true;
     }
+
     public override bool CanUseAbilityButton()
     {
         return AbductVictim != null;
     }
+
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
@@ -157,6 +173,7 @@ class Penguin : RoleBase, IImpostor
         {
             Player.RpcMurderPlayer(AbductVictim);
         }
+
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
@@ -165,10 +182,12 @@ class Penguin : RoleBase, IImpostor
             RemoveVictim();
         }
     }
+
     public override void OnSpawn(bool initialState)
     {
         RestartAbduct();
     }
+
     public void RestartAbduct()
     {
         if (AbductVictim != null)
@@ -177,7 +196,9 @@ class Penguin : RoleBase, IImpostor
             state = 0;
         }
     }
+
     static int state = 0;
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -193,6 +214,7 @@ class Penguin : RoleBase, IImpostor
                 RemoveVictim();
                 return;
             }
+
             if (AbductTimer <= 0f && !Player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 // 先にIsDeadをtrueにする(はしごチェイス封じ)
@@ -243,14 +265,14 @@ class Penguin : RoleBase, IImpostor
                     else
                     {
                         _ = new LateTask(() =>
-                        {
-                            if (AbductVictim != null)
                             {
-                                //サーバー負荷を減らすためSendOption.Noneを使用
-                                AbductVictim.RpcSnapToForced(position, SendOption.None);
+                                if (AbductVictim != null)
+                                {
+                                    //サーバー負荷を減らすためSendOption.Noneを使用
+                                    AbductVictim.RpcSnapToForced(position, SendOption.None);
+                                }
                             }
-                        }
-                        , 0.25f, "");
+                            , 0.25f, "");
                     }
                 }
             }

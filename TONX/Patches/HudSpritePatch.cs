@@ -16,8 +16,12 @@ public static class HudSpritePatch
 {
     private static Sprite? Defalt_Kill => DestroyableSingleton<HudManager>.Instance?.KillButton?.graphic?.sprite;
     private static Sprite? Defalt_Ability => DestroyableSingleton<HudManager>.Instance?.AbilityButton?.graphic?.sprite;
-    private static Sprite? Defalt_Vent => DestroyableSingleton<HudManager>.Instance?.ImpostorVentButton?.graphic?.sprite;
+
+    private static Sprite? Defalt_Vent =>
+        DestroyableSingleton<HudManager>.Instance?.ImpostorVentButton?.graphic?.sprite;
+
     private static Sprite? Defalt_Report => DestroyableSingleton<HudManager>.Instance?.ReportButton?.graphic?.sprite;
+
     public static void Postfix(HudManager __instance)
     {
         var player = PlayerControl.LocalPlayer;
@@ -38,6 +42,7 @@ public static class HudSpritePatch
                 if (killer.OverrideVentButtonSprite(out var newVentButtonName))
                     newVentButton = CustomButton.GetSprite(newVentButtonName);
             }
+
             if (player.GetRoleClass()?.GetAbilityButtonSprite(out var newAbilityButtonName) ?? false)
                 newAbilityButton = CustomButton.GetSprite(newAbilityButtonName);
             if (player.GetRoleClass()?.GetReportButtonSprite(out var newReportButtonName) ?? false)
@@ -51,22 +56,29 @@ public static class HudSpritePatch
                 __instance.KillButton.graphic.sprite = newKillButton;
                 __instance.KillButton.graphic.material = __instance.ReportButton.graphic.material;
             }
+
             if (__instance.ImpostorVentButton.graphic.sprite != newVentButton && newVentButton != null)
             {
                 __instance.ImpostorVentButton.graphic.sprite = newVentButton;
             }
-            __instance.KillButton?.graphic?.material?.SetFloat("_Desat", __instance?.KillButton?.isCoolingDown ?? true ? 1f : 0f);
+
+            __instance.KillButton?.graphic?.material?.SetFloat("_Desat",
+                __instance?.KillButton?.isCoolingDown ?? true ? 1f : 0f);
         }
+
         if (__instance.AbilityButton.graphic.sprite != newAbilityButton && newAbilityButton != null)
         {
             __instance.AbilityButton.graphic.sprite = newAbilityButton;
             __instance.AbilityButton.graphic.material = __instance.ReportButton.graphic.material;
         }
+
         if (__instance.ReportButton.graphic.sprite != newReportButton && newReportButton != null)
         {
             __instance.ReportButton.graphic.sprite = newReportButton;
         }
-        __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
+
+        __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat",
+            __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
     }
 }
 #nullable disable

@@ -22,6 +22,7 @@ public static class ObjectHelper
         TextTranslatorTMP[] translator = obj.GetComponentsInChildren<TextTranslatorTMP>(true);
         translator?.Do(Object.Destroy);
     }
+
     /// <summary>
     /// オブジェクトの<see cref="TextTranslatorTMP"/>コンポーネントを破棄します
     /// </summary>

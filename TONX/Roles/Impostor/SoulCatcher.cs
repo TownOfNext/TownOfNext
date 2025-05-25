@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class SoulCatcher : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -18,35 +18,43 @@ public sealed class SoulCatcher : RoleBase, IImpostor
             "st|奪魂者|多混|夺魂",
             experimental: true
         );
+
     public SoulCatcher(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     static OptionItem OptionShapeshiftCooldown;
     static OptionItem OptionShapeshiftDuration;
 
     private static void SetupOptionItem()
     {
-        OptionShapeshiftCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.ShapeshiftCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        OptionShapeshiftCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.ShapeshiftCooldown,
+                new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionShapeshiftDuration = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.ShapeshiftDuration, new(2.5f, 180f, 2.5f), 15f, false)
+        OptionShapeshiftDuration = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.ShapeshiftDuration,
+                new(2.5f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.ShapeshifterLeaveSkin = false;
         AURoleOptions.ShapeshifterCooldown = OptionShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = OptionShapeshiftDuration.GetFloat();
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = Translator.GetString("SoulCatcherButtonText");
         return !Shapeshifting;
     }
+
     private bool Shapeshifting = false;
+
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);

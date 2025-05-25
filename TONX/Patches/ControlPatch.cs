@@ -11,7 +11,9 @@ namespace TONX;
 [HarmonyPatch(typeof(ControllerManager), nameof(ControllerManager.Update))]
 internal class ControllerManagerUpdatePatch
 {
-    private static readonly (int, int)[] resolutions = { (480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080) };
+    private static readonly (int, int)[] resolutions =
+        { (480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080) };
+
     private static int resolutionIndex = 0;
 
     public static void Postfix(ControllerManager __instance)
@@ -25,6 +27,7 @@ internal class ControllerManagerUpdatePatch
                 if (Input.GetKey(KeyCode.LeftControl)) OptionShower.Previous();
                 else OptionShower.Next();
             }
+
             for (var i = 0; i < 9; i++)
             {
                 if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
@@ -32,24 +35,29 @@ internal class ControllerManagerUpdatePatch
                     OptionShower.currentPage = i;
                 }
             }
+
             // 現在の設定を文字列形式のデータに変換してコピー
             if (GetKeysDown(KeyCode.O, KeyCode.LeftAlt))
             {
                 OptionSerializer.SaveToClipboard();
             }
+
             // 現在の設定を文字列形式のデータに変換してファイルに出力
             if (GetKeysDown(KeyCode.L, KeyCode.LeftAlt))
             {
                 OptionSerializer.SaveToFile();
             }
+
             // クリップボードから文字列形式の設定データを読み込む
             if (GetKeysDown(KeyCode.P, KeyCode.LeftAlt))
             {
                 OptionSerializer.LoadFromClipboard();
             }
         }
+
         //职业介绍
-        if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
+        if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) &&
+            Options.CurrentGameMode == CustomGameMode.Standard)
         {
             if (Input.GetKeyDown(KeyCode.F1))
             {
@@ -59,6 +67,7 @@ internal class ControllerManagerUpdatePatch
                     InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
+
                 HudManagerInitializePatch.RoleInfoButton?.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }
@@ -67,13 +76,16 @@ internal class ControllerManagerUpdatePatch
             InGameRoleInfoMenu.Hide();
             HudManagerInitializePatch.RoleInfoButton?.SelectButton(false);
         }
+
         //更改分辨率
         if (Input.GetKeyDown(KeyCode.F11))
         {
             resolutionIndex++;
             if (resolutionIndex >= resolutions.Length) resolutionIndex = 0;
-            ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2, false);
+            ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2,
+                false);
         }
+
         //重新加载自定义翻译
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
         {
@@ -81,23 +93,27 @@ internal class ControllerManagerUpdatePatch
             Translator.LoadLangs();
             Logger.SendInGame("Reloaded Custom Translation File");
         }
+
         if (GetKeysDown(KeyCode.F5, KeyCode.X))
         {
             Logger.Info("导出自定义翻译文件", "KeyCommand");
             Translator.ExportCustomTranslation();
             Logger.SendInGame("Exported Custom Translation File");
         }
+
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
         {
             Logger.Info("输出日志", "KeyCommand");
             Utils.DumpLog();
         }
+
         //将当前设置复制为文本
         if (GetKeysDown(KeyCode.LeftAlt, KeyCode.C) && !Input.GetKey(KeyCode.LeftShift) && !GameStates.IsNotJoined)
         {
             Utils.CopyCurrentSettings();
         }
+
         //打开游戏目录
         if (GetKeysDown(KeyCode.F10))
         {
@@ -111,52 +127,63 @@ internal class ControllerManagerUpdatePatch
         {
             HudManager.Instance.Chat.SetVisible(true);
         }
+
         //强制结束游戏
         if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
         {
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
             GameManager.Instance.LogicFlow.CheckEndCriteria();
         }
+
         //强制结束会议或召开会议
         if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
         {
             if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
             else PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
         }
+
         //立即开始
         if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown)
         {
             Logger.Info("倒计时修改为0", "KeyCommand");
             GameStartManager.Instance.countDownTimer = 0;
         }
+
         //倒计时取消
         if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown)
         {
             Logger.Info("重置倒计时", "KeyCommand");
             GameStartManager.Instance.ResetStartState();
         }
+
         //显示当前有效设置的说明
         if (GetKeysDown(KeyCode.N, KeyCode.LeftShift, KeyCode.LeftControl))
         {
             Utils.ShowActiveSettingsHelp();
         }
+
         //显示当前有效设置
         if (GetKeysDown(KeyCode.N, KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
         {
             Utils.ShowActiveSettings();
         }
+
         //将 TONX 选项设置为默认值
         if (GetKeysDown(KeyCode.Delete, KeyCode.LeftControl))
         {
             OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValue(x.DefaultValue, false));
             Logger.SendInGame(GetString("RestTONXSetting"));
-            if (!(!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)))
+            if (!(!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 ||
+                  (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)))
             {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RestTONXSetting, SendOption.Reliable, -1);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.RestTONXSetting, SendOption.Reliable, -1);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
+
             OptionShower.BuildText();
         }
+
         //放逐自己
         if (GetKeysDown(KeyCode.Return, KeyCode.E, KeyCode.LeftShift) && GameStates.IsInGame)
         {
@@ -165,8 +192,10 @@ internal class ControllerManagerUpdatePatch
             state.DeathReason = CustomDeathReason.etc;
             PlayerControl.LocalPlayer.RpcExileV2();
             state.SetDead();
-            Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
+            Utils.SendMessage(GetString("HostKillSelfByCommand"),
+                title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
+
         //切换日志是否也在游戏中输出
         if (GetKeysDown(KeyCode.F2, KeyCode.LeftControl))
         {
@@ -185,7 +214,8 @@ internal class ControllerManagerUpdatePatch
         }
 
         //实名投票
-        if (GetKeysDown(KeyCode.Return, KeyCode.V, KeyCode.LeftShift) && GameStates.IsMeeting && !GameStates.IsOnlineGame)
+        if (GetKeysDown(KeyCode.Return, KeyCode.V, KeyCode.LeftShift) && GameStates.IsMeeting &&
+            !GameStates.IsOnlineGame)
         {
             MeetingHud.Instance.RpcClearVote(AmongUsClient.Instance.ClientId);
         }
@@ -218,11 +248,13 @@ internal class ControllerManagerUpdatePatch
             HudManager.Instance.StartCoroutine(HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black));
             HudManager.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
         }
+
         //用任务面板显示设施信息
         if (Input.GetKeyDown(KeyCode.Equals))
         {
             Main.VisibleTasksCount = !Main.VisibleTasksCount;
-            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("VisibleTaskCountが" + Main.VisibleTasksCount.ToString() + "に変更されました。");
+            DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("VisibleTaskCountが" +
+                Main.VisibleTasksCount.ToString() + "に変更されました。");
         }
 
         //获取现在的坐标
@@ -237,6 +269,7 @@ internal class ControllerManagerUpdatePatch
                 if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
             }
         }
+
         if (Input.GetKeyDown(KeyCode.V))
         {
             Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
@@ -249,6 +282,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
         }
+
         if (Input.GetKeyDown(KeyCode.B))
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
@@ -256,6 +290,7 @@ internal class ControllerManagerUpdatePatch
                 if (!pc.AmOwner) pc.MyPhysics.RpcExitVent(2);
             }
         }
+
         if (Input.GetKeyDown(KeyCode.N))
         {
             VentilationSystem.Update(VentilationSystem.Operation.StartCleaning, 0);
@@ -270,6 +305,7 @@ internal class ControllerManagerUpdatePatch
             Logger.Info($"快捷键：{keys.Where(Input.GetKeyDown).First()} in [{string.Join(",", keys)}]", "GetKeysDown");
             return true;
         }
+
         return false;
     }
 
@@ -284,6 +320,7 @@ internal class ConsoleJoystickHandleHUDPatch
         HandleHUDPatch.Postfix(ConsoleJoystick.player);
     }
 }
+
 [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.HandleHud))]
 internal class KeyboardJoystickHandleHUDPatch
 {
@@ -298,14 +335,15 @@ internal class HandleHUDPatch
     public static void Postfix(Rewired.Player player)
     {
         if (player.GetButtonDown(8) && // 8:キルボタンのactionId
-        PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
-        PlayerControl.LocalPlayer.CanUseKillButton())
+            PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
+            PlayerControl.LocalPlayer.CanUseKillButton())
         {
             DestroyableSingleton<HudManager>.Instance.KillButton.DoClick();
         }
+
         if (player.GetButtonDown(50) && // 50:インポスターのベントボタンのactionId
-        PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
-        PlayerControl.LocalPlayer.CanUseImpostorVentButton())
+            PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
+            PlayerControl.LocalPlayer.CanUseImpostorVentButton())
         {
             DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
         }

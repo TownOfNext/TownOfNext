@@ -5,6 +5,7 @@ using TONX.Roles.Core.Interfaces;
 using static TONX.Options;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Mare : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -18,53 +19,62 @@ public sealed class Mare : RoleBase, IImpostor
             SetupCustomOption,
             "ma|夢魘|夜魇"
         );
+
     public Mare(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         KillCooldownInLightsOut = OptionKillCooldownInLightsOut.GetFloat();
         SpeedInLightsOut = OptionSpeedInLightsOut.GetFloat();
 
         IsActivateKill = false;
         IsAccelerated = false;
-
     }
 
     private static OptionItem OptionKillCooldownInLightsOut;
     private static OptionItem OptionSpeedInLightsOut;
+
     enum OptionName
     {
         MareAddSpeedInLightsOut,
         MareKillCooldownInLightsOut,
     }
+
     private float KillCooldownInLightsOut;
     private float SpeedInLightsOut;
     private static bool IsActivateKill;
-    private bool IsAccelerated;  //加速済みかフラグ
+    private bool IsAccelerated; //加速済みかフラグ
 
     public static void SetupCustomOption()
     {
-        OptionSpeedInLightsOut = FloatOptionItem.Create(RoleInfo, 10, OptionName.MareAddSpeedInLightsOut, new(0.1f, 0.5f, 0.1f), 0.3f, false);
-        OptionKillCooldownInLightsOut = FloatOptionItem.Create(RoleInfo, 11, OptionName.MareKillCooldownInLightsOut, new(2.5f, 180f, 2.5f), 12f, false)
+        OptionSpeedInLightsOut = FloatOptionItem.Create(RoleInfo, 10, OptionName.MareAddSpeedInLightsOut,
+            new(0.1f, 0.5f, 0.1f), 0.3f, false);
+        OptionKillCooldownInLightsOut = FloatOptionItem.Create(RoleInfo, 11, OptionName.MareKillCooldownInLightsOut,
+                new(2.5f, 180f, 2.5f), 12f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     public bool CanUseKillButton() => IsActivateKill;
     public float CalculateKillCooldown() => IsActivateKill ? KillCooldownInLightsOut : DefaultKillCooldown;
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         if (IsActivateKill && !IsAccelerated)
-        { //停電中で加速済みでない場合
+        {
+            //停電中で加速済みでない場合
             IsAccelerated = true;
-            Main.AllPlayerSpeed[Player.PlayerId] += SpeedInLightsOut;//Mareの速度を加算
+            Main.AllPlayerSpeed[Player.PlayerId] += SpeedInLightsOut; //Mareの速度を加算
         }
         else if (!IsActivateKill && IsAccelerated)
-        { //停電中ではなく加速済みになっている場合
+        {
+            //停電中ではなく加速済みになっている場合
             IsAccelerated = false;
-            Main.AllPlayerSpeed[Player.PlayerId] -= SpeedInLightsOut;//Mareの速度を減算
+            Main.AllPlayerSpeed[Player.PlayerId] -= SpeedInLightsOut; //Mareの速度を減算
         }
     }
+
     private void ActivateKill(bool activate)
     {
         IsActivateKill = activate;
@@ -75,15 +85,15 @@ public sealed class Mare : RoleBase, IImpostor
             Utils.NotifyRoles();
         }
     }
+
     public void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(IsActivateKill);
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         IsActivateKill = reader.ReadBoolean();
     }
 
@@ -98,6 +108,7 @@ public sealed class Mare : RoleBase, IImpostor
             }
         }
     }
+
     public override bool OnSabotage(PlayerControl player, SystemTypes systemType)
     {
         if (systemType == SystemTypes.Electrical)
@@ -111,9 +122,10 @@ public sealed class Mare : RoleBase, IImpostor
                 }
             }, 4.0f, "Mare Activate Kill");
         }
+
         return true;
     }
+
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => !isMeeting && IsActivateKill && target.Is(CustomRoles.Mare);
-
 }

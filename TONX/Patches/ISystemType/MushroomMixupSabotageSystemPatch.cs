@@ -16,6 +16,7 @@ public static class MushroomMixupSabotageSystemUpdateSystemPatch
         }
         __state = amount;
     }
+
     public static void Postfix(MushroomMixupSabotageSystem __instance, byte __state /* amount */)
     {
         var operation = (MushroomMixupSabotageSystem.Operation)__state;
@@ -23,10 +24,12 @@ public static class MushroomMixupSabotageSystemUpdateSystemPatch
         {
             __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
         }
+
         // Desyncインポスター目線のプレイヤー名の表示/非表示を反映
         Utils.NotifyRoles(ForceLoop: true);
     }
 }
+
 [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
 public static class MushroomMixupSabotageSystemDeterioratePatch
 {
@@ -34,6 +37,7 @@ public static class MushroomMixupSabotageSystemDeterioratePatch
     {
         __state = __instance.IsActive;
     }
+
     public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
     {
         // 本体処理でIsActiveが変わった場合

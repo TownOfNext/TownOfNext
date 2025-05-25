@@ -36,20 +36,23 @@ public static class Base62
             var remainder = number % 62;
             stack.Push(Chars[remainder]);
             number /= 62;
-        }
-        while (number > 0);
+        } while (number > 0);
+
         var resultBuilder = new StringBuilder(stack.Count);
         if (isNegative)
         {
             resultBuilder.Append('-');
         }
+
         // 最後に入れたものから順に追加
         foreach (var c in stack)
         {
             resultBuilder.Append(c);
         }
+
         return resultBuilder.ToString();
     }
+
     /// <summary>
     /// 62進文字列を<see cref="int"/>に変換します
     /// </summary>
@@ -63,6 +66,7 @@ public static class Base62
         {
             base62 = base62[1..];
         }
+
         // 下位桁から処理したいので前後反転
         base62 = new string(base62.Reverse().ToArray());
         var result = 0;
@@ -74,12 +78,15 @@ public static class Base62
             {
                 throw new ArgumentException($"{c}は62進の数字として適切ではありません");
             }
+
             result += index * (int)Math.Pow(62, i);
         }
+
         if (isNegative)
         {
             result *= -1;
         }
+
         return result;
     }
 }

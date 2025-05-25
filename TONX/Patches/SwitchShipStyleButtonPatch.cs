@@ -10,12 +10,14 @@ public class SwitchShipStyleButtonPatch
 {
     public static GameObject SwitchShipStyleButton;
     static ShipStyles ShipStyle;
+
     enum ShipStyles
     {
         Normal,
         Helloween,
         BirthdayDecorSkeld
     }
+
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake)), HarmonyPostfix]
     public static void ShipStatusFixedUpdate(ShipStatus __instance)
     {
@@ -51,6 +53,7 @@ public class SwitchShipStyleButtonPatch
             {
                 nextIndex = currentIndex + 1;
             }
+
             ShipStyle = allStyles[nextIndex];
 
             foreach (var style in allStyles)
@@ -58,11 +61,13 @@ public class SwitchShipStyleButtonPatch
                 if (style != ShipStyles.Normal)
                     ShipStatus.Instance.gameObject.transform.FindChild(style.ToString())?.gameObject.SetActive(false);
             }
+
             if (ShipStyle != ShipStyles.Normal)
                 ShipStatus.Instance.gameObject.transform.FindChild(ShipStyle.ToString())?.gameObject.SetActive(true);
-            RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, ShipStyle != ShipStyles.Normal ? Sounds.ImpTransform : Sounds.TaskUpdateSound);
+            RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId,
+                ShipStyle != ShipStyles.Normal ? Sounds.ImpTransform : Sounds.TaskUpdateSound);
 
-            return false; 
+            return false;
         }
     }
 }

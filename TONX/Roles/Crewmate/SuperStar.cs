@@ -4,6 +4,7 @@ using TONX.Roles.Core;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class SuperStar : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -18,16 +19,18 @@ public sealed class SuperStar : RoleBase
             "ss|明星",
             "#f6f657"
         );
+
     public SuperStar(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         CustomRoleManager.MarkOthers.Add(MarkOthers);
     }
 
     public static OptionItem OptionEveryoneKnowSuperStar;
+
     enum OptionName
     {
         EveryOneKnowSuperStar,
@@ -35,15 +38,22 @@ public sealed class SuperStar : RoleBase
 
     private static void SetupOptionItem()
     {
-        OptionEveryoneKnowSuperStar = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EveryOneKnowSuperStar, true, false);
+        OptionEveryoneKnowSuperStar =
+            BooleanOptionItem.Create(RoleInfo, 10, OptionName.EveryOneKnowSuperStar, true, false);
     }
+
     public static string MarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        return (seen.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool()) ? Utils.ColorString(RoleInfo.RoleColor, "★") : "";
+        return (seen.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool())
+            ? Utils.ColorString(RoleInfo.RoleColor, "★")
+            : "";
     }
-    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
+
+    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor,
+        ref string roleText)
         => enabled |= OptionEveryoneKnowSuperStar.GetBool();
+
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
@@ -52,8 +62,9 @@ public sealed class SuperStar : RoleBase
             !Is(pc) &&
             pc != killer &&
             Vector2.Distance(pc.GetTruePosition(), target.GetTruePosition()) < 2f
-            );
+        );
     }
+
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => target.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool();
 }

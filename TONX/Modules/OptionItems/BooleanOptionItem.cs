@@ -10,9 +10,10 @@ public class BooleanOptionItem : OptionItem
 
     // コンストラクタ
     public BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
-    : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue)
+        : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue)
     {
     }
+
     public static BooleanOptionItem Create(
         int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue
     )
@@ -21,16 +22,19 @@ public class BooleanOptionItem : OptionItem
             id, name, defaultValue, tab, isSingleValue
         );
     }
+
     public static BooleanOptionItem Create(
-            int id, Enum name, bool defaultValue, TabGroup tab, bool isSingleValue
-        )
+        int id, Enum name, bool defaultValue, TabGroup tab, bool isSingleValue
+    )
     {
         return new BooleanOptionItem(
             id, name.ToString(), defaultValue, tab, isSingleValue
         );
     }
+
     public static BooleanOptionItem Create(
-        SimpleRoleInfo roleInfo, int idOffset, Enum name, bool defaultValue, bool isSingleValue, OptionItem parent = null
+        SimpleRoleInfo roleInfo, int idOffset, Enum name, bool defaultValue, bool isSingleValue,
+        OptionItem parent = null
     )
     {
         var opt = new BooleanOptionItem(

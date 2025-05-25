@@ -9,6 +9,7 @@ using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class BallLightning : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -23,11 +24,12 @@ public sealed class BallLightning : RoleBase, IImpostor
             "li|球狀閃電|球闪|球状",
             experimental: true
         );
+
     public BallLightning(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         Ghosts = new();
 
@@ -38,6 +40,7 @@ public sealed class BallLightning : RoleBase, IImpostor
     static OptionItem OptionKillCooldown;
     static OptionItem OptionConvertTime;
     static OptionItem OptionKillerConvertGhost;
+
     enum OptionName
     {
         BallLightningKillCooldown,
@@ -46,42 +49,57 @@ public sealed class BallLightning : RoleBase, IImpostor
     }
 
     private static Dictionary<byte, byte> Ghosts;
+
     private static void SetupOptionItem()
     {
-        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.BallLightningKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.BallLightningKillCooldown,
+                new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionConvertTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.BallLightningConvertTime, new(2.5f, 180f, 2.5f), 10f, false)
+        OptionConvertTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.BallLightningConvertTime,
+                new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionKillerConvertGhost = BooleanOptionItem.Create(RoleInfo, 12, OptionName.BallLightningKillerConvertGhost, true, false);
+        OptionKillerConvertGhost =
+            BooleanOptionItem.Create(RoleInfo, 12, OptionName.BallLightningKillerConvertGhost, true, false);
     }
+
     private void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(Ghosts.Count);
-        Ghosts.Do(x => { sender.Writer.Write(x.Key); sender.Writer.Write(x.Value); });
+        Ghosts.Do(x =>
+        {
+            sender.Writer.Write(x.Key);
+            sender.Writer.Write(x.Value);
+        });
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-        
         Ghosts = new();
         for (int i = 0; i < reader.ReadInt32(); i++)
             Ghosts.Add(reader.ReadByte(), reader.ReadByte());
     }
+
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     public static bool IsGhost(byte id) => Ghosts.ContainsKey(id);
+
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         seen ??= seer;
         string mark = Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■");
         return IsGhost(seen.PlayerId) ? mark : "";
     }
+
     private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
     {
         if (info.IsSuicide) return true;
         if (!IsGhost(info.AttemptTarget.PlayerId)) return true;
-        Logger.Info($"{info.AttemptKiller.GetNameWithRole()} 尝试交互的目标 {info.AttemptTarget.GetNameWithRole()} 是量子幽灵，操作被取消", "BallLightning.OnCheckMurderPlayerOthers_Before");
+        Logger.Info(
+            $"{info.AttemptKiller.GetNameWithRole()} 尝试交互的目标 {info.AttemptTarget.GetNameWithRole()} 是量子幽灵，操作被取消",
+            "BallLightning.OnCheckMurderPlayerOthers_Before");
         return false;
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
@@ -90,6 +108,7 @@ public sealed class BallLightning : RoleBase, IImpostor
         StartConvertCountDown(killer, target);
         return false;
     }
+
     private static void StartConvertCountDown(PlayerControl killer, PlayerControl target)
     {
         new LateTask(() =>
@@ -104,12 +123,14 @@ public sealed class BallLightning : RoleBase, IImpostor
             }
         }, OptionConvertTime.GetFloat(), "BallLightning.StartConvertCountDown");
     }
+
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (!OptionKillerConvertGhost.GetBool() || IsGhost(killer.PlayerId)) return;
         StartConvertCountDown(target, killer);
     }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -123,7 +144,10 @@ public sealed class BallLightning : RoleBase, IImpostor
                 deList.Add(gs.PlayerId);
                 continue;
             }
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x.PlayerId) && !x.IsEaten()))
+
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x =>
+                         x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) &&
+                         !IsGhost(x.PlayerId) && !x.IsEaten()))
             {
                 var pos = gs.transform.position;
                 var dis = Vector2.Distance(pos, pc.transform.position);
@@ -136,12 +160,13 @@ public sealed class BallLightning : RoleBase, IImpostor
                 CustomRoleManager.OnCheckMurder(
                     killer, gs,
                     gs, gs
-                    );
+                );
 
                 Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵因碰撞而死", "BallLightning.OnFixedUpdate");
                 break;
             }
         }
+
         deList.Do(id => Ghosts.Remove(id));
         if (deList.Count > 0)
         {
@@ -149,6 +174,7 @@ public sealed class BallLightning : RoleBase, IImpostor
             Utils.NotifyRoles();
         }
     }
+
     public override void OnStartMeeting()
     {
         foreach (var ghost in Ghosts)
@@ -159,9 +185,11 @@ public sealed class BallLightning : RoleBase, IImpostor
             player.SetRealKiller(ghost.Value);
             Logger.Info($"{player.GetNameWithRole()} 作为量子幽灵参与会议，将在会议后死亡", "BallLightning.OnStartMeeting");
         }
+
         Ghosts = new();
         SendRPC();
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         text = Translator.GetString("BallLightningButtonText");

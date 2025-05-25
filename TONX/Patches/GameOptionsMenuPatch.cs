@@ -19,9 +19,12 @@ namespace TONX
         private static List<GameOptionsMenu> tonxSettingsTab = new List<GameOptionsMenu>();
         private static List<PassiveButton> tonxSettingsButton = new List<PassiveButton>();
         public static List<string> TONXMenuName = new List<string>();
+
         public static List<CategoryHeaderMasked> CategoryHeaders = new List<CategoryHeaderMasked>();
+
         // 左侧按钮坐标
         private static Vector3 buttonPosition = new(-2.55f, -0.1f, 0f);
+
         // 本体按钮大小
         private static Vector3 buttonSize = new(0.45f, 0.6f, 1f);
 
@@ -40,8 +43,8 @@ namespace TONX
             // TONX設定ボタン
             foreach (var tab in Enum.GetValues(typeof(TabGroup)))
             {
-                Vector3 offset_left = new (0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
-                Vector3 offset_right = new (-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
+                Vector3 offset_left = new(0f, 0.64f * ((int)tab + 3) - 0.64f, 0f);
+                Vector3 offset_right = new(-3f, 0.64f * ((int)tab - 2) - 0.64f, 0f);
                 Color32 buttonColor = tab switch
                 {
                     TabGroup.SystemSettings => Main.UnityModColor,
@@ -54,7 +57,8 @@ namespace TONX
                     _ => Color.white,
                 };
 
-                var settingsTab = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
+                var settingsTab = Object.Instantiate(__instance.GameSettingsTab,
+                    __instance.GameSettingsTab.transform.parent);
                 settingsTab.name = tab.ToString() + " TAB";
                 TONXMenuName.Add(settingsTab.name);
                 var vanillaOptions = settingsTab.GetComponentsInChildren<OptionBehaviour>();
@@ -63,7 +67,8 @@ namespace TONX
                     Object.Destroy(vanillaOption.gameObject);
                 }
 
-                var settingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
+                var settingsButton = Object.Instantiate(__instance.GameSettingsButton,
+                    __instance.GameSettingsButton.transform.parent);
                 settingsButton.name = tab.ToString() + " BUTTON";
                 settingsButton.transform.localPosition -= ((int)tab < 2) ? offset_left : offset_right;
                 settingsButton.buttonText.DestroyTranslator();
@@ -75,7 +80,7 @@ namespace TONX
                 settingsButton.OnClick.AddListener((Action)(() =>
                 {
                     ControllerManager.Instance.OpenOverlayMenu(settingsTab.name, GameSettingMenu.Instance.BackButton);
-                    __instance.ChangeTab((int)tab + 3, false);  // バニラタブを閉じる
+                    __instance.ChangeTab((int)tab + 3, false); // バニラタブを閉じる
                     settingsTab.gameObject.SetActive(true);
                     __instance.MenuDescriptionText.text = GetString($"MenuDescriptionText.{tab}");
                     settingsButton.SelectButton(true);
@@ -92,11 +97,12 @@ namespace TONX
                     if (option.Tab != (TabGroup)tab) continue;
                     if (option.OptionBehaviour == null)
                     {
-                        if (option.IsText) 
+                        if (option.IsText)
                         {
                             CategoryHeaders.Add(CreateCategoryHeader(__instance, settingsTab, option));
                             continue;
                         }
+
                         var stringOption = Object.Instantiate(template, settingsTab.settingsContainer);
                         scOptions.Add(stringOption);
                         stringOption.SetClickMask(__instance.GameSettingsButton.ClickMask);
@@ -108,13 +114,14 @@ namespace TONX
                         stringOption.name = option.Name;
 
                         // タイトルの枠をデカくする
-                        var indent = 0f;  // 親オプションがある場合枠の左を削ってインデントに見せる
+                        var indent = 0f; // 親オプションがある場合枠の左を削ってインデントに見せる
                         var parent = option.Parent;
                         while (parent != null)
                         {
                             indent += 0.15f;
                             parent = parent.Parent;
                         }
+
                         stringOption.LabelBackground.size += new Vector2(2f - indent * 2, 0f);
                         stringOption.LabelBackground.transform.localPosition += new Vector3(-1f + indent, 0f, 0f);
                         stringOption.TitleText.rectTransform.sizeDelta += new Vector2(2f - indent * 2, 0f);
@@ -122,8 +129,10 @@ namespace TONX
 
                         option.OptionBehaviour = stringOption;
                     }
+
                     option.OptionBehaviour.gameObject.SetActive(true);
                 }
+
                 settingsTab.Children = scOptions;
                 settingsTab.gameObject.SetActive(false);
 
@@ -132,20 +141,27 @@ namespace TONX
                 tonxSettingsButton.Add(settingsButton);
             }
         }
-        private static MapSelectButton CreateTabImage(GameSettingMenu __instance, GameOptionsMenu tonxTab, string resourcePath)
+
+        private static MapSelectButton CreateTabImage(GameSettingMenu __instance, GameOptionsMenu tonxTab,
+            string resourcePath)
         {
             var image = Utils.LoadSprite(resourcePath, 100f);
-            var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
+            var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero,
+                Quaternion.identity, tonxTab.transform);
             tabImage.SetImage(image, GameOptionsMenu.MASK_LAYER);
             tabImage.transform.localPosition = new(7.1f, -0.6f, -10f);
             Object.Destroy(tabImage.Button.GetComponentInChildren<BoxCollider2D>());
             tabImage.Button.activeSprites.transform.GetChild(0).gameObject.SetActive(false);
-            tabImage.Button.activeSprites.GetComponent<SpriteRenderer>().sprite = tabImage.Button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = null;
+            tabImage.Button.activeSprites.GetComponent<SpriteRenderer>().sprite =
+                tabImage.Button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = null;
             return tabImage;
         }
-        private static CategoryHeaderMasked CreateCategoryHeader(GameSettingMenu __instance, GameOptionsMenu tonxTab, OptionItem option)
+
+        private static CategoryHeaderMasked CreateCategoryHeader(GameSettingMenu __instance, GameOptionsMenu tonxTab,
+            OptionItem option)
         {
-            var categoryHeader = Object.Instantiate(__instance.GameSettingsTab.categoryHeaderOrigin, Vector3.zero, Quaternion.identity, tonxTab.settingsContainer);
+            var categoryHeader = Object.Instantiate(__instance.GameSettingsTab.categoryHeaderOrigin, Vector3.zero,
+                Quaternion.identity, tonxTab.settingsContainer);
             categoryHeader.name = option.Name;
             categoryHeader.Title.text = option.GetName();
             var maskLayer = GameOptionsMenu.MASK_LAYER;
@@ -154,6 +170,7 @@ namespace TONX
             {
                 categoryHeader.Divider.material.SetInt(PlayerMaterial.MaskLayer, maskLayer);
             }
+
             categoryHeader.Title.fontMaterial.SetFloat("_StencilComp", 3f);
             categoryHeader.Title.fontMaterial.SetFloat("_Stencil", (float)maskLayer);
             categoryHeader.transform.localScale = Vector3.one * GameOptionsMenu.HEADER_SCALE;
@@ -173,6 +190,7 @@ namespace TONX
                         tab.gameObject.SetActive(false);
                     }
                 }
+
                 foreach (var button in tonxSettingsButton)
                 {
                     if (button)
@@ -181,6 +199,7 @@ namespace TONX
                     }
                 }
             }
+
             return true;
         }
     }
@@ -207,6 +226,7 @@ namespace TONX
                         {
                             ob.Cast<NumberOption>().ValidRange.min = 0;
                         }
+
                         break;
                     default:
                         break;
@@ -246,6 +266,7 @@ namespace TONX
                             offset += 0.3f;
                             isFirst = false;
                         }
+
                         foreach (var categoryHeader in GameSettingMenuPatch.CategoryHeaders)
                         {
                             if (option.Name == categoryHeader.name)
@@ -254,8 +275,10 @@ namespace TONX
                                 continue;
                             }
                         }
+
                         continue;
                     }
+
                     if (isFirst) isFirst = false;
                     UpdateOption(ref isOdd, option, ref offset);
                 }
@@ -263,6 +286,7 @@ namespace TONX
                 __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
             }
         }
+
         private static void UpdateCategoryHeader(CategoryHeaderMasked categoryHeader, OptionItem item, ref float offset)
         {
             var enabled = true;
@@ -274,6 +298,7 @@ namespace TONX
                 categoryHeader.transform.localPosition = new(GameOptionsMenu.HEADER_X, offset, -2f);
             }
         }
+
         private static void UpdateOption(ref bool isOdd, OptionItem item, ref float offset)
         {
             if (item?.OptionBehaviour == null || item.OptionBehaviour.gameObject == null) return;
@@ -289,13 +314,15 @@ namespace TONX
                 enabled = parent.GetBool();
                 parent = parent.Parent;
             }
-            
+
             item.OptionBehaviour.gameObject.SetActive(enabled);
 
             if (enabled)
             {
                 // 見やすさのため交互に色を変える  
-                stringOption.LabelBackground.color = item is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
+                stringOption.LabelBackground.color = item is IRoleOptionItem roleOption
+                    ? roleOption.RoleColor
+                    : (isOdd ? Color.cyan : Color.white);
 
                 offset -= GameOptionsMenu.SPACING_Y;
                 if (item.IsHeader)
@@ -303,6 +330,7 @@ namespace TONX
                     // IsHeaderなら隙間を広くする
                     offset -= HeaderSpacingY;
                 }
+
                 item.OptionBehaviour.transform.localPosition = new Vector3(
                     GameOptionsMenu.START_POS_X,
                     offset,
@@ -340,7 +368,8 @@ namespace TONX
             var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
             if (option == null) return true;
 
-            option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
+            option.SetValue(option.CurrentValue +
+                            (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
             return false;
         }
     }
@@ -353,7 +382,8 @@ namespace TONX
             var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
             if (option == null) return true;
 
-            option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
+            option.SetValue(option.CurrentValue -
+                            (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
             return false;
         }
     }
@@ -366,6 +396,7 @@ namespace TONX
             OptionItem.SyncAllOptions();
         }
     }
+
     [HarmonyPatch(typeof(RolesSettingsMenu), nameof(RolesSettingsMenu.InitialSetup))]
     public static class RolesSettingsMenuPatch
     {

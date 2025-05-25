@@ -63,11 +63,13 @@ public class ClientActionItem
                         returnButton = button.GetComponent<PassiveButton>();
                     }
                 }
+
                 var generalTab = mouseMoveToggle.transform.parent.parent.parent;
 
                 ModOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
                 var pos = leaveButton?.transform?.localPosition;
-                ModOptionsButton.transform.localPosition = pos != null ? pos.Value + new Vector3(1.24f, 0f, 0f) : new(1.24f, -2.4f, 1f);
+                ModOptionsButton.transform.localPosition =
+                    pos != null ? pos.Value + new Vector3(1.24f, 0f, 0f) : new(1.24f, -2.4f, 1f);
                 ModOptionsButton.name = "TONX Options";
                 ModOptionsButton.Text.text = Translator.GetString("TONXOptions");
                 if (ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor))
@@ -83,6 +85,7 @@ public class ClientActionItem
                 {
                     leaveButton.transform.localPosition = new(-1.35f, -2.411f, -1f);
                 }
+
                 if (returnButton != null)
                 {
                     returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);

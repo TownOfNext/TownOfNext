@@ -18,11 +18,13 @@ public static class NameTagPanel
     public static Dictionary<string, GameObject> Items { get; private set; }
 
     private static int numItems = 0;
+
     public static void Hide()
     {
         if (CustomBackground != null)
             CustomBackground?.gameObject?.SetActive(false);
     }
+
     public static void Init(OptionsMenuBehaviour optionsMenuBehaviour)
     {
         var mouseMoveToggle = optionsMenuBehaviour.DisableMouseMovement;
@@ -37,13 +39,15 @@ public static class NameTagPanel
             if (button.name == "LeaveGameButton") leaveButton = button.GetComponent<PassiveButton>();
             else if (button.name == "ReturnToGameButton") returnButton = button.GetComponent<PassiveButton>();
         }
+
         var generalTab = mouseMoveToggle.transform.parent.parent.parent;
 
         if (TagOptionsButton == null)
         {
             TagOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
             var pos = leaveButton?.transform?.localPosition;
-            TagOptionsButton.transform.localPosition = pos != null ? pos.Value - new Vector3(1.3f, 0f, 0f) : new(-1.3f, -2.4f, 1f);
+            TagOptionsButton.transform.localPosition =
+                pos != null ? pos.Value - new Vector3(1.3f, 0f, 0f) : new(-1.3f, -2.4f, 1f);
             TagOptionsButton.name = "Name Tag Options";
             TagOptionsButton.Background.color = Main.ModColor32;
             var tagOptionsPassiveButton = TagOptionsButton.GetComponent<PassiveButton>();
@@ -84,10 +88,7 @@ public static class NameTagPanel
             closeButton.Background.color = Palette.DisabledGrey;
             var closePassiveButton = closeButton.GetComponent<PassiveButton>();
             closePassiveButton.OnClick = new();
-            closePassiveButton.OnClick.AddListener(new Action(() =>
-            {
-                CustomBackground.gameObject.SetActive(false);
-            }));
+            closePassiveButton.OnClick.AddListener(new Action(() => { CustomBackground.gameObject.SetActive(false); }));
 
             var newButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
             newButton.transform.localPosition = new(1.3f, -1.88f, -6f);
@@ -106,7 +107,8 @@ public static class NameTagPanel
             helpTextTMP.text = GetString("CustomNameTagHelp");
             helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
 
-            var sliderTemplate = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
+            var sliderTemplate = AccountManager.Instance.transform
+                .FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
             if (sliderTemplate != null && Slider == null)
             {
                 Slider = Object.Instantiate(sliderTemplate, CustomBackground.transform);
@@ -124,16 +126,19 @@ public static class NameTagPanel
         ReloadTag(null);
         RefreshTagList();
     }
+
     public static void RefreshTagList()
     {
         var scroller = Slider.GetComponent<Scroller>();
         scroller.Inner.gameObject.ForEachChild((Action<GameObject>)(DestroyObj));
+
         static void DestroyObj(GameObject obj)
         {
             if (obj.name.StartsWith("AccountButton")) Object.Destroy(obj);
         }
 
-        var numberSetter = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months").GetComponent<NumberSetter>();
+        var numberSetter = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months")
+            .GetComponent<NumberSetter>();
         var buttonPrefab = numberSetter.ButtonPrefab.gameObject;
 
         Items?.Values?.Do(Object.Destroy);
@@ -155,11 +160,9 @@ public static class NameTagPanel
             rollover.OutColor = Palette.DisabledGrey;
             var passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
-            passiveButton.OnClick.AddListener(new Action(() =>
-            {
-                NameTagEditMenu.Toggle(nameTag.Key, null);
-            }));
-            var previewText = Object.Instantiate(button.transform.GetChild(0).GetComponent<TextMeshPro>(), button.transform);
+            passiveButton.OnClick.AddListener(new Action(() => { NameTagEditMenu.Toggle(nameTag.Key, null); }));
+            var previewText =
+                Object.Instantiate(button.transform.GetChild(0).GetComponent<TextMeshPro>(), button.transform);
             previewText.transform.SetLocalX(1.9f);
             previewText.fontSize = 1f;
             string preview = GetString("PreviewNotAvailable");

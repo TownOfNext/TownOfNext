@@ -28,13 +28,22 @@ public static class ConfirmEjections
         var coloredTeamName = GetString($"Team{roleType}").Color(Utils.GetCustomRoleTypeColor(roleType));
 
         string text = string.Empty;
-        int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor) || p.Is(CustomRoles.Madmate));
-        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral) || p.Is(CustomRoles.Charmed));
+        int impNum =
+            Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor) || p.Is(CustomRoles.Madmate));
+        int neutralNum =
+            Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral) || p.Is(CustomRoles.Charmed));
 
         if (CustomRoles.Bard.IsExist()) // 吟游诗人创作
         {
-            try { text = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
-            catch { text = GetString("ByBardGetFailed"); }
+            try
+            {
+                text = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text");
+            }
+            catch
+            {
+                text = GetString("ByBardGetFailed");
+            }
+
             text += "\n\t\t——" + GetString("ByBard");
             goto EndOfSession;
         }
@@ -73,7 +82,7 @@ public static class ConfirmEjections
                 text += string.Format(GetString("NeutralRemain"), neutralNum);
         }
 
-    EndOfSession:
+        EndOfSession:
 
         text += "<size=0>";
         _ = new LateTask(() =>

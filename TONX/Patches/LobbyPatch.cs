@@ -7,6 +7,7 @@ namespace TONX;
 public class LobbyStartPatch
 {
     private static GameObject Paint;
+
     public static void Postfix(LobbyBehaviour __instance)
     {
         if (Paint != null) return;

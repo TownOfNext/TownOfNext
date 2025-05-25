@@ -5,6 +5,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class Veteran : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -19,16 +20,19 @@ public sealed class Veteran : RoleBase
             "ve",
             "#a77738"
         );
+
     public Veteran(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     static OptionItem OptionSkillCooldown;
     static OptionItem OptionSkillDuration;
     static OptionItem OptionSkillNums;
+
     enum OptionName
     {
         VeteranSkillCooldown,
@@ -38,37 +42,47 @@ public sealed class Veteran : RoleBase
 
     private int SkillLimit;
     private float SkillTimer;
+
     private static void SetupOptionItem()
     {
-        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
+        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown,
+                new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.VeteranSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
+        OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.VeteranSkillDuration,
+                new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 12, OptionName.VeteranSkillMaxOfUseage, new(1, 99, 1), 5, false)
+        OptionSkillNums = IntegerOptionItem
+            .Create(RoleInfo, 12, OptionName.VeteranSkillMaxOfUseage, new(1, 99, 1), 5, false)
             .SetValueFormat(OptionFormat.Times);
     }
+
     public override void Add()
     {
         SkillLimit = OptionSkillNums.GetInt();
         SkillTimer = -1f;
     }
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
-            SkillTimer >= 0 ? OptionSkillDuration.GetFloat() :
-            (SkillLimit <= 0 ? 255f : OptionSkillCooldown.GetFloat());
+            SkillTimer >= 0
+                ? OptionSkillDuration.GetFloat()
+                : (SkillLimit <= 0 ? 255f : OptionSkillCooldown.GetFloat());
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("VeteranVetnButtonText");
         return true;
     }
+
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = "Veteran";
         return true;
     }
+
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
         if (SkillLimit >= 1)
@@ -84,8 +98,10 @@ public sealed class Veteran : RoleBase
         {
             Player.Notify(GetString("SkillMaxUsage"));
         }
+
         return false;
     }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -100,6 +116,7 @@ public sealed class Veteran : RoleBase
         }
         else SkillTimer += Time.fixedDeltaTime;
     }
+
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
@@ -110,7 +127,9 @@ public sealed class Veteran : RoleBase
             Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran.OnCheckMurderAsTarget");
             return false;
         }
+
         return true;
     }
+
     public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
 }

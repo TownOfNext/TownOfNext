@@ -12,18 +12,22 @@ namespace TONX;
 public static class Zoom
 {
     private static bool ResetButtons = false;
+
     public static void Postfix()
     {
-        if ((GameStates.IsShip || GameStates.IsLobby) && !GameStates.IsMeeting && GameStates.IsCanMove && !InGameRoleInfoMenu.Showing)
+        if ((GameStates.IsShip || GameStates.IsLobby) && !GameStates.IsMeeting && GameStates.IsCanMove &&
+            !InGameRoleInfoMenu.Showing)
         {
             if (Camera.main.orthographicSize > 3.0f) ResetButtons = true;
             if (Input.mouseScrollDelta.y > 0)
             {
                 if (Camera.main.orthographicSize > 3.0f) SetZoomSize(times: false);
             }
+
             if (Input.mouseScrollDelta.y < 0)
             {
-                if (GameStates.IsDead || GameStates.IsFreePlay || DebugModeManager.AmDebugger || GameStates.IsLobby || Main.GodMode.Value)
+                if (GameStates.IsDead || GameStates.IsFreePlay || DebugModeManager.AmDebugger || GameStates.IsLobby ||
+                    Main.GodMode.Value)
                 {
                     if (Camera.main.orthographicSize < 18.0f)
                     {
@@ -31,14 +35,12 @@ public static class Zoom
                     }
                 }
             }
+
             Flag.NewFlag("Zoom");
         }
         else //if (!DestroyableSingleton<ChatController>.Instance.IsOpenOrOpening)
         {
-            Flag.Run(() =>
-            {
-                SetZoomSize(reset: true);
-            }, "Zoom");
+            Flag.Run(() => { SetZoomSize(reset: true); }, "Zoom");
         }
     }
 
@@ -58,22 +60,27 @@ public static class Zoom
             Camera.main.orthographicSize *= size;
             HudManager.Instance.UICamera.orthographicSize *= size;
         }
-        DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
+
+        DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(
+            (reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
         if (ResetButtons)
         {
-            ResolutionManager.ResolutionChanged.Invoke((float)Screen.width / Screen.height, Screen.width, Screen.height, Screen.fullScreen);
+            ResolutionManager.ResolutionChanged.Invoke((float)Screen.width / Screen.height, Screen.width, Screen.height,
+                Screen.fullScreen);
             ResetButtons = false;
         }
     }
 
     public static void OnFixedUpdate()
-        => DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
+        => DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(
+            (Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
 }
 
 public static class Flag
 {
     private static readonly List<string> OneTimeList = new();
     private static readonly List<string> FirstRunList = new();
+
     public static void Run(Action action, string type, bool firstrun = false)
     {
         if (OneTimeList.Contains(type) || (firstrun && !FirstRunList.Contains(type)))
@@ -82,8 +89,8 @@ public static class Flag
             OneTimeList.Remove(type);
             action();
         }
-
     }
+
     public static void NewFlag(string type)
     {
         if (!OneTimeList.Contains(type)) OneTimeList.Add(type);

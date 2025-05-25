@@ -20,6 +20,7 @@ public class PlayerState
     public TaskState taskState;
     public bool IsBlackOut { get; set; }
     private bool _canUseMovingPlatform = true;
+
     public bool CanUseMovingPlatform
     {
         get => _canUseMovingPlatform;
@@ -29,10 +30,12 @@ public class PlayerState
             _canUseMovingPlatform = value;
         }
     }
+
     public (DateTime, byte) RealKiller;
     public PlainShipRoom LastRoom;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData;
+
     public PlayerState(byte playerId)
     {
         MainRole = CustomRoles.NotAssigned;
@@ -47,6 +50,7 @@ public class PlayerState
         LastRoom = null;
         TargetColorData = new();
     }
+
     public CustomRoles GetCustomRole()
     {
         var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
@@ -63,19 +67,21 @@ public class PlayerState
                 _ => CustomRoles.Crewmate,
             };
     }
+
     public void SetMainRole(CustomRoles role)
     {
         MainRole = role;
 
-        CountType = CustomRoleManager.GetRoleInfo(role) is SimpleRoleInfo roleInfo ?
-            roleInfo.CountType :
-            role switch
+        CountType = CustomRoleManager.GetRoleInfo(role) is SimpleRoleInfo roleInfo
+            ? roleInfo.CountType
+            : role switch
             {
                 CustomRoles.KB_Normal => CountTypes.Impostor,
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
     }
+
     public void SetSubRole(CustomRoles role, bool AllReplace = false)
     {
         if (AllReplace)
@@ -95,6 +101,7 @@ public class PlayerState
             };
             SubRoles.Remove(CustomRoles.Charmed);
         }
+
         if (role == CustomRoles.Charmed)
         {
             CountType = Succubus.OptionCharmedCountMode.GetInt() switch
@@ -106,8 +113,8 @@ public class PlayerState
             };
             SubRoles.Remove(CustomRoles.Madmate);
         }
-
     }
+
     public void RemoveSubRole(CustomRoles role)
     {
         if (SubRoles.Contains(role))
@@ -122,12 +129,22 @@ public class PlayerState
             RPC.SendDeathReason(PlayerId, DeathReason);
         }
     }
-    public bool IsSuicide() { return DeathReason == CustomDeathReason.Suicide; }
-    public TaskState GetTaskState() { return taskState; }
+
+    public bool IsSuicide()
+    {
+        return DeathReason == CustomDeathReason.Suicide;
+    }
+
+    public TaskState GetTaskState()
+    {
+        return taskState;
+    }
+
     public void InitTask(PlayerControl player)
     {
         taskState.Init(player);
     }
+
     public void UpdateTask(PlayerControl player)
     {
         taskState.Update(player);
@@ -135,6 +152,7 @@ public class PlayerState
 
     public byte GetRealKiller()
         => IsDead && RealKiller.Item1 != DateTime.MinValue ? RealKiller.Item2 : byte.MaxValue;
+
     public int GetKillCount(bool ExcludeSelfKill = false)
     {
         int count = 0;
@@ -143,15 +161,18 @@ public class PlayerState
                 count++;
         return count;
     }
+
     public void SetCountType(CountTypes countType) => CountType = countType;
 
     private static Dictionary<byte, PlayerState> allPlayerStates = new(15);
     public static IReadOnlyDictionary<byte, PlayerState> AllPlayerStates => allPlayerStates;
 
-    public static PlayerState GetByPlayerId(byte playerId) => AllPlayerStates.TryGetValue(playerId, out var state) ? state : null;
+    public static PlayerState GetByPlayerId(byte playerId) =>
+        AllPlayerStates.TryGetValue(playerId, out var state) ? state : null;
 
     [GameModuleInitializer]
     public static void Clear() => allPlayerStates.Clear();
+
     public static void Create(byte playerId)
     {
         if (allPlayerStates.ContainsKey(playerId))
@@ -159,9 +180,11 @@ public class PlayerState
             Logger.Warn($"重複したIDのPlayerStateが作成されました: {playerId}", nameof(PlayerState));
             return;
         }
+
         allPlayerStates[playerId] = new(playerId);
     }
 }
+
 public class TaskState
 {
     public static int InitialTotalTasks;
@@ -171,6 +194,7 @@ public class TaskState
     public int RemainingTasksCount => AllTasksCount - CompletedTasksCount;
     public bool DoExpose => RemainingTasksCount <= Options.SnitchExposeTaskLeft && hasTasks;
     public bool IsTaskFinished => RemainingTasksCount <= 0 && hasTasks;
+
     public TaskState()
     {
         this.AllTasksCount = -1;
@@ -187,10 +211,13 @@ public class TaskState
             AllTasksCount = 0;
             return;
         }
+
         hasTasks = true;
         AllTasksCount = player.Data.Tasks.Count;
-        Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
+        Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}",
+            "TaskState.Init");
     }
+
     public void Update(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole()}: UpdateTask", "TaskState.Update");
@@ -207,34 +234,46 @@ public class TaskState
 
         //調整後のタスク量までしか表示しない
         CompletedTasksCount = Math.Min(AllTasksCount, CompletedTasksCount);
-        Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Update");
+        Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}",
+            "TaskState.Update");
     }
+
     public bool HasCompletedEnoughCountOfTasks(int count) =>
-            IsTaskFinished || CompletedTasksCount >= count;
+        IsTaskFinished || CompletedTasksCount >= count;
 }
+
 public class PlayerVersion
 {
     public readonly Version version;
     public readonly string tag;
     public readonly string forkId;
-    public PlayerVersion(string ver, string tag_str, string forkId) : this(Version.Parse(ver), tag_str, forkId) { }
+
+    public PlayerVersion(string ver, string tag_str, string forkId) : this(Version.Parse(ver), tag_str, forkId)
+    {
+    }
+
     public PlayerVersion(Version ver, string tag_str, string forkId)
     {
         version = ver;
         tag = tag_str;
         this.forkId = forkId;
     }
+
     public bool IsEqual(PlayerVersion pv)
     {
         return pv.version == version && pv.tag == tag;
     }
 }
+
 public static class GameStates
 {
     public static bool InGame = false;
     public static bool InTask = false;
     public static bool AlreadyDied = false;
-    public static bool IsModHost => PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(x => x.PlayerId == 0 && x.IsModClient());
+
+    public static bool IsModHost => PlayerControl.AllPlayerControls.ToArray()
+        .FirstOrDefault(x => x.PlayerId == 0 && x.IsModClient());
+
     public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;
@@ -244,12 +283,19 @@ public static class GameStates
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
     public static bool IsInTask => InTask;
     public static bool IsMeeting => InGame && MeetingHud.Instance;
-    public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
-    public static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
+
+    public static bool IsVoting => IsMeeting &&
+                                   MeetingHud.Instance.state is MeetingHud.VoteStates.Voted
+                                       or MeetingHud.VoteStates.NotVoted;
+
+    public static bool IsCountDown => GameStartManager.InstanceExists &&
+                                      GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
+
     public static bool IsShip => ShipStatus.Instance != null;
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }
+
 public static class MeetingStates
 {
     public static DeadBody[] DeadBodies = null;

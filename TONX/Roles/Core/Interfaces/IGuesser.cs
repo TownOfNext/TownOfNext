@@ -17,6 +17,7 @@ public interface IGuesser
             string name = pc.GetRealName();
             text += $"\n{id} → {name}";
         }
+
         return text;
     }
 }

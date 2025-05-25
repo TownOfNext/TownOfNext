@@ -6,6 +6,7 @@ using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Escapist : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -19,11 +20,12 @@ public sealed class Escapist : RoleBase, IImpostor
             null,
             "ec|逃逸"
         );
+
     public Escapist(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         Marked = false;
     }
@@ -31,26 +33,32 @@ public sealed class Escapist : RoleBase, IImpostor
     private bool Shapeshifting;
     private bool Marked;
     private Vector2 MarkedPosition;
+
     public override void Add()
     {
         Marked = false;
         Shapeshifting = false;
     }
+
     private void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(Marked);
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-        
         Marked = reader.ReadBoolean();
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Marked ? Translator.GetString("EscapistTeleportButtonText") : Translator.GetString("EscapistMarkButtonText");
+        text = Marked
+            ? Translator.GetString("EscapistTeleportButtonText")
+            : Translator.GetString("EscapistMarkButtonText");
         return !Shapeshifting;
     }
+
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);

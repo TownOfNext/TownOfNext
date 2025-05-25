@@ -12,6 +12,7 @@ class ButtonRolloverHandlerPatch
         if (__instance.OverColor == new Color(0, 1, 0, 1) || __instance.OverColor == Palette.AcceptedGreen)
             __instance.OverColor = new Color32(255, 192, 203, 255);
     }
+
     [HarmonyPatch(nameof(ButtonRolloverHandler.ChangeOutColor)), HarmonyPrefix]
     public static void ChangeOutColor_Prefix(ButtonRolloverHandler __instance, ref Color color)
     {
@@ -19,6 +20,7 @@ class ButtonRolloverHandlerPatch
             color = new Color32(255, 129, 166, 255);
     }
 }
+
 [HarmonyPatch(typeof(Palette))]
 class PalettePath
 {

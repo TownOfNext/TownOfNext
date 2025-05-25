@@ -28,9 +28,14 @@ public class MersenneTwister : IRandom
 {
     // 参考元
     public const string REFERENCE_HOMEPAGE = "http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/mt.html";
-    public const string REFERENCE_SOURCE_CODE = "https://github.com/vpmedia/template-unity/blob/master/Framework/Assets/Frameworks/URandom/MersenneTwister.cs";
 
-    public MersenneTwister() : this((Int32)DateTime.UtcNow.Ticks) { }
+    public const string REFERENCE_SOURCE_CODE =
+        "https://github.com/vpmedia/template-unity/blob/master/Framework/Assets/Frameworks/URandom/MersenneTwister.cs";
+
+    public MersenneTwister() : this((Int32)DateTime.UtcNow.Ticks)
+    {
+    }
+
     public MersenneTwister(Int32 seed)
     {
         Init((UInt32)seed);
@@ -41,6 +46,7 @@ public class MersenneTwister : IRandom
     /// これより下の値の一部は参考元のソースより拝借
     /// </summary>
     private const Int32 N = 624;
+
     private const Int32 M = 397;
     private const UInt32 MatrixA = 0x9908b0df;
     private const UInt32 UpperMask = 0x80000000;
@@ -122,7 +128,8 @@ public class MersenneTwister : IRandom
     public int Next(int minValue, int maxValue)
     {
         if (minValue < 0) throw new ArgumentOutOfRangeException(nameof(minValue), "minValue must be bigger than 0.");
-        else if (maxValue < 0) throw new ArgumentOutOfRangeException(nameof(maxValue), "maxValue must be bigger than 0.");
+        else if (maxValue < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxValue), "maxValue must be bigger than 0.");
         else if (minValue > maxValue) throw new ArgumentException("maxValue must be bigger than minValue.");
         else if (minValue == maxValue) return minValue;
 

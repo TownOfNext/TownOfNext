@@ -16,7 +16,8 @@ public static class DoubleTrigger
         public Func<PlayerControl, PlayerControl, bool> SingleAction;
         public Func<PlayerControl, PlayerControl, bool> DoubleAction;
 
-        public DoubleTriggerData(Func<PlayerControl, PlayerControl, bool> singleAction, Func<PlayerControl, PlayerControl, bool> doubleAction)
+        public DoubleTriggerData(Func<PlayerControl, PlayerControl, bool> singleAction,
+            Func<PlayerControl, PlayerControl, bool> doubleAction)
         {
             Timer = -1f;
             Target = null;
@@ -24,6 +25,7 @@ public static class DoubleTrigger
             DoubleAction = doubleAction;
         }
     }
+
     static Dictionary<byte, DoubleTriggerData> DoubleTriggerList = new(15);
 
     static float DoubleTriggerTime = 0.3f;
@@ -34,9 +36,11 @@ public static class DoubleTrigger
         DoubleTriggerList.Clear();
         DoubleTriggerTime = Options.DoubleTriggerThreshold.GetFloat();
     }
+
     public static void AddDoubleTrigger(this PlayerControl killer)
     {
-        if (killer.GetRoleClass() is not IDoubleTrigger role) throw new Exception($"{killer.name} is Not IDoubleTrigger!");
+        if (killer.GetRoleClass() is not IDoubleTrigger role)
+            throw new Exception($"{killer.name} is Not IDoubleTrigger!");
         DoubleTriggerList[killer.PlayerId] = new DoubleTriggerData(role.SingleAction, role.DoubleAction);
     }
 
@@ -62,11 +66,14 @@ public static class DoubleTrigger
         else
         {
             //ダブルクリック対象がターゲットとずれたとしても元々のターゲットを優先
-            Logger.Info($"{killer.name} DoDoubleAction to {triggerData.Target.name} [{DoubleTriggerTime - triggerData.Timer}s]", "DoubleTrigger");
+            Logger.Info(
+                $"{killer.name} DoDoubleAction to {triggerData.Target.name} [{DoubleTriggerTime - triggerData.Timer}s]",
+                "DoubleTrigger");
             info.DoKill = triggerData.DoubleAction(killer, triggerData.Target);
             //シングル処理をキャンセルするためnullにする
             triggerData.Target = null;
         }
+
         return true;
     }
 
@@ -77,12 +84,15 @@ public static class DoubleTrigger
         {
             triggerData.Target = null;
         }
+
         if (triggerData.Target == null) return;
 
         triggerData.Timer -= Time.fixedDeltaTime;
         if (triggerData.Timer < 0)
         {
-            Logger.Info($"{player.name} DoSingleAction to {triggerData.Target.name} [{DoubleTriggerTime - triggerData.Timer}s]", "DoubleTrigger");
+            Logger.Info(
+                $"{player.name} DoSingleAction to {triggerData.Target.name} [{DoubleTriggerTime - triggerData.Timer}s]",
+                "DoubleTrigger");
             triggerData.SingleAction(player, triggerData.Target);
             triggerData.Target = null;
         }

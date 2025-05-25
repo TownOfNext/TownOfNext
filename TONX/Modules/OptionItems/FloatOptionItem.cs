@@ -9,11 +9,13 @@ public class FloatOptionItem : OptionItem
     public FloatValueRule Rule;
 
     // コンストラクタ
-    public FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue, FloatValueRule rule)
-    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue)
+    public FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue,
+        FloatValueRule rule)
+        : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue)
     {
         Rule = rule;
     }
+
     public static FloatOptionItem Create(
         int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue
     )
@@ -22,16 +24,19 @@ public class FloatOptionItem : OptionItem
             id, name, defaultValue, tab, isSingleValue, rule
         );
     }
+
     public static FloatOptionItem Create(
-            int id, Enum name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue
-        )
+        int id, Enum name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue
+    )
     {
         return new FloatOptionItem(
             id, name.ToString(), defaultValue, tab, isSingleValue, rule
         );
     }
+
     public static FloatOptionItem Create(
-        SimpleRoleInfo roleInfo, int idOffset, Enum name, FloatValueRule rule, float defaultValue, bool isSingleValue, OptionItem parent = null
+        SimpleRoleInfo roleInfo, int idOffset, Enum name, FloatValueRule rule, float defaultValue, bool isSingleValue,
+        OptionItem parent = null
     )
     {
         var opt = new FloatOptionItem(
@@ -44,10 +49,12 @@ public class FloatOptionItem : OptionItem
     // Getter
     public override int GetInt() => (int)Rule.GetValueByIndex(CurrentValue);
     public override float GetFloat() => Rule.GetValueByIndex(CurrentValue);
+
     public override string GetString()
     {
         return ApplyFormat(((float)((int)(Rule.GetValueByIndex(CurrentValue) * 100) * 1.0) / 100).ToString());
     }
+
     public override int GetValue()
         => Rule.RepeatIndex(base.GetValue());
 

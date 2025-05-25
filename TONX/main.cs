@@ -17,6 +17,7 @@ using UnityEngine;
 [assembly: AssemblyFileVersion(TONX.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersion(TONX.Main.PluginVersion)]
 [assembly: AssemblyVersion(TONX.Main.PluginVersion)]
+
 namespace TONX;
 
 [BepInPlugin(PluginGuid, "TONX", PluginVersion)]
@@ -31,20 +32,29 @@ public class Main : BasePlugin
     public static readonly bool AllowPublicRoom = true;
     public static readonly string ForkId = "TONX";
     public const string OriginalForkId = "OriginalTOH";
+
     public const string PluginGuid = "cn.karped1em.tonx";
+
     // == 认证设定 / Authentication Config ==
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
     public const string DebugKeySalt = "59687b";
+
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
+
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2025.3.25"; // 16.0.0
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "3.0.2";
+
     public const int PluginCreation = 1;
+
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
+
+    public static readonly string WebsiteUrl =
+        Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
+
     public static readonly bool ShowQQButton = false;
     public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
     public static readonly bool ShowDiscordButton = false;
@@ -55,6 +65,7 @@ public class Main : BasePlugin
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
+
     public static Color UnityModColor
     {
         get
@@ -71,16 +82,20 @@ public class Main : BasePlugin
                     return Color.gray;
                 }
             }
+
             return _unityModColor.Value;
         }
     }
+
     private static Color? _unityModColor;
     public static BepInEx.Logging.ManualLogSource Logger;
     public static bool hasArgumentException = false;
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
+
     public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -99,12 +114,15 @@ public class Main : BasePlugin
 
 
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
+
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
     public static ConfigEntry<string> Preset3 { get; private set; }
     public static ConfigEntry<string> Preset4 { get; private set; }
+
     public static ConfigEntry<string> Preset5 { get; private set; }
+
     //Other Configs
     public static ConfigEntry<string> WebhookURL { get; private set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
@@ -127,6 +145,7 @@ public class Main : BasePlugin
     /// 基本的に速度の代入は禁止.スピードは増減で対応してください.
     /// </summary>
     public static Dictionary<byte, float> AllPlayerSpeed = new();
+
     public const float MinSpeed = 0.0001f;
     public static int AliveImpostorCount;
     public static Dictionary<byte, bool> CheckShapeshift = new();
@@ -142,8 +161,11 @@ public class Main : BasePlugin
 
     public static Dictionary<byte, CustomRoles> DevRole = new();
 
-    public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !p.IsEaten());
+    public static IEnumerable<PlayerControl> AllPlayerControls =>
+        PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
+
+    public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray()
+        .Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !p.IsEaten());
 
     public static Main Instance;
 
@@ -160,11 +182,26 @@ public class Main : BasePlugin
     public static byte FirstDied = byte.MaxValue;
     public static byte ShieldPlayer = byte.MaxValue;
 
-    public static List<string> TName_Snacks_CN = new() { "冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖" };
-    public static List<string> TName_Snacks_EN = new() { "Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee" };
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
-        TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
-        TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
+    public static List<string> TName_Snacks_CN = new()
+    {
+        "冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇",
+        "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥",
+        "可颂", "奶糖"
+    };
+
+    public static List<string> TName_Snacks_EN = new()
+    {
+        "Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy",
+        "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies",
+        "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp",
+        "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew",
+        "panna cotta", "soufflé", "croissant", "toffee"
+    };
+
+    public static string Get_TName_Snacks =>
+        TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
+            ? TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)]
+            : TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
 
     public override void Load()
     {
@@ -238,53 +275,53 @@ public class Main : BasePlugin
             roleColors = new Dictionary<CustomRoles, string>()
             {
                 //GM
-                {CustomRoles.GM, "#ff5b70"},
+                { CustomRoles.GM, "#ff5b70" },
 
                 //Vanilla
-                {CustomRoles.Crewmate, "#ffffff"},
-                {CustomRoles.Engineer, "#8cffff"},
-                {CustomRoles.Scientist, "#8cffff"},
-                {CustomRoles.Noisemaker, "#8cffff"},
-                {CustomRoles.Tracker, "#8cffff"},
-                {CustomRoles.Phantom, "#ff1919"},
-                {CustomRoles.GuardianAngel, "#ffffff"},
-                {CustomRoles.Impostor, "#ff1919"},
-                {CustomRoles.Shapeshifter, "#ff1919"},
+                { CustomRoles.Crewmate, "#ffffff" },
+                { CustomRoles.Engineer, "#8cffff" },
+                { CustomRoles.Scientist, "#8cffff" },
+                { CustomRoles.Noisemaker, "#8cffff" },
+                { CustomRoles.Tracker, "#8cffff" },
+                { CustomRoles.Phantom, "#ff1919" },
+                { CustomRoles.GuardianAngel, "#ffffff" },
+                { CustomRoles.Impostor, "#ff1919" },
+                { CustomRoles.Shapeshifter, "#ff1919" },
 
                 //Add-Ons
-                {CustomRoles.NotAssigned, "#ffffff"},
-                {CustomRoles.LastImpostor, "#ff1919"},
-                {CustomRoles.Lovers, "#ff9ace"},
-                {CustomRoles.Neptune, "#00a4ff"},
-                {CustomRoles.Madmate, "#ff1919"},
-                {CustomRoles.Watcher, "#800080"},
-                {CustomRoles.Flashman, "#ff8400"},
-                {CustomRoles.Lighter, "#eee5be"},
-                {CustomRoles.Seer, "#61b26c"},
-                {CustomRoles.Tiebreaker, "#1447af"},
-                {CustomRoles.Oblivious, "#424242"},
-                {CustomRoles.Bewilder, "#c894f5"},
-                {CustomRoles.Workhorse, "#00ffff"},
-                {CustomRoles.Fool, "#e6e7ff"},
-                {CustomRoles.Avenger, "#ffab1b"},
-                {CustomRoles.YouTuber, "#fb749b"},
-                {CustomRoles.Egoist, "#5600ff"},
-                {CustomRoles.TicketsStealer, "#ff1919"},
-                {CustomRoles.Schizophrenic, "#3a648f"},
-                {CustomRoles.Mimic, "#ff1919"},
-                {CustomRoles.Reach, "#74ba43"},
-                {CustomRoles.Charmed, "#ff00ff"},
-                {CustomRoles.Bait, "#00f7ff"},
-                {CustomRoles.Beartrap, "#5a8fd0"},
+                { CustomRoles.NotAssigned, "#ffffff" },
+                { CustomRoles.LastImpostor, "#ff1919" },
+                { CustomRoles.Lovers, "#ff9ace" },
+                { CustomRoles.Neptune, "#00a4ff" },
+                { CustomRoles.Madmate, "#ff1919" },
+                { CustomRoles.Watcher, "#800080" },
+                { CustomRoles.Flashman, "#ff8400" },
+                { CustomRoles.Lighter, "#eee5be" },
+                { CustomRoles.Seer, "#61b26c" },
+                { CustomRoles.Tiebreaker, "#1447af" },
+                { CustomRoles.Oblivious, "#424242" },
+                { CustomRoles.Bewilder, "#c894f5" },
+                { CustomRoles.Workhorse, "#00ffff" },
+                { CustomRoles.Fool, "#e6e7ff" },
+                { CustomRoles.Avenger, "#ffab1b" },
+                { CustomRoles.YouTuber, "#fb749b" },
+                { CustomRoles.Egoist, "#5600ff" },
+                { CustomRoles.TicketsStealer, "#ff1919" },
+                { CustomRoles.Schizophrenic, "#3a648f" },
+                { CustomRoles.Mimic, "#ff1919" },
+                { CustomRoles.Reach, "#74ba43" },
+                { CustomRoles.Charmed, "#ff00ff" },
+                { CustomRoles.Bait, "#00f7ff" },
+                { CustomRoles.Beartrap, "#5a8fd0" },
 
                 //SoloKombat
-                {CustomRoles.KB_Normal, "#f55252"}
+                { CustomRoles.KB_Normal, "#f55252" }
             };
             var type = typeof(RoleBase);
             var roleClassArray =
-            CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(type)
-                .GetTypes()
-                .Where(x => x.IsSubclassOf(type)).ToArray();
+                CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(type)
+                    .GetTypes()
+                    .Where(x => x.IsSubclassOf(type)).ToArray();
 
             foreach (var roleClassType in roleClassArray)
                 roleClassType.GetField("RoleInfo")?.GetValue(type);
@@ -317,7 +354,7 @@ public class Main : BasePlugin
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
-        
+
         Harmony.PatchAll();
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
@@ -326,6 +363,7 @@ public class Main : BasePlugin
         TONX.Logger.Msg("========= TONX loaded! =========", "Plugin Load");
     }
 }
+
 public enum CustomDeathReason
 {
     Kill,
@@ -358,6 +396,7 @@ public enum CustomDeathReason
 
     etc = -1
 }
+
 //WinData
 public enum CustomWinner
 {
@@ -388,6 +427,7 @@ public enum CustomWinner
     Succubus = CustomRoles.Succubus,
     PlagueDoctor = CustomRoles.PlagueDoctor,
 }
+
 public enum SuffixModes
 {
     None = 0,
@@ -399,6 +439,7 @@ public enum SuffixModes
     DoNotKillMe,
     NoAndroidPlz
 }
+
 public enum VoteMode
 {
     Default,
@@ -406,6 +447,7 @@ public enum VoteMode
     SelfVote,
     Skip
 }
+
 public enum TieMode
 {
     Default,

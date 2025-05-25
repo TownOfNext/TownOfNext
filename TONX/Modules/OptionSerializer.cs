@@ -13,26 +13,31 @@ public static class OptionSerializer
     private static LogHandler logger = Logger.Handler(nameof(OptionSerializer));
     private const string Header = "%TOHOptions%", Footer = "%End%";
     private static readonly DirectoryInfo exportDir = new("./TOH_DATA/OptionOutputs");
+
     public static void SaveToClipboard()
     {
         GUIUtility.systemCopyBuffer = GenerateOptionsString();
         Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.CopiedOptions")));
     }
+
     public static void SaveToFile()
     {
         if (!exportDir.Exists)
         {
             exportDir.Create();
         }
+
         var output = $"{exportDir.FullName}/Preset{OptionItem.CurrentPreset}_{DateTime.Now.Ticks}.txt";
         File.WriteAllText(output, GenerateOptionsString());
         Utils.OpenDirectory(exportDir.FullName);
         Logger.SendInGame(Utils.ColorString(Color.green, Translator.GetString("Message.ExportedOptions")));
     }
+
     public static void LoadFromClipboard()
     {
         LoadOptionsString(GUIUtility.systemCopyBuffer);
     }
+
     /// <summary>
     /// <see cref="GenerateModOptionsString"/>と<see cref="GenerateVanillaOptionsString"/>を合成し，<see cref="LoadOptionsString"/>で読み込める文字列データを生成します<br/>
     /// <see cref="Header"/>から始まって<see cref="Footer"/>で終わります<br/>
@@ -48,6 +53,7 @@ public static class OptionSerializer
         builder.Append(Footer);
         return builder.ToString();
     }
+
     /// <summary>
     /// <see cref="LoadModOptionsString"/>で読み込める現在のプリセットのMod設定の文字列データを生成します<br/>
     /// '!'が各オプションを区切り，','が前のオプションIDとの差とオプションの値を区切ります<br/>
@@ -60,7 +66,8 @@ public static class OptionSerializer
     public static string GenerateModOptionsString()
     {
         var builder = new StringBuilder(1024);
-        var options = OptionItem.AllOptions.Where(option => option is not PresetOptionItem).OrderBy(option => option.Id);
+        var options = OptionItem.AllOptions.Where(option => option is not PresetOptionItem)
+            .OrderBy(option => option.Id);
         var lastId = 0;
         foreach (var option in options)
         {
@@ -69,12 +76,16 @@ public static class OptionSerializer
             {
                 continue;
             }
+
             var idDelta = option.Id - lastId;
-            builder.Append(idDelta == 1 ? "" : Base62.ToBase62(idDelta)).Append(',').Append(value == 1 ? "" : Base62.ToBase62(value)).Append('!');
+            builder.Append(idDelta == 1 ? "" : Base62.ToBase62(idDelta)).Append(',')
+                .Append(value == 1 ? "" : Base62.ToBase62(value)).Append('!');
             lastId = option.Id;
         }
+
         return builder.ToString();
     }
+
     /// <summary>
     /// <see cref="LoadVanillaOptionsString"/>で読み込める現在のバニラ設定の文字列データを生成します<br/>
     /// <see cref="GameOptionsFactory.ToBytes"/>で生成されたバイト列を<see cref="Convert.ToBase64String"/>でBase64文字列に変換します
@@ -82,9 +93,11 @@ public static class OptionSerializer
     /// <returns>生成された文字列</returns>
     public static string GenerateVanillaOptionsString()
     {
-        byte[] bytes = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn);
+        byte[] bytes = GameOptionsManager.Instance.gameOptionsFactory.ToBytes(
+            GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn);
         return Convert.ToBase64String(bytes);
     }
+
     /// <summary>
     /// <see cref="GenerateOptionsString"/>で生成された形式の文字列を読み込んで現在のプリセットを上書きします
     /// </summary>
@@ -109,12 +122,14 @@ public static class OptionSerializer
             logger.Info("ヘッダがありません");
             goto Failed;
         }
+
         var footerAt = source.IndexOf(Footer, headerAt);
         if (footerAt < 0)
         {
             logger.Info("フッタがありません");
             goto Failed;
         }
+
         // ヘッダ以前とフッタ以降を削除
         source = source[(headerAt + Header.Length)..footerAt];
 
@@ -130,11 +145,13 @@ public static class OptionSerializer
             logger.Exception(ex);
             goto Failed;
         }
+
         return;
 
-    Failed:
+        Failed:
         Logger.SendInGame(Translator.GetString("Message.FailedToLoadOptions"));
     }
+
     /// <summary>
     /// <see cref="GenerateModOptionsString"/>で生成された形式の文字列を読み込んで現在のプリセットを上書きします
     /// </summary>
@@ -152,16 +169,20 @@ public static class OptionSerializer
             var value = split[1] == "" ? 1 : Base62.ToInt(split[1]);
             parsedModOptions[lastId] = value;
         }
+
         foreach (var option in OptionItem.AllOptions)
         {
             if (option is PresetOptionItem)
             {
                 continue;
             }
+
             option.SetValue(parsedModOptions.TryGetValue(option.Id, out var value) ? value : 0, false);
         }
+
         OptionItem.SyncAllOptions();
     }
+
     /// <summary>
     /// <see cref="GenerateVanillaOptionsString"/>で生成された形式の文字列を読み込んで適用します
     /// </summary>

@@ -12,10 +12,12 @@ public sealed class Tracker : RoleBase
             RoleTypes.Tracker,
             "#8cffff"
         );
+
     public Tracker(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

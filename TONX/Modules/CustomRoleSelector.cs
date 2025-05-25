@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using TONX.Roles.Core;
 
 namespace TONX.Modules;
@@ -20,7 +19,8 @@ internal static class CustomRoleSelector
         int playerCount = Main.AllAlivePlayerControls.Count();
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optNeutralNum = 0;
-        if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
+        if (Options.NeutralRolesMaxPlayer.GetInt() > 0 &&
+            Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
 
         int readyRoleNum = 0;
@@ -40,14 +40,17 @@ internal static class CustomRoleSelector
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
         {
             RoleResult = new();
-            foreach (var pc in Main.AllAlivePlayerControls) RoleResult.Add(pc, pc.AmOwner && Options.EnableGM.GetBool() ? CustomRoles.GM : CustomRoles.KB_Normal);
+            foreach (var pc in Main.AllAlivePlayerControls)
+                RoleResult.Add(pc, pc.AmOwner && Options.EnableGM.GetBool() ? CustomRoles.GM : CustomRoles.KB_Normal);
             return;
         }
 
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
-            if (role.IsVanilla() || role.IsAddon() || !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) || option.Selections.Length != 3) continue;
+            if (role.IsVanilla() || role.IsAddon() ||
+                !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) ||
+                option.Selections.Length != 3) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
             if (role is CustomRoles.Mare or CustomRoles.Concealer && Main.NormalOptions.MapId == 5) continue;
             for (int i = 0; i < role.GetAssignCount(); i++)
@@ -61,6 +64,7 @@ internal static class CustomRoleSelector
             else if (role.IsNeutral()) NeutralOnList.Add(role);
             else roleOnList.Add(role);
         }
+
         // 职业设置为：启用
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 1))
         {
@@ -68,7 +72,7 @@ internal static class CustomRoleSelector
             else if (role.IsNeutral()) NeutralRateList.Add(role);
             else roleRateList.Add(role);
         }
-        
+
         if (!Options.DisableHiddenRoles.GetBool())
         {
             foreach (var role in roleList.Where(x => x.GetRoleInfo()?.Hidden ?? false))
@@ -90,6 +94,7 @@ internal static class CustomRoleSelector
             if (readyRoleNum >= playerCount) goto EndOfAssign;
             if (readyRoleNum >= optImpNum) break;
         }
+
         // 优先职业不足以分配，开始分配启用的职业（内鬼）
         if (readyRoleNum < playerCount && readyRoleNum < optImpNum)
         {
@@ -117,6 +122,7 @@ internal static class CustomRoleSelector
             if (readyRoleNum >= playerCount) goto EndOfAssign;
             if (readyNeutralNum >= optNeutralNum) break;
         }
+
         // 优先职业不足以分配，开始分配启用的职业（中立）
         if (readyRoleNum < playerCount && readyNeutralNum < optNeutralNum)
         {
@@ -143,6 +149,7 @@ internal static class CustomRoleSelector
             Logger.Info(select.ToString() + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
         }
+
         // 优先职业不足以分配，开始分配启用的职业
         if (readyRoleNum < playerCount)
         {
@@ -157,13 +164,14 @@ internal static class CustomRoleSelector
             }
         }
 
-    // 职业抽取结束
-    EndOfAssign:
+        // 职业抽取结束
+        EndOfAssign:
 
         // 隐藏职业
         if (!Options.DisableHiddenRoles.GetBool())
         {
-            if (rd.Next(0, 100) < 3 && rolesToAssign.Remove(CustomRoles.Jester)) rolesToAssign.Add(CustomRoles.Sunnyboy);
+            if (rd.Next(0, 100) < 3 && rolesToAssign.Remove(CustomRoles.Jester))
+                rolesToAssign.Add(CustomRoles.Sunnyboy);
             if (rd.Next(0, 100) < 5 && rolesToAssign.Remove(CustomRoles.Arrogance)) rolesToAssign.Add(CustomRoles.Bard);
         }
 
@@ -178,6 +186,7 @@ internal static class CustomRoleSelector
                 Logger.Info("职业列表提高优先：" + dr.Value, "Dev Role");
                 continue;
             }
+
             for (int i = 0; i < rolesToAssign.Count; i++)
             {
                 var role = rolesToAssign[i];
@@ -186,7 +195,7 @@ internal static class CustomRoleSelector
                     (dr.Value.IsImpostor() && role.IsImpostor()) ||
                     (dr.Value.IsNeutral() && role.IsNeutral()) ||
                     (dr.Value.IsCrewmate() & role.IsCrewmate())
-                    )
+                )
                 {
                     rolesToAssign.RemoveAt(i);
                     rolesToAssign.Insert(0, dr.Value);
@@ -202,17 +211,17 @@ internal static class CustomRoleSelector
         {
             PlayerControl delPc = null;
             foreach (var pc in AllPlayer)
-                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key))
-                {
-                    if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Options.EnableGM.GetBool()) continue;
-                    var id = rolesToAssign.IndexOf(dr.Value);
-                    if (id == -1) continue;
-                    RoleResult.Add(pc, rolesToAssign[id]);
-                    Logger.Info($"职业优先分配：{AllPlayer[0].GetRealName()} => {rolesToAssign[id]}", "CustomRoleSelector");
-                    delPc = pc;
-                    rolesToAssign.RemoveAt(id);
-                    goto EndOfWhile;
-                }
+            foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key))
+            {
+                if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Options.EnableGM.GetBool()) continue;
+                var id = rolesToAssign.IndexOf(dr.Value);
+                if (id == -1) continue;
+                RoleResult.Add(pc, rolesToAssign[id]);
+                Logger.Info($"职业优先分配：{AllPlayer[0].GetRealName()} => {rolesToAssign[id]}", "CustomRoleSelector");
+                delPc = pc;
+                rolesToAssign.RemoveAt(id);
+                goto EndOfWhile;
+            }
 
             var roleId = rd.Next(0, rolesToAssign.Count);
             RoleResult.Add(AllPlayer[0], rolesToAssign[roleId]);
@@ -220,7 +229,7 @@ internal static class CustomRoleSelector
             AllPlayer.RemoveAt(0);
             rolesToAssign.RemoveAt(roleId);
 
-        EndOfWhile:
+            EndOfWhile:
             if (delPc != null)
             {
                 AllPlayer.Remove(delPc);
@@ -232,15 +241,15 @@ internal static class CustomRoleSelector
             Logger.Error("职业分配错误：存在未被分配职业的玩家", "CustomRoleSelector");
         if (rolesToAssign.Count > 0)
             Logger.Error("职业分配错误：存在未被分配的职业", "CustomRoleSelector");
-
     }
 
     public static int addScientistNum = 0;
     public static int addEngineerNum = 0;
     public static int addTrackerNum = 0;
-    public static int addNoisemakerNum = 0; 
+    public static int addNoisemakerNum = 0;
     public static int addPhantomNum = 0;
     public static int addShapeshifterNum = 0;
+
     public static void CalculateVanillaRoleCount()
     {
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
@@ -266,6 +275,7 @@ internal static class CustomRoleSelector
             }
         }
     }
+
     public static int GetRoleTypesCount(RoleTypes type)
     {
         return type switch
@@ -279,19 +289,21 @@ internal static class CustomRoleSelector
             _ => 0
         };
     }
+
     public static int GetAssignCount(this CustomRoles role)
     {
         int maximumCount = role.GetCount();
         int assignUnitCount = CustomRoleManager.GetRoleInfo(role)?.AssignUnitCount ??
-            role switch
-            {
-                CustomRoles.Lovers => 2,
-                _ => 1,
-            };
+                              role switch
+                              {
+                                  CustomRoles.Lovers => 2,
+                                  _ => 1,
+                              };
         return maximumCount / assignUnitCount;
     }
 
     public static List<CustomRoles> AddonRolesList = new();
+
     public static void SelectAddonRoles()
     {
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
@@ -301,7 +313,8 @@ internal static class CustomRoleSelector
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAddon()) continue;
-            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse or CustomRoles.Madmate) continue;
+            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse
+                or CustomRoles.Madmate) continue;
             AddonRolesList.Add(role);
         }
     }

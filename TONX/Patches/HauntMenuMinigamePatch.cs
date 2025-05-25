@@ -13,6 +13,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
             __instance.FilterText.text = Utils.GetDisplayRoleName(PlayerControl.LocalPlayer, __instance.HauntTarget);
             return false;
         }
+
         return true;
     }
 }

@@ -26,7 +26,9 @@ public interface IMeetingButton
     /// 该事件已经自动完成了RPC同步，因此该事件只会在 Host 调用
     /// </summary>
     /// <param name="target">目标玩家</param>
-    public void OnClickButton(PlayerControl target) { }
+    public void OnClickButton(PlayerControl target)
+    {
+    }
 
     /// <summary>
     /// 玩家按下按钮的事件

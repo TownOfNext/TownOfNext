@@ -23,6 +23,7 @@ public static class OptionsMenuBehaviourStartPatch
 
 
     private static bool reseted = false;
+
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
         if (__instance.DisableMouseMovement == null) return;
@@ -39,19 +40,24 @@ public static class OptionsMenuBehaviourStartPatch
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
             UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
+
             static void UnlockFPSButtonToggle()
             {
                 Application.targetFrameRate = Main.UnlockFPS.Value ? 240 : 60;
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
+
         if (LongMode == null || LongMode.ToggleButton == null)
         {
             LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance);
         }
+
         if (AutoStartGame == null || AutoStartGame.ToggleButton == null)
         {
-            AutoStartGame = ClientOptionItem.Create("AutoStartGame", Main.AutoStartGame, __instance, AutoStartButtonToggle);
+            AutoStartGame =
+                ClientOptionItem.Create("AutoStartGame", Main.AutoStartGame, __instance, AutoStartButtonToggle);
+
             static void AutoStartButtonToggle()
             {
                 if (Main.AutoStartGame.Value == false && GameStates.IsCountDown)
@@ -60,38 +66,49 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
+
         if (AutoEndGame == null || AutoEndGame.ToggleButton == null)
         {
             AutoEndGame = ClientOptionItem.Create("AutoEndGame", Main.AutoEndGame, __instance);
         }
+
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
         }
+
         if (ForceOwnLanguageRoleName == null || ForceOwnLanguageRoleName.ToggleButton == null)
         {
-            ForceOwnLanguageRoleName = ClientOptionItem.Create("ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, __instance);
+            ForceOwnLanguageRoleName =
+                ClientOptionItem.Create("ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, __instance);
         }
+
         if (EnableCustomButton == null || EnableCustomButton.ToggleButton == null)
         {
             EnableCustomButton = ClientOptionItem.Create("EnableCustomButton", Main.EnableCustomButton, __instance);
         }
+
         if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
         {
-            EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
+            EnableCustomSoundEffect =
+                ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
         }
+
         if (UnloadMod == null || UnloadMod.ToggleButton == null)
         {
             UnloadMod = ClientActionItem.Create("UnloadMod", ModUnloaderScreen.Show, __instance);
         }
+
         if (DumpLog == null || DumpLog.ToggleButton == null)
         {
             DumpLog = ClientActionItem.Create("DumpLog", () => Utils.DumpLog(), __instance);
         }
+
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
+
         if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);

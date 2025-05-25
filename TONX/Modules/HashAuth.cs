@@ -9,6 +9,7 @@ public class HashAuth
 
     private readonly string salt;
     private HashAlgorithm algorithm;
+
     public HashAuth(string hashValue, string salt = null, HashAlgorithm algorithm = null)
     {
         HashValue = hashValue;
@@ -21,6 +22,7 @@ public class HashAuth
         var hash = CalculateHash(value);
         return HashValue == hash;
     }
+
     public string CalculateHash(string source)
         => HashAuth.CalculateHash(source, salt, algorithm);
 

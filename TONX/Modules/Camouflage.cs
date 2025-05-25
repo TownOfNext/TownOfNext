@@ -7,7 +7,8 @@ namespace TONX;
 
 static class PlayerOutfitExtension
 {
-    public static NetworkedPlayerInfo.PlayerOutfit Set(this NetworkedPlayerInfo.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId)
+    public static NetworkedPlayerInfo.PlayerOutfit Set(this NetworkedPlayerInfo.PlayerOutfit instance,
+        string playerName, int colorId, string hatId, string skinId, string visorId, string petId)
     {
         instance.PlayerName = playerName;
         instance.ColorId = colorId;
@@ -17,24 +18,31 @@ static class PlayerOutfitExtension
         instance.PetId = petId;
         return instance;
     }
-    public static bool Compare(this NetworkedPlayerInfo.PlayerOutfit instance, NetworkedPlayerInfo.PlayerOutfit targetOutfit)
+
+    public static bool Compare(this NetworkedPlayerInfo.PlayerOutfit instance,
+        NetworkedPlayerInfo.PlayerOutfit targetOutfit)
     {
         return instance.ColorId == targetOutfit.ColorId &&
-                instance.HatId == targetOutfit.HatId &&
-                instance.SkinId == targetOutfit.SkinId &&
-                instance.VisorId == targetOutfit.VisorId &&
-                instance.PetId == targetOutfit.PetId;
-
+               instance.HatId == targetOutfit.HatId &&
+               instance.SkinId == targetOutfit.SkinId &&
+               instance.VisorId == targetOutfit.VisorId &&
+               instance.PetId == targetOutfit.PetId;
     }
+
     public static string GetString(this NetworkedPlayerInfo.PlayerOutfit instance)
     {
-        return $"{instance.PlayerName} Color:{instance.ColorId} {instance.HatId} {instance.SkinId} {instance.VisorId} {instance.PetId}";
+        return
+            $"{instance.PlayerName} Color:{instance.ColorId} {instance.HatId} {instance.SkinId} {instance.VisorId} {instance.PetId}";
     }
 }
+
 public static class Camouflage
 {
-    public static NetworkedPlayerInfo.PlayerOutfit CamouflageOutfit_Default = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "", "");
-    public static NetworkedPlayerInfo.PlayerOutfit CamouflageOutfit_KPD = new NetworkedPlayerInfo.PlayerOutfit().Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "");
+    public static NetworkedPlayerInfo.PlayerOutfit CamouflageOutfit_Default =
+        new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "", "");
+
+    public static NetworkedPlayerInfo.PlayerOutfit CamouflageOutfit_KPD =
+        new NetworkedPlayerInfo.PlayerOutfit().Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "");
 
     public static bool IsCamouflage;
     public static Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> PlayerSkins = new();
@@ -45,9 +53,11 @@ public static class Camouflage
         IsCamouflage = false;
         PlayerSkins.Clear();
     }
+
     public static void CheckCamouflage()
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || CustomRoles.Concealer.IsExist(true)))) return;
+        if (!(AmongUsClient.Instance.AmHost &&
+              (Options.CommsCamouflage.GetBool() || CustomRoles.Concealer.IsExist(true)))) return;
 
         var oldIsCamouflage = IsCamouflage;
 
@@ -65,12 +75,16 @@ public static class Camouflage
                     pc.RpcSetPet("");
                 }
             }
+
             Utils.NotifyRoles(NoCache: true);
         }
     }
-    public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool ForceChange = false)
+
+    public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false,
+        bool ForceChange = false)
     {
-        if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || CustomRoles.Concealer.IsExist(true)))) return;
+        if (!(AmongUsClient.Instance.AmHost &&
+              (Options.CommsCamouflage.GetBool() || CustomRoles.Concealer.IsExist(true)))) return;
         if (target == null) return;
 
         var id = target.PlayerId;

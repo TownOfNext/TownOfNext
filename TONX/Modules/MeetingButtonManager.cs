@@ -13,8 +13,14 @@ public class MeetingButtonManager
 {
     private static int Count = 0;
     public static bool ButtonCreated = false;
+
     private static void ClearMeetingButton(MeetingHud __instance, bool forceAll = false)
-     => __instance.playerStates.ToList().ForEach(x => { if ((forceAll || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead)) && x.transform.FindChild("Custom Meeting Button") != null) UnityEngine.Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject); });
+        => __instance.playerStates.ToList().ForEach(x =>
+        {
+            if ((forceAll || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead)) &&
+                x.transform.FindChild("Custom Meeting Button") != null)
+                UnityEngine.Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject);
+        });
 
     [HarmonyPatch(nameof(MeetingHud.Start)), HarmonyPrefix]
     public static void Start(MeetingHud __instance)
@@ -25,7 +31,8 @@ public class MeetingButtonManager
 
         // CreateMeetingButton
         ButtonCreated = false;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is IMeetingButton meetingButton && meetingButton.ShouldShowButton())
+        if (PlayerControl.LocalPlayer.GetRoleClass() is IMeetingButton meetingButton &&
+            meetingButton.ShouldShowButton())
         {
             CreateMeetingButton(__instance, meetingButton);
         }
@@ -40,7 +47,9 @@ public class MeetingButtonManager
         if (Count != 0) return;
 
         //若某玩家死亡则修复会议该玩家状态
-        __instance.playerStates.Where(x => (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
+        __instance.playerStates
+            .Where(x => (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) &&
+                        !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
 
         //本地玩家并没有会议技能按钮
         if (PlayerControl.LocalPlayer.GetRoleClass() is not IMeetingButton meetingButton) return;
@@ -68,6 +77,7 @@ public class MeetingButtonManager
         //销毁死亡玩家身上的技能按钮
         ClearMeetingButton(__instance);
     }
+
     public static void CreateMeetingButton(MeetingHud __instance, IMeetingButton meetingButton)
     {
         foreach (var pva in __instance.playerStates)
@@ -89,13 +99,16 @@ public class MeetingButtonManager
                     if (AmongUsClient.Instance.AmHost) meetingButton.OnClickButton(pc);
                     else
                     {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OnClickMeetingButton, SendOption.Reliable, -1);
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OnClickMeetingButton, SendOption.Reliable,
+                            -1);
                         writer.Write(pc.PlayerId);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
                 }
             }));
         }
+
         ButtonCreated = true;
     }
 }

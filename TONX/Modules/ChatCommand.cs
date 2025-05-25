@@ -11,7 +11,10 @@ using static TONX.Translator;
 
 namespace TONX.Modules;
 
-public class ChatCommand(List<string> keywords, CommandAccess access, Func<MessageControl, (MsgRecallMode, string)> command)
+public class ChatCommand(
+    List<string> keywords,
+    CommandAccess access,
+    Func<MessageControl, (MsgRecallMode, string)> command)
 {
     public List<string> KeyWords { get; set; } = keywords;
 
@@ -34,7 +37,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             {
                 StringBuilder sb = new();
                 foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key))
-                    sb.Append($"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
+                    sb.Append(
+                        $"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
                 return (MsgRecallMode.Block, sb.ToString());
             }),
             new(["win", "winner"], CommandAccess.All, mc =>
@@ -52,6 +56,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     text = string.Format(GetString("Message.SetLevel"), level);
                     mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["l", "lastresult"], CommandAccess.All, mc =>
@@ -77,7 +82,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 GameStartManagerPatch.HideName.text = Main.HideName.Value;
                 return (MsgRecallMode.Block, null);
             }),
-            new(["now", "n" ], CommandAccess.All, mc =>
+            new(["now", "n"], CommandAccess.All, mc =>
             {
                 switch (mc.Args)
                 {
@@ -89,6 +94,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         Utils.ShowActiveSettings(mc.Player.PlayerId);
                         break;
                 }
+
                 return (MsgRecallMode.Block, null);
             }),
             new(["dis", "disconnect"], CommandAccess.Host, mc =>
@@ -107,6 +113,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         Utils.AddChatMessage("crew | imp");
                         break;
                 }
+
                 return (MsgRecallMode.Block, null);
             }),
             new(["up", "specify"], CommandAccess.Host, mc =>
@@ -126,9 +133,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 {
                     var role = mc.Player.GetCustomRole();
                     text = role.GetRoleInfo()?.Description?.GetFullFormatHelpWithAddonsByPlayer(mc.Player) ??
-                        // roleInfoがない役職
-                        GetString(role.ToString()) + mc.Player.GetRoleInfo(true);
+                           // roleInfoがない役職
+                           GetString(role.ToString()) + mc.Player.GetRoleInfo(true);
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["t", "template"], CommandAccess.LocalMod, mc =>
@@ -145,6 +153,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     Main.MessageWait.Value = sec;
                     text = string.Format(GetString("Message.SetToSeconds"), sec);
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["exile"], CommandAccess.Host, mc =>
@@ -166,6 +175,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["kill"], CommandAccess.Host, mc =>
@@ -185,12 +195,13 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
-            new(["color", "colour"], Options.PlayerCanSetColor.GetBool() ?CommandAccess.All : CommandAccess.Host, mc =>
+            new(["color", "colour"], Options.PlayerCanSetColor.GetBool() ? CommandAccess.All : CommandAccess.Host, mc =>
             {
                 string text = GetString("Message.OnlyCanUseInLobby");
-                if (GameStates.IsLobby )
+                if (GameStates.IsLobby)
                 {
                     text = GetString("IllegalColor");
                     var color = Utils.MsgToColor(mc.Args, mc.IsFromSelf);
@@ -200,6 +211,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = string.Format(GetString("Message.SetColor"), mc.Args);
                     }
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["qt", "quit"], CommandAccess.All, mc =>
@@ -220,6 +232,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = string.Format(GetString("SureUse.quit"), cid);
                     }
                 }
+
                 return (MsgRecallMode.Block, text);
             }),
             new(["id"], CommandAccess.All, mc =>
@@ -243,7 +256,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["cosid"], CommandAccess.Host, mc =>
             {
-                var of =mc.Player.Data.DefaultOutfit;
+                var of = mc.Player.Data.DefaultOutfit;
                 Logger.Warn($"ColorId: {of.ColorId}", "Get Cos Id");
                 Logger.Warn($"PetId: {of.PetId}", "Get Cos Id");
                 Logger.Warn($"HatId: {of.HatId}", "Get Cos Id");
@@ -256,6 +269,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
     }
 
     private static Dictionary<CustomRoles, List<string>> RoleCommands;
+
     public static void InitRoleCommands()
     {
         // 初回のみ処理
@@ -291,6 +305,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         RoleCommands.Add(CustomRoles.Mimic, new() { "mi", "寶箱怪", "宝箱" });
         RoleCommands.Add(CustomRoles.TicketsStealer, new() { "ts", "竊票者", "偷票", "偷票者", "窃票师", "窃票" });
     }
+
     public static void SendRolesInfo(string input, byte playerId)
     {
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
@@ -298,6 +313,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
             return;
         }
+
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);
@@ -310,9 +326,13 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
-            Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
+            Utils.SendMessage(
+                role.IsAddon()
+                    ? AddonDescription.FullFormatHelpBySubRole(role)
+                    : role.GetRoleInfo().Description.FullFormatHelp, playerId);
         }
     }
+
     public static void SpecifyRole(string input, byte playerId)
     {
         if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
@@ -320,6 +340,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
             return;
         }
+
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);
@@ -332,7 +353,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else if (!Options.EnableDirectorMode.GetBool())
         {
-            Utils.SendMessage(string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableDirectorMode")));
+            Utils.SendMessage(string.Format(GetString("Message.DirectorModeDisabled"),
+                GetString("EnableDirectorMode")));
         }
         else if (!GameStates.IsLobby)
         {
@@ -360,6 +382,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }
         }
     }
+
     private static void ConcatCommands(CustomRoleTypes roleType)
     {
         var roles = CustomRoleManager.AllRolesInfo.Values.Where(role => role.CustomRoleType == roleType);
@@ -371,6 +394,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             coms.DoIf(c => c.Trim() != "", RoleCommands[role.RoleName].Add);
         }
     }
+
     public static bool GetRoleByInputName(string input, out CustomRoles output, bool includeVanilla = false)
     {
         output = new();
@@ -382,14 +406,16 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
         {
             if (!includeVanilla && role.IsVanilla()) continue;
-            if (input == GetString(Enum.GetName(typeof(CustomRoles), role)).TrimStart('*').ToLower().Trim().Replace(" ", string.Empty).RemoveHtmlTags() //匹配到翻译文件中的职业原名
+            if (input == GetString(Enum.GetName(typeof(CustomRoles), role)).TrimStart('*').ToLower().Trim()
+                    .Replace(" ", string.Empty).RemoveHtmlTags() //匹配到翻译文件中的职业原名
                 || (RoleCommands.TryGetValue(role, out var com) && com.Any(c => input == c.Trim().ToLower())) //匹配到职业缩写
-                )
+               )
             {
                 output = role;
                 return true;
             }
         }
+
         return false;
     }
 }

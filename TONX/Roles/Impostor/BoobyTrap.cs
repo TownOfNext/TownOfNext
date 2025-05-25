@@ -5,6 +5,7 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class BoobyTrap : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -18,32 +19,38 @@ public sealed class BoobyTrap : RoleBase, IImpostor
             SetupOptionItem,
             "bt|詭雷"
         );
+
     public BoobyTrap(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         Boobytraps = new();
     }
 
     static OptionItem OptionSuicideDelay;
+
     enum OptionName
     {
         BoobyTrapSuicideDelay,
     }
 
     private static Dictionary<byte, byte> Boobytraps;
+
     private static void SetupOptionItem()
     {
-        OptionSuicideDelay = FloatOptionItem.Create(RoleInfo, 10, OptionName.BoobyTrapSuicideDelay, new(0f, 5f, 1f), 1f, false)
+        OptionSuicideDelay = FloatOptionItem
+            .Create(RoleInfo, 10, OptionName.BoobyTrapSuicideDelay, new(0f, 5f, 1f), 1f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         text = Translator.GetString("BoobyTrapKillButtonText");
         return true;
     }
+
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return;
@@ -59,6 +66,7 @@ public sealed class BoobyTrap : RoleBase, IImpostor
             }
         }, OptionSuicideDelay.GetFloat(), "BoobyTrap Death Delay");
     }
+
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (Boobytraps.ContainsKey(target.PlayerId) && reporter.IsAlive())
@@ -74,7 +82,7 @@ public sealed class BoobyTrap : RoleBase, IImpostor
 
             return false;
         }
+
         return true;
     }
-
 }

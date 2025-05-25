@@ -9,6 +9,7 @@ public interface IKiller
     /// 可以使用击杀键击杀玩家
     /// </summary>
     public bool CanKill => true;
+
     /// <summary>
     /// 是按下击杀按键则击杀的职业吗<br/>
     /// 若设置为 false 则在您尝试击杀时不会请求目标进行任何检查
@@ -22,17 +23,20 @@ public interface IKiller
     /// </summary>
     /// <returns>true：可以使用击杀按键</returns>
     public bool CanUseKillButton() => CanKill;
+
     /// <summary>
     /// 计算击杀冷却时间<br/>
     /// 默认：<see cref="Options.DefaultKillCooldown"/>
     /// </summary>
     /// <returns>击杀冷却时间（秒）</returns>
     public float CalculateKillCooldown() => CanUseKillButton() ? Options.DefaultKillCooldown : 255f;
+
     /// <summary>
     /// サボタージュボタンを使えるかどうか
     /// </summary>
     /// <returns>trueを返した場合，サボタージュボタンを使える</returns>
     public bool CanUseSabotageButton();
+
     /// <summary>
     /// ベントボタンを使えるかどうか
     /// デフォルトでは使用可能
@@ -53,14 +57,18 @@ public interface IKiller
     /// MurderPlayer 作为击杀者时的处理函数
     /// </summary>
     /// <param name="info">击杀事件的信息</param>
-    public void OnMurderPlayerAsKiller(MurderInfo info) { }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+    }
 
     /// <summary>
     /// 本次击杀已经经过目标的检查，目标确定可以被击杀
     /// 这个函数相当于击杀者的二次确认，您还有机会取消本次击杀
     /// </summary>
     /// <param name="info">击杀事件的信息</param>
-    public void BeforeMurderPlayerAsKiller(MurderInfo info) { }
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+    }
 
     /// <summary>
     /// 更改击杀按钮的文本

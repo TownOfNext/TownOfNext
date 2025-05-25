@@ -8,14 +8,14 @@ namespace TONX;
 public class ErrorText : MonoBehaviour
 {
     #region Singleton
+
     public static ErrorText Instance
     {
-        get
-        {
-            return _instance;
-        }
+        get { return _instance; }
     }
+
     private static ErrorText _instance;
+
     private void Awake()
     {
         if (_instance != null)
@@ -28,7 +28,9 @@ public class ErrorText : MonoBehaviour
             DontDestroyOnLoad(this);
         }
     }
+
     #endregion
+
     public static void Create(TMPro.TextMeshPro baseText)
     {
         var Text = Instantiate(baseText);
@@ -54,8 +56,10 @@ public class ErrorText : MonoBehaviour
                 bgTexture.SetPixel(x, y, new(0f, 0f, 0f, 0.6f));
             }
         }
+
         bgTexture.Apply();
-        var bgSprite = Sprite.Create(bgTexture, new(0, 0, bgTexture.width, bgTexture.height), new(0.5f, 1f /* 上端の真ん中を中心とする */ ));
+        var bgSprite = Sprite.Create(bgTexture, new(0, 0, bgTexture.width, bgTexture.height),
+            new(0.5f, 1f /* 上端の真ん中を中心とする */));
         bgRenderer.sprite = bgSprite;
         var bgTransform = bgObject.transform;
         bgTransform.parent = instance.transform;
@@ -68,6 +72,7 @@ public class ErrorText : MonoBehaviour
     public Camera Camera;
     public List<ErrorData> AllErrors = new();
     public Vector3 TextOffset = new(0, TextOffsetY, -1000f);
+
     public void Update()
     {
         AllErrors.ForEach(err => err.IncreaseTimer());
@@ -80,6 +85,7 @@ public class ErrorText : MonoBehaviour
                 Destroy(this.gameObject);
         }
     }
+
     public void LateUpdate()
     {
         if (!Text.enabled) return;
@@ -88,9 +94,11 @@ public class ErrorText : MonoBehaviour
             Camera = !HudManager.InstanceExists ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
         if (Camera != null)
         {
-            transform.position = AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.Top, TextOffset);
+            transform.position =
+                AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.Top, TextOffset);
         }
     }
+
     public void AddError(ErrorCode code)
     {
         var error = new ErrorData(code);
@@ -102,8 +110,10 @@ public class ErrorText : MonoBehaviour
             //まだ出ていないエラー
             AllErrors.Add(error);
         }
+
         UpdateText();
     }
+
     public void UpdateText()
     {
         string text = "";
@@ -113,6 +123,7 @@ public class ErrorText : MonoBehaviour
             text += $"{err}: {err.Message}\n";
             if (maxLevel < err.ErrorLevel) maxLevel = err.ErrorLevel;
         }
+
         if (maxLevel == 0)
         {
             Hide();
@@ -125,25 +136,30 @@ public class ErrorText : MonoBehaviour
                 text = SBDetected ? GetString("EAC.CheatDetected.HighLevel") : GetString("EAC.CheatDetected.LowLevel");
             Show();
         }
+
         if (GameStates.IsInGame && maxLevel != 3 && !CheatDetected)
             text += $"\n{GetString("TerminateCommand")}: Shift+L+Enter";
         Text.text = text;
     }
+
     public void Clear()
     {
         AllErrors.RemoveAll(err => err.ErrorLevel != 3);
         UpdateText();
     }
+
     private void Show()
     {
         Text.enabled = true;
         background.gameObject.SetActive(true);
     }
+
     private void Hide()
     {
         Text.enabled = false;
         background.gameObject.SetActive(false);
     }
+
     public class ErrorData
     {
         public readonly ErrorCode Code;
@@ -152,6 +168,7 @@ public class ErrorText : MonoBehaviour
         public readonly int ErrorLevel;
         public float Timer { get; private set; }
         public string Message => GetString(this.ToString());
+
         public ErrorData(ErrorCode code)
         {
             this.Code = code;
@@ -160,11 +177,13 @@ public class ErrorText : MonoBehaviour
             this.ErrorLevel = (int)code - (int)code / 10 * 10;
             this.Timer = 0f;
         }
+
         public override string ToString()
         {
             // ERR-xxx-yyy-z
             return $"ERR-{ErrorType1:000}-{ErrorType2:000}-{ErrorLevel:0}";
         }
+
         public void IncreaseTimer() => Timer += Time.deltaTime;
     }
 
@@ -173,6 +192,7 @@ public class ErrorText : MonoBehaviour
     public bool CheatDetected;
     public bool SBDetected;
 }
+
 public enum ErrorCode
 {
     //xxxyyyz: ERR-xxx-yyy-z
@@ -187,11 +207,14 @@ public enum ErrorCode
     // 001 Main
     Main_DictionaryError = 0010003, // 001-000-3 Main Dictionary Error
     OptionIDDuplicate = 001_010_3, // 001-010-3 オプションIDが重複している(DEBUGビルド時のみ)
+
     // 002 サポート関連
-    UnsupportedVersion = 002_000_1,  // 002-000-1 AmongUsのバージョンが古い
-                                     // 010 参加/退出関連
-    OnPlayerLeftPostfixFailedInGame = 010_000_2,  // 010-000-2 OnPlayerLeftPatch.Postfixがゲーム中に失敗
-    OnPlayerLeftPostfixFailedInLobby = 010_001_2,  // 010-001-2 OnPlayerLeftPatch.Postfixがロビーで失敗// ==========
+    UnsupportedVersion = 002_000_1, // 002-000-1 AmongUsのバージョンが古い
+
+    // 010 参加/退出関連
+    OnPlayerLeftPostfixFailedInGame = 010_000_2, // 010-000-2 OnPlayerLeftPatch.Postfixがゲーム中に失敗
+    OnPlayerLeftPostfixFailedInLobby = 010_001_2, // 010-001-2 OnPlayerLeftPatch.Postfixがロビーで失敗// ==========
+
     // 000 Test
     NoError = 0000000, // 000-000-0 No Error
     TestError0 = 0009000, // 000-900-0 Test Error 0

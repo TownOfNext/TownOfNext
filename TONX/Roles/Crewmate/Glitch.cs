@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class Glitch : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -17,14 +17,17 @@ public sealed class Glitch : RoleBase
             "gl|活死",
             "#dcdcdc"
         );
+
     public Glitch(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     static OptionItem OptionCanVote;
+
     enum OptionName
     {
         GlitchCanVote,
@@ -34,14 +37,18 @@ public sealed class Glitch : RoleBase
     {
         OptionCanVote = BooleanOptionItem.Create(RoleInfo, 10, OptionName.GlitchCanVote, true, false);
     }
-    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
+
+    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId,
+        bool isIntentional)
     {
         var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
         var baseVote = (votedForId, numVotes, doVote);
-        if (!isIntentional || voterId != Player.PlayerId || OptionCanVote.GetBool() || sourceVotedForId >= 253 || !Player.IsAlive())
+        if (!isIntentional || voterId != Player.PlayerId || OptionCanVote.GetBool() || sourceVotedForId >= 253 ||
+            !Player.IsAlive())
         {
             return baseVote;
         }
+
         return (votedForId, numVotes, false);
     }
 }

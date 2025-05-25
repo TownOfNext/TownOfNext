@@ -8,6 +8,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Vampire : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,11 +23,12 @@ public sealed class Vampire : RoleBase, IImpostor
             "va|吸血",
             introSound: () => GetIntroSound(RoleTypes.Shapeshifter)
         );
+
     public Vampire(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         KillDelay = OptionKillDelay.GetFloat();
 
@@ -34,6 +36,7 @@ public sealed class Vampire : RoleBase, IImpostor
     }
 
     static OptionItem OptionKillDelay;
+
     enum OptionName
     {
         VampireKillDelay
@@ -46,9 +49,11 @@ public sealed class Vampire : RoleBase, IImpostor
 
     private static void SetupOptionItem()
     {
-        OptionKillDelay = FloatOptionItem.Create(RoleInfo, 10, OptionName.VampireKillDelay, new(1f, 1000f, 1f), 7f, false)
+        OptionKillDelay = FloatOptionItem
+            .Create(RoleInfo, 10, OptionName.VampireKillDelay, new(1f, 1000f, 1f), 7f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
@@ -63,8 +68,10 @@ public sealed class Vampire : RoleBase, IImpostor
             killer.RPCPlayCustomSound("Bite");
             BittenPlayers.Add(target.PlayerId, 0f);
         }
+
         return false;
     }
+
     public override void OnFixedUpdate(PlayerControl _)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsInTask) return;
@@ -83,6 +90,7 @@ public sealed class Vampire : RoleBase, IImpostor
             }
         }
     }
+
     public override void OnReportDeadBody(PlayerControl _, NetworkedPlayerInfo __)
     {
         foreach (var targetId in BittenPlayers.Keys)
@@ -90,13 +98,16 @@ public sealed class Vampire : RoleBase, IImpostor
             var target = Utils.GetPlayerById(targetId);
             KillBitten(target, true);
         }
+
         BittenPlayers.Clear();
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("VampireBiteButtonText");
         return true;
     }
+
     public bool OverrideKillButtonSprite(out string buttonName)
     {
         buttonName = "Bite";

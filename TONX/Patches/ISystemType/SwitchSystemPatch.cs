@@ -9,7 +9,8 @@ namespace TONX.Patches.ISystemType;
 [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
 public static class SwitchSystemUpdateSystemPatch
 {
-    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] MessageReader msgReader)
     {
         byte amount;
         {
@@ -22,18 +23,23 @@ public static class SwitchSystemUpdateSystemPatch
         {
             return true;
         }
+
         // 停電サボタージュが鳴らされた場合は関係なし(ホスト名義で飛んでくるため誤爆注意)
         if (amount.HasBit(SwitchSystem.DamageSystem))
         {
             return true;
         }
+
         //Airshipの特定の停電を直せないならキャンセル
         if ((MapNames)Main.NormalOptions.MapId == MapNames.Airship)
         {
             var truePosition = player.GetTruePosition();
-            if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
-            if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Vector2.Distance(truePosition, new(13.92f, 6.43f)) <= 2f) return false;
-            if (Options.DisableAirshipCargoLightsPanel.GetBool() && Vector2.Distance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
+            if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() &&
+                Vector2.Distance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
+            if (Options.DisableAirshipGapRoomLightsPanel.GetBool() &&
+                Vector2.Distance(truePosition, new(13.92f, 6.43f)) <= 2f) return false;
+            if (Options.DisableAirshipCargoLightsPanel.GetBool() &&
+                Vector2.Distance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
         }
 
         // サボタージュによる破壊ではない && 配電盤を下げられなくするオプションがオン
@@ -53,14 +59,17 @@ public static class SwitchSystemUpdateSystemPatch
                 return false;
             }
         }
+
         if (player.Is(CustomRoles.Fool)) return false;
 
 
         // ロールの処理
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateSwitchSystem(__instance, amount))
+        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook &&
+            !systemTypeUpdateHook.UpdateSwitchSystem(__instance, amount))
         {
             return false;
         }
+
         return true;
     }
 }

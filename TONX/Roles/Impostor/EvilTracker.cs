@@ -8,6 +8,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -15,7 +16,9 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             typeof(EvilTracker),
             player => new EvilTracker(player),
             CustomRoles.EvilTracker,
-            () => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
+            () => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never
+                ? RoleTypes.Impostor
+                : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             2800,
             SetupOptionItem,
@@ -23,10 +26,10 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         );
 
     public EvilTracker(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
         CurrentTargetMode = (TargetMode)OptionTargetMode.GetValue();
@@ -58,6 +61,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         EvilTrackerTargetMode,
         EvilTrackerCanSeeLastRoomInMeeting,
     }
+
     public static bool CanSeeKillFlash;
     private static TargetMode CurrentTargetMode;
     public static bool CanSeeLastRoomInMeeting;
@@ -73,6 +77,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         EveryMeeting,
         Always,
     };
+
     private static readonly string[] TargetModeText =
     {
         "EvilTrackerTargetMode.Never",
@@ -80,16 +85,19 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         "EvilTrackerTargetMode.EveryMeeting",
         "EvilTrackerTargetMode.Always",
     };
+
     private enum TargetOperation : byte
     {
         /// <summary>
         /// ターゲット再設定可能にする
         /// </summary>
         ReEnableTargeting,
+
         /// <summary>
         /// ターゲットを削除する
         /// </summary>
         RemoveTarget,
+
         /// <summary>
         /// ターゲットを設定する
         /// </summary>
@@ -98,10 +106,14 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
 
     private static void SetupOptionItem()
     {
-        OptionCanSeeKillFlash = BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilTrackerCanSeeKillFlash, true, false);
-        OptionTargetMode = StringOptionItem.Create(RoleInfo, 11, OptionName.EvilTrackerTargetMode, TargetModeText, 2, false);
-        OptionCanSeeLastRoomInMeeting = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilTrackerCanSeeLastRoomInMeeting, false, false);
+        OptionCanSeeKillFlash =
+            BooleanOptionItem.Create(RoleInfo, 10, OptionName.EvilTrackerCanSeeKillFlash, true, false);
+        OptionTargetMode =
+            StringOptionItem.Create(RoleInfo, 11, OptionName.EvilTrackerTargetMode, TargetModeText, 2, false);
+        OptionCanSeeLastRoomInMeeting =
+            BooleanOptionItem.Create(RoleInfo, 13, OptionName.EvilTrackerCanSeeLastRoomInMeeting, false, false);
     }
+
     public bool CheckKillFlash(MurderInfo info) // IKillFlashSeeable
     {
         if (!CanSeeKillFlash) return false;
@@ -112,6 +124,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         var realKiller = target.GetRealKiller() ?? killer;
         return realKiller.Is(CustomRoleTypes.Impostor) && realKiller != target;
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
         var operation = (TargetOperation)reader.ReadByte();
@@ -124,6 +137,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             default: Logger.Warn($"不明なオペレーション: {operation}", nameof(EvilTracker)); break;
         }
     }
+
     private void ReEnableTargeting()
     {
         CanSetTarget = true;
@@ -133,6 +147,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             sender.Writer.Write((byte)TargetOperation.ReEnableTargeting);
         }
     }
+
     private void RemoveTarget()
     {
         TargetId = byte.MaxValue;
@@ -142,6 +157,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             sender.Writer.Write((byte)TargetOperation.RemoveTarget);
         }
     }
+
     private void SetTarget(byte targetId)
     {
         TargetId = targetId;
@@ -149,6 +165,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         {
             CanSetTarget = false;
         }
+
         TargetArrow.Add(Player.PlayerId, targetId);
         if (AmongUsClient.Instance.AmHost)
         {
@@ -163,23 +180,27 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         AURoleOptions.ShapeshifterCooldown = CanTarget() ? 1f : 255f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("EvilTrackerChangeButtonText");
         return true;
     }
+
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = "Track";
         return true;
     }
+
     public override bool CanUseAbilityButton() => CanTarget();
 
     // 値取得の関数
     private bool CanTarget() => Player.IsAlive() && CanSetTarget;
+
     private bool IsTrackTarget(PlayerControl target)
         => Player.IsAlive() && target.IsAlive() && !Is(target)
-        && (target.Is(CustomRoleTypes.Impostor) || TargetId == target.PlayerId);
+           && (target.Is(CustomRoleTypes.Impostor) || TargetId == target.PlayerId);
 
     // 各所で呼ばれる処理
     public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
@@ -194,6 +215,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         Utils.NotifyRoles();
         return false;
     }
+
     public override void OnSpawn(bool initialState)
     {
         if (initialState) return;
@@ -201,6 +223,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         {
             ReEnableTargeting();
         }
+
         var target = Utils.GetPlayerById(TargetId);
         if (!Player.IsAlive() || !target.IsAlive())
         {
@@ -214,6 +237,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         seen ??= seer;
         return TargetId == seen.PlayerId ? Utils.ColorString(Palette.ImpostorRed, "◀") : "";
     }
+
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -228,6 +252,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             return GetArrows(seen);
         }
     }
+
     private string GetArrows(PlayerControl seen)
     {
         if (!Is(seen)) return "";
@@ -244,6 +269,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
             {
                 sb.Append(TargetArrow.GetArrows(Player, impostorId));
             }
+
             sb.Append($"</color>");
         }
 
@@ -251,8 +277,10 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         {
             sb.Append(Utils.ColorString(Color.white, TargetArrow.GetArrows(Player, TargetId)));
         }
+
         return sb.ToString();
     }
+
     public string GetLastRoom(PlayerControl seen)
     {
         if (!(CanSeeLastRoomInMeeting && IsTrackTarget(seen))) return "";

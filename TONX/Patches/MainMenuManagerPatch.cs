@@ -14,6 +14,7 @@ public class MainMenuManagerPatch
     public static MainMenuManager Instance { get; private set; }
 
     public static GameObject InviteButton;
+
     //public static GameObject WebsiteButton;
     public static GameObject UpdateButton;
     public static GameObject PlayButton;
@@ -44,17 +45,27 @@ public class MainMenuManagerPatch
     private static bool isOnline = false;
     public static bool ShowedBak = false;
     private static bool ShowingPanel = false;
+
     [HarmonyPatch(typeof(SignInStatusComponent), nameof(SignInStatusComponent.SetOnline)), HarmonyPostfix]
-    public static void SetOnline_Postfix() { _ = new LateTask(() => { isOnline = true; NameTagManager.Init(); }, 0.1f, "Set Online Status"); }
+    public static void SetOnline_Postfix()
+    {
+        _ = new LateTask(() =>
+        {
+            isOnline = true;
+            NameTagManager.Init();
+        }, 0.1f, "Set Online Status");
+    }
+
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
     public static void MainMenuManager_LateUpdate(MainMenuManager __instance)
     {
         static void AdjustCustomButtonSize(PassiveButton template, PassiveButton button)
         {
             button.inactiveSprites.GetComponent<SpriteRenderer>().size =
-            button.activeSprites.GetComponent<SpriteRenderer>().size =
-            template.activeSprites.GetComponent<SpriteRenderer>().size;
+                button.activeSprites.GetComponent<SpriteRenderer>().size =
+                    template.activeSprites.GetComponent<SpriteRenderer>().size;
         }
+
         AdjustCustomButtonSize(__instance.creditsButton, InviteButton.GetComponent<PassiveButton>());
 
         CustomPopup.Update();
@@ -64,12 +75,16 @@ public class MainMenuManagerPatch
         if (TitleLogoPatch.RightPanel != null)
         {
             var pos1 = TitleLogoPatch.RightPanel.transform.localPosition;
-            var pos3 = new Vector3(TitleLogoPatch.RightPanelOp.x * Utils.GetResolutionOffset(Screen.width, Screen.height), TitleLogoPatch.RightPanelOp.y, TitleLogoPatch.RightPanelOp.z);
-            Vector3 lerp1 = Vector3.Lerp(pos1, ShowingPanel ? pos3 : TitleLogoPatch.RightPanelOp + new Vector3(10f, 0f, 0f), Time.deltaTime * (ShowingPanel ? 3f : 2f));
+            var pos3 = new Vector3(
+                TitleLogoPatch.RightPanelOp.x * Utils.GetResolutionOffset(Screen.width, Screen.height),
+                TitleLogoPatch.RightPanelOp.y, TitleLogoPatch.RightPanelOp.z);
+            Vector3 lerp1 = Vector3.Lerp(pos1,
+                ShowingPanel ? pos3 : TitleLogoPatch.RightPanelOp + new Vector3(10f, 0f, 0f),
+                Time.deltaTime * (ShowingPanel ? 3f : 2f));
             if (ShowingPanel
-                ? TitleLogoPatch.RightPanel.transform.localPosition.x > pos3.x + 0.03f
-                : TitleLogoPatch.RightPanel.transform.localPosition.x < TitleLogoPatch.RightPanelOp.x + 9f
-                ) TitleLogoPatch.RightPanel.transform.localPosition = lerp1;
+                    ? TitleLogoPatch.RightPanel.transform.localPosition.x > pos3.x + 0.03f
+                    : TitleLogoPatch.RightPanel.transform.localPosition.x < TitleLogoPatch.RightPanelOp.x + 9f
+               ) TitleLogoPatch.RightPanel.transform.localPosition = lerp1;
         }
 
         if (ShowedBak || !isOnline) return;
@@ -88,10 +103,18 @@ public class MainMenuManagerPatch
 
         SimpleButton.SetBase(__instance.quitButton);
 
-        int row = 1; int col = 0;
+        int row = 1;
+        int col = 0;
+
         GameObject CreatButton(string text, Action action)
         {
-            col++; if (col > 2) { col = 1; row++; }
+            col++;
+            if (col > 2)
+            {
+                col = 1;
+                row++;
+            }
+
             var template = col == 1 ? __instance.creditsButton.gameObject : __instance.quitButton.gameObject;
             var button = Object.Instantiate(template, template.transform.parent);
             button.transform.transform.FindChild("FontPlacer").GetChild(0).gameObject.DestroyTranslator();
@@ -115,7 +138,8 @@ public class MainMenuManagerPatch
         //     extraLinkEnabled = true;
         // }
 
-        if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
+        if (InviteButton == null)
+            InviteButton = CreatButton(extraLinkName, () => { Application.OpenURL(extraLinkUrl); });
         InviteButton.gameObject.SetActive(extraLinkEnabled);
         InviteButton.name = "TONX Extra Link Button";
 

@@ -8,7 +8,7 @@ namespace TONX.Roles.Neutral;
 public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
-       SimpleRoleInfo.Create(
+        SimpleRoleInfo.Create(
             typeof(Hater),
             player => new Hater(player),
             CustomRoles.Hater,
@@ -20,13 +20,15 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             "#414b66",
             true
         );
+
     public Hater(PlayerControl player)
-    : base(
-        RoleInfo,
-        player,
-        () => HasTask.False
-    )
-    { }
+        : base(
+            RoleInfo,
+            player,
+            () => HasTask.False
+        )
+    {
+    }
 
     public float CalculateKillCooldown() => 0f;
     public bool CanUseSabotageButton() => false;
@@ -40,6 +42,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
         text = Translator.GetString("HaterButtonText");
         return true;
     }
+
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
         (var killer, var target) = info.AttemptTuple;
@@ -50,12 +53,14 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
         }
     }
+
     public bool CheckWin(ref CustomRoles winnerRole)
     {
         return CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers
-            && !CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.Lovers)
-            && !CustomRoles.Lovers.IsExist()
-            && !CustomRoles.Neptune.IsExist()
-            && Main.AllPlayerControls.Any(p => (p.Is(CustomRoles.Lovers) || p.Is(CustomRoles.Neptune)) && Is(p.GetRealKiller()));
+               && !CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.Lovers)
+               && !CustomRoles.Lovers.IsExist()
+               && !CustomRoles.Neptune.IsExist()
+               && Main.AllPlayerControls.Any(p =>
+                   (p.Is(CustomRoles.Lovers) || p.Is(CustomRoles.Neptune)) && Is(p.GetRealKiller()));
     }
 }

@@ -25,16 +25,18 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             "#696969",
             introSound: () => GetIntroSound(RoleTypes.Impostor)
         );
+
     public SchrodingerCat(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         CanWinTheCrewmateBeforeChange = OptionCanWinTheCrewmateBeforeChange.GetBool();
         ChangeTeamWhenExile = OptionChangeTeamWhenExile.GetBool();
         CanSeeKillableTeammate = OptionCanSeeKillableTeammate.GetBool();
     }
+
     static OptionItem OptionCanWinTheCrewmateBeforeChange;
     static OptionItem OptionChangeTeamWhenExile;
     static OptionItem OptionCanSeeKillableTeammate;
@@ -45,6 +47,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         SchrodingerCatExiledTeamChanges,
         SchrodingerCatCanSeeKillableTeammate,
     }
+
     static bool CanWinTheCrewmateBeforeChange;
     static bool ChangeTeamWhenExile;
     static bool CanSeeKillableTeammate;
@@ -53,7 +56,9 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     /// 自分をキルしてきた人のロール
     /// </summary>
     private ISchrodingerCatOwner owner = null;
+
     private TeamType _team = TeamType.None;
+
     /// <summary>
     /// 現在の所属陣営<br/>
     /// 変更する際は特段の事情がない限り<see cref="RpcSetTeam"/>を使ってください
@@ -67,20 +72,26 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             _team = value;
         }
     }
+
     public bool AmMadmate => Team == TeamType.Mad;
     public Color DisplayRoleColor => GetCatColor(Team);
     private static LogHandler logger = Logger.Handler(nameof(SchrodingerCat));
 
     public static void SetupOptionItem()
     {
-        OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanBeforeSchrodingerCatWinTheCrewmate, true, false);
-        OptionChangeTeamWhenExile = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SchrodingerCatExiledTeamChanges, false, false);
-        OptionCanSeeKillableTeammate = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
+        OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 10,
+            OptionName.CanBeforeSchrodingerCatWinTheCrewmate, true, false);
+        OptionChangeTeamWhenExile =
+            BooleanOptionItem.Create(RoleInfo, 11, OptionName.SchrodingerCatExiledTeamChanges, false, false);
+        OptionCanSeeKillableTeammate =
+            BooleanOptionItem.Create(RoleInfo, 12, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
     }
+
     public override void ApplyGameOptions(IGameOptions opt)
     {
         owner?.ApplySchrodingerCatOptions(opt);
     }
+
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         var killer = info.AttemptKiller;
@@ -94,8 +105,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             ChangeTeamOnKill(killer);
             return false;
         }
+
         return true;
     }
+
     /// <summary>
     /// キルしてきた人に応じて陣営の状態を変える
     /// </summary>
@@ -118,6 +131,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         Utils.NotifyRoles();
         Utils.MarkEveryoneDirtySettings();
     }
+
     /// <summary>
     /// キルしてきた人とオプションに応じて名前の色を開示する
     /// </summary>
@@ -126,7 +140,8 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         if (CanSeeKillableTeammate)
         {
             var killerRoleId = killer.GetCustomRole();
-            var killerTeam = Main.AllPlayerControls.Where(player => (AmMadmate && player.Is(CustomRoleTypes.Impostor)) || player.Is(killerRoleId));
+            var killerTeam = Main.AllPlayerControls.Where(player =>
+                (AmMadmate && player.Is(CustomRoleTypes.Impostor)) || player.Is(killerRoleId));
             foreach (var member in killerTeam)
             {
                 NameColorManager.Add(member.PlayerId, Player.PlayerId, RoleInfo.RoleColorCode);
@@ -139,6 +154,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             NameColorManager.Add(Player.PlayerId, killer.PlayerId);
         }
     }
+
     public override void OverrideTrueRoleName(ref Color roleColor, ref string roleText)
     {
         // 陣営変化前なら上書き不要
@@ -146,16 +162,20 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         {
             return;
         }
+
         roleColor = DisplayRoleColor;
     }
+
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
         if (exiled.PlayerId != Player.PlayerId || Team != TeamType.None || !ChangeTeamWhenExile)
         {
             return;
         }
+
         ChangeTeamRandomly();
     }
+
     /// <summary>
     /// ゲームに存在している陣営の中からランダムに自分の陣営を変更する
     /// </summary>
@@ -171,29 +191,36 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         {
             candidates.Add(TeamType.Jackal);
         }
+
         if (CustomRoles.Pelican.IsExist())
         {
             candidates.Add(TeamType.Pelican);
         }
+
         if (CustomRoles.BloodKnight.IsExist())
         {
             candidates.Add(TeamType.BloodKnight);
         }
+
         if (CustomRoles.Demon.IsExist())
         {
             candidates.Add(TeamType.Demon);
         }
+
         if (CustomRoles.Hater.IsExist())
         {
             candidates.Add(TeamType.Hater);
         }
+
         if (CustomRoles.Stalker.IsExist())
         {
             candidates.Add(TeamType.Stalker);
         }
+
         var team = candidates[rand.Next(candidates.Count)];
         RpcSetTeam(team);
     }
+
     public bool CheckWin(ref CustomRoles winnerRole)
     {
         bool? won = Team switch
@@ -215,8 +242,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             logger.Warn($"不明な猫の勝利チェック: {Team}");
             return false;
         }
+
         return won.Value;
     }
+
     public void RpcSetTeam(TeamType team)
     {
         Team = team;
@@ -226,9 +255,9 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             sender.Writer.Write((byte)team);
         }
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-
         Team = (TeamType)reader.ReadByte();
     }
 
@@ -250,8 +279,8 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         Demon,
         Hater,
         Stalker
-
     }
+
     public static Color GetCatColor(TeamType catType)
     {
         Color? color = catType switch
@@ -273,6 +302,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             logger.Warn($"不明な猫に対する色の取得: {catType}");
             return Utils.GetRoleColor(CustomRoles.Crewmate);
         }
+
         return color.Value;
     }
 }

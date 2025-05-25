@@ -9,6 +9,7 @@ class LateTask
     public float timer;
     public Action action;
     public static List<LateTask> Tasks = new();
+
     public bool Run(float deltaTime)
     {
         timer -= deltaTime;
@@ -17,8 +18,10 @@ class LateTask
             action();
             return true;
         }
+
         return false;
     }
+
     public LateTask(Action action, float time, string name = "No Name Task")
     {
         this.action = action;
@@ -28,6 +31,7 @@ class LateTask
         if (name != "")
             Logger.Info("\"" + name + "\" is created", "LateTask");
     }
+
     public static void Update(float deltaTime)
     {
         var TasksToRemove = new List<LateTask>();
@@ -45,10 +49,12 @@ class LateTask
             }
             catch (Exception ex)
             {
-                Logger.Error($"{ex.GetType()}: {ex.Message}  in \"{task.name}\"\n{ex.StackTrace}", "LateTask.Error", false);
+                Logger.Error($"{ex.GetType()}: {ex.Message}  in \"{task.name}\"\n{ex.StackTrace}", "LateTask.Error",
+                    false);
                 TasksToRemove.Add(task);
             }
         }
+
         TasksToRemove.ForEach(task => Tasks.Remove(task));
     }
 }

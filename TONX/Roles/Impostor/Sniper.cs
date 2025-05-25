@@ -9,6 +9,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Sniper : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -22,11 +23,12 @@ public sealed class Sniper : RoleBase, IImpostor
             SetupOptionItem,
             "snp|狙擊手|狙击"
         );
+
     public Sniper(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         MaxBulletCount = SniperBulletCount.GetInt();
         PrecisionShooting = SniperPrecisionShooting.GetBool();
@@ -40,10 +42,12 @@ public sealed class Sniper : RoleBase, IImpostor
     {
         Snipers.Clear();
     }
+
     static OptionItem SniperBulletCount;
     static OptionItem SniperPrecisionShooting;
     static OptionItem SniperAimAssist;
     static OptionItem SniperAimAssistOnshot;
+
     enum OptionName
     {
         SniperBulletCount,
@@ -51,6 +55,7 @@ public sealed class Sniper : RoleBase, IImpostor
         SniperAimAssist,
         SniperAimAssistOneshot
     }
+
     Vector3 SnipeBasePosition;
     Vector3 LastPosition;
     int BulletCount;
@@ -66,14 +71,18 @@ public sealed class Sniper : RoleBase, IImpostor
     bool AimAssistOneshot;
 
     bool MeetingReset;
+
     public static void SetupOptionItem()
     {
         SniperBulletCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SniperBulletCount, new(1, 5, 1), 2, false)
             .SetValueFormat(OptionFormat.Pieces);
-        SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
+        SniperPrecisionShooting =
+            BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
         SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SniperAimAssist, true, false);
-        SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
+        SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false,
+            SniperAimAssist);
     }
+
     public override void Add()
     {
         Logger.Disable("Sniper");
@@ -88,6 +97,7 @@ public sealed class Sniper : RoleBase, IImpostor
 
         Snipers.Add(this);
     }
+
     private void SendRPC()
     {
         Logger.Info($"{Player.GetNameWithRole()}:SendRPC", "Sniper");
@@ -103,7 +113,6 @@ public sealed class Sniper : RoleBase, IImpostor
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        
         ShotNotify.Clear();
         var count = reader.ReadInt32();
         while (count > 0)
@@ -111,12 +120,15 @@ public sealed class Sniper : RoleBase, IImpostor
             ShotNotify.Add(reader.ReadByte());
             count--;
         }
+
         Logger.Info($"{Player.GetNameWithRole()}:ReceiveRPC", "Sniper");
     }
+
     public bool CanUseKillButton()
     {
         return Player.IsAlive() && BulletCount <= 0;
     }
+
     /// <summary>
     /// 狙撃の場合死因設定
     /// </summary>
@@ -181,9 +193,10 @@ public sealed class Sniper : RoleBase, IImpostor
                 targets.Add(target, err);
             }
         }
-        return targets;
 
+        return targets;
     }
+
     public override void OnShapeshift(PlayerControl target)
     {
         var shapeshifting = !Is(target);
@@ -231,8 +244,8 @@ public sealed class Sniper : RoleBase, IImpostor
             var snipedTarget = targets.OrderBy(c => c.Value).First().Key;
             var killed = false;
             CustomRoleManager.OnCheckMurder(
-                Player, snipedTarget,       // sniperがsnipedTargetを打ち抜く
-                snipedTarget, snipedTarget,  // 表示上はsnipedTargetの自爆
+                Player, snipedTarget, // sniperがsnipedTargetを打ち抜く
+                snipedTarget, snipedTarget, // 表示上はsnipedTargetの自爆
                 () => killed = true
             );
 
@@ -251,6 +264,7 @@ public sealed class Sniper : RoleBase, IImpostor
                 snList.Add(otherPc.PlayerId);
                 Utils.NotifyRoles(SpecifySeer: otherPc);
             }
+
             SendRPC();
             _ = new LateTask(
                 () =>
@@ -262,13 +276,15 @@ public sealed class Sniper : RoleBase, IImpostor
                         {
                             Utils.NotifyRoles(SpecifySeer: otherPc);
                         }
+
                         SendRPC();
                     }
                 },
                 0.5f, "Sniper shot Notify"
-                );
+            );
         }
     }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!Player.IsAlive()) return;
@@ -297,14 +313,17 @@ public sealed class Sniper : RoleBase, IImpostor
             Utils.NotifyRoles(SpecifySeer: Player);
         }
     }
+
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         MeetingReset = true;
     }
+
     public override string GetProgressText(bool comms = false)
     {
         return Utils.ColorString(Color.yellow, $"({BulletCount})");
     }
+
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -321,8 +340,10 @@ public sealed class Sniper : RoleBase, IImpostor
                 }
             }
         }
+
         return "";
     }
+
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         //各スナイパーから
@@ -335,8 +356,10 @@ public sealed class Sniper : RoleBase, IImpostor
                 return $"<size=200%>{Utils.ColorString(Palette.ImpostorRed, "!")}</size>";
             }
         }
+
         return "";
     }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString(BulletCount <= 0 ? "DefaultShapeshiftText" : "SniperSnipeButtonText");

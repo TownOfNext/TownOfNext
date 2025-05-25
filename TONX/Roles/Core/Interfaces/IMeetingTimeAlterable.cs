@@ -7,6 +7,7 @@ public interface IMeetingTimeAlterable
     /// 注意这是个 get-only 属性，写为 ｢=｣ 会不一样
     /// </summary>
     public bool RevertOnDie { get; }
+
     /// <summary>
     /// 增加或减少会议时间的函数
     /// </summary>

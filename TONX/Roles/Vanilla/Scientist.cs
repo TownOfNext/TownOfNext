@@ -12,10 +12,12 @@ public sealed class Scientist : RoleBase
             RoleTypes.Scientist,
             "#8cffff"
         );
+
     public Scientist(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

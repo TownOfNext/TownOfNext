@@ -8,7 +8,8 @@ namespace TONX.Patches.ISystemType;
 [HarmonyPatch(typeof(LifeSuppSystemType), nameof(LifeSuppSystemType.UpdateSystem))]
 public static class LifeSuppSystemUpdateSystemPatch
 {
-    public static bool Prefix(LifeSuppSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+    public static bool Prefix(LifeSuppSystemType __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] MessageReader msgReader)
     {
         byte amount;
         {
@@ -18,10 +19,12 @@ public static class LifeSuppSystemUpdateSystemPatch
         }
         if (player.Is(CustomRoles.Fool)) return false;
 
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateLifeSuppSystem(__instance, amount))
+        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook &&
+            !systemTypeUpdateHook.UpdateLifeSuppSystem(__instance, amount))
         {
             return false;
         }
+
         return true;
     }
 }

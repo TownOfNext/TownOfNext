@@ -42,7 +42,14 @@ public static class NameTagEditMenu
     private static string FriendCode;
     private static NameTag CacheTag;
     private static ComponentType CurrentComponent;
-    private enum ComponentType { Upper, Prefix, Suffix, Name }
+
+    private enum ComponentType
+    {
+        Upper,
+        Prefix,
+        Suffix,
+        Name
+    }
 
     public static void Hide()
     {
@@ -59,17 +66,21 @@ public static class NameTagEditMenu
             if (Menu != null) Menu?.SetActive(false);
             return;
         }
+
         if (Menu == null) Init();
         if (Menu == null) return;
         Menu.SetActive(on.Value);
         FriendCode = friendCode;
-        CacheTag = (friendCode != null && AllExternalNameTags.TryGetValue(friendCode, out var tag)) ? DeepClone(tag) : new NameTag();
+        CacheTag = (friendCode != null && AllExternalNameTags.TryGetValue(friendCode, out var tag))
+            ? DeepClone(tag)
+            : new NameTag();
         if (!Menu.activeSelf) return;
         LoadComponent(CacheTag?.UpperText);
         SetButtonHighlight(EditUpperButton);
         CurrentComponent = ComponentType.Upper;
         UpdatePreview();
     }
+
     private static void SetButtonHighlight(GameObject obj)
     {
         EditUpperButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().color = Palette.DisabledGrey;
@@ -78,6 +89,7 @@ public static class NameTagEditMenu
         EditNameButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().color = Palette.DisabledGrey;
         obj.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().color = new Color32(0, 164, 255, 255);
     }
+
     private static void LoadComponent(Component? com, bool name = false)
     {
         Text_Enter.GetComponent<TextBoxTMP>().enabled = !name;
@@ -92,13 +104,13 @@ public static class NameTagEditMenu
             foreach (var color in com.Gradient.Colors)
             {
                 (colorNum switch
-                {
-                    1 => Color1_Enter.transform,
-                    2 => Color2_Enter.transform,
-                    3 => Color3_Enter.transform,
-                    _ => throw new NotImplementedException()
-                }
-                ).GetComponent<TextBoxTMP>().SetText(ColorUtility.ToHtmlStringRGBA(color)[..6]);
+                        {
+                            1 => Color1_Enter.transform,
+                            2 => Color2_Enter.transform,
+                            3 => Color3_Enter.transform,
+                            _ => throw new NotImplementedException()
+                        }
+                    ).GetComponent<TextBoxTMP>().SetText(ColorUtility.ToHtmlStringRGBA(color)[..6]);
                 colorNum++;
             }
         }
@@ -114,6 +126,7 @@ public static class NameTagEditMenu
         var name = CacheTag.Apply(DataManager.player.Customization.Name, false);
         Preview.GetComponent<TextMeshPro>().text = name;
     }
+
     private static void SaveToCache(ComponentType type)
     {
         var com = new Component();
@@ -147,7 +160,9 @@ public static class NameTagEditMenu
             case ComponentType.Name:
                 CacheTag.Name = com;
                 break;
-        };
+        }
+
+        ;
     }
 #nullable enable
     private enum ComponentName
@@ -157,6 +172,7 @@ public static class NameTagEditMenu
         Suffix,
         Name
     }
+
     private static bool SaveToFile(string friendCode, NameTag tag)
     {
         if (FriendCode is null or "") return false;
@@ -186,11 +202,13 @@ public static class NameTagEditMenu
                 JsonWriter.WritePropertyName("Text");
                 JsonWriter.WriteValue(com.Text);
             }
+
             if (com.SizePercentage != null)
             {
                 JsonWriter.WritePropertyName("SizePercentage");
                 JsonWriter.WriteValue(com.SizePercentage.ToString());
             }
+
             if (com.Gradient != null && com.Gradient.IsValid)
             {
                 string colors = "";
@@ -203,11 +221,13 @@ public static class NameTagEditMenu
                 JsonWriter.WritePropertyName("Color");
                 JsonWriter.WriteValue("#" + ColorUtility.ToHtmlStringRGBA(com.TextColor.Value)[..6]);
             }
+
             if (comName is not ComponentName.UpperText and not ComponentName.Name)
             {
                 JsonWriter.WritePropertyName("Spaced");
                 JsonWriter.WriteValue(com.Spaced.ToString());
             }
+
             JsonWriter.WriteEndObject();
         }
 
@@ -224,7 +244,8 @@ public static class NameTagEditMenu
     {
         if (!GameStates.IsNotJoined) return;
 
-        Menu = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject, NameTagPanel.CustomBackground.transform.parent);
+        Menu = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject,
+            NameTagPanel.CustomBackground.transform.parent);
         Menu.name = "Name Tag Edit Menu";
         Menu.transform.SetLocalZ(-30f);
         Menu.transform.FindChild("Background").localScale *= 1.4f;
@@ -235,10 +256,7 @@ public static class NameTagEditMenu
         closeButton.transform.localPosition = new Vector3(4.9f, 2.5f, -1f);
         closeButton.transform.localScale = new Vector3(1f, 1f, 1f);
         closeButton.GetComponent<PassiveButton>().OnClick = new();
-        closeButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
-        {
-            Toggle(null, false);
-        }));
+        closeButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => { Toggle(null, false); }));
 
         var titlePrefab = Menu.transform.FindChild("TitleText_TMP").gameObject;
         titlePrefab.name = "Title Prefab";
@@ -247,7 +265,10 @@ public static class NameTagEditMenu
         var buttonPrefab = Menu.transform.FindChild("Button1").gameObject;
         buttonPrefab.name = "Button Prefab";
         buttonPrefab.GetComponent<PassiveButton>().OnClick = new();
-        var enterPrefab = Object.Instantiate(AccountManager.Instance.transform.FindChild("PremissionRequestWindow/GuardianEmailConfirm").gameObject, Menu.transform);
+        var enterPrefab =
+            Object.Instantiate(
+                AccountManager.Instance.transform.FindChild("PremissionRequestWindow/GuardianEmailConfirm").gameObject,
+                Menu.transform);
         enterPrefab.name = "Enter Box Prefab";
         enterPrefab.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
         enterPrefab.GetComponent<TextBoxTMP>().AllowPaste = true;
@@ -370,8 +391,8 @@ public static class NameTagEditMenu
         Text_Enter.transform.localPosition = new Vector3(-2.9f, 0f, 0f);
         var textEnterTBT = Text_Enter.GetComponent<TextBoxTMP>();
         textEnterTBT.allowAllCharacters =
-        textEnterTBT.AllowEmail =
-        textEnterTBT.AllowSymbols = true;
+            textEnterTBT.AllowEmail =
+                textEnterTBT.AllowSymbols = true;
 
         Size_Info = Object.Instantiate(infoPrefab, Menu.transform);
         Size_Info.name = "Edit Size Description";
@@ -384,9 +405,9 @@ public static class NameTagEditMenu
         Size_Enter.transform.localPosition = new Vector3(-2.9f, -1.5f, 0f);
         var sizeEnterTBT = Size_Enter.GetComponent<TextBoxTMP>();
         sizeEnterTBT.allowAllCharacters =
-        sizeEnterTBT.AllowEmail =
-        sizeEnterTBT.AllowSymbols =
-        sizeEnterTBT.AllowPaste = false;
+            sizeEnterTBT.AllowEmail =
+                sizeEnterTBT.AllowSymbols =
+                    sizeEnterTBT.AllowPaste = false;
 
         Color_Info = Object.Instantiate(infoPrefab, Menu.transform);
         Color_Info.name = "Edit Color Description";
@@ -410,6 +431,5 @@ public static class NameTagEditMenu
         infoPrefab.SetActive(false);
         buttonPrefab.SetActive(false);
         enterPrefab.SetActive(false);
-
     }
 }

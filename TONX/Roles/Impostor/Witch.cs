@@ -8,6 +8,7 @@ using TONX.Roles.Core.Interfaces;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -21,25 +22,30 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
             SetupOptionItem,
             "wi"
         );
+
     public Witch(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
+
     public override void OnDestroy()
     {
         Witches.Clear();
         SpelledPlayer.Clear();
         CustomRoleManager.MarkOthers.Remove(GetMarkOthers);
     }
+
     public static OptionItem OptionModeSwitchAction;
+
     enum OptionName
     {
         WitchModeSwitchAction,
     }
+
     public enum SwitchTrigger
     {
         TriggerKill,
@@ -52,10 +58,13 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
     public SwitchTrigger NowSwitchTrigger;
 
     public static List<Witch> Witches = new();
+
     public static void SetupOptionItem()
     {
-        OptionModeSwitchAction = StringOptionItem.Create(RoleInfo, 10, OptionName.WitchModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 2, false);
+        OptionModeSwitchAction = StringOptionItem.Create(RoleInfo, 10, OptionName.WitchModeSwitchAction,
+            EnumHelper.GetAllNames<SwitchTrigger>(), 2, false);
     }
+
     public override void Add()
     {
         IsSpellMode = false;
@@ -63,8 +72,8 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
         NowSwitchTrigger = (SwitchTrigger)OptionModeSwitchAction.GetValue();
         Witches.Add(this);
         if (NowSwitchTrigger == SwitchTrigger.TriggerDouble) Player.AddDoubleTrigger();
-
     }
+
     private void SendRPC(bool doSpell, byte target = 255)
     {
         using var sender = CreateSender();
@@ -81,8 +90,6 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         var doSpel = reader.ReadBoolean();
         if (doSpel)
         {
@@ -101,6 +108,7 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
             IsSpellMode = reader.ReadBoolean();
         }
     }
+
     public void SwitchSpellMode(bool kill)
     {
         bool needSwitch = false;
@@ -113,6 +121,7 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
                 needSwitch = !kill;
                 break;
         }
+
         if (needSwitch)
         {
             IsSpellMode = !IsSpellMode;
@@ -120,6 +129,7 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
             Utils.NotifyRoles(SpecifySeer: Player);
         }
     }
+
     public static bool IsSpelled(byte target = 255)
     {
         foreach (var witch in Witches)
@@ -131,8 +141,10 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
                 return true;
             }
         }
+
         return false;
     }
+
     public void SetSpelled(PlayerControl target)
     {
         if (!IsSpelled(target.PlayerId))
@@ -144,23 +156,28 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
             Player.RPCPlayCustomSound("Curse");
         }
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
 
         if (IsSpellMode)
-        {//呪いならキルしない
+        {
+            //呪いならキルしない
             info.DoKill = false;
             SetSpelled(target);
         }
+
         SwitchSpellMode(true);
 
         return info.DoKill;
     }
+
     public override void AfterMeetingTasks()
     {
         if (Player.IsAlive() || MyState.DeathReason != CustomDeathReason.Vote)
-        {//吊られなかった時呪いキル発動
+        {
+            //吊られなかった時呪いキル発動
             var spelledIdList = new List<byte>();
             foreach (var pc in Main.AllAlivePlayerControls)
             {
@@ -170,13 +187,16 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
                     spelledIdList.Add(pc.PlayerId);
                 }
             }
+
             MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Spell, spelledIdList.ToArray());
         }
+
         //実行してもしなくても呪いはすべて解除
         SpelledPlayer.Clear();
         if (AmongUsClient.Instance.AmHost)
             SendRPC(true);
     }
+
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -184,9 +204,12 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
         {
             return Utils.ColorString(Palette.ImpostorRed, "†");
         }
+
         return "";
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false)
     {
         seen ??= seer;
         if (!Is(seen) || isForMeeting) return "";
@@ -201,8 +224,10 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
         {
             sb.Append(IsSpellMode ? GetString("WitchModeSpell") : GetString("WitchModeKill"));
         }
+
         return sb.ToString();
     }
+
     public bool OverrideKillButtonText(out string text)
     {
         if (NowSwitchTrigger != SwitchTrigger.TriggerDouble && IsSpellMode)
@@ -210,15 +235,18 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
             text = GetString("WitchSpellButtonText");
             return true;
         }
+
         text = default;
         return false;
     }
+
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
         if (NowSwitchTrigger is SwitchTrigger.TriggerVent)
         {
             SwitchSpellMode(false);
         }
+
         return true;
     }
 

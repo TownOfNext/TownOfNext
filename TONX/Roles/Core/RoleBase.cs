@@ -12,35 +12,43 @@ namespace TONX.Roles.Core;
 public abstract class RoleBase : IDisposable
 {
     public PlayerControl Player { get; private set; }
+
     /// <summary>
     /// 玩家状态
     /// </summary>
     public readonly PlayerState MyState;
+
     /// <summary>
     /// 玩家任务状态
     /// </summary>
     public readonly TaskState MyTaskState;
+
     /// <summary>
     /// 是否拥有任务
     /// 默认只有在您是船员的时候有任务
     /// </summary>
     protected Func<HasTask> hasTasks;
+
     /// <summary>
     /// 是否拥有任务
     /// </summary>
     public HasTask HasTasks => hasTasks.Invoke();
+
     /// <summary>
     /// 任务是否完成
     /// </summary>
     public bool IsTaskFinished => MyTaskState.IsTaskFinished;
+
     /// <summary>
     /// 可以成为叛徒
     /// </summary>
     public bool CanBeMadmate { get; private set; }
+
     /// <summary>
     /// 是否拥有技能按钮
     /// </summary>
     public bool HasAbility { get; private set; }
+
     public RoleBase(
         SimpleRoleInfo roleInfo,
         PlayerControl player,
@@ -50,7 +58,9 @@ public abstract class RoleBase : IDisposable
     )
     {
         Player = player;
-        this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate ? () => HasTask.True : () => HasTask.False);
+        this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate
+            ? () => HasTask.True
+            : () => HasTask.False);
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
             RoleTypes.Shapeshifter or
@@ -79,16 +89,21 @@ public abstract class RoleBase : IDisposable
     {
         return player.PlayerId == Player.PlayerId;
     }
+
     /// <summary>
     /// 创建实例后立刻调用的函数
     /// </summary>
     public virtual void Add()
-    { }
+    {
+    }
+
     /// <summary>
     /// 实例被销毁时调用的函数
     /// </summary>
     public virtual void OnDestroy()
-    { }
+    {
+    }
+
     /// <summary>
     /// RoleBase 专用 RPC 发送类
     /// 会自动发送 PlayerId
@@ -96,16 +111,20 @@ public abstract class RoleBase : IDisposable
     protected class RoleRPCSender : IDisposable
     {
         public MessageWriter Writer;
+
         public RoleRPCSender(RoleBase role)
         {
-            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.Reliable, -1);
+            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                (byte)CustomRPC.CustomRoleSync, SendOption.Reliable, -1);
             Writer.Write(role.Player.PlayerId);
         }
+
         public void Dispose()
         {
             AmongUsClient.Instance.FinishRpcImmediately(Writer);
         }
     }
+
     /// <summary>
     /// 创建一个待发送的 RPC
     /// PlayerId 是自动添加的，所以您可以忽略
@@ -116,6 +135,7 @@ public abstract class RoleBase : IDisposable
     {
         return new RoleRPCSender(this);
     }
+
     /// <summary>
     /// 接受到 RPC 时的函数
     /// 任何职业收到任何类型的 RPC 时都会调用，所以您需要判断是否是您需要的 RPC 类型
@@ -124,17 +144,21 @@ public abstract class RoleBase : IDisposable
     /// <param name="reader">收到 RPC 内容</param>
     /// <param name="rpcType">收到 RPC 类型</param>
     public virtual void ReceiveRPC(MessageReader reader)
-    { }
+    {
+    }
+
     /// <summary>
     /// 可以使用技能按钮
     /// </summary>
     /// <returns>true：可以使用能力按钮</returns>
     public virtual bool CanUseAbilityButton() => true;
+
     /// <summary>
     /// 在 BuildGameOptions 中调用的函数
     /// </summary>
     public virtual void ApplyGameOptions(IGameOptions opt)
-    { }
+    {
+    }
 
     /// <summary>
     /// CheckMurder 作为目标处理函数<br/>
@@ -152,14 +176,16 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="info">击杀事件的信息</param>
     public virtual void BeforeMurderPlayerAsTarget(MurderInfo info)
-    { }
+    {
+    }
 
     /// <summary>
     /// MurderPlayer 作为目标处理函数
     /// </summary>
     /// <param name="info">击杀事件的信息</param>
     public virtual void OnMurderPlayerAsTarget(MurderInfo info)
-    { }
+    {
+    }
 
     /// <summary>
     /// 玩家死亡时调用的函数
@@ -168,7 +194,8 @@ public abstract class RoleBase : IDisposable
     /// <param name="player">死亡玩家</param>
     /// <param name="deathReason">死亡原因</param>
     public virtual void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
-    { }
+    {
+    }
 
     /// <summary>
     /// 变形时调用的函数
@@ -191,8 +218,10 @@ public abstract class RoleBase : IDisposable
     /// <param name="animate">アニメーションを再生するかどうか</param>
     /// <returns>falseを返すと変身がキャンセルされる</returns>
     public virtual bool OnCheckShapeshift(PlayerControl target, ref bool animate) => true;
+
     public virtual void OnShapeshift(PlayerControl target)
-    { }
+    {
+    }
 
     /// <summary>
     /// 帧 Task 处理函数<br/>
@@ -203,7 +232,9 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="player">目标玩家</param>
     public virtual void OnFixedUpdate(PlayerControl player)
-    { }
+    {
+    }
+
     /// <summary>
     /// 秒 Task 处理函数<br/>
     /// 不需要验证您的身份，因为调用前已经验证<br/>
@@ -212,7 +243,8 @@ public abstract class RoleBase : IDisposable
     /// <param name="player">目标玩家</param>
     /// <param name="now">当前10位时间戳</param>
     public virtual void OnSecondsUpdate(PlayerControl player, long now)
-    { }
+    {
+    }
 
     /// <summary>
     /// 报告前检查调用的函数
@@ -230,7 +262,8 @@ public abstract class RoleBase : IDisposable
     /// <param name="reporter">报告者</param>
     /// <param name="target">被报告的玩家</param>
     public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
-    { }
+    {
+    }
 
     /// <summary>
     /// <para>进入通风管时调用的函数</para>
@@ -245,7 +278,8 @@ public abstract class RoleBase : IDisposable
     /// 会议开始时调用的函数
     /// </summary>
     public virtual void OnStartMeeting()
-    { }
+    {
+    }
 
     /// <summary>
     /// 在玩家投票时触发，此时还未计票<br/>
@@ -263,7 +297,8 @@ public abstract class RoleBase : IDisposable
     /// <param name="voterId">投票人的ID</param>
     /// <param name="sourceVotedForId">被投票人的ID</param>
     /// <returns>(修改后的被票者的ID(不修改则为 null), 修改后的票数(不修改则为 null), 是否玩家自行操作)</returns>
-    public virtual (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional) => (null, null, true);
+    public virtual (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId,
+        bool isIntentional) => (null, null, true);
 
     /// <summary>
     /// 当有人投票时触发
@@ -282,7 +317,8 @@ public abstract class RoleBase : IDisposable
     /// <param name="exiled">被驱逐的玩家</param>
     /// <param name="DecidedWinner">是否决定了胜利玩家</param>
     public virtual void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
-    { }
+    {
+    }
 
     /// <summary>
     /// 将要驱逐玩家调用的函数
@@ -291,13 +327,15 @@ public abstract class RoleBase : IDisposable
     /// <param name="DecidedWinner">是否决定了胜利玩家</param>
     /// <param name="winDescriptionText">胜利描述文本</param>
     /// <returns>OnExileWrapUp 将要执行的函数</returns>
-    public virtual Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText) => null;
+    public virtual Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner,
+        ref List<string> WinDescriptionText) => null;
 
     /// <summary>
     /// 每次会议结束后调用的函数
     /// </summary>
     public virtual void AfterMeetingTasks()
-    { }
+    {
+    }
 
     /// <summary>
     /// 在玩家出生时调用的函数
@@ -305,7 +343,8 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="initialState">是否是游戏开局出生</param>
     public virtual void OnSpawn(bool initialState = false)
-    { }
+    {
+    }
 
     /// <summary>
     /// 玩家发送消息后调用的函数
@@ -364,8 +403,11 @@ public abstract class RoleBase : IDisposable
     /// <param name="enabled">是否显示 RoleName</param>
     /// <param name="roleColor">RoleName 的颜色</param>
     /// <param name="roleText">RoleName 的文本</param>
-    public virtual void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
-    { }
+    public virtual void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor,
+        ref string roleText)
+    {
+    }
+
     /// <summary>
     /// 作为 seer 重写显示上的 RoleName
     /// </summary>
@@ -373,15 +415,20 @@ public abstract class RoleBase : IDisposable
     /// <param name="enabled">是否显示 RoleName</param>
     /// <param name="roleColor">RoleName 的颜色</param>
     /// <param name="roleText">RoleName 的文本</param>
-    public virtual void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
-    { }
+    public virtual void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor,
+        ref string roleText)
+    {
+    }
+
     /// <summary>
     /// 重写原来的职业名
     /// </summary>
     /// <param name="roleColor">RoleName 的颜色</param>
     /// <param name="roleText">RoleName 的文本</param>
     public virtual void OverrideTrueRoleName(ref Color roleColor, ref string roleText)
-    { }
+    {
+    }
+
     /// <summary>
     /// 作为 seer 重写 ProgressText
     /// </summary>
@@ -389,12 +436,15 @@ public abstract class RoleBase : IDisposable
     /// <param name="enabled">是否显示 ProgressText</param>
     /// <param name="text">ProgressText 的文本</param>
     public virtual void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
-    { }
+    {
+    }
+
     /// <summary>
     /// 显示在职业旁边的文本
     /// </summary>
     /// <param name="comms">目前是否为通讯破坏状态</param>
     public virtual string GetProgressText(bool comms = false) => "";
+
     /// <summary>
     /// 作为 seen 重写 Name
     /// </summary>
@@ -402,7 +452,9 @@ public abstract class RoleBase : IDisposable
     /// <param name="nameText">Name 的文本</param>
     /// <param name="isForMeeting">是否用于显示在会议上</param>
     public virtual void OverrideNameAsSeen(PlayerControl seer, ref string nameText, bool isForMeeting = false)
-    { }
+    {
+    }
+
     /// <summary>
     /// 作为 seer 重写 Name
     /// </summary>
@@ -411,7 +463,9 @@ public abstract class RoleBase : IDisposable
     /// <param name="nameText">Name 的文本</param>
     /// <param name="isForMeeting">是否用于显示在会议上</param>
     public virtual void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
-    { }
+    {
+    }
+
     /// <summary>
     /// 作为 seer 时获取 Mark 的函数
     /// 如果您想在 seer,seen 都不是您时进行处理，请使用相同的参数将其实现为静态
@@ -422,6 +476,7 @@ public abstract class RoleBase : IDisposable
     /// <param name="isForMeeting">是否正在会议中</param>
     /// <returns>構築したMark</returns>
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => "";
+
     /// <summary>
     /// 作为 seer 时获取 LowerTex 的函数
     /// 如果您想在 seer,seen 都不是您时进行处理，请使用相同的参数将其实现为静态
@@ -432,7 +487,9 @@ public abstract class RoleBase : IDisposable
     /// <param name="isForMeeting">是否正在会议中</param>
     /// <param name="isForHud">是否显示在模组端的HUD</param>
     /// <returns>组合后的全部 LowerText</returns>
-    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => "";
+    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false) => "";
+
     /// <summary>
     /// 作为 seer 时获取 LowerTex 的函数
     /// 如果您想在 seer,seen 都不是您时进行处理，请使用相同的参数将其实现为静态
@@ -448,6 +505,7 @@ public abstract class RoleBase : IDisposable
     /// 修改技能按钮的剩余次数
     /// </summary>
     public virtual int OverrideAbilityButtonUsesRemaining() => -1;
+
     /// <summary>
     /// 更改变形/跳管/生命面板按钮的文本
     /// </summary>
@@ -456,6 +514,7 @@ public abstract class RoleBase : IDisposable
         text = default;
         return false;
     }
+
     /// <summary>
     /// 更改变形/跳管/生命面板按钮的图片
     /// </summary>
@@ -466,12 +525,14 @@ public abstract class RoleBase : IDisposable
         buttonName = default;
         return false;
     }
+
     /// <summary>
     /// 更改报告按钮的文本
     /// </summary>
     /// <param name="text">覆盖后的文本</param>
     /// <returns>true：确定要覆盖</returns>
     public virtual string GetReportButtonText() => GetString(StringNames.ReportLabel);
+
     /// <summary>
     /// 更改报告按钮的图片
     /// </summary>
@@ -488,14 +549,16 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="msgToSend">等待发送的信息列表</param>
     public virtual void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
-    { }
+    {
+    }
 
     /// <summary>
     /// 游戏开始后会立刻调用该函数
     /// 默认为全体玩家调用
     /// </summary>
     public virtual void OnGameStart()
-    { }
+    {
+    }
 
     protected static AudioClip GetIntroSound(RoleTypes roleType) =>
         RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;

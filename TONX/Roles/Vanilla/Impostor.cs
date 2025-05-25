@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -13,10 +12,12 @@ public sealed class Impostor : RoleBase, IImpostor
             player => new Impostor(player),
             RoleTypes.Impostor
         );
+
     public Impostor(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

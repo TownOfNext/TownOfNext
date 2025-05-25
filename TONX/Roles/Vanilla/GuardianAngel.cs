@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Vanilla;
@@ -12,10 +11,12 @@ public sealed class GuardianAngel : RoleBase
             player => new GuardianAngel(player),
             RoleTypes.GuardianAngel
         );
+
     public GuardianAngel(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

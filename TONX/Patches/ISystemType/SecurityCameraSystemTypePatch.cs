@@ -27,6 +27,7 @@ public static class SecurityCameraSystemTypeUpdateSystemPatch
             };
             return !camerasDisabled;
         }
+
         return true;
     }
 }

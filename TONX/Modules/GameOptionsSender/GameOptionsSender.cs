@@ -4,6 +4,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
 using InnerNet;
 using System.Collections.Generic;
+
 // Il2CppStructArray<byte>とbyte[]との間での暗黙的な変換の際に発生する重い計算を抑制するため，意図的にIl2CppSystemとIl2CppInterop.Runtime.InteropTypes.Arraysを使用します - Hyz-sui
 
 namespace TONX.Modules;
@@ -11,6 +12,7 @@ namespace TONX.Modules;
 public abstract class GameOptionsSender
 {
     #region Static
+
     public readonly static List<GameOptionsSender> AllSenders = new(15) { new NormalGameOptionsSender() };
 
     public static void SendAllGameOptions()
@@ -22,6 +24,7 @@ public abstract class GameOptionsSender
             sender.IsDirty = false;
         }
     }
+
     #endregion
 
     public abstract IGameOptions BasedGameOptions { get; }
@@ -32,7 +35,8 @@ public abstract class GameOptionsSender
     {
         var opt = BuildGameOptions();
         var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
-            ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
+            ? opt.AprilFoolsOnMode
+            : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
 
         // option => byte[]
         MessageWriter writer = MessageWriter.Get(SendOption.None);
@@ -48,6 +52,7 @@ public abstract class GameOptionsSender
             writer.Recycle();
             Logger.Error("オプションのキャストに失敗しました", this.ToString());
         }
+
         writer.EndMessage();
 
         // 配列化&送信
@@ -58,6 +63,7 @@ public abstract class GameOptionsSender
         SendOptionsArray(byteArray);
         writer.Recycle();
     }
+
     public virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray)
     {
         for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
@@ -68,7 +74,9 @@ public abstract class GameOptionsSender
             }
         }
     }
-    protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex, int targetClientId)
+
+    protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex,
+        int targetClientId)
     {
         var writer = MessageWriter.Get(SendOption.Reliable);
 
@@ -92,6 +100,7 @@ public abstract class GameOptionsSender
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();
     }
+
     public abstract IGameOptions BuildGameOptions();
 
     public virtual bool AmValid() => true;

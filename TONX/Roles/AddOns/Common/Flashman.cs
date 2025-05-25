@@ -5,6 +5,7 @@ using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Common;
+
 public static class Flashman
 {
     private static readonly int Id = 80500;
@@ -17,19 +18,23 @@ public static class Flashman
     {
         SetupAddonOptions(Id, TabGroup.OtherRoles, CustomRoles.Flashman);
         AddOnsAssignData.Create(Id + 10, TabGroup.OtherRoles, CustomRoles.Flashman, true, true, true);
-        OptionSpeed = FloatOptionItem.Create(Id + 20, "FlashmanSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Flashman])
+        OptionSpeed = FloatOptionItem
+            .Create(Id + 20, "FlashmanSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.OtherRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Flashman])
             .SetValueFormat(OptionFormat.Multiplier);
     }
+
     [GameModuleInitializer]
     public static void Init()
     {
         playerIdList = new();
     }
+
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
     }
+
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-
 }

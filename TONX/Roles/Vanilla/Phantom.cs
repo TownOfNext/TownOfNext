@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -13,10 +12,12 @@ public sealed class Phantom : RoleBase, IImpostor
             player => new Phantom(player),
             RoleTypes.Phantom
         );
+
     public Phantom(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

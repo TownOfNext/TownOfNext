@@ -6,6 +6,7 @@ namespace TONX.Templates;
 public sealed class TMPTemplate
 {
     private static TextMeshPro baseTMP;
+
     public static void SetBase(TextMeshPro tmp)
     {
         if (baseTMP != null) return;
@@ -16,6 +17,7 @@ public sealed class TMPTemplate
         baseTMP.gameObject.SetActive(false);
         baseTMP.gameObject.name = "TMPTemplateBase";
     }
+
     public static TextMeshPro Create(
         string name,
         string text = null,
@@ -24,7 +26,7 @@ public sealed class TMPTemplate
         TextAlignmentOptions? alignment = null,
         bool setActive = false,
         Transform parent = null
-        )
+    )
     {
         var replicatedObject = parent == null
             ? Object.Instantiate(baseTMP)
@@ -32,8 +34,8 @@ public sealed class TMPTemplate
         replicatedObject.text = text ?? "";
         replicatedObject.color = color ?? Color.white;
         replicatedObject.fontSize =
-        replicatedObject.fontSizeMax =
-        replicatedObject.fontSizeMin = fontSize ?? baseTMP.fontSize;
+            replicatedObject.fontSizeMax =
+                replicatedObject.fontSizeMin = fontSize ?? baseTMP.fontSize;
         replicatedObject.alignment = alignment ?? TextAlignmentOptions.Center;
 
         replicatedObject.gameObject.SetActive(setActive);

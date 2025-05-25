@@ -14,6 +14,7 @@ namespace TONX;
 class HudManagerInitializePatch
 {
     public static PassiveButton RoleInfoButton;
+
     [GameModuleInitializer]
     public static void CreateRoleInfoButton()
     {
@@ -22,7 +23,8 @@ class HudManagerInitializePatch
         RoleInfoButton = UnityEngine.Object.Instantiate(template, template.transform.parent);
         RoleInfoButton.OnClick.AddListener((Action)(() =>
         {
-            if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) &&
+                Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
                 else
@@ -30,12 +32,16 @@ class HudManagerInitializePatch
                     InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
+
                 RoleInfoButton.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }));
-        RoleInfoButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-inactive.png", 100f);
-        RoleInfoButton.activeSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-active.png", 100f);
-        RoleInfoButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-selected.png", 100f);
+        RoleInfoButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite =
+            Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-inactive.png", 100f);
+        RoleInfoButton.activeSprites.GetComponent<SpriteRenderer>().sprite =
+            Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-active.png", 100f);
+        RoleInfoButton.selectedSprites.GetComponent<SpriteRenderer>().sprite =
+            Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-selected.png", 100f);
         RoleInfoButton.gameObject.SetActive(true);
     }
 }
@@ -51,11 +57,12 @@ class HudManagerPatch
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
     public static TMPro.TextMeshPro LowerInfoText;
+
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost) return;
 
-        if (HudManagerInitializePatch.RoleInfoButton != null) 
+        if (HudManagerInitializePatch.RoleInfoButton != null)
         {
             var template = HudManager.Instance.MapButton;
             var RoleInfoButton = HudManagerInitializePatch.RoleInfoButton;
@@ -75,6 +82,7 @@ class HudManagerPatch
                 player.Collider.offset = new Vector2(0f, 127f);
             }
         }
+
         //壁抜け解除
         if (player.Collider.offset.y == 127f)
         {
@@ -97,20 +105,24 @@ class HudManagerPatch
                 var roleClass = player.GetRoleClass();
                 if (roleClass != null)
                 {
-                    var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : GetString(StringNames.KillLabel);
+                    var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true
+                        ? text
+                        : GetString(StringNames.KillLabel);
                     __instance.KillButton.OverrideText(killLabel);
                     var reportLabel = roleClass?.GetReportButtonText() ?? GetString(StringNames.ReportLabel);
                     __instance.ReportButton.OverrideText(reportLabel);
                     if (roleClass.HasAbility)
                     {
-                        if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(abilityLabel);
+                        if (roleClass.GetAbilityButtonText(out var abilityLabel))
+                            __instance.AbilityButton.OverrideText(abilityLabel);
                         __instance.AbilityButton.ToggleVisible(roleClass.CanUseAbilityButton() && GameStates.IsInTask);
                         int uses = roleClass.OverrideAbilityButtonUsesRemaining();
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
                         else __instance.AbilityButton.SetInfiniteUses();
                     }
                 }
-                else if (player.GetCustomRole() == CustomRoles.KB_Normal) __instance.KillButton.OverrideText(GetString("DemonButtonText"));
+                else if (player.GetCustomRole() == CustomRoles.KB_Normal)
+                    __instance.KillButton.OverrideText(GetString("DemonButtonText"));
 
                 //バウンティハンターのターゲットテキスト
                 if (LowerInfoText == null)
@@ -126,10 +138,12 @@ class HudManagerPatch
                     LowerInfoText.fontSizeMax = 2.0f;
                 }
 
-                LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+                LowerInfoText.text =
+                    roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
                 LowerInfoText.enabled = LowerInfoText.text != "";
 
-                if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
+                if ((!AmongUsClient.Instance.IsGameStarted &&
+                     AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
                 {
                     LowerInfoText.enabled = false;
                 }
@@ -149,7 +163,7 @@ class HudManagerPatch
                     __instance.KillButton.SetDisabled();
                     __instance.KillButton.ToggleVisible(false);
                 }
-                
+
                 bool CanUseVent = player.CanUseImpostorVentButton();
                 __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
                 player.Data.Role.CanVent = CanUseVent;
@@ -186,6 +200,7 @@ class HudManagerPatch
             RepairSender.enabled = !RepairSender.enabled;
             RepairSender.Reset();
         }
+
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
         {
             if (Input.GetKeyDown(KeyCode.Alpha0)) RepairSender.Input(0);
@@ -202,20 +217,24 @@ class HudManagerPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ToggleHighlight))]
 class ToggleHighlightPatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active,
+        [HarmonyArgument(1)] RoleTeamTypes team)
     {
         var player = PlayerControl.LocalPlayer;
         if (!GameStates.IsInTask) return;
 
         if (player.CanUseKillButton())
         {
-            __instance.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
+            __instance.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor",
+                Utils.GetRoleColor(player.GetCustomRole()));
         }
     }
 }
+
 [HarmonyPatch(typeof(Vent), nameof(Vent.SetOutline))]
 class SetVentOutlinePatch
 {
@@ -227,15 +246,19 @@ class SetVentOutlinePatch
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
     }
 }
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), new System.Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive),
+    new System.Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
 class SetHudActivePatch
 {
     public static bool IsActive = false;
+
     public static void Prefix(HudManager __instance, [HarmonyArgument(2)] ref bool isActive)
     {
         isActive &= !GameStates.IsMeeting;
         return;
     }
+
     public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
     {
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
@@ -250,21 +273,27 @@ class SetHudActivePatch
         __instance.SabotageButton.ToggleVisible(player.CanUseSabotageButton());
     }
 }
+
 [HarmonyPatch(typeof(VentButton), nameof(VentButton.DoClick))]
 class VentButtonDoClickPatch
 {
     public static bool Prefix(VentButton __instance)
     {
         var pc = PlayerControl.LocalPlayer;
-        if (pc == null || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
-        if (pc.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Veteran or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.Grenadier or CustomRoles.DoveOfPeace)
+        if (pc == null || pc.inVent || __instance.currentTarget == null || !pc.CanMove ||
+            !__instance.isActiveAndEnabled) return true;
+        if (pc.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Revolutionist
+            or CustomRoles.Veteran or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.Grenadier
+            or CustomRoles.DoveOfPeace)
         {
             pc?.MyPhysics?.RpcEnterVent(__instance.currentTarget.Id);
             return false;
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Show))]
 class MapBehaviourShowPatch
 {
@@ -282,6 +311,7 @@ class MapBehaviourShowPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
 class TaskPanelBehaviourPatch
 {
@@ -312,14 +342,17 @@ class TaskPanelBehaviourPatch
                     foreach (var eachLine in lines)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) &&
+                            sb.Length < 1 && !line.Contains('(')) continue;
                         sb.Append(line + "\r\n");
                     }
+
                     if (sb.Length > 1)
                     {
                         var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');
                         if (!Utils.HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 2)
-                            text = $"{Utils.ColorString(new Color32(255, 20, 147, byte.MaxValue), GetString("FakeTask"))}\r\n{text}";
+                            text =
+                                $"{Utils.ColorString(new Color32(255, 20, 147, byte.MaxValue), GetString("FakeTask"))}\r\n{text}";
                         AllText += $"\r\n\r\n<size=85%>{text}</size>";
                     }
 
@@ -361,6 +394,7 @@ class RepairSender
             amount += num;
         }
     }
+
     public static void InputEnter()
     {
         if (!TypingAmount)
@@ -374,17 +408,20 @@ class RepairSender
             Send();
         }
     }
+
     public static void Send()
     {
         ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();
     }
+
     public static void Reset()
     {
         TypingAmount = false;
         SystemType = 0;
         amount = 0;
     }
+
     public static string GetText()
     {
         return SystemType.ToString() + "(" + ((SystemTypes)SystemType).ToString() + ")\r\n" + amount;

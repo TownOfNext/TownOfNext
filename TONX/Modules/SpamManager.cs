@@ -20,6 +20,7 @@ public static class SpamManager
         CreateIfNotExists();
         BanWords = ReturnAllNewLinesInFile(BANEDWORDS_FILE_PATH);
     }
+
     public static void CreateIfNotExists()
     {
         if (!File.Exists(BANEDWORDS_FILE_PATH))
@@ -32,7 +33,8 @@ public static class SpamManager
                 {
                     string fileName = GetUserLangByRegion().ToString();
                     Logger.Warn($"Create New BanWords: {fileName}", "SpamManager");
-                    File.WriteAllText(BANEDWORDS_FILE_PATH, GetResourcesTxt($"TONX.Resources.Configs.BanWords.{fileName}.txt"));
+                    File.WriteAllText(BANEDWORDS_FILE_PATH,
+                        GetResourcesTxt($"TONX.Resources.Configs.BanWords.{fileName}.txt"));
                 }
             }
             catch (Exception ex)
@@ -41,6 +43,7 @@ public static class SpamManager
             }
         }
     }
+
     private static string GetResourcesTxt(string path)
     {
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
@@ -48,6 +51,7 @@ public static class SpamManager
         using StreamReader reader = new(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
+
     public static List<string> ReturnAllNewLinesInFile(string filename)
     {
         if (!File.Exists(filename)) return new List<string>();
@@ -55,9 +59,11 @@ public static class SpamManager
         string text;
         List<string> sendList = new();
         while ((text = sr.ReadLine()) != null)
-            if (text.Length > 1 && text != "") sendList.Add(text.Replace("\\n", "\n").ToLower());
+            if (text.Length > 1 && text != "")
+                sendList.Add(text.Replace("\\n", "\n").ToLower());
         return sendList;
     }
+
     public static bool CheckSpam(PlayerControl player, string text)
     {
         if (player.AmOwner || !AmongUsClient.Instance.AmHost) return false;
@@ -72,21 +78,26 @@ public static class SpamManager
                 msg = string.Format(GetString("Message.KickWhoSayStart"), name);
                 if (Options.AutoKickStart.GetBool())
                 {
-                    if (!Main.SayStartTimes.ContainsKey(player.GetClientId())) Main.SayStartTimes.Add(player.GetClientId(), 0);
+                    if (!Main.SayStartTimes.ContainsKey(player.GetClientId()))
+                        Main.SayStartTimes.Add(player.GetClientId(), 0);
                     Main.SayStartTimes[player.GetClientId()]++;
-                    msg = string.Format(GetString("Message.WarnWhoSayStart"), name, Main.SayStartTimes[player.GetClientId()]);
+                    msg = string.Format(GetString("Message.WarnWhoSayStart"), name,
+                        Main.SayStartTimes[player.GetClientId()]);
                     if (Main.SayStartTimes[player.GetClientId()] > Options.AutoKickStartTimes.GetInt())
                     {
-                        msg = string.Format(GetString("Message.KickStartAfterWarn"), name, Main.SayStartTimes[player.GetClientId()]);
+                        msg = string.Format(GetString("Message.KickStartAfterWarn"), name,
+                            Main.SayStartTimes[player.GetClientId()]);
                         kick = true;
                     }
                 }
+
                 if (msg != "") Utils.SendMessage(msg);
                 if (kick)
                 {
                     RPC.NotificationPop(msg);
                     Utils.KickPlayer(player.GetClientId(), Options.AutoKickStartAsBan.GetBool(), "SayStart");
                 }
+
                 return true;
             }
         }
@@ -98,12 +109,15 @@ public static class SpamManager
         if (Options.AutoWarnStopWords.GetBool()) msg = string.Format(GetString("Message.WarnWhoSayBanWord"), name);
         if (Options.AutoKickStopWords.GetBool())
         {
-            if (!Main.SayBanwordsTimes.ContainsKey(player.GetClientId())) Main.SayBanwordsTimes.Add(player.GetClientId(), 0);
+            if (!Main.SayBanwordsTimes.ContainsKey(player.GetClientId()))
+                Main.SayBanwordsTimes.Add(player.GetClientId(), 0);
             Main.SayBanwordsTimes[player.GetClientId()]++;
-            msg = string.Format(GetString("Message.WarnWhoSayBanWordTimes"), name, Main.SayBanwordsTimes[player.GetClientId()]);
+            msg = string.Format(GetString("Message.WarnWhoSayBanWordTimes"), name,
+                Main.SayBanwordsTimes[player.GetClientId()]);
             if (Main.SayBanwordsTimes[player.GetClientId()] > Options.AutoKickStopWordsTimes.GetInt())
             {
-                msg = string.Format(GetString("Message.KickWhoSayBanWordAfterWarn"), name, Main.SayBanwordsTimes[player.GetClientId()]);
+                msg = string.Format(GetString("Message.KickWhoSayBanWordAfterWarn"), name,
+                    Main.SayBanwordsTimes[player.GetClientId()]);
                 kick = true;
             }
         }
@@ -117,13 +131,16 @@ public static class SpamManager
                     Utils.SendMessage(msg, pc.PlayerId);
             }
         }
+
         if (kick)
         {
             RPC.NotificationPop(msg);
             Utils.KickPlayer(player.GetClientId(), Options.AutoKickStopWordsAsBan.GetBool(), "BanWords");
         }
+
         return true;
     }
+
     private static bool ContainsStart(string text)
     {
         text = text.Trim().ToLower();
@@ -134,6 +151,7 @@ public static class SpamManager
             if (text[i..].Equals("k")) stNum++;
             if (text[i..].Equals("开")) stNum++;
         }
+
         if (stNum >= 3) return true;
 
         if (text == "Start") return true;

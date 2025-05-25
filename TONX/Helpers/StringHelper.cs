@@ -18,6 +18,7 @@ public static class StringHelper
         var markingColorCode = ColorUtility.ToHtmlStringRGBA(markingColor);
         return $"<mark=#{markingColorCode}>{self}</mark>";
     }
+
     /// <summary>
     /// SJISでのバイト数を計算する
     /// </summary>

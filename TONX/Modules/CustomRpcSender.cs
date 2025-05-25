@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+
 namespace TONX;
 
 public class CustomRpcSender
@@ -11,7 +12,9 @@ public class CustomRpcSender
     public readonly string name;
     public readonly SendOption sendOption;
     public bool isUnsafe;
+
     public delegate void onSendDelegateType();
+
     public onSendDelegateType onSendDelegate;
 
     public State CurrentState
@@ -23,6 +26,7 @@ public class CustomRpcSender
             else Logger.Warn("CurrentStateはisUnsafeがtrueの時のみ上書きできます", "CustomRpcSender");
         }
     }
+
     private State currentState = State.BeforeInit;
 
     //0~: targetClientId (GameDataTo)
@@ -30,7 +34,10 @@ public class CustomRpcSender
     //-2: 未設定
     private int currentRpcTarget;
 
-    private CustomRpcSender() { }
+    private CustomRpcSender()
+    {
+    }
+
     public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
     {
         stream = MessageWriter.Get(sendOption);
@@ -44,12 +51,15 @@ public class CustomRpcSender
         currentState = State.Ready;
         Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
-    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.Reliable, bool isUnsafe = false)
+
+    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.Reliable,
+        bool isUnsafe = false)
     {
         return new CustomRpcSender(name, sendOption, isUnsafe);
     }
 
     #region Start/End Message
+
     public CustomRpcSender StartMessage(int targetClientId = -1)
     {
         if (currentState != State.Ready)
@@ -83,6 +93,7 @@ public class CustomRpcSender
         currentState = State.InRootMessage;
         return this;
     }
+
     public CustomRpcSender EndMessage(int targetClientId = -1)
     {
         if (currentState != State.InRootMessage)
@@ -97,16 +108,21 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
             }
         }
+
         stream.EndMessage();
 
         currentRpcTarget = -2;
         currentState = State.Ready;
         return this;
     }
+
     #endregion
+
     #region Start/End Rpc
+
     public CustomRpcSender StartRpc(uint targetNetId, RpcCalls rpcCall)
         => StartRpc(targetNetId, (byte)rpcCall);
+
     public CustomRpcSender StartRpc(
         uint targetNetId,
         byte callId)
@@ -131,6 +147,7 @@ public class CustomRpcSender
         currentState = State.InRpc;
         return this;
     }
+
     public CustomRpcSender EndRpc()
     {
         if (currentState != State.InRpc)
@@ -150,7 +167,9 @@ public class CustomRpcSender
         currentState = State.InRootMessage;
         return this;
     }
+
     #endregion
+
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
         byte callId,
@@ -169,16 +188,19 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
             }
         }
+
         if (currentRpcTarget != targetClientId)
         {
             //StartMessage処理
             if (currentState == State.InRootMessage) this.EndMessage();
             this.StartMessage(targetClientId);
         }
+
         this.StartRpc(targetNetId, callId);
 
         return this;
     }
+
     public void SendMessage()
     {
         if (currentState == State.InRootMessage) this.EndMessage();
@@ -203,7 +225,9 @@ public class CustomRpcSender
     }
 
     // Write
+
     #region PublicWriteMethods
+
     public CustomRpcSender Write(float val) => Write(w => w.Write(val));
     public CustomRpcSender Write(string val) => Write(w => w.Write(val));
     public CustomRpcSender Write(ulong val) => Write(w => w.Write(val));
@@ -214,11 +238,15 @@ public class CustomRpcSender
     public CustomRpcSender Write(sbyte val) => Write(w => w.Write(val));
     public CustomRpcSender Write(bool val) => Write(w => w.Write(val));
     public CustomRpcSender Write(Il2CppStructArray<byte> bytes) => Write(w => w.Write(bytes));
-    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) => Write(w => w.Write(bytes, offset, length));
+
+    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) =>
+        Write(w => w.Write(bytes, offset, length));
+
     public CustomRpcSender WriteBytesAndSize(Il2CppStructArray<byte> bytes) => Write(w => w.WriteBytesAndSize(bytes));
     public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
+
     #endregion
 
     private CustomRpcSender Write(Action<MessageWriter> action)
@@ -235,6 +263,7 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
             }
         }
+
         action(stream);
 
         return this;
@@ -252,21 +281,26 @@ public class CustomRpcSender
 
 public static class CustomRpcSenderExtensions
 {
-    public static void RpcSetRole(this CustomRpcSender sender, PlayerControl player, RoleTypes role, int targetClientId = -1)
+    public static void RpcSetRole(this CustomRpcSender sender, PlayerControl player, RoleTypes role,
+        int targetClientId = -1)
     {
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
             .Write((ushort)role)
             .Write(false)
             .EndRpc();
     }
-    public static void RpcMurderPlayer(this CustomRpcSender sender, PlayerControl player, PlayerControl target, int targetClientId = -1)
+
+    public static void RpcMurderPlayer(this CustomRpcSender sender, PlayerControl player, PlayerControl target,
+        int targetClientId = -1)
     {
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId)
             .WriteNetObject(target)
             .Write((int)ExtendedPlayerControl.SucceededFlags)
             .EndRpc();
     }
-    public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name, PlayerControl seer = null)
+
+    public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name,
+        PlayerControl seer = null)
     {
         var targetClientId = seer == null ? -1 : seer.GetClientId();
         if (seer == null)
@@ -280,6 +314,7 @@ public static class CustomRpcSenderExtensions
         {
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
+
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
             .Write(player.Data.NetId)
             .Write(name)

@@ -8,6 +8,7 @@ using TONX.Roles.Core.Interfaces;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONX.Roles.Neutral;
+
 public sealed class Executioner : RoleBase, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -23,12 +24,13 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
             "#611c3a",
             introSound: () => GetIntroSound(RoleTypes.Shapeshifter)
         );
+
     public Executioner(PlayerControl player)
-    : base(
-        RoleInfo,
-        player,
-        () => ChangeRolesAfterTargetKilled == CustomRoles.Crewmate ? HasTask.ForRecompute : HasTask.False
-    )
+        : base(
+            RoleInfo,
+            player,
+            () => ChangeRolesAfterTargetKilled == CustomRoles.Crewmate ? HasTask.ForRecompute : HasTask.False
+        )
     {
         CanTargetImpostor = OptionCanTargetImpostor.GetBool();
         CanTargetNeutralKiller = OptionCanTargetNeutralKiller.GetBool();
@@ -38,11 +40,13 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
 
         TargetExiled = false;
     }
+
     public static byte WinnerID;
 
     private static OptionItem OptionCanTargetImpostor;
     private static OptionItem OptionCanTargetNeutralKiller;
     public static OptionItem OptionChangeRolesAfterTargetKilled;
+
     enum OptionName
     {
         ExecutionerCanTargetImpostor,
@@ -57,18 +61,23 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
     public static HashSet<Executioner> Executioners = new(15);
     public byte TargetId;
     private bool TargetExiled;
+
     public static readonly CustomRoles[] ChangeRoles =
     {
-            CustomRoles.Crewmate, CustomRoles.Jester, CustomRoles.Opportunist,
+        CustomRoles.Crewmate, CustomRoles.Jester, CustomRoles.Opportunist,
     };
 
     private static void SetupOptionItem()
     {
         var cRolesString = ChangeRoles.Select(x => x.ToString()).ToArray();
-        OptionCanTargetImpostor = BooleanOptionItem.Create(RoleInfo, 10, OptionName.ExecutionerCanTargetImpostor, false, false);
-        OptionCanTargetNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
-        OptionChangeRolesAfterTargetKilled = StringOptionItem.Create(RoleInfo, 11, OptionName.ExecutionerChangeRolesAfterTargetKilled, cRolesString, 1, false);
+        OptionCanTargetImpostor =
+            BooleanOptionItem.Create(RoleInfo, 10, OptionName.ExecutionerCanTargetImpostor, false, false);
+        OptionCanTargetNeutralKiller =
+            BooleanOptionItem.Create(RoleInfo, 12, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
+        OptionChangeRolesAfterTargetKilled = StringOptionItem.Create(RoleInfo, 11,
+            OptionName.ExecutionerChangeRolesAfterTargetKilled, cRolesString, 1, false);
     }
+
     public override void Add()
     {
         //ターゲット割り当て
@@ -86,16 +95,18 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
 
             targetList.Add(target);
         }
+
         var SelectedTarget = targetList[rand.Next(targetList.Count)];
         TargetId = SelectedTarget.PlayerId;
         SendRPC();
         Logger.Info($"{Player.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Executioner");
     }
+
     public override void OnDestroy()
     {
         Executioners.Remove(this);
-
     }
+
     public void SendRPC()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -103,16 +114,19 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         using var sender = CreateSender();
         sender.Writer.Write(TargetId);
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         TargetId = targetId;
     }
+
     public override void OnMurderPlayerAsTarget(MurderInfo _)
     {
         TargetId = byte.MaxValue;
         SendRPC();
     }
+
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
     {
         foreach (var executioner in Executioners.ToArray())
@@ -124,6 +138,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
             }
         }
     }
+
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
@@ -131,7 +146,9 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
 
         return TargetId == seen.PlayerId ? Utils.ColorString(RoleInfo.RoleColor, "♦") : "";
     }
-    public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText)
+
+    public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner,
+        ref List<string> WinDescriptionText)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
         if (Player?.IsAlive() != true) return null;
@@ -147,10 +164,12 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         };
     }
+
     public bool CheckWin(ref CustomRoles winnerRole)
     {
         return TargetExiled && CustomWinnerHolder.WinnerTeam != CustomWinner.Default;
     }
+
     public void ChangeRole()
     {
         Player.RpcSetCustomRole(ChangeRolesAfterTargetKilled);

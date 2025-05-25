@@ -30,15 +30,19 @@ public static class MeetingStartNotify
                 var txt = sb.ToString();
                 sb.Clear().Append(txt.RemoveHtmlTags());
                 foreach (var subRole in PlayerState.AllPlayerStates[pc.PlayerId].SubRoles)
-                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleDisplaySpawnMode(subRole) + GetString($"{subRole}InfoLong"));
+                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleDisplaySpawnMode(subRole) +
+                              GetString($"{subRole}InfoLong"));
                 if (CustomRoles.Neptune.IsExist() && (role is not CustomRoles.GM and not CustomRoles.Neptune))
-                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleDisplaySpawnMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleDisplaySpawnMode(CustomRoles.Lovers) +
+                              GetString($"LoversInfoLong"));
                 AddMsg(sb.ToString(), pc.PlayerId);
             }
+
         if (msgToSend.Count >= 1)
         {
             var msgTemp = msgToSend.ToList();
-            new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "")); }, 3f, "NotifyOnMeetingStart");
+            new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "")); }, 3f,
+                "NotifyOnMeetingStart");
         }
 
         msgToSend = new();
@@ -50,15 +54,19 @@ public static class MeetingStartNotify
             if ((vic.GetRealKiller()?.Is(CustomRoles.Mimic) ?? false) && (!vic.GetRealKiller()?.IsAlive() ?? false))
                 mimicSb.Append($"\n{vic.GetNameWithRole(true)}");
         }
+
         if (mimicSb.Length > 1)
         {
             string mimicMsg = GetString("MimicDeadMsg") + "\n" + mimicSb.ToString();
             foreach (var ipc in Main.AllPlayerControls.Where(x => x.Is(CustomRoleTypes.Impostor)))
-                AddMsg(mimicMsg, ipc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
+                AddMsg(mimicMsg, ipc.PlayerId,
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
         }
 
         CustomRoleManager.AllActiveRoles.Values.Do(x => x.NotifyOnMeetingStart(ref msgToSend));
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3 ?? ""} => {x.Item1}", "NotifyOnMeetingStart"));
-        new LateTask(() => { msgToSend.DoIf(x => x.Item1 != null, x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "")); }, 3f, "NotifyOnMeetingStart");
+        new LateTask(
+            () => { msgToSend.DoIf(x => x.Item1 != null, x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "")); },
+            3f, "NotifyOnMeetingStart");
     }
 }

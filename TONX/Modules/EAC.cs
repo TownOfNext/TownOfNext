@@ -11,6 +11,7 @@ internal class EAC
 {
     public static int MeetingTimes = 0;
     public static int DeNum = 0;
+
     public static void WarnHost(int denum = 1)
     {
         DeNum += denum;
@@ -19,11 +20,14 @@ internal class EAC
             ErrorText.Instance.CheatDetected = DeNum > 3;
             ErrorText.Instance.SBDetected = DeNum > 10;
             if (ErrorText.Instance.CheatDetected)
-                ErrorText.Instance.AddError(ErrorText.Instance.SBDetected ? ErrorCode.SBDetected : ErrorCode.CheatDetected);
+                ErrorText.Instance.AddError(ErrorText.Instance.SBDetected
+                    ? ErrorCode.SBDetected
+                    : ErrorCode.CheatDetected);
             else
                 ErrorText.Instance.Clear();
         }
     }
+
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -39,7 +43,8 @@ internal class EAC
                     string name = sr.ReadString();
                     if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
                     if (
-                        ((name.Contains("<size") || name.Contains("size>")) && name.Contains("?") && !name.Contains("color")) ||
+                        ((name.Contains("<size") || name.Contains("size>")) && name.Contains("?") &&
+                         !name.Contains("color")) ||
                         name.Length > 160 ||
                         name.Count(f => f.Equals("\"\\n\"")) > 3 ||
                         name.Count(f => f.Equals("\n")) > 3 ||
@@ -50,13 +55,14 @@ internal class EAC
                         name.Contains("▌") ||
                         name.Contains("▒") ||
                         name.Contains("习近平")
-                        )
+                    )
                     {
                         WarnHost();
                         Report(pc, "非法设置游戏名称");
                         Logger.Fatal($"非法修改玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.SetRole:
                     var role = (RoleTypes)sr.ReadUInt16();
@@ -67,6 +73,7 @@ internal class EAC
                         Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的状态为幽灵，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
@@ -78,12 +85,13 @@ internal class EAC
                         text.Contains("▌") ||
                         text.Contains("▒") ||
                         text.Contains("习近平")
-                        )
+                    )
                     {
                         Report(pc, "非法消息");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送非法消息，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.StartMeeting:
                     MeetingTimes++;
@@ -94,6 +102,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法召集会议：【null】，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.ReportDeadBody:
                     var p1 = Utils.GetPlayerById(sr.ReadByte());
@@ -101,22 +110,26 @@ internal class EAC
                     {
                         WarnHost();
                         Report(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回", "EAC");
+                        Logger.Fatal(
+                            $"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回",
+                            "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.SetColor:
                 case RpcCalls.CheckColor:
                     var color = sr.ReadByte();
                     if (pc.Data.DefaultOutfit.ColorId != -1 &&
                         (Main.AllPlayerControls.Where(x => x.Data.DefaultOutfit.ColorId == color).Count() >= 5
-                        || !GameStates.IsLobby || color < 0 || color > 18))
+                         || !GameStates.IsLobby || color < 0 || color > 18))
                     {
                         WarnHost();
                         Report(pc, "非法设置颜色");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case RpcCalls.MurderPlayer:
                     if (GameStates.IsLobby)
@@ -126,8 +139,10 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法击杀，已驳回", "EAC");
                         return true;
                     }
+
                     break;
             }
+
             switch (callId)
             {
                 case 101:
@@ -144,6 +159,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 11:
                     MeetingTimes++;
@@ -154,6 +170,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法召集会议：【null】，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 5:
                     string name = sr.ReadString();
@@ -164,6 +181,7 @@ internal class EAC
                         Logger.Fatal($"非法修改玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 47:
                     if (GameStates.IsLobby)
@@ -173,6 +191,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法击杀，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 41:
                     if (GameStates.IsInGame)
@@ -182,6 +201,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置宠物，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 40:
                     if (GameStates.IsInGame)
@@ -191,6 +211,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置皮肤，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 42:
                     if (GameStates.IsInGame)
@@ -200,6 +221,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置面部装扮，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 39:
                     if (GameStates.IsInGame)
@@ -209,6 +231,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置帽子，已驳回", "EAC");
                         return true;
                     }
+
                     break;
                 case 43:
                     if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
@@ -219,6 +242,7 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置名称，已驳回", "EAC");
                         return true;
                     }
+
                     break;
             }
         }
@@ -227,15 +251,18 @@ internal class EAC
             Logger.Exception(e, "EAC");
             throw;
         }
+
         WarnHost(-1);
         return false;
     }
+
     public static void Report(PlayerControl pc, string reason)
     {
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{reason}";
         // Cloud.SendData(msg);
         Logger.Warn($"EAC报告：{pc.GetRealName()}: {reason}", "EAC Cloud");
     }
+
     public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
     {
         switch (callId)
@@ -245,8 +272,10 @@ internal class EAC
                 HandleCheat(pc, GetString("EAC.CheatDetected.EAC"));
                 return true;
         }
+
         return true;
     }
+
     public static void HandleCheat(PlayerControl pc, string text)
     {
         switch (Options.CheatResponses.GetInt())
@@ -264,11 +293,15 @@ internal class EAC
                 RPC.NotificationPop(msg1);
                 break;
             case 2:
-                Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text),
+                    PlayerControl.LocalPlayer.PlayerId,
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
             case 3:
                 foreach (var apc in Main.AllPlayerControls.Where(x => x.PlayerId != pc?.Data?.PlayerId))
-                    Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                    Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text),
+                        pc.PlayerId,
+                        Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
         }
     }

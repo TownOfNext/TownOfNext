@@ -17,7 +17,9 @@ class ShipFixedUpdatePatch
         //ここより下、ホストのみが実行する
     }
 }
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl),
+    typeof(byte))]
 class ShipStatusUpdateSystemPatch
 {
     public static void Prefix(ShipStatus __instance,
@@ -27,14 +29,18 @@ class ShipStatusUpdateSystemPatch
     {
         if (systemType != SystemTypes.Sabotage)
         {
-            Logger.Info("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount, "UpdateSystem");
+            Logger.Info(
+                "SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " +
+                amount, "UpdateSystem");
         }
 
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
         {
-            Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() + ", amount: " + amount);
+            Logger.SendInGame("SystemType: " + systemType.ToString() + ", PlayerName: " + player.GetNameWithRole() +
+                              ", amount: " + amount);
         }
     }
+
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {
         var Ids = new List<int>();
@@ -42,16 +48,20 @@ class ShipStatusUpdateSystemPatch
         {
             Ids.Add(i);
         }
+
         CheckAndOpenDoors(__instance, amount, Ids.ToArray());
     }
+
     private static void CheckAndOpenDoors(ShipStatus __instance, int amount, params int[] DoorIds)
     {
-        if (DoorIds.Contains(amount)) foreach (var id in DoorIds)
+        if (DoorIds.Contains(amount))
+            foreach (var id in DoorIds)
             {
                 __instance.RpcUpdateSystem(SystemTypes.Doors, (byte)id);
             }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
 class CloseDoorsPatch
 {
@@ -60,6 +70,7 @@ class CloseDoorsPatch
         return !Options.DisableSabotage.GetBool() && Options.CurrentGameMode != CustomGameMode.SoloKombat;
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {
@@ -85,6 +96,7 @@ class StartPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
@@ -93,6 +105,7 @@ class StartMeetingPatch
         MeetingStates.ReportTarget = target;
         MeetingStates.DeadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
     }
+
     public static void Postfix()
     {
         // 全プレイヤーを湧いてない状態にする
@@ -102,6 +115,7 @@ class StartMeetingPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class BeginPatch
 {
@@ -112,6 +126,7 @@ class BeginPatch
         //ホストの役職初期設定はここで行うべき？
     }
 }
+
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 class CheckTaskCompletionPatch
 {
@@ -122,8 +137,7 @@ class CheckTaskCompletionPatch
             __result = false;
             return false;
         }
+
         return true;
     }
 }
-
-

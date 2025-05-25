@@ -44,16 +44,19 @@ internal static class SoloKombatManager
 
     public static void SetupCustomOption()
     {
-        KB_GameTime = IntegerOptionItem.Create(66_233_001, "KB_GameTime", new(30, 300, 5), 180, TabGroup.GameSettings, false)
+        KB_GameTime = IntegerOptionItem
+            .Create(66_233_001, "KB_GameTime", new(30, 300, 5), 180, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
-        KB_ATKCooldown = FloatOptionItem.Create(66_223_008, "KB_ATKCooldown", new(1f, 10f, 0.1f), 1f, TabGroup.GameSettings, false)
+        KB_ATKCooldown = FloatOptionItem.Create(66_223_008, "KB_ATKCooldown", new(1f, 10f, 0.1f), 1f,
+                TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        KB_HPMax = FloatOptionItem.Create(66_233_002, "KB_HPMax", new(10f, 990f, 5f), 100f, TabGroup.GameSettings, false)
+        KB_HPMax = FloatOptionItem
+            .Create(66_233_002, "KB_HPMax", new(10f, 990f, 5f), 100f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Health);
@@ -61,23 +64,28 @@ internal static class SoloKombatManager
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Health);
-        KB_RecoverPerSecond = FloatOptionItem.Create(66_233_005, "KB_RecoverPerSecond", new(1f, 180f, 1f), 2f, TabGroup.GameSettings, false)
+        KB_RecoverPerSecond = FloatOptionItem.Create(66_233_005, "KB_RecoverPerSecond", new(1f, 180f, 1f), 2f,
+                TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Health);
-        KB_RecoverAfterSecond = IntegerOptionItem.Create(66_233_004, "KB_RecoverAfterSecond", new(0, 60, 1), 8, TabGroup.GameSettings, false)
+        KB_RecoverAfterSecond = IntegerOptionItem.Create(66_233_004, "KB_RecoverAfterSecond", new(0, 60, 1), 8,
+                TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        KB_ResurrectionWaitingTime = IntegerOptionItem.Create(66_233_006, "KB_ResurrectionWaitingTime", new(5, 990, 1), 15, TabGroup.GameSettings, false)
+        KB_ResurrectionWaitingTime = IntegerOptionItem.Create(66_233_006, "KB_ResurrectionWaitingTime", new(5, 990, 1),
+                15, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        KB_KillBonusMultiplier = FloatOptionItem.Create(66_233_007, "KB_KillBonusMultiplier", new(0.25f, 5f, 0.25f), 1.25f, TabGroup.GameSettings, false)
+        KB_KillBonusMultiplier = FloatOptionItem.Create(66_233_007, "KB_KillBonusMultiplier", new(0.25f, 5f, 0.25f),
+                1.25f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier);
-        KB_BootVentWhenDead = BooleanOptionItem.Create(66_233_009, "KB_BootVentWhenDead", true, TabGroup.GameSettings, false)
+        KB_BootVentWhenDead = BooleanOptionItem
+            .Create(66_233_009, "KB_BootVentWhenDead", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(new Color32(245, 82, 82, byte.MaxValue));
     }
@@ -110,13 +118,16 @@ internal static class SoloKombatManager
             LastHurt.TryAdd(pc.PlayerId, Utils.GetTimeStamp());
         }
     }
+
     private static void SendRPCSyncKBBackCountdown(PlayerControl player)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKBBackCountdown, SendOption.Reliable, player.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncKBBackCountdown, SendOption.Reliable, player.GetClientId());
         int x = BackCountdown.TryGetValue(player.PlayerId, out var value) ? value : -1;
         writer.Write(x);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ReceiveRPCSyncBackCountdown(MessageReader reader)
     {
         int num = reader.ReadInt32();
@@ -128,9 +139,11 @@ internal static class SoloKombatManager
             BackCountdown[PlayerControl.LocalPlayer.PlayerId] = num;
         }
     }
+
     private static void SendRPCSyncKBPlayer(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKBPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncKBPlayer, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(PlayerHPMax[playerId]);
         writer.Write(PlayerHP[playerId]);
@@ -140,6 +153,7 @@ internal static class SoloKombatManager
         writer.Write(KBScore[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ReceiveRPCSyncKBPlayer(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
@@ -150,15 +164,18 @@ internal static class SoloKombatManager
         PlayerDF[PlayerId] = reader.ReadSingle();
         KBScore[PlayerId] = reader.ReadInt32();
     }
+
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
         if (pc.AmOwner || !pc.IsModClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKBNameNotify, SendOption.Reliable, pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncKBNameNotify, SendOption.Reliable, pc.GetClientId());
         if (NameNotify.ContainsKey(pc.PlayerId))
             writer.Write(NameNotify[pc.PlayerId].Item1);
         else writer.Write("");
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ReceiveRPCSyncNameNotify(MessageReader reader)
     {
         var name = reader.ReadString();
@@ -166,16 +183,23 @@ internal static class SoloKombatManager
         if (name != null && name != "")
             NameNotify.Add(PlayerControl.LocalPlayer.PlayerId, (name, 0));
     }
+
     public static string GetDisplayHealth(PlayerControl pc)
         => pc.SoloAlive() ? Utils.ColorString(GetHealthColor(pc), $"{(int)pc.HP()}/{(int)pc.HPMAX()}") : "";
+
     private static Color32 GetHealthColor(PlayerControl pc)
     {
         var x = (int)(pc.HP() / pc.HPMAX() * 10 * 50);
-        int R = 255; int G = 255; int B = 0;
-        if (x > 255) R -= x - 255; else G = x;
+        int R = 255;
+        int G = 255;
+        int B = 0;
+        if (x > 255) R -= x - 255;
+        else G = x;
         return new Color32((byte)R, (byte)G, (byte)B, byte.MaxValue);
     }
+
     public static Dictionary<byte, (string, long)> NameNotify = new();
+
     public static void GetNameNotify(PlayerControl player, ref string name)
     {
         if (Options.CurrentGameMode != CustomGameMode.SoloKombat || player == null) return;
@@ -185,12 +209,14 @@ internal static class SoloKombatManager
             NameNotify.Remove(player.PlayerId);
             return;
         }
+
         if (NameNotify.ContainsKey(player.PlayerId))
         {
             name = NameNotify[player.PlayerId].Item1;
             return;
         }
     }
+
     public static string GetDisplayScore(byte playerId)
     {
         int rank = GetRankOfScore(playerId);
@@ -199,6 +225,7 @@ internal static class SoloKombatManager
         Color color = Utils.GetRoleColor(CustomRoles.KB_Normal);
         return Utils.ColorString(color, text);
     }
+
     public static int GetRankOfScore(byte playerId)
     {
         try
@@ -213,10 +240,12 @@ internal static class SoloKombatManager
             return Main.AllPlayerControls.Count();
         }
     }
+
     public static string GetHudText()
     {
         return string.Format(Translator.GetString("KBTimeRemain"), RoundTime.ToString());
     }
+
     public static void OnPlayerAttack(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || Options.CurrentGameMode != CustomGameMode.SoloKombat) return;
@@ -243,6 +272,7 @@ internal static class SoloKombatManager
         Utils.NotifyRoles(killer);
         Utils.NotifyRoles(target);
     }
+
     public static void OnPlayerBack(PlayerControl pc)
     {
         BackCountdown.Remove(pc.PlayerId);
@@ -259,6 +289,7 @@ internal static class SoloKombatManager
 
         PlayerRandomSpwan(pc);
     }
+
     public static void PlayerRandomSpwan(PlayerControl pc)
     {
         SpawnMap map;
@@ -286,6 +317,7 @@ internal static class SoloKombatManager
                 break;
         }
     }
+
     public static void OnPlayerDead(PlayerControl target)
     {
         originalSpeed.Remove(target.PlayerId);
@@ -298,6 +330,7 @@ internal static class SoloKombatManager
         BackCountdown.TryAdd(target.PlayerId, KB_ResurrectionWaitingTime.GetInt());
         SendRPCSyncKBBackCountdown(target);
     }
+
     public static void OnPlayerKill(PlayerControl killer)
     {
         killer.KillFlash();
@@ -319,7 +352,8 @@ internal static class SoloKombatManager
             case 1:
                 addin = killer.HPRECO() * addRate * 2;
                 PlayerHPReco[killer.PlayerId] += addin;
-                AddNameNotify(killer, string.Format(Translator.GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
+                AddNameNotify(killer,
+                    string.Format(Translator.GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
                 break;
             case 2:
                 addin = killer.ATK() * addRate;
@@ -328,6 +362,7 @@ internal static class SoloKombatManager
                 break;
         }
     }
+
     public static void AddNameNotify(PlayerControl pc, string text, int time = 5)
     {
         NameNotify.Remove(pc.PlayerId);
@@ -346,11 +381,9 @@ internal static class SoloKombatManager
             if (!AmongUsClient.Instance.AmHost || Options.CurrentGameMode != CustomGameMode.SoloKombat) return true;
             if (!__instance.myPlayer.SoloAlive() && KB_BootVentWhenDead.GetBool())
             {
-                new LateTask(() =>
-                {
-                    __instance.BootFromVent(id);
-                }, 0.5f, "Fix DesyncImpostor Stuck");
+                new LateTask(() => { __instance.BootFromVent(id); }, 0.5f, "Fix DesyncImpostor Stuck");
             }
+
             return true;
         }
     }
@@ -362,13 +395,15 @@ internal static class SoloKombatManager
     class FixedUpdatePatch
     {
         private static long LastFixedUpdate = new();
+
         public static void Postfix(PlayerControl __instance)
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.SoloKombat) return;
 
             if (AmongUsClient.Instance.AmHost)
             {
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetCustomRole() == CustomRoles.KB_Normal && !x.SoloAlive()))
+                foreach (var pc in Main.AllPlayerControls.Where(x =>
+                             x.GetCustomRole() == CustomRoles.KB_Normal && !x.SoloAlive()))
                 {
                     // 锁定死亡玩家在小黑屋
                     var pos = Utils.GetBlackRoomPS();
@@ -388,13 +423,15 @@ internal static class SoloKombatManager
                 {
                     bool notifyRoles = false;
                     // 每秒回复血量
-                    if (LastHurt[pc.PlayerId] + KB_RecoverAfterSecond.GetInt() < Utils.GetTimeStamp() && pc.HP() < pc.HPMAX() && pc.SoloAlive() && !pc.inVent)
+                    if (LastHurt[pc.PlayerId] + KB_RecoverAfterSecond.GetInt() < Utils.GetTimeStamp() &&
+                        pc.HP() < pc.HPMAX() && pc.SoloAlive() && !pc.inVent)
                     {
                         PlayerHP[pc.PlayerId] += pc.HPRECO();
                         PlayerHP[pc.PlayerId] = Math.Min(pc.HPMAX(), pc.HP());
                         SendRPCSyncKBPlayer(pc.PlayerId);
                         notifyRoles = true;
                     }
+
                     // 复活玩家随机复活（二次确认）
                     if (pc.SoloAlive())
                     {
@@ -402,6 +439,7 @@ internal static class SoloKombatManager
                         var dis = Vector2.Distance(pos, pc.GetTruePosition());
                         if (dis < 1.2f) PlayerRandomSpwan(pc);
                     }
+
                     // 复活倒计时
                     if (BackCountdown.ContainsKey(pc.PlayerId))
                     {
@@ -411,6 +449,7 @@ internal static class SoloKombatManager
                         SendRPCSyncKBBackCountdown(pc);
                         notifyRoles = true;
                     }
+
                     // 清除过期的提示信息
                     if (NameNotify.ContainsKey(pc.PlayerId) && NameNotify[pc.PlayerId].Item2 < Utils.GetTimeStamp())
                     {
@@ -418,6 +457,7 @@ internal static class SoloKombatManager
                         SendRPCSyncNameNotify(pc);
                         notifyRoles = true;
                     }
+
                     // 必要时刷新玩家名字
                     if (notifyRoles) Utils.NotifyRoles(pc);
                 }

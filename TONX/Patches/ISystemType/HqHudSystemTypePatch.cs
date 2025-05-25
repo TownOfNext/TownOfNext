@@ -8,7 +8,8 @@ namespace TONX.Patches.ISystemType;
 [HarmonyPatch(typeof(HqHudSystemType), nameof(HqHudSystemType.UpdateSystem))]
 public static class HqHudSystemTypeUpdateSystemPatch
 {
-    public static bool Prefix(HqHudSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+    public static bool Prefix(HqHudSystemType __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] MessageReader msgReader)
     {
         byte amount;
         {
@@ -21,12 +22,15 @@ public static class HqHudSystemTypeUpdateSystemPatch
         var playerRole = player.GetRoleClass();
         if (player.Is(CustomRoles.Fool)) return false;
 
-        if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHqHudSystem(__instance, amount))
+        if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook &&
+            !systemTypeUpdateHook.UpdateHqHudSystem(__instance, amount))
         {
             return false;
         }
+
         return true;
     }
+
     public static void Postfix()
     {
         Camouflage.CheckCamouflage();

@@ -7,6 +7,7 @@ using static TONX.Options;
 using static TONX.Translator;
 
 namespace TONX.Roles.AddOns;
+
 public class AddOnsAssignData
 {
     static Dictionary<CustomRoles, AddOnsAssignData> AllData = new();
@@ -21,6 +22,7 @@ public class AddOnsAssignData
     OptionItem NeutralMaximum;
     OptionItem NeutralFixedRole;
     OptionItem NeutralAssignTarget;
+
     static readonly CustomRoles[] InvalidRoles =
     {
         CustomRoles.GuardianAngel,
@@ -28,32 +30,44 @@ public class AddOnsAssignData
         CustomRoles.LazyGuy,
         CustomRoles.GM,
     };
+
     static bool CheckRoleConflict(PlayerControl pc, CustomRoles role)
     {
-        if (role is CustomRoles.Lighter && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Bewilder))) return false;
-        if (role is CustomRoles.Bewilder && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Lighter))) return false;
+        if (role is CustomRoles.Lighter && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Bewilder)))
+            return false;
+        if (role is CustomRoles.Bewilder && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Lighter)))
+            return false;
         if (role is CustomRoles.Neptune && (pc.Is(CustomRoles.Lovers) || pc.Is(CustomRoles.Hater))) return false;
         if (role is CustomRoles.Madmate && !Utils.CanBeMadmate(pc)) return false;
-        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.Detective) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
+        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.Detective) || pc.Is(CustomRoles.Cleaner) ||
+                                              pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
         if (role is CustomRoles.Fool && pc.Is(CustomRoles.Repairman)) return false;
         if (role is CustomRoles.Tiebreaker && pc.Is(CustomRoles.Dictator)) return false;
-        if (role is CustomRoles.YouTuber && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Sheriff))) return false;
+        if (role is CustomRoles.YouTuber && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Madmate) ||
+                                             pc.Is(CustomRoles.Sheriff))) return false;
         if (role is CustomRoles.Egoist && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Madmate))) return false;
         if (role is CustomRoles.TicketsStealer or CustomRoles.Mimic && !pc.GetCustomRole().IsImpostor()) return false;
-        if (role is CustomRoles.TicketsStealer && (pc.Is(CustomRoles.Bomber) || pc.Is(CustomRoles.BoobyTrap) || pc.Is(CustomRoles.Capitalist))) return false;
+        if (role is CustomRoles.TicketsStealer &&
+            (pc.Is(CustomRoles.Bomber) || pc.Is(CustomRoles.BoobyTrap) || pc.Is(CustomRoles.Capitalist))) return false;
         if (role is CustomRoles.Mimic && pc.Is(CustomRoles.Mafia)) return false;
-        if (role is CustomRoles.Schizophrenic && ((!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate()) || pc.Is(CustomRoles.Madmate))) return false;
+        if (role is CustomRoles.Schizophrenic &&
+            ((!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate()) ||
+             pc.Is(CustomRoles.Madmate))) return false;
         if (role is CustomRoles.Seer && pc.Is(CustomRoles.Mortician)) return false;
         if (role is CustomRoles.Reach && !pc.CanUseKillButton()) return false;
         if (role is CustomRoles.Flashman && pc.Is(CustomRoles.Swooper)) return false;
         return true;
     }
-    static readonly IEnumerable<CustomRoles> ValidRoles = CustomRolesHelper.AllRoles.Where(role => !InvalidRoles.Contains(role));
+
+    static readonly IEnumerable<CustomRoles> ValidRoles =
+        CustomRolesHelper.AllRoles.Where(role => !InvalidRoles.Contains(role));
+
     static CustomRoles[] CrewmateRoles = ValidRoles.Where(role => role.IsCrewmate()).ToArray();
     static CustomRoles[] ImpostorRoles = ValidRoles.Where(role => role.IsImpostor()).ToArray();
     static CustomRoles[] NeutralRoles = ValidRoles.Where(role => role.IsNeutral()).ToArray();
 
-    public AddOnsAssignData(int idStart, TabGroup tab, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
+    public AddOnsAssignData(int idStart, TabGroup tab, CustomRoles role, bool assignCrewmate, bool assignImpostor,
+        bool assignNeutral)
     {
         IdStart = idStart;
         Role = role;
@@ -62,7 +76,13 @@ public class AddOnsAssignData
             CrewmateMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            CrewmateMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate")) } };
+            CrewmateMaximum.ReplacementDictionary = new Dictionary<string, string>
+            {
+                {
+                    "%roleTypes%",
+                    Utils.ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"))
+                }
+            };
             CrewmateFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(CrewmateMaximum);
             var crewmateStringArray = CrewmateRoles.Select(role => role.ToString()).ToArray();
@@ -75,7 +95,10 @@ public class AddOnsAssignData
             ImpostorMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 3, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            ImpostorMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(247, 70, 49, byte.MaxValue), GetString("TeamImpostor")) } };
+            ImpostorMaximum.ReplacementDictionary = new Dictionary<string, string>
+            {
+                { "%roleTypes%", Utils.ColorString(new Color32(247, 70, 49, byte.MaxValue), GetString("TeamImpostor")) }
+            };
             ImpostorFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(ImpostorMaximum);
             var impostorStringArray = ImpostorRoles.Select(role => role.ToString()).ToArray();
@@ -88,7 +111,10 @@ public class AddOnsAssignData
             NeutralMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
-            NeutralMaximum.ReplacementDictionary = new Dictionary<string, string> { { "%roleTypes%", Utils.ColorString(new Color32(255, 171, 27, byte.MaxValue), GetString("TeamNeutral")) } };
+            NeutralMaximum.ReplacementDictionary = new Dictionary<string, string>
+            {
+                { "%roleTypes%", Utils.ColorString(new Color32(255, 171, 27, byte.MaxValue), GetString("TeamNeutral")) }
+            };
             NeutralFixedRole = BooleanOptionItem.Create(idStart++, "FixedRole", false, tab, false)
                 .SetParent(NeutralMaximum);
             var neutralStringsArray = NeutralRoles.Select(role => role.ToString()).ToArray();
@@ -99,10 +125,15 @@ public class AddOnsAssignData
         if (!AllData.ContainsKey(role)) AllData.Add(role, this);
         else Logger.Warn("重複したCustomRolesを対象とするAddOnsAssignDataが作成されました", "AddOnsAssignData");
     }
-    public static AddOnsAssignData Create(int idStart, TabGroup tab, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
+
+    public static AddOnsAssignData Create(int idStart, TabGroup tab, CustomRoles role, bool assignCrewmate,
+        bool assignImpostor, bool assignNeutral)
         => new(idStart, tab, role, assignCrewmate, assignImpostor, assignNeutral);
-    public static AddOnsAssignData Create(int idStart, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
+
+    public static AddOnsAssignData Create(int idStart, CustomRoles role, bool assignCrewmate, bool assignImpostor,
+        bool assignNeutral)
         => new(idStart, TabGroup.Addons, role, assignCrewmate, assignImpostor, assignNeutral);
+
     ///<summary>
     ///AddOnsAssignDataが存在する属性を一括で割り当て
     ///</summary>
@@ -120,6 +151,7 @@ public class AddOnsAssignData
             }
         }
     }
+
     ///<summary>
     ///アサインするプレイヤーのList
     ///</summary>
@@ -127,7 +159,9 @@ public class AddOnsAssignData
     {
         var rnd = IRandom.Instance;
         var candidates = new List<PlayerControl>();
-        var validPlayers = Main.AllPlayerControls.Where(pc => ValidRoles.Contains(pc.GetCustomRole()) && pc.GetCustomSubRoles()?.Count < AddonsNumLimit.GetInt() && CheckRoleConflict(pc, data.Role) && rnd.Next(0, 100) < GetRoleChance(data.Role));
+        var validPlayers = Main.AllPlayerControls.Where(pc =>
+            ValidRoles.Contains(pc.GetCustomRole()) && pc.GetCustomSubRoles()?.Count < AddonsNumLimit.GetInt() &&
+            CheckRoleConflict(pc, data.Role) && rnd.Next(0, 100) < GetRoleChance(data.Role));
 
         if (data.CrewmateMaximum != null)
         {
@@ -135,7 +169,9 @@ public class AddOnsAssignData
             if (crewmateMaximum > 0)
             {
                 var crewmates = validPlayers.Where(pc
-                    => data.CrewmateFixedRole.GetBool() ? pc.Is(CrewmateRoles[data.CrewmateAssignTarget.GetValue()]) : pc.Is(CustomRoleTypes.Crewmate)).ToList();
+                    => data.CrewmateFixedRole.GetBool()
+                        ? pc.Is(CrewmateRoles[data.CrewmateAssignTarget.GetValue()])
+                        : pc.Is(CustomRoleTypes.Crewmate)).ToList();
                 for (var i = 0; i < crewmateMaximum; i++)
                 {
                     if (crewmates.Count == 0) break;
@@ -152,7 +188,9 @@ public class AddOnsAssignData
             if (impostorMaximum > 0)
             {
                 var impostors = validPlayers.Where(pc
-                    => data.ImpostorFixedRole.GetBool() ? pc.Is(ImpostorRoles[data.ImpostorAssignTarget.GetValue()]) : pc.Is(CustomRoleTypes.Impostor)).ToList();
+                    => data.ImpostorFixedRole.GetBool()
+                        ? pc.Is(ImpostorRoles[data.ImpostorAssignTarget.GetValue()])
+                        : pc.Is(CustomRoleTypes.Impostor)).ToList();
                 for (var i = 0; i < impostorMaximum; i++)
                 {
                     if (impostors.Count == 0) break;
@@ -169,7 +207,9 @@ public class AddOnsAssignData
             if (neutralMaximum > 0)
             {
                 var neutrals = validPlayers.Where(pc
-                    => data.NeutralFixedRole.GetBool() ? pc.Is(NeutralRoles[data.NeutralAssignTarget.GetValue()]) : pc.Is(CustomRoleTypes.Neutral)).ToList();
+                    => data.NeutralFixedRole.GetBool()
+                        ? pc.Is(NeutralRoles[data.NeutralAssignTarget.GetValue()])
+                        : pc.Is(CustomRoleTypes.Neutral)).ToList();
                 for (var i = 0; i < neutralMaximum; i++)
                 {
                     if (neutrals.Count == 0) break;

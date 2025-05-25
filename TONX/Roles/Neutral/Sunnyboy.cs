@@ -11,7 +11,7 @@ namespace TONX.Roles.Neutral;
 public sealed class Sunnyboy : RoleBase, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
-       SimpleRoleInfo.Create(
+        SimpleRoleInfo.Create(
             typeof(Sunnyboy),
             player => new Sunnyboy(player),
             CustomRoles.Sunnyboy,
@@ -26,14 +26,15 @@ public sealed class Sunnyboy : RoleBase, IAdditionalWinner
             Hidden: true // For Debug
 #endif
         );
+
     public Sunnyboy(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
-        
     }
+
     public bool IsNE { get; private set; } = false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
 

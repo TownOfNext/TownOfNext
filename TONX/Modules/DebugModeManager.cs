@@ -8,7 +8,7 @@ public static class DebugModeManager
     // また、ゲーム内オプションでデバッグモードを有効化することができる。
     public static bool AmDebugger { get; private set; } =
 #if DEBUG
-true;
+        true;
 #else
 false;
 #endif
@@ -22,6 +22,7 @@ false;
         // AmDebugger = デバッグビルドである || デバッグキー認証が通った
         AmDebugger = AmDebugger || auth.CheckString(input);
     }
+
     public static void SetupCustomOption()
     {
         EnableDebugMode = BooleanOptionItem.Create(2, "EnableDebugMode", false, TabGroup.SystemSettings, true)
@@ -30,7 +31,8 @@ false;
             .SetHidden(!AmDebugger)
             .RegisterUpdateValueEvent((obj, args) =>
             {
-                if (DestroyableSingleton<GameStartManager>.InstanceExists && Main.NormalOptions.NumImpostors == 0 && AmongUsClient.Instance.AmHost && !EnableDebugMode.GetBool())
+                if (DestroyableSingleton<GameStartManager>.InstanceExists && Main.NormalOptions.NumImpostors == 0 &&
+                    AmongUsClient.Instance.AmHost && !EnableDebugMode.GetBool())
                 {
                     Main.NormalOptions.NumImpostors = 1;
                 }

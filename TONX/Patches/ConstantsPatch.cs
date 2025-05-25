@@ -11,6 +11,7 @@ public static class ConstantsGetBroadcastVersionPatch
         {
             return;
         }
+
         __result += 25;
     }
 }

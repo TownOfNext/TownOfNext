@@ -8,7 +8,8 @@ namespace TONX.Patches.ISystemType;
 [HarmonyPatch(typeof(HeliSabotageSystem), nameof(HeliSabotageSystem.UpdateSystem))]
 public static class HeliSabotageSystemUpdateSystemPatch
 {
-    public static bool Prefix(HeliSabotageSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+    public static bool Prefix(HeliSabotageSystem __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] MessageReader msgReader)
     {
         byte amount;
         {
@@ -17,10 +18,12 @@ public static class HeliSabotageSystemUpdateSystemPatch
             newReader.Recycle();
         }
         if (player.Is(CustomRoles.Fool)) return false;
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHeliSabotageSystem(__instance, amount))
+        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook &&
+            !systemTypeUpdateHook.UpdateHeliSabotageSystem(__instance, amount))
         {
             return false;
         }
+
         return true;
     }
 }

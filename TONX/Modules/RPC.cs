@@ -79,6 +79,7 @@ public enum CustomRPC
     SyncKBBackCountdown,
     SyncKBNameNotify,
 }
+
 public enum Sounds
 {
     KillSound,
@@ -88,17 +89,23 @@ public enum Sounds
 
     Test,
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.Guess or CustomRPC.OnClickMeetingButton;
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+        => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout
+            or CustomRPC.Judge or CustomRPC.Guess or CustomRPC.OnClickMeetingButton;
+
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId,
+        [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
         if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance?.Data?.PlayerId == 0 ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+        Logger.Info(
+            $"{__instance?.Data?.PlayerId}({(__instance?.Data?.PlayerId == 0 ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})",
+            "ReceiveRPC");
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
@@ -123,11 +130,13 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
+
         if (__instance.PlayerId != 0
             && Enum.IsDefined(typeof(CustomRPC), (int)callId)
             && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
-            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。", "CustomRPC");
+            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。",
+                "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
             {
                 if (!EAC.ReceiveInvalidRpc(__instance, callId)) return false;
@@ -135,11 +144,15 @@ internal class RPCHandlerPatch
                 Logger.Warn($"收到来自 {__instance?.Data?.PlayerName} 的不受信用的RPC，因此将其踢出。", "Kick");
                 RPC.NotificationPop(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
             }
+
             return false;
         }
+
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId,
+        [HarmonyArgument(1)] MessageReader reader)
     {
         //CustomRPC以外は処理しない
         if (callId < (byte)CustomRPC.VersionCheck) return;
@@ -150,13 +163,18 @@ internal class RPCHandlerPatch
             case CustomRPC.AntiBlackout:
                 if (Options.EndWhenPlayerBug.GetBool())
                 {
-                    Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): {reader.ReadString()} 错误，根据设定终止游戏", "Anti-black");
+                    Logger.Fatal(
+                        $"{__instance?.Data?.PlayerName}({__instance.PlayerId}): {reader.ReadString()} 错误，根据设定终止游戏",
+                        "Anti-black");
                     ChatUpdatePatch.DoBlockChat = true;
-                    Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"), __instance?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
-                    _ = new LateTask(() =>
-                    {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"),
+                        __instance?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
+                    _ = new LateTask(
+                        () =>
+                        {
+                            Logger.SendInGame(
+                                string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName), true);
+                        }, 3f, "Anti-Black Msg SendInGame");
                     _ = new LateTask(() =>
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
@@ -166,12 +184,17 @@ internal class RPCHandlerPatch
                 }
                 else
                 {
-                    Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Change Role Setting Postfix 错误，根据设定继续游戏", "Anti-black");
-                    _ = new LateTask(() =>
-                    {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    Logger.Fatal(
+                        $"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Change Role Setting Postfix 错误，根据设定继续游戏",
+                        "Anti-black");
+                    _ = new LateTask(
+                        () =>
+                        {
+                            Logger.SendInGame(
+                                string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName), true);
+                        }, 3f, "Anti-Black Msg SendInGame");
                 }
+
                 break;
             case CustomRPC.VersionCheck:
                 try
@@ -194,7 +217,8 @@ internal class RPCHandlerPatch
                             {
                                 if (__instance?.Data?.Disconnected is not null and not true)
                                 {
-                                    var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"), __instance?.Data?.PlayerName);
+                                    var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"),
+                                        __instance?.Data?.PlayerName);
                                     Logger.Warn(msg, "Version Kick");
                                     RPC.NotificationPop(msg);
                                     Utils.KickPlayer(__instance.GetClientId(), false, "ModVersionIncorrect");
@@ -205,13 +229,17 @@ internal class RPCHandlerPatch
                 }
                 catch
                 {
-                    Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
+                    Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です",
+                        "RpcVersionCheck");
                     _ = new LateTask(() =>
                     {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.GetClientId());
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+                            PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck,
+                            SendOption.Reliable, __instance.GetClientId());
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }, 1f, "Retry Version Check Task");
                 }
+
                 break;
             case CustomRPC.RequestRetryVersionCheck:
                 RPC.RpcVersionCheck();
@@ -223,7 +251,8 @@ internal class RPCHandlerPatch
                 var lastAmount = reader.ReadInt32();
                 for (var i = startAmount; i < OptionItem.AllOptions.Count && i <= lastAmount; i++)
                     list.Add(OptionItem.AllOptions[i]);
-                Logger.Info($"{startAmount}-{lastAmount}:{list.Count}/{OptionItem.AllOptions.Count}", "SyncCustomSettings");
+                Logger.Info($"{startAmount}-{lastAmount}:{list.Count}/{OptionItem.AllOptions.Count}",
+                    "SyncCustomSettings");
                 foreach (var co in list) co.SetValue(reader.ReadPackedInt32());
                 OptionShower.BuildText();
                 break;
@@ -330,14 +359,18 @@ internal static class RPC
         if (targetId != -1)
         {
             var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
+            if (client == null || client.Character == null ||
+                !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
-        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)) return;
+
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 ||
+            (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)) return;
         var amount = OptionItem.AllOptions.Count;
         int divideBy = amount / 10;
         for (var i = 0; i <= 10; i++)
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, targetId);
     }
+
     public static void SyncCustomSettingsRPCforOneOption(OptionItem option)
     {
         List<OptionItem> allOptions = new(OptionItem.AllOptions);
@@ -345,6 +378,7 @@ internal static class RPC
         if (placement != -1)
             SyncOptionsBetween(placement, placement);
     }
+
     static void SyncOptionsBetween(int startAmount, int lastAmount, int targetId = -1)
     {
         //判断发送请求是否有效
@@ -357,11 +391,13 @@ internal static class RPC
         if (targetId != -1)
         {
             var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId))
+            if (client == null || client.Character == null ||
+                !Main.playerVersion.ContainsKey(client.Character.PlayerId))
                 return;
         }
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
         List<OptionItem> list = new();
         writer.Write(startAmount);
         writer.Write(lastAmount);
@@ -371,61 +407,79 @@ internal static class RPC
         foreach (var co in list) writer.WritePacked(co.GetValue());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void PlaySoundRPC(byte PlayerID, Sounds sound)
     {
         if (AmongUsClient.Instance.AmHost)
             PlaySound(PlayerID, sound);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlaySound, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.PlaySound, SendOption.Reliable, -1);
         writer.Write(PlayerID);
         writer.Write((byte)sound);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void SyncAllPlayerNames()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
         writer.Write(Main.AllPlayerNames.Count);
         foreach (var name in Main.AllPlayerNames)
         {
             writer.Write(name.Key);
             writer.Write(name.Value);
         }
+
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ShowPopUp(this PlayerControl pc, string msg)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
         writer.Write(msg);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ExileAsync(PlayerControl player)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
+        MessageWriter writer =
+            AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         player.Exiled();
     }
+
     public static async void RpcVersionCheck()
     {
         while (PlayerControl.LocalPlayer == null) await Task.Delay(500);
         if (Main.playerVersion.ContainsKey(0) || !Main.VersionCheat.Value)
         {
             bool cheating = Main.VersionCheat.Value;
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
+            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId,
+                (byte)CustomRPC.VersionCheck, SendOption.Reliable);
             writer.Write(cheating ? Main.playerVersion[0].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[0].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+            writer.Write(cheating
+                ? Main.playerVersion[0].tag
+                : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
             writer.Write(cheating ? Main.playerVersion[0].forkId : Main.ForkId);
             writer.EndMessage();
         }
-        Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+
+        Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion,
+            $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
     }
+
     public static void SendDeathReason(byte playerId, CustomDeathReason deathReason)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDeathReason, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SetDeathReason, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write((int)deathReason);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void GetDeathReason(MessageReader reader)
     {
         var playerId = reader.ReadByte();
@@ -434,20 +488,39 @@ internal static class RPC
         state.DeathReason = deathReason;
         state.IsDead = true;
     }
+
     public static void ForceEndGame(CustomWinner win)
     {
         if (ShipStatus.Instance == null) return;
-        try { CustomWinnerHolder.ResetAndSetWinner(win); }
-        catch { }
+        try
+        {
+            CustomWinnerHolder.ResetAndSetWinner(win);
+        }
+        catch
+        {
+        }
+
         if (AmongUsClient.Instance.AmHost)
         {
             ShipStatus.Instance.enabled = false;
-            try { GameManager.Instance.LogicFlow.CheckEndCriteria(); }
-            catch { }
-            try { GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false); }
-            catch { }
+            try
+            {
+                GameManager.Instance.LogicFlow.CheckEndCriteria();
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
+            }
+            catch
+            {
+            }
         }
     }
+
     public static void EndGame(MessageReader reader)
     {
         try
@@ -459,6 +532,7 @@ internal static class RPC
             Logger.Error($"正常にEndGameを行えませんでした。\n{ex}", "EndGame", false);
         }
     }
+
     public static void PlaySound(byte playerID, Sounds sound)
     {
         if (PlayerControl.LocalPlayer.PlayerId == playerID)
@@ -469,17 +543,21 @@ internal static class RPC
                     SoundManager.Instance.PlaySound(PlayerControl.LocalPlayer.KillSfx, false, 1f);
                     break;
                 case Sounds.TaskComplete:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
+                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false,
+                        1f);
                     break;
                 case Sounds.TaskUpdateSound:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
+                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false,
+                        1f);
                     break;
                 case Sounds.ImpTransform:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
+                    SoundManager.Instance.PlaySound(
+                        DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
                     break;
             }
         }
     }
+
     public static void SetCustomRole(byte targetId, CustomRoles role)
     {
         if (role < CustomRoles.NotAssigned)
@@ -487,26 +565,31 @@ internal static class RPC
             CustomRoleManager.GetByPlayerId(targetId)?.Dispose();
             PlayerState.GetByPlayerId(targetId).SetMainRole(role);
         }
-        else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
+        else if (role >= CustomRoles.NotAssigned) //500:NoSubRole 501~:SubRole
         {
             PlayerState.GetByPlayerId(targetId).SetSubRole(role);
         }
+
         CustomRoleManager.CreateInstance(role, Utils.GetPlayerById(targetId));
 
         HudManager.Instance.SetHudActive(true);
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
+
     public static void SyncLoversPlayers()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetLoversPlayers, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SetLoversPlayers, SendOption.Reliable, -1);
         writer.Write(Main.LoversPlayers.Count);
         foreach (var lp in Main.LoversPlayers)
         {
             writer.Write(lp.PlayerId);
         }
+
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
     {
         if (!DebugModeManager.AmDebugger) return;
@@ -518,17 +601,29 @@ internal static class RPC
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
             from = Main.AllPlayerControls.Where(c => c.NetId == targetNetId).FirstOrDefault()?.Data?.PlayerName;
         }
-        catch { }
-        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
+        catch
+        {
+        }
+
+        Logger.Info(
+            $"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})",
+            "SendRPC");
     }
+
     public static string GetRpcName(byte callId)
     {
         string rpcName;
-        if ((rpcName = Enum.GetName(typeof(RpcCalls), callId)) != null) { }
-        else if ((rpcName = Enum.GetName(typeof(CustomRPC), callId)) != null) { }
+        if ((rpcName = Enum.GetName(typeof(RpcCalls), callId)) != null)
+        {
+        }
+        else if ((rpcName = Enum.GetName(typeof(CustomRPC), callId)) != null)
+        {
+        }
         else rpcName = callId.ToString();
+
         return rpcName;
     }
+
     public static void SetRealKiller(byte targetId, byte killerId)
     {
         var state = PlayerState.GetByPlayerId(targetId);
@@ -536,32 +631,39 @@ internal static class RPC
         state.RealKiller.Item2 = killerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SetRealKiller, Hazel.SendOption.Reliable, -1);
         writer.Write(targetId);
         writer.Write(killerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void NotificationPop(string text)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPop, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.NotificationPop, Hazel.SendOption.Reliable, -1);
         writer.Write(text);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         NotificationPopperPatch.AddItem(text);
     }
 }
+
 [HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
+    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId,
+        [HarmonyArgument(1)] byte callId)
     {
         RPC.SendRpcLogger(targetNetId, callId);
     }
 }
+
 [HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpcImmediately))]
 internal class StartRpcImmediatelyPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
+    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId,
+        [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
     {
         RPC.SendRpcLogger(targetNetId, callId, targetClientId);
     }

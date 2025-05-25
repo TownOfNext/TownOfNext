@@ -9,6 +9,7 @@ namespace TONX
     public abstract class OptionItem
     {
         #region static
+
         public static IReadOnlyList<OptionItem> AllOptions => _allOptions;
         private static List<OptionItem> _allOptions = new(1024);
         public static IReadOnlyList<OptionItem> SystemSettingsOptions => _systemSettingsOptions;
@@ -31,6 +32,7 @@ namespace TONX
 #if DEBUG
         public static bool IdDuplicated { get; private set; } = false;
 #endif
+
         #endregion
 
         // 必須情報 (コンストラクタで必ず設定させる必要がある値)
@@ -49,6 +51,7 @@ namespace TONX
         public bool IsFixValue { get; protected set; }
         public bool IsText { get; protected set; }
         public string AddonDescription { get; protected set; }
+
         public Dictionary<string, string> ReplacementDictionary
         {
             get => _replacementDictionary;
@@ -58,15 +61,18 @@ namespace TONX
                 else _replacementDictionary = value;
             }
         }
+
         private Dictionary<string, string> _replacementDictionary;
 
         // 設定値情報 (オプションの値に関わる情報)
         public int[] AllValues { get; private set; } = new int[NumPresets];
+
         public int CurrentValue
         {
             get => GetValue();
             set => SetValue(value);
         }
+
         public int SingleValue { get; private set; }
 
         // 親子情報
@@ -134,7 +140,9 @@ namespace TONX
                     case TabGroup.NeutralRoles: _neutralRoleOptions.Add(this); break;
                     case TabGroup.Addons: _addOnOptions.Add(this); break;
                     case TabGroup.OtherRoles: _otherRoleOptions.Add(this); break;
-                    default: Logger.Warn($"Encountered unknown option category \"{tab}\" (ID: {id}, Name: {name})", nameof(OptionItem)); break;
+                    default:
+                        Logger.Warn($"Encountered unknown option category \"{tab}\" (ID: {id}, Name: {name})",
+                            nameof(OptionItem)); break;
                 }
             }
             else
@@ -167,7 +175,9 @@ namespace TONX
             i.Parent = parent;
             parent.SetChild(i);
         });
+
         public OptionItem SetChild(OptionItem child) => Do(i => i.Children.Add(child));
+
         public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
             => Do(i => UpdateValueEvent += handler);
 
@@ -178,24 +188,28 @@ namespace TONX
                 ReplacementDictionary ??= new();
                 ReplacementDictionary.Add(kvp.key, kvp.value);
             });
+
         public OptionItem RemoveReplacement(string key)
             => Do(i => ReplacementDictionary?.Remove(key));
 
         // Getter
-    public virtual string GetName(bool disableColor = false, bool console = false)
+        public virtual string GetName(bool disableColor = false, bool console = false)
         {
-        return (disableColor ?
-            Translator.GetString(Name, ReplacementDictionary, console) :
-            Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
-            + AddonDescription;
+            return (disableColor
+                       ? Translator.GetString(Name, ReplacementDictionary, console)
+                       : Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
+                   + AddonDescription;
         }
+
         public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
         public virtual int GetInt() => CurrentValue;
         public virtual float GetFloat() => CurrentValue;
+
         public virtual string GetString()
         {
             return ApplyFormat(CurrentValue.ToString());
         }
+
         public virtual int GetValue() => IsSingleValue ? SingleValue : AllValues[CurrentPreset];
 
         // 旧IsHidden関数
@@ -220,6 +234,7 @@ namespace TONX
                 opt.oldValue = opt.Value = CurrentValue;
             }
         }
+
         public virtual void SetValue(int afterValue, bool doSave, bool doSync = true)
         {
             int beforeValue = CurrentValue;
@@ -238,16 +253,19 @@ namespace TONX
             {
                 SyncAllOptions();
             }
+
             if (doSave)
             {
                 OptionSaver.Save();
             }
         }
+
         public virtual void SetValue(int afterValue, bool doSync = true)
         {
             SetValue(afterValue, true, doSync);
         }
-        public void SetAllValues(int[] values)  // プリセット読み込み専用
+
+        public void SetAllValues(int[] values) // プリセット読み込み専用
         {
             AllValues = values;
         }
@@ -255,6 +273,7 @@ namespace TONX
         // 演算子オーバーロード
         public static OptionItem operator ++(OptionItem item)
             => item.Do(item => item.SetValue(item.CurrentValue + 1));
+
         public static OptionItem operator --(OptionItem item)
             => item.Do(item => item.SetValue(item.CurrentValue - 1));
 
@@ -268,6 +287,7 @@ namespace TONX
 
             SyncAllOptions();
         }
+
         public static void SyncAllOptions()
         {
             if (
@@ -298,6 +318,7 @@ namespace TONX
         {
             public int CurrentValue { get; set; }
             public int BeforeValue { get; set; }
+
             public UpdateValueEventArgs(int beforeValue, int currentValue)
             {
                 CurrentValue = currentValue;
@@ -319,6 +340,7 @@ namespace TONX
         Addons,
         OtherRoles
     }
+
     public enum OptionFormat
     {
         None,

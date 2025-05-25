@@ -6,6 +6,7 @@ using TONX.Roles.Core.Interfaces;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Swooper : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -21,10 +22,10 @@ public sealed class Swooper : RoleBase, IImpostor
         );
 
     public Swooper(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         InvisTime = -1;
         LastTime = -1;
@@ -33,6 +34,7 @@ public sealed class Swooper : RoleBase, IImpostor
 
     static OptionItem SwooperCooldown;
     static OptionItem SwooperDuration;
+
     enum OptionName
     {
         SwooperCooldown,
@@ -42,27 +44,33 @@ public sealed class Swooper : RoleBase, IImpostor
     private long InvisTime;
     private long LastTime;
     private int VentedId;
+
     private static void SetupOptionItem()
     {
-        SwooperCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.SwooperCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        SwooperCooldown = FloatOptionItem
+            .Create(RoleInfo, 10, OptionName.SwooperCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        SwooperDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.SwooperDuration, new(2.5f, 180f, 2.5f), 15f, false)
+        SwooperDuration = FloatOptionItem
+            .Create(RoleInfo, 11, OptionName.SwooperDuration, new(2.5f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     private void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(InvisTime.ToString());
         sender.Writer.Write(LastTime.ToString());
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
-        
         InvisTime = long.Parse(reader.ReadString());
         LastTime = long.Parse(reader.ReadString());
     }
+
     public bool CanGoInvis() => GameStates.IsInTask && InvisTime == -1 && LastTime == -1;
     public bool IsInvis() => InvisTime != -1;
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || LastTime == -1) return;
@@ -75,6 +83,7 @@ public sealed class Swooper : RoleBase, IImpostor
             SendRPC();
         }
     }
+
     public override void OnSecondsUpdate(PlayerControl player, long now)
     {
         if (!AmongUsClient.Instance.AmHost || !IsInvis()) return;
@@ -90,9 +99,11 @@ public sealed class Swooper : RoleBase, IImpostor
         }
         else if (remainTime <= 10)
         {
-            if (!player.IsModClient()) player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
+            if (!player.IsModClient())
+                player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
         }
     }
+
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
         var now = Utils.GetTimeStamp();
@@ -112,7 +123,8 @@ public sealed class Swooper : RoleBase, IImpostor
                 {
                     VentedId = ventId;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34, SendOption.Reliable, Player.GetClientId());
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34,
+                        SendOption.Reliable, Player.GetClientId());
                     writer.WritePacked(ventId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
 
@@ -130,7 +142,9 @@ public sealed class Swooper : RoleBase, IImpostor
             return true;
         }
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false)
     {
         if (!isForHud || isForMeeting) return "";
 
@@ -149,8 +163,10 @@ public sealed class Swooper : RoleBase, IImpostor
         {
             str.Append(GetString("SwooperCanVent"));
         }
+
         return str.ToString();
     }
+
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
         if (!IsInvis()) return;
@@ -165,12 +181,14 @@ public sealed class Swooper : RoleBase, IImpostor
 
         info.DoKill = false;
     }
+
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
         LastTime = -1;
         InvisTime = -1;
         SendRPC();
     }
+
     public override void OnGameStart()
     {
         LastTime = Utils.GetTimeStamp();

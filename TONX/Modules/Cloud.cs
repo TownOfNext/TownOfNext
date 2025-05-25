@@ -34,6 +34,7 @@ internal class Cloud
             Logger.Exception(e, "Cloud Init");
         }
     }
+
     private static string GetResourcesTxt(string path)
     {
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
@@ -41,18 +42,22 @@ internal class Cloud
         using StreamReader reader = new(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
+
     public static bool ShareLobby(bool command = false)
     {
         try
         {
             if (!Options.ShareLobby.GetBool() && !command) return false;
-            if (!Main.NewLobby || (GameData.Instance.PlayerCount < Options.ShareLobbyMinPlayer.GetInt() && !command) || !GameStates.IsLobby) return false;
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false;
+            if (!Main.NewLobby || (GameData.Instance.PlayerCount < Options.ShareLobbyMinPlayer.GetInt() && !command) ||
+                !GameStates.IsLobby) return false;
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance ||
+                AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false;
 
             if (IP == null || LOBBY_PORT == 0) throw new("Has no ip or port");
 
             Main.NewLobby = false;
-            string msg = $"{GameStartManager.Instance.GameRoomNameCode.text}|{Main.PluginVersion}|{GameData.Instance.PlayerCount + 1}|{TranslationController.Instance.currentLanguage.languageID}|{ServerManager.Instance.CurrentRegion.Name}|{DataManager.player.customization.name}";
+            string msg =
+                $"{GameStartManager.Instance.GameRoomNameCode.text}|{Main.PluginVersion}|{GameData.Instance.PlayerCount + 1}|{TranslationController.Instance.currentLanguage.languageID}|{ServerManager.Instance.CurrentRegion.Name}|{DataManager.player.customization.name}";
 
             if (msg.Length <= 60)
             {
@@ -64,7 +69,6 @@ internal class Cloud
             }
 
             Utils.SendMessage(Translator.GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
-
         }
         catch (Exception e)
         {
@@ -72,21 +76,25 @@ internal class Cloud
             Logger.Exception(e, "SentLobbyToQQ");
             throw;
         }
+
         return true;
     }
 
     private static bool connecting = false;
+
     public static void StartConnect()
     {
         if (connecting || EacClientSocket != null && EacClientSocket.Connected) return;
         connecting = true;
         _ = new LateTask(() =>
         {
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame)
+            if (!AmongUsClient.Instance.AmHost || !GameData.Instance ||
+                AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame)
             {
                 connecting = false;
                 return;
             }
+
             try
             {
                 if (IP == null || EAC_PORT == 0) throw new("Has no ip or port");
@@ -100,14 +108,17 @@ internal class Cloud
                 connecting = false;
                 Logger.Error($"Connect To EAC Failed:\n{ex.Message}", "EAC Cloud", false);
             }
+
             connecting = false;
         }, 3.5f, "EAC Cloud Connect");
     }
+
     public static void StopConnect()
     {
         if (EacClientSocket != null && EacClientSocket.Connected)
             EacClientSocket.Close();
     }
+
     public static void SendData(string msg)
     {
         //StartConnect();
@@ -116,8 +127,10 @@ internal class Cloud
             //Logger.Warn("未连接至TONX服务器，报告被取消", "EAC Cloud");
             return;
         }
+
         EacClientSocket.Send(Encoding.Default.GetBytes(msg));
     }
+
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class EACConnectTimeOut
     {

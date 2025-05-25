@@ -21,13 +21,20 @@ class AddTasksFromListPatch
         for (var i = 0; i < unusedTasks.Count; i++)
         {
             var task = unusedTasks[i];
-            if (task.TaskType == TaskTypes.SwipeCard && Options.DisableSwipeCard.GetBool()) disabledTasks.Add(task);//カードタスク
-            if (task.TaskType == TaskTypes.SubmitScan && Options.DisableSubmitScan.GetBool()) disabledTasks.Add(task);//スキャンタスク
-            if (task.TaskType == TaskTypes.UnlockSafe && Options.DisableUnlockSafe.GetBool()) disabledTasks.Add(task);//金庫タスク
-            if (task.TaskType == TaskTypes.UploadData && Options.DisableUploadData.GetBool()) disabledTasks.Add(task);//アップロードタスク
-            if (task.TaskType == TaskTypes.StartReactor && Options.DisableStartReactor.GetBool()) disabledTasks.Add(task);//リアクターの3x3タスク
-            if (task.TaskType == TaskTypes.ResetBreakers && Options.DisableResetBreaker.GetBool()) disabledTasks.Add(task);//レバータスク
+            if (task.TaskType == TaskTypes.SwipeCard && Options.DisableSwipeCard.GetBool())
+                disabledTasks.Add(task); //カードタスク
+            if (task.TaskType == TaskTypes.SubmitScan && Options.DisableSubmitScan.GetBool())
+                disabledTasks.Add(task); //スキャンタスク
+            if (task.TaskType == TaskTypes.UnlockSafe && Options.DisableUnlockSafe.GetBool())
+                disabledTasks.Add(task); //金庫タスク
+            if (task.TaskType == TaskTypes.UploadData && Options.DisableUploadData.GetBool())
+                disabledTasks.Add(task); //アップロードタスク
+            if (task.TaskType == TaskTypes.StartReactor && Options.DisableStartReactor.GetBool())
+                disabledTasks.Add(task); //リアクターの3x3タスク
+            if (task.TaskType == TaskTypes.ResetBreakers && Options.DisableResetBreaker.GetBool())
+                disabledTasks.Add(task); //レバータスク
         }
+
         foreach (var task in disabledTasks)
         {
             Logger.Msg("削除: " + task.TaskType.ToString(), "AddTask");
@@ -42,7 +49,7 @@ class RpcSetTasksPatch
     //タスクを割り当ててRPCを送る処理が行われる直前にタスクを上書きするPatch
     //バニラのタスク割り当て処理自体には干渉しない
     public static void Prefix(NetworkedPlayerInfo __instance,
-    [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
+        [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
     {
         //null対策
         if (Main.RealOptionsData == null)
@@ -64,10 +71,10 @@ class RpcSetTasksPatch
         if (Options.OverrideTasksData.AllData.TryGetValue(role, out var data) && data.doOverride.GetBool())
         {
             hasCommonTasks = data.assignCommonTasks.GetBool(); // コモンタスク(通常タスク)を割り当てるかどうか
-                                                               // 割り当てる場合でも再割り当てはされず、他のクルーと同じコモンタスクが割り当てられる。
+            // 割り当てる場合でも再割り当てはされず、他のクルーと同じコモンタスクが割り当てられる。
             NumLongTasks = data.numLongTasks.GetInt(); // 割り当てるロングタスクの数
             NumShortTasks = data.numShortTasks.GetInt(); // 割り当てるショートタスクの数
-                                                         // ロングとショートは常時再割り当てが行われる。
+            // ロングとショートは常時再割り当てが行われる。
         }
 
         //背叛告密的任务覆盖
@@ -95,7 +102,8 @@ class RpcSetTasksPatch
 
         if (taskTypeIds.Count == 0) hasCommonTasks = false; //タスク再配布時はコモンを0に
         if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //タスク0対策
-        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //変更点がない場合
+        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks &&
+            NumShortTasks == Main.NormalOptions.NumShortTasks) return; //変更点がない場合
 
         //割り当て可能なタスクのIDが入ったリスト
         //本来のRpcSetTasksの第二引数のクローン
@@ -151,8 +159,8 @@ class RpcSetTasksPatch
         {
             taskTypeIds[i] = TasksList[i];
         }
-
     }
+
     public static void Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
     {
         for (int i = 0; i < list.Count - 1; i++)

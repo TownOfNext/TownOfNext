@@ -12,6 +12,7 @@ public interface IDoubleTrigger
     /// <param name="target"></param>
     /// <returns>true:キルする false:キルしない</returns>
     public bool SingleAction(PlayerControl killer, PlayerControl target);
+
     /// <summary>
     /// ダブル時のアクションの記述
     /// </summary>

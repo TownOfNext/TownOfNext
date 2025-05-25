@@ -8,14 +8,21 @@ namespace TONX;
 [HarmonyPatch]
 public class MapBehaviourPatch
 {
-    private static Dictionary<PlayerControl, SpriteRenderer> herePoints = new Dictionary<PlayerControl, SpriteRenderer>();
+    private static Dictionary<PlayerControl, SpriteRenderer> herePoints =
+        new Dictionary<PlayerControl, SpriteRenderer>();
+
     private static Dictionary<PlayerControl, Vector3> preMeetingPostions = new Dictionary<PlayerControl, Vector3>();
-    private static bool ShouldShowRealTime => !PlayerControl.LocalPlayer.IsAlive() || PlayerControl.LocalPlayer.Is(Roles.Core.CustomRoles.GM) || Main.GodMode.Value;
+
+    private static bool ShouldShowRealTime => !PlayerControl.LocalPlayer.IsAlive() ||
+                                              PlayerControl.LocalPlayer.Is(Roles.Core.CustomRoles.GM) ||
+                                              Main.GodMode.Value;
+
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowNormalMap)), HarmonyPostfix]
     public static void ShowNormalMapPostfix(MapBehaviour __instance)
     {
         InitializeCustomHerePoints(__instance);
     }
+
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowSabotageMap)), HarmonyPostfix]
     public static void ShowSabotageMapPostfix(MapBehaviour __instance)
     {
@@ -31,6 +38,7 @@ public class MapBehaviourPatch
             if (oldHerePoint.Value == null) continue;
             Object.Destroy(oldHerePoint.Value.gameObject);
         }
+
         herePoints.Clear();
 
         // 创建新图标
@@ -66,7 +74,9 @@ public class MapBehaviourPatch
             herePoint.material.SetColor(PlayerMaterial.VisorColor, Palette.VisorColor);
 
             // 设置图标位置
-            var vector = GameStates.IsMeeting && preMeetingPostions.TryGetValue(pc, out var pmp) ? pmp : pc.transform.position;
+            var vector = GameStates.IsMeeting && preMeetingPostions.TryGetValue(pc, out var pmp)
+                ? pmp
+                : pc.transform.position;
             vector /= ShipStatus.Instance.MapScale;
             vector.x *= Mathf.Sign(ShipStatus.Instance.transform.localScale.x);
             vector.z = -1f;

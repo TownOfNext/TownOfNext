@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Vanilla;
@@ -13,10 +12,12 @@ public sealed class Crewmate : RoleBase
             RoleTypes.Crewmate,
             "#8cffff"
         );
+
     public Crewmate(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

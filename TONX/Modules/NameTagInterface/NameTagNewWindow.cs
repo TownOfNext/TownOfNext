@@ -13,6 +13,7 @@ public static class NameTagNewWindow
     public static GameObject Info { get; private set; }
     public static GameObject EnterBox { get; private set; }
     public static GameObject ConfirmButton { get; private set; }
+
     public static void Open()
     {
         if (Window == null) Init();
@@ -21,11 +22,13 @@ public static class NameTagNewWindow
         Window.SetActive(true);
         EnterBox.GetComponent<TextBoxTMP>().Clear();
     }
+
     public static void Init()
     {
         if (!GameStates.IsNotJoined) return;
 
-        Window = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject, NameTagPanel.CustomBackground.transform.parent);
+        Window = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject,
+            NameTagPanel.CustomBackground.transform.parent);
         Window.name = "New Name Tag Window";
         Window.transform.FindChild("Background").localScale *= 0.7f;
 
@@ -35,10 +38,7 @@ public static class NameTagNewWindow
         closeButton.transform.localPosition = new Vector3(2.4f, 1.2f, -1f);
         closeButton.transform.localScale = new Vector3(1f, 1f, 1f);
         closeButton.GetComponent<PassiveButton>().OnClick = new();
-        closeButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
-        {
-            Window.SetActive(false);
-        }));
+        closeButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => { Window.SetActive(false); }));
 
         var titlePrefab = Window.transform.FindChild("TitleText_TMP").gameObject;
         titlePrefab.name = "Title Prefab";
@@ -47,7 +47,10 @@ public static class NameTagNewWindow
         var buttonPrefab = Window.transform.FindChild("Button1").gameObject;
         buttonPrefab.name = "Button Prefab";
         buttonPrefab.GetComponent<PassiveButton>().OnClick = new();
-        var enterPrefab = Object.Instantiate(AccountManager.Instance.transform.FindChild("PremissionRequestWindow/GuardianEmailConfirm").gameObject, Window.transform);
+        var enterPrefab =
+            Object.Instantiate(
+                AccountManager.Instance.transform.FindChild("PremissionRequestWindow/GuardianEmailConfirm").gameObject,
+                Window.transform);
         enterPrefab.name = "Enter Box Prefab";
         enterPrefab.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
         Object.Destroy(enterPrefab.GetComponent<EmailTextBehaviour>());
@@ -71,7 +74,8 @@ public static class NameTagNewWindow
         ConfirmButton.transform.localPosition = new Vector3(0, -0.8f, 0f);
         ConfirmButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
-            var code = EnterBox.GetComponent<TextBoxTMP>().text.ToLower().Trim().Replace("-", "#").Replace("—", "#").Replace(" ", string.Empty);
+            var code = EnterBox.GetComponent<TextBoxTMP>().text.ToLower().Trim().Replace("-", "#").Replace("—", "#")
+                .Replace(" ", string.Empty);
             var reg = new Regex(@"^[a-z]+#[0-9]{4}$");
             if (NameTagManager.AllNameTags.TryGetValue(code, out var tag) && !tag.Isinternal)
             {
@@ -91,6 +95,7 @@ public static class NameTagNewWindow
                 NameTagEditMenu.Toggle(code, true);
                 return;
             }
+
             new LateTask(() =>
             {
                 colorInfoTmp.text = GetString("PleaseEnterFriendCode");

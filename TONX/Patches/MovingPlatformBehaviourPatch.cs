@@ -18,6 +18,7 @@ public static class MovingPlatformBehaviourPatch
             ShipStatus.Instance.Cast<AirshipStatus>().outOfOrderPlat.SetActive(true);
         }
     }
+
     [HarmonyPatch(nameof(MovingPlatformBehaviour.IsDirty), MethodType.Getter), HarmonyPrefix]
     public static bool GetIsDirtyPrefix(ref bool __result)
     {
@@ -26,18 +27,22 @@ public static class MovingPlatformBehaviourPatch
             __result = false;
             return false;
         }
+
         return true;
     }
+
     [HarmonyPatch(nameof(MovingPlatformBehaviour.Use), typeof(PlayerControl)), HarmonyPrefix]
     public static bool UsePrefix([HarmonyArgument(0)] PlayerControl player)
     {
-        // ¥×¥ì¥¤¥ä©`¤¬¤Ì©`¤óÊ¹ÓÃ²»¿É×´‘B¤Î¤È¤­¤ËÊ¹ÓÃ¤ò¥Ö¥í¥Ã¥¯
+        // ï¿½×¥ì¥¤ï¿½ï¿½`ï¿½ï¿½ï¿½Ì©`ï¿½ï¿½Ê¹ï¿½Ã²ï¿½ï¿½ï¿½×´ï¿½Bï¿½Î¤È¤ï¿½ï¿½ï¿½Ê¹ï¿½Ã¤ï¿½Ö¥ï¿½ï¿½Ã¥ï¿½
         if (!PlayerState.GetByPlayerId(player.PlayerId).CanUseMovingPlatform)
         {
             return false;
         }
+
         return !isDisabled;
     }
+
     [HarmonyPatch(nameof(MovingPlatformBehaviour.SetSide)), HarmonyPrefix]
     public static bool SetSidePrefix() => !isDisabled;
 }

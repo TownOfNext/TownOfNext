@@ -12,9 +12,9 @@ public sealed class ClientOptionItem : ClientActionItem
         string name,
         ConfigEntry<bool> config,
         OptionsMenuBehaviour optionsMenuBehaviour)
-    : base(
-        name,
-        optionsMenuBehaviour)
+        : base(
+            name,
+            optionsMenuBehaviour)
     {
         Config = config;
         UpdateToggle();

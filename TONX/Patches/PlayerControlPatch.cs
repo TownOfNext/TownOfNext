@@ -23,7 +23,8 @@ class CheckProtectPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
-        Logger.Info("CheckProtect発生: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
+        Logger.Info("CheckProtect発生: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(),
+            "CheckProtect");
         if (__instance.Is(CustomRoles.Sheriff))
         {
             if (__instance.Data.IsDead)
@@ -32,13 +33,16 @@ class CheckProtectPatch
                 return false;
             }
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = new();
+
     public static void Update()
     {
         for (byte i = 0; i < 15; i++)
@@ -50,6 +54,7 @@ class CheckMurderPatch
             }
         }
     }
+
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -82,6 +87,7 @@ class CheckMurderPatch
             Logger.Info($"{killer.GetNameWithRole()}は死亡しているためキャンセルされました。", "CheckMurder");
             return false;
         }
+
         // targetがキル可能な状態か
         if (
             // PlayerDataがnullじゃないか確認
@@ -95,12 +101,14 @@ class CheckMurderPatch
             Logger.Info("targetは現在キルできない状態です。", "CheckMurder");
             return false;
         }
+
         // targetが既に死んでいないか
         if (!target.IsAlive())
         {
             Logger.Info("targetは既に死んでいたため、キルをキャンセルしました。", "CheckMurder");
             return false;
         }
+
         // 会議中のキルでないか
         if (MeetingHud.Instance != null)
         {
@@ -109,14 +117,16 @@ class CheckMurderPatch
         }
 
         // 連打キルでないか
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / 1000f * 6f); //※AmongUsClient.Instance.Pingの値はミリ秒(ms)なので÷1000
-                                                                                    //TimeSinceLastKillに値が保存されていない || 保存されている時間がminTime以上 => キルを許可
-                                                                                    //↓許可されない場合
+        float minTime =
+            Mathf.Max(0.02f, AmongUsClient.Instance.Ping / 1000f * 6f); //※AmongUsClient.Instance.Pingの値はミリ秒(ms)なので÷1000
+        //TimeSinceLastKillに値が保存されていない || 保存されている時間がminTime以上 => キルを許可
+        //↓許可されない場合
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
         {
             Logger.Info("前回のキルからの時間が早すぎるため、キルをブロックしました。", "CheckMurder");
             return false;
         }
+
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
         // キルが可能なプレイヤーか(遠隔は除く)
@@ -129,10 +139,12 @@ class CheckMurderPatch
         return true;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
 class RpcMurderPlayerPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.RpcMurderPlayer));
+
     public static void Prefix(PlayerControl __instance, PlayerControl target, ref bool didSucceed)
     {
         if (didSucceed)
@@ -156,21 +168,27 @@ class RpcMurderPlayerPatch
                 logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}(シェイプシフト中のため遅延)");
                 return;
             }
+
             if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
             {
                 //シェイプシフト強制解除
                 target.RpcShapeshift(target, false);
             }
+
             Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
         }
+
         logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}(didSucceed:{didSucceed})");
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.MurderPlayer));
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */ )
+
+    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target,
+        [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */)
     {
         logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}({resultFlags})");
         var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
@@ -181,19 +199,23 @@ class MurderPlayerPatch
         {
             logger.Info("守護されているため，キルは失敗します");
         }
+
         if (isProtectedByHost)
         {
             logger.Info("守護されているため，キルはホストによってキャンセルされました");
         }
+
         if (isFailed)
         {
             logger.Info("キルはホストによってキャンセルされました");
         }
+
         if (isSucceeded)
         {
             logger.Info("キルは実行されます");
         }
     }
+
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
     {
         // キルが成功していない場合，何もしない
@@ -201,6 +223,7 @@ class MurderPlayerPatch
         {
             return;
         }
+
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
         //以降ホストしか処理しない
@@ -220,12 +243,14 @@ class MurderPlayerPatch
             Main.FirstDied = target.PlayerId;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
 public static class PlayerControlCheckShapeshiftPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
 
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target,
+        [HarmonyArgument(1)] bool shouldAnimate)
     {
         if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
         {
@@ -251,50 +276,61 @@ public static class PlayerControlCheckShapeshiftPatch
             {
                 __instance.RpcRejectShapeshift();
             }
+
             return false;
         }
 
         __instance.RpcShapeshift(target, shouldAnimate);
         return false;
     }
+
     private static bool CheckInvalidShapeshifting(PlayerControl instance, PlayerControl target, bool animate)
     {
-        logger.Info($"Checking shapeshift {instance.GetNameWithRole()} -> {(target == null || target.Data == null ? "(null)" : target.GetNameWithRole())}");
+        logger.Info(
+            $"Checking shapeshift {instance.GetNameWithRole()} -> {(target == null || target.Data == null ? "(null)" : target.GetNameWithRole())}");
 
         if (!target || target.Data == null)
         {
             logger.Info("targetがnullのため変身をキャンセルします");
             return false;
         }
+
         if (!instance.IsAlive())
         {
             logger.Info("変身者が死亡しているため変身をキャンセルします");
             return false;
         }
+
         // RoleInfoによるdesyncシェイプシフター用の判定を追加
-        if (instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetRoleInfo()?.BaseRoleType?.Invoke() != RoleTypes.Shapeshifter)
+        if (instance.Data.Role.Role != RoleTypes.Shapeshifter &&
+            instance.GetCustomRole().GetRoleInfo()?.BaseRoleType?.Invoke() != RoleTypes.Shapeshifter)
         {
             logger.Info("変身者がシェイプシフターではないため変身をキャンセルします");
             return false;
         }
+
         if (instance.Data.Disconnected)
         {
             logger.Info("変身者が切断済のため変身をキャンセルします");
             return false;
         }
+
         if (target.IsMushroomMixupActive() && animate)
         {
             logger.Info("キノコカオス中のため変身をキャンセルします");
             return false;
         }
+
         if (MeetingHud.Instance && animate)
         {
             logger.Info("会議中のため変身をキャンセルします");
             return false;
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {
@@ -322,31 +358,30 @@ class ShapeshiftPatch
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
         // 变形后刷新玩家名字
-        _ = new LateTask(() =>
-        {
-            Utils.NotifyRoles(NoCache: true);
-        },
-        1.2f, "ShapeShiftNotify");
+        _ = new LateTask(() => { Utils.NotifyRoles(NoCache: true); },
+            1.2f, "ShapeShiftNotify");
 
         // 变形后刷新玩家小黑人状态
         if (shapeshifting && Camouflage.IsCamouflage)
         {
             _ = new LateTask(() =>
-            {
-                if (GameStates.IsInTask)
                 {
-                    Camouflage.RpcSetSkin(__instance, ForceChange: true);
-                } 
-            },
-            1.2f, "ShapeShiftRpcSetSkin");
+                    if (GameStates.IsInTask)
+                    {
+                        Camouflage.RpcSetSkin(__instance, ForceChange: true);
+                    }
+                },
+                1.2f, "ShapeShiftRpcSetSkin");
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
     public static Dictionary<byte, List<NetworkedPlayerInfo>> WaitReport = new();
+
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo target)
     {
         if (GameStates.IsMeeting) return false;
@@ -358,7 +393,9 @@ class ReportDeadBodyPatch
             Logger.Warn($"{__instance.GetNameWithRole()}:通報禁止中のため可能になるまで待機します", "ReportDeadBody");
             return false;
         }
-        Logger.Info($"{__instance.GetNameWithRole()} => {target?.Object?.GetNameWithRole() ?? "null"}", "ReportDeadBody");
+
+        Logger.Info($"{__instance.GetNameWithRole()} => {target?.Object?.GetNameWithRole() ?? "null"}",
+            "ReportDeadBody");
         if (!AmongUsClient.Instance.AmHost) return true;
 
         //通報者が死んでいる場合、本処理で会議がキャンセルされるのでここで止める
@@ -366,7 +403,8 @@ class ReportDeadBodyPatch
 
         if (Options.SyncButtonMode.GetBool() && target == null)
         {
-            Logger.Info("最大:" + Options.SyncedButtonCount.GetInt() + ", 現在:" + Options.UsedButtonCount, "ReportDeadBody");
+            Logger.Info("最大:" + Options.SyncedButtonCount.GetInt() + ", 現在:" + Options.UsedButtonCount,
+                "ReportDeadBody");
             if (Options.SyncedButtonCount.GetFloat() <= Options.UsedButtonCount)
             {
                 Logger.Info("使用可能ボタン回数が最大数を超えているため、ボタンはキャンセルされました。", "ReportDeadBody");
@@ -407,10 +445,10 @@ class ReportDeadBodyPatch
         }
 
         Main.AllPlayerControls
-                    .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId))
-                    .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
+            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId))
+            .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
         Main.AllPlayerControls
-                    .Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true)); // 会议开始前强制解除小黑人
+            .Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true)); // 会议开始前强制解除小黑人
         MeetingTimeManager.OnReportDeadBody();
 
         Utils.NotifyRoles(isForMeeting: true, NoCache: true);
@@ -419,6 +457,7 @@ class ReportDeadBodyPatch
 
         return true;
     }
+
     public static async void ChangeLocalNameAndRevert(string name, int time)
     {
         //async Taskじゃ警告出るから仕方ないよね。
@@ -428,6 +467,7 @@ class ReportDeadBodyPatch
         PlayerControl.LocalPlayer.RpcSetNameEx(revertName);
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
 public static class PlayerControlStartMeetingPatch
 {
@@ -440,17 +480,20 @@ public static class PlayerControlStartMeetingPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 class FixedUpdatePatch
 {
     private static StringBuilder Mark = new(20);
     private static StringBuilder Suffix = new(120);
     private static int LevelKickBufferTime = 10;
+
     public static void Postfix(PlayerControl __instance)
     {
         var player = __instance;
 
-        if (player.AmOwner && player.IsEACPlayer() && (GameStates.IsLobby || GameStates.IsInGame) && GameStates.IsOnlineGame)
+        if (player.AmOwner && player.IsEACPlayer() && (GameStates.IsLobby || GameStates.IsInGame) &&
+            GameStates.IsOnlineGame)
             AmongUsClient.Instance.ExitGame(DisconnectReasons.Error);
 
         if (!GameStates.IsModHost) return;
@@ -463,11 +506,16 @@ class FixedUpdatePatch
         CustomRoleManager.OnFixedUpdate(player);
 
         if (AmongUsClient.Instance.AmHost)
-        {//実行クライアントがホストの場合のみ実行
-            if (GameStates.IsLobby && ((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion) && AmongUsClient.Instance.IsGamePublic)
+        {
+            //実行クライアントがホストの場合のみ実行
+            if (GameStates.IsLobby &&
+                ((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom ||
+                 !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion) &&
+                AmongUsClient.Instance.IsGamePublic)
                 AmongUsClient.Instance.ChangeGamePublic(false);
 
-            if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
+            if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[__instance.PlayerId] &&
+                ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
             {
                 var info = ReportDeadBodyPatch.WaitReport[__instance.PlayerId][0];
                 ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Clear();
@@ -477,8 +525,8 @@ class FixedUpdatePatch
 
             //踢出低等级的人
             if (GameStates.IsLobby && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
-                (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
-                player.Data.FriendCode == ""
+                    (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
+                    player.Data.FriendCode == ""
                 ))
             {
                 LevelKickBufferTime--;
@@ -507,11 +555,13 @@ class FixedUpdatePatch
 
             NameTagManager.ApplyFor(player);
         }
+
         //LocalPlayer専用
         if (__instance.AmOwner)
         {
             //キルターゲットの上書き処理
-            if (GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() && !__instance.Data.IsDead)
+            if (GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() &&
+                !__instance.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = players.Count <= 0 ? null : players[0];
@@ -529,13 +579,20 @@ class FixedUpdatePatch
                 if (Main.playerVersion.TryGetValue(__instance.PlayerId, out var ver))
                 {
                     if (Main.ForkId != ver.forkId) // フォークIDが違う場合
-                        __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.5>{ver.forkId}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text =
+                            $"<color=#ff0000><size=1.5>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
-                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#fcc5f8>{__instance.name}</color>" : $"<color=#ffff00><size=1.5>{ver.tag}</size>\n{__instance?.name}</color>";
-                    else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.5>v{ver.version}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text =
+                            ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})"
+                                ? $"<color=#fcc5f8>{__instance.name}</color>"
+                                : $"<color=#ffff00><size=1.5>{ver.tag}</size>\n{__instance?.name}</color>";
+                    else
+                        __instance.cosmetics.nameText.text =
+                            $"<color=#ff0000><size=1.5>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
                 else __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
             }
+
             if (GameStates.IsInGame)
             {
                 //if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
@@ -543,8 +600,10 @@ class FixedUpdatePatch
                 //    var hasRole = main.AllPlayerCustomRoles.TryGetValue(__instance.PlayerId, out var role);
                 //    if (hasRole) RoleTextData = Utils.GetRoleTextHideAndSeek(__instance.Data.Role.Role, role);
                 //}
-                (RoleText.enabled, RoleText.text) = Utils.GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, __instance);
-                if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
+                (RoleText.enabled, RoleText.text) =
+                    Utils.GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, __instance);
+                if (!AmongUsClient.Instance.IsGameStarted &&
+                    AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
                     RoleText.enabled = false; //ゲームが始まっておらずフリープレイでなければロールを非表示
                     if (!__instance.AmOwner) __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
@@ -564,12 +623,15 @@ class FixedUpdatePatch
                 // 名前色変更処理
                 //自分自身の名前の色を変更
                 if (target.AmOwner && GameStates.IsInTask)
-                { //targetが自分自身
+                {
+                    //targetが自分自身
                     if (seer.IsEaten())
-                        RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
+                        RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican),
+                            GetString("EatenByPelican"));
                     if (NameNotifyManager.GetNameNotify(target, out var name))
                         RealName = name;
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
+                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat &&
+                        target.GetCustomRole() == CustomRoles.KB_Normal)
                         SoloKombatManager.GetNameNotify(target, ref RealName);
                 }
 
@@ -608,7 +670,8 @@ class FixedUpdatePatch
                 //seerに関わらず発動するSuffix
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat &&
+                    target.GetCustomRole() == CustomRoles.KB_Normal)
                     Suffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
@@ -617,7 +680,9 @@ class FixedUpdatePatch
                 if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
                     RealName = $"<size=0>{RealName}</size> ";
 
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
+                    ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})"
+                    : "";
                 //Mark・Suffixの適用
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
@@ -626,7 +691,6 @@ class FixedUpdatePatch
                     //名前が2行になると役職テキストを上にずらす必要がある
                     RoleText.transform.SetLocalY(0.35f);
                     target.cosmetics.nameText.text += "\r\n" + Suffix.ToString();
-
                 }
                 else
                 {
@@ -641,6 +705,7 @@ class FixedUpdatePatch
             }
         }
     }
+
     //FIXME: 役職クラス化のタイミングで、このメソッドは移動予定
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false, bool now = false)
     {
@@ -661,16 +726,19 @@ class FixedUpdatePatch
                     //生きていて死ぬ予定もない場合は心中
                     if (partnerPlayer.PlayerId != deathId && !partnerPlayer.Data.IsDead)
                     {
-                        PlayerState.GetByPlayerId(partnerPlayer.PlayerId).DeathReason = CustomDeathReason.FollowingSuicide;
+                        PlayerState.GetByPlayerId(partnerPlayer.PlayerId).DeathReason =
+                            CustomDeathReason.FollowingSuicide;
                         if (isExiled)
                         {
                             if (now) partnerPlayer?.RpcExileV2();
-                            MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+                            MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.FollowingSuicide,
+                                partnerPlayer.PlayerId);
                         }
                         else
                         {
                             partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
+
                         Utils.NotifyRoles(partnerPlayer);
                     }
                 }
@@ -678,6 +746,7 @@ class FixedUpdatePatch
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
 class PlayerStartPatch
 {
@@ -693,17 +762,21 @@ class PlayerStartPatch
         roleText.enabled = false;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetColor))]
 class SetColorPatch
 {
     public static bool IsAntiGlitchDisabled = false;
+
     public static bool Prefix(PlayerControl __instance, int bodyColor)
     {
         //色変更バグ対策
-        if (!AmongUsClient.Instance.AmHost || __instance.CurrentOutfit.ColorId == bodyColor || IsAntiGlitchDisabled) return true;
+        if (!AmongUsClient.Instance.AmHost || __instance.CurrentOutfit.ColorId == bodyColor ||
+            IsAntiGlitchDisabled) return true;
         return true;
     }
 }
+
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -715,6 +788,7 @@ class EnterVentPatch
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
     }
 }
+
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
 class CoEnterVentPatch
 {
@@ -728,8 +802,8 @@ class CoEnterVentPatch
 
         if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
             (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
-            !user.CanUseImpostorVentButton()) //インポスターベントも使えない
-        )
+             !user.CanUseImpostorVentButton()) //インポスターベントも使えない
+           )
         {
             _ = new LateTask(() =>
             {
@@ -741,6 +815,7 @@ class CoEnterVentPatch
                 }
             }, 0.5f, "Cancel Vent");
         }
+
         return true;
     }
 }
@@ -752,6 +827,7 @@ class SetNamePatch
     {
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
 class PlayerControlCompleteTaskPatch
 {
@@ -769,6 +845,7 @@ class PlayerControlCompleteTaskPatch
         {
             ret = cancel;
         }
+
         //属性クラスの扱いを決定するまで仮置き
         ret &= Workhorse.OnCompleteTask(pc);
         ret &= Capitalist.OnCompleteTask(pc);
@@ -776,13 +853,16 @@ class PlayerControlCompleteTaskPatch
         Utils.NotifyRoles();
         return ret;
     }
+
     public static void Postfix()
     {
         //人外のタスクを排除して再計算
         GameData.Instance.RecomputeTaskCounts();
-        Logger.Info($"TotalTaskCounts = {GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks}", "TaskState.Update");
+        Logger.Info($"TotalTaskCounts = {GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks}",
+            "TaskState.Update");
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ProtectPlayer))]
 class PlayerControlProtectPlayerPatch
 {
@@ -791,6 +871,7 @@ class PlayerControlProtectPlayerPatch
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "ProtectPlayer");
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RemoveProtection))]
 class PlayerControlRemoveProtectionPatch
 {
@@ -799,6 +880,7 @@ class PlayerControlRemoveProtectionPatch
         Logger.Info($"{__instance.GetNameWithRole()}", "RemoveProtection");
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
@@ -826,6 +908,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
+
             if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
             {
                 roleType = RoleTypes.CrewmateGhost;
@@ -838,15 +921,19 @@ class PlayerControlSetRolePatch
             {
                 foreach ((var seer, var role) in ghostRoles)
                 {
-                    Logger.Info($"Desync {targetName} =>{role} for{seer.GetNameWithRole()}", "PlayerControl.RpcSetRole");
+                    Logger.Info($"Desync {targetName} =>{role} for{seer.GetNameWithRole()}",
+                        "PlayerControl.RpcSetRole");
                     target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
+
                 return false;
             }
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
@@ -854,12 +941,14 @@ public static class PlayerControlDiePatch
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(__instance, PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
+            CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(__instance,
+                PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
             // 死者の最終位置にペットが残るバグ対応
             __instance.RpcSetPet("");
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]
 public static class PlayerControlMixupOutfitPatch
 {
@@ -869,17 +958,19 @@ public static class PlayerControlMixupOutfitPatch
         {
             return;
         }
+
         // 自分がDesyncインポスターで，バニラ判定ではインポスターの場合，バニラ処理で名前が非表示にならないため，相手の名前を非表示にする
         if (
-            PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // バニラ判定でインポスター
-            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) &&  // Mod判定でインポスターではない
-            PlayerControl.LocalPlayer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true)  // Desyncインポスター
+            PlayerControl.LocalPlayer.Data.Role.IsImpostor && // バニラ判定でインポスター
+            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) && // Mod判定でインポスターではない
+            PlayerControl.LocalPlayer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true) // Desyncインポスター
         {
             // 名前を隠す
             __instance.cosmetics.ToggleNameVisible(false);
         }
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
 public static class PlayerControlCheckSporeTriggerPatch
 {
@@ -889,9 +980,11 @@ public static class PlayerControlCheckSporeTriggerPatch
         {
             return false;
         }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
 class CheckNamePatch
 {
@@ -904,13 +997,16 @@ class CheckNamePatch
         else
         {
             // 删除非法字符
-            playerName = playerName.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\0", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
+            playerName = playerName.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty)
+                .Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("\0", string.Empty)
+                .Replace("<", string.Empty).Replace(">", string.Empty);
             // 删除超出10位的字符
             if (playerName.Length > 10) playerName = playerName[..10];
             // 删除Emoji
             if (Options.DisableEmojiName.GetBool()) playerName = Regex.Replace(playerName, @"\p{Cs}", string.Empty);
             // 若无有效字符则随机取名
-            if (Regex.Replace(Regex.Replace(playerName, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) playerName = Main.Get_TName_Snacks;
+            if (Regex.Replace(Regex.Replace(playerName, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty)
+                    .Length < 1) playerName = Main.Get_TName_Snacks;
             // 替换重名
             string fixedName = playerName;
             int suffixNumber = 0;
@@ -919,8 +1015,10 @@ class CheckNamePatch
                 suffixNumber++;
                 fixedName = $"{playerName} {suffixNumber}";
             }
+
             if (!fixedName.Equals(playerName)) playerName = fixedName;
         }
+
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, playerName);
         RPC.SyncAllPlayerNames();

@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Capitalist : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -20,17 +20,19 @@ public sealed class Capitalist : RoleBase, IImpostor
             "ca|資本家|资本|资本主义",
             experimental: true
         );
+
     public Capitalist(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         NumShortTasks = new();
         TasksWaitToAdd = new();
     }
 
     static OptionItem OptionKillCooldown;
+
     enum OptionName
     {
         CapitalistSkillCooldown,
@@ -39,18 +41,25 @@ public sealed class Capitalist : RoleBase, IImpostor
     public static Dictionary<byte, int> NumShortTasks;
     public static Dictionary<byte, int> TasksWaitToAdd;
     public bool IsKiller { get; private set; } = false;
+
     private static void SetupOptionItem()
     {
-        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.CapitalistSkillCooldown, new(2.5f, 180f, 2.5f), 12.5f, false)
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.CapitalistSkillCooldown,
+                new(2.5f, 180f, 2.5f), 12.5f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
+
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("CapitalistButtonText");
         return true;
     }
-    public static int GetShortTasks(byte playerId, int shortTasks) => (NumShortTasks != null && NumShortTasks.TryGetValue(playerId, out var x)) ? x : shortTasks;
+
+    public static int GetShortTasks(byte playerId, int shortTasks) =>
+        (NumShortTasks != null && NumShortTasks.TryGetValue(playerId, out var x)) ? x : shortTasks;
+
     public static bool OnCompleteTask(PlayerControl pc)
     {
         if (!CustomRoles.Capitalist.IsExist(true)) return true;
@@ -75,6 +84,7 @@ public sealed class Capitalist : RoleBase, IImpostor
 
         return false;
     }
+
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var target = info.AttemptTarget;

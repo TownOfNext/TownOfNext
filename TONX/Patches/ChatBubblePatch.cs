@@ -14,6 +14,7 @@ public static class ChatBubblePatch
         if (GameStates.IsInGame && __instance.playerInfo.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             __instance.NameText.color = PlayerControl.LocalPlayer.GetRoleColor();
     }
+
     [HarmonyPatch(nameof(ChatBubble.SetText)), HarmonyPrefix]
     public static void SetText_Prefix(ChatBubble __instance, ref string chatText)
     {

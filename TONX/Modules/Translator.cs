@@ -24,6 +24,7 @@ public static class Translator
         LoadLangs();
         Logger.Info("加载语言文件成功", "Translator");
     }
+
     public static void LoadLangs()
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -94,13 +95,16 @@ public static class Translator
             if (translateMaps[(int)langId].TryGetValue(str, out var trans))
                 res = trans;
             // 繁中用户寻找简中翻译替代
-            else if (langId is SupportedLangs.TChinese && translateMaps[(int)SupportedLangs.SChinese].TryGetValue(str, out trans))
+            else if (langId is SupportedLangs.TChinese &&
+                     translateMaps[(int)SupportedLangs.SChinese].TryGetValue(str, out trans))
                 res = "*" + trans;
             // 非中文用户寻找英语翻译替代
-            else if (langId is not SupportedLangs.English and not SupportedLangs.TChinese && translateMaps[(int)SupportedLangs.English].TryGetValue(str, out trans))
+            else if (langId is not SupportedLangs.English and not SupportedLangs.TChinese &&
+                     translateMaps[(int)SupportedLangs.English].TryGetValue(str, out trans))
                 res = "*" + trans;
             // 非中文用户寻找中文（原生）字符串替代
-            else if (langId is not SupportedLangs.SChinese && translateMaps[(int)SupportedLangs.SChinese].TryGetValue(str, out trans))
+            else if (langId is not SupportedLangs.SChinese &&
+                     translateMaps[(int)SupportedLangs.SChinese].TryGetValue(str, out trans))
                 res = "*" + trans;
             // 在游戏自带的字符串中寻找
             else
@@ -115,10 +119,14 @@ public static class Translator
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
+
         return res;
     }
+
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName,
+            new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance?.currentLanguage?.languageID ?? SupportedLangs.English;
@@ -128,6 +136,7 @@ public static class Translator
 
         return GetString(str, lang);
     }
+
     public static SupportedLangs GetUserLangByRegion()
     {
 #if DEBUG
@@ -149,8 +158,12 @@ public static class Translator
             return SupportedLangs.English;
         }
     }
+
     public static bool IsChineseUser => GetUserLangByRegion() == SupportedLangs.SChinese;
-    public static bool IsChineseLanguageUser => GetUserLangByRegion() is SupportedLangs.SChinese or SupportedLangs.TChinese;
+
+    public static bool IsChineseLanguageUser =>
+        GetUserLangByRegion() is SupportedLangs.SChinese or SupportedLangs.TChinese;
+
     public static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
@@ -167,7 +180,8 @@ public static class Translator
                 {
                     try
                     {
-                        translateMaps[(int)lang][tmp[0]] = tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n").Replace("\\r", "\r");
+                        translateMaps[(int)lang][tmp[0]] =
+                            tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n").Replace("\\r", "\r");
                     }
                     catch (KeyNotFoundException)
                     {
@@ -188,6 +202,7 @@ public static class Translator
         foreach (var title in translateMaps) sb.Append($"{title.Key}:\n");
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
     }
+
     public static void ExportCustomTranslation()
     {
         LoadLangs();
@@ -199,6 +214,7 @@ public static class Translator
             if (!translateMaps.ContainsKey((int)lang)) text = "";
             sb.Append($"{kvp.Key}:{text}\n");
         }
+
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
     }
 }

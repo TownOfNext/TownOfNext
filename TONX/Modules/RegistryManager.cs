@@ -20,6 +20,7 @@ public static class RegistryManager
             Logger.Info("Create TONX Registry Key", "Registry Manager");
             Keys = SoftwareKeys.CreateSubKey("AU-TONX", true);
         }
+
         if (Keys == null)
         {
             Logger.Error("Create Registry Failed", "Registry Manager");
@@ -34,10 +35,10 @@ public static class RegistryManager
         Keys.SetValue("Path", Path.GetFullPath("./"));
 
         List<string> FoldersNFileToDel =
-            [
-                @"./TOH_DATA",
-                @"./TOHE_DATA",
-            ];
+        [
+            @"./TOH_DATA",
+            @"./TOHE_DATA",
+        ];
 
         Logger.Warn("上次启动的TONX版本：" + LastVersion, "Registry Manager");
 
@@ -63,6 +64,5 @@ public static class RegistryManager
             Logger.Warn("Delete Useless File:" + p, "Registry Manager");
             File.Delete(p);
         });
-
     }
 }

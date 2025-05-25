@@ -5,6 +5,7 @@ using TONX.Roles.Core;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
+
 public class Snitch : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -19,11 +20,12 @@ public class Snitch : RoleBase
             "sn|告密",
             "#b8fb4f"
         );
+
     public Snitch(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         EnableTargetArrow = OptionEnableTargetArrow.GetBool();
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
@@ -35,6 +37,7 @@ public class Snitch : RoleBase
         //他視点用のMarkメソッド登録
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
+
     public override void OnDestroy()
     {
         TargetList.Clear();
@@ -48,6 +51,7 @@ public class Snitch : RoleBase
     private static OptionItem OptionCanFindMadmate;
     private static OptionItem OptionCanFindCharmed;
     private static OptionItem OptionRemainingTasks;
+
     enum OptionName
     {
         SnitchEnableTargetArrow,
@@ -75,14 +79,19 @@ public class Snitch : RoleBase
 
     private static void SetupOptionItem()
     {
-        OptionEnableTargetArrow = BooleanOptionItem.Create(RoleInfo, 10, OptionName.SnitchEnableTargetArrow, false, false);
-        OptionCanGetColoredArrow = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, false, false);
-        OptionCanFindNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, false, false);
+        OptionEnableTargetArrow =
+            BooleanOptionItem.Create(RoleInfo, 10, OptionName.SnitchEnableTargetArrow, false, false);
+        OptionCanGetColoredArrow =
+            BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, false, false);
+        OptionCanFindNeutralKiller =
+            BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, false, false);
         OptionCanFindMadmate = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SnitchCanFindMadmate, false, false);
         OptionCanFindCharmed = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindCharmed, false, false);
-        OptionRemainingTasks = IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false);
+        OptionRemainingTasks =
+            IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false);
         Options.OverrideTasksData.Create(RoleInfo, 20);
     }
+
     /// <summary>
     /// スニッチのターゲットであるかの判定
     /// Others系でも使うためstatic実装
@@ -92,9 +101,9 @@ public class Snitch : RoleBase
     private static bool IsSnitchTarget(PlayerControl target)
     {
         return target.Is(CustomRoleTypes.Impostor)
-            || (CanFindNeutralKiller && target.IsNeutralKiller())
-            || (CanFindMadmate && target.Is(CustomRoles.Madmate))
-            || (CanFindCharmed && target.Is(CustomRoles.Charmed));
+               || (CanFindNeutralKiller && target.IsNeutralKiller())
+               || (CanFindMadmate && target.Is(CustomRoles.Madmate))
+               || (CanFindCharmed && target.Is(CustomRoles.Charmed));
     }
 
     /// <summary>
@@ -124,14 +133,15 @@ public class Snitch : RoleBase
             {
                 mark += TargetArrow.GetArrows(seer, ExposedList.ToArray());
             }
+
             return Utils.ColorString(RoleInfo.RoleColor, mark);
         }
         else if (seen.GetRoleClass() is Snitch snitch && snitch.IsExposed)
         {
             //seenがタスク終わりそうなスニッチの時
             return Utils.ColorString(RoleInfo.RoleColor, "★");
-
         }
+
         //その他seenなら無し
         return "";
     }
@@ -161,8 +171,10 @@ public class Snitch : RoleBase
             var arrow = TargetArrow.GetArrows(seer, targetId);
             arrows += CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow;
         }
+
         return arrows;
     }
+
     /// <summary>
     /// タスクの進行状況の管理
     /// </summary>
@@ -181,6 +193,7 @@ public class Snitch : RoleBase
                 TargetColorlist.Add(targetId, target.GetRoleColor());
             }
         }
+
         if (!IsExposed && MyTaskState.RemainingTasksCount <= RemainingTasksToBeFound)
         {
             IsExposed = true;
@@ -192,6 +205,7 @@ public class Snitch : RoleBase
                     TargetArrow.Add(targetId, Player.PlayerId);
                 }
             }
+
             update = true;
         }
 
@@ -205,8 +219,10 @@ public class Snitch : RoleBase
                 if (EnableTargetArrow)
                     TargetArrow.Add(Player.PlayerId, targetId);
             }
+
             update = true;
         }
+
         if (update) Utils.NotifyRoles();
         cancel = false;
         return false;

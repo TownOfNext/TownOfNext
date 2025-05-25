@@ -1,5 +1,4 @@
 using HarmonyLib;
-
 using TONX.Roles.Core;
 
 namespace TONX;
@@ -16,6 +15,7 @@ public static class AirshipStatusPrespawnStepPatch
             // GMは湧き画面をスキップ
             return false;
         }
+
         return true;
     }
 }

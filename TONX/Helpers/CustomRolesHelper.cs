@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-
 using TONX.Roles.Core;
 
 namespace TONX;
@@ -8,11 +7,17 @@ namespace TONX;
 static class CustomRolesHelper
 {
     /// <summary>すべての役職(属性は含まない)</summary>
-    public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray();
+    public static readonly CustomRoles[] AllRoles =
+        EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray();
+
     /// <summary>すべての属性</summary>
-    public static readonly CustomRoles[] AllAddOns = EnumHelper.GetAllValues<CustomRoles>().Where(role => role > CustomRoles.NotAssigned).ToArray();
+    public static readonly CustomRoles[] AllAddOns =
+        EnumHelper.GetAllValues<CustomRoles>().Where(role => role > CustomRoles.NotAssigned).ToArray();
+
     /// <summary>スタンダードモードで出現できるすべての役職</summary>
-    public static readonly CustomRoles[] AllStandardRoles = AllRoles.Where(role => role is not CustomRoles.KB_Normal).ToArray();
+    public static readonly CustomRoles[] AllStandardRoles =
+        AllRoles.Where(role => role is not CustomRoles.KB_Normal).ToArray();
+
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
 
     public static bool IsImpostor(this CustomRoles role)
@@ -22,7 +27,9 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Impostor;
         return false;
     }
+
     public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role is CustomRoles.Madmate;
+
     public static bool IsNeutral(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();
@@ -30,6 +37,7 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Neutral;
         return role is CustomRoles.KB_Normal;
     }
+
     public static bool IsCrewmate(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();
@@ -37,14 +45,18 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Crewmate;
         return
             role is CustomRoles.Crewmate or
-            CustomRoles.Engineer or
-            CustomRoles.Noisemaker or
-            CustomRoles.Tracker or
-            CustomRoles.Scientist;
+                CustomRoles.Engineer or
+                CustomRoles.Noisemaker or
+                CustomRoles.Tracker or
+                CustomRoles.Scientist;
     }
+
     public static bool IsAddon(this CustomRoles role) => (int)role > 500;
     public static bool IsValid(this CustomRoles role) => role is not CustomRoles.GM and not CustomRoles.NotAssigned;
-    public static bool IsExist(this CustomRoles role, bool CountDeath = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || CountDeath));
+
+    public static bool IsExist(this CustomRoles role, bool CountDeath = false) =>
+        Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || CountDeath));
+
     public static bool IsVanilla(this CustomRoles role)
     {
         return
@@ -75,6 +87,7 @@ static class CustomRolesHelper
 
         return type;
     }
+
     public static int GetCount(this CustomRoles role)
     {
         if (role.IsVanilla())
@@ -98,6 +111,7 @@ static class CustomRolesHelper
             return Options.GetRoleCount(role);
         }
     }
+
     public static int GetChance(this CustomRoles role)
     {
         if (role.IsVanilla())
@@ -121,7 +135,9 @@ static class CustomRolesHelper
             return Options.GetRoleChance(role);
         }
     }
+
     public static bool IsEnable(this CustomRoles role) => role.GetCount() > 0;
+
     public static CustomRoles GetCustomRoleTypes(this RoleTypes role)
     {
         return role switch
@@ -138,6 +154,7 @@ static class CustomRolesHelper
             _ => CustomRoles.NotAssigned
         };
     }
+
     public static RoleTypes GetRoleTypes(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();
@@ -152,6 +169,7 @@ static class CustomRolesHelper
         };
     }
 }
+
 public enum CountTypes
 {
     OutOfGame,

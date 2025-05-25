@@ -37,6 +37,7 @@ public static class SabotageSystemTypeUpdateSystemPatch
         {
             return false;
         }
+
         var roleClass = player.GetRoleClass();
         if (roleClass is IKiller killer)
         {
@@ -50,6 +51,7 @@ public static class SabotageSystemTypeUpdateSystemPatch
             return CanSabotage(player);
         }
     }
+
     private static bool CanSabotage(PlayerControl player)
     {
         //サボタージュ出来ないキラー役職はサボタージュ自体をキャンセル
@@ -57,14 +59,17 @@ public static class SabotageSystemTypeUpdateSystemPatch
         {
             return false;
         }
+
         return true;
     }
-    public static void Postfix(SabotageSystemType __instance, bool __runOriginal /* Prefixの結果，本体処理が実行されたかどうか */ )
+
+    public static void Postfix(SabotageSystemType __instance, bool __runOriginal /* Prefixの結果，本体処理が実行されたかどうか */)
     {
         if (!__runOriginal || !isCooldownModificationEnabled || !AmongUsClient.Instance.AmHost)
         {
             return;
         }
+
         // サボタージュクールダウンを変更
         __instance.Timer = modifiedCooldownSec;
         __instance.IsDirty = true;
@@ -81,6 +86,7 @@ public static class ElectricTaskInitializePatch
             Utils.NotifyRoles(ForceLoop: true);
     }
 }
+
 [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
 public static class ElectricTaskCompletePatch
 {

@@ -9,7 +9,8 @@ namespace TONX.Patches.ISystemType;
 [HarmonyPatch(typeof(ReactorSystemType), nameof(ReactorSystemType.UpdateSystem))]
 public static class ReactorSystemTypeUpdateSystemPatch
 {
-    public static bool Prefix(ReactorSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader, ref byte __state /* amount */)
+    public static bool Prefix(ReactorSystemType __instance, [HarmonyArgument(0)] PlayerControl player,
+        [HarmonyArgument(1)] MessageReader msgReader, ref byte __state /* amount */)
     {
         byte amount;
         {
@@ -20,7 +21,8 @@ public static class ReactorSystemTypeUpdateSystemPatch
         __state = amount;
         if (player.Is(CustomRoles.Fool)) return false;
 
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateReactorSystem(__instance, amount))
+        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook &&
+            !systemTypeUpdateHook.UpdateReactorSystem(__instance, amount))
         {
             return false;
         }
@@ -29,7 +31,7 @@ public static class ReactorSystemTypeUpdateSystemPatch
     }
 
 
-    public static void Postfix(ReactorSystemType __instance, byte __state /* amount */ )
+    public static void Postfix(ReactorSystemType __instance, byte __state /* amount */)
     {
         // サボタージュ発動時
         if (__state == ReactorSystemType.StartCountdown)
@@ -38,6 +40,7 @@ public static class ReactorSystemTypeUpdateSystemPatch
             {
                 return;
             }
+
             var duration = (MapNames)Main.NormalOptions.MapId switch
             {
                 MapNames.Polus => Options.PolusReactorTimeLimit.GetFloat(),

@@ -1,11 +1,11 @@
 using AmongUs.GameOptions;
-
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -19,30 +19,36 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
             SetupOptionItem,
             "mf|黑手黨|黑手"
         );
+
     public Mafia(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         RevengeLimit = OptionRevengeNum.GetInt();
     }
 
     private static OptionItem OptionRevengeNum;
+
     enum OptionName
     {
         MafiaCanKillNum,
     }
+
     public int RevengeLimit = 0;
+
     private static void SetupOptionItem()
     {
         OptionRevengeNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MafiaCanKillNum, new(0, 15, 1), 1, false)
             .SetValueFormat(OptionFormat.Players);
     }
+
     public override void Add()
     {
         RevengeLimit = OptionRevengeNum.GetInt();
     }
+
     public bool CanUseKillButton()
     {
         if (PlayerState.AllPlayerStates == null) return false;
@@ -56,6 +62,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
 
         return livingImpostorsNum <= 0;
     }
+
     public override bool OnSendMessage(string msg, out MsgRecallMode recallMode)
     {
         recallMode = MsgRecallMode.None;
@@ -71,7 +78,8 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + Utils.GetTrueRoleName(npc.PlayerId, false) + ") " + npc.GetRealName();
+                text += "\n" + npc.PlayerId.ToString() + " → (" + Utils.GetTrueRoleName(npc.PlayerId, false) + ") " +
+                        npc.GetRealName();
             Utils.SendMessage(text, Player.PlayerId);
             return true;
         }
@@ -100,6 +108,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
 
         return true;
     }
+
     private static void RevengeKill(PlayerControl killer, PlayerControl target)
     {
         Logger.Info($"{killer.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Mafia");
@@ -121,9 +130,16 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
                 target.RpcMurderPlayer(target);
                 state.SetDead();
             }
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
+
+            _ = new LateTask(
+                () =>
+                {
+                    Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255,
+                        Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")));
+                }, 0.6f, "Mafia Kill");
         }, 0.2f, "Mafia Kill");
     }
+
     private bool CanRevenge(PlayerControl target, out string reason)
     {
         reason = string.Empty;
@@ -133,21 +149,25 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
             reason = GetString("MafiaKillDisable");
             return false;
         }
+
         if (Player.IsAlive())
         {
             reason = GetString("MafiaAliveKill");
             return false;
         }
+
         if (RevengeLimit <= 0)
         {
             reason = GetString("MafiaKillMax");
             return false;
         }
+
         if (target == null || target.Data.IsDead)
         {
             reason = GetString("MafiaKillDead");
             return false;
         }
+
         return true;
     }
 

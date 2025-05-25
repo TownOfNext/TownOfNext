@@ -7,6 +7,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Bomber : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -20,36 +21,44 @@ public sealed class Bomber : RoleBase, IImpostor
             SetupOptionItem,
             "bb|自爆"
         );
+
     public Bomber(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     static OptionItem OptionRadius;
     bool Shapeshifting;
+
     enum OptionName
     {
         BomberRadius
     }
+
     private static void SetupOptionItem()
     {
         OptionRadius = FloatOptionItem.Create(RoleInfo, 10, OptionName.BomberRadius, new(0.5f, 10f, 0.5f), 2f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
+
     public bool CanKill { get; private set; } = false;
     public float CalculateKillCooldown() => 255f;
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("BomberShapeshiftText");
         return true;
     }
+
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = "Bomb";
         return true;
     }
+
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);
@@ -75,6 +84,7 @@ public sealed class Bomber : RoleBase, IImpostor
             tg.SetRealKiller(Player);
             tg.RpcMurderPlayerV2(tg);
         }
+
         new LateTask(() =>
         {
             //自分が最後の生き残りの場合は勝利のために死なない
@@ -85,8 +95,8 @@ public sealed class Bomber : RoleBase, IImpostor
                 Player.RpcExileV2();
                 state.SetDead();
             }
+
             Utils.NotifyRoles();
         }, 1.5f, "Bomber Suiscide");
-
     }
 }

@@ -17,11 +17,13 @@ public static class OptionSaver
             SaveDataDirectoryInfo.Create();
             SaveDataDirectoryInfo.Attributes |= FileAttributes.Hidden;
         }
+
         if (!OptionSaverFileInfo.Exists)
         {
             OptionSaverFileInfo.Create().Dispose();
         }
     }
+
     /// <summary>現在のオプションからjsonシリアライズ用のオブジェクトを生成</summary>
     private static SerializableOptionsData GenerateOptionsData()
     {
@@ -41,6 +43,7 @@ public static class OptionSaver
                 logger.Warn($"プリセットオプションのID {option.Id} が重複");
             }
         }
+
         return new SerializableOptionsData
         {
             Version = Version,
@@ -48,16 +51,19 @@ public static class OptionSaver
             PresetOptions = presetOptions,
         };
     }
+
     /// <summary>デシリアライズされたオブジェクトを読み込み，オプション値を設定</summary>
     private static void LoadOptionsData(SerializableOptionsData serializableOptionsData)
     {
         if (serializableOptionsData.Version != Version)
         {
             // 今後バージョン間の移行方法を用意する場合，ここでバージョンごとの変換メソッドに振り分ける
-            logger.Info($"読み込まれたオプションのバージョン {serializableOptionsData.Version} が現在のバージョン {Version} と一致しないためデフォルト値で上書きします");
+            logger.Info(
+                $"読み込まれたオプションのバージョン {serializableOptionsData.Version} が現在のバージョン {Version} と一致しないためデフォルト値で上書きします");
             Save();
             return;
         }
+
         Dictionary<int, int> singleOptions = serializableOptionsData.SingleOptions;
         Dictionary<int, int[]> presetOptions = serializableOptionsData.PresetOptions;
         foreach (var singleOption in singleOptions)
@@ -69,6 +75,7 @@ public static class OptionSaver
                 optionItem.SetValue(value, doSave: false);
             }
         }
+
         foreach (var presetOption in presetOptions)
         {
             var id = presetOption.Key;
@@ -79,6 +86,7 @@ public static class OptionSaver
             }
         }
     }
+
     /// <summary>現在のオプションをjsonファイルに保存</summary>
     public static void Save()
     {
@@ -87,9 +95,12 @@ public static class OptionSaver
         {
             return;
         }
-        var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
+
+        var jsonString =
+            JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
         File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
     }
+
     /// <summary>jsonファイルからオプションを読み込み</summary>
     public static void Load()
     {
@@ -101,6 +112,7 @@ public static class OptionSaver
             Save();
             return;
         }
+
         LoadOptionsData(JsonSerializer.Deserialize<SerializableOptionsData>(jsonString));
     }
 
@@ -108,8 +120,10 @@ public static class OptionSaver
     public class SerializableOptionsData
     {
         public int Version { get; init; }
+
         /// <summary>プリセット外のオプション</summary>
         public Dictionary<int, int> SingleOptions { get; init; }
+
         /// <summary>プリセット内のオプション</summary>
         public Dictionary<int, int[]> PresetOptions { get; init; }
     }

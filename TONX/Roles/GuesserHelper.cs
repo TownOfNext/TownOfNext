@@ -13,6 +13,7 @@ using UnityEngine;
 using static TONX.Translator;
 
 namespace TONX;
+
 public static class GuesserHelper
 {
     public static string GetFormatString()
@@ -24,8 +25,10 @@ public static class GuesserHelper
             string name = pc.GetRealName();
             text += $"\n{id} → {name}";
         }
+
         return text;
     }
+
     public static bool MatchCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
@@ -44,8 +47,10 @@ public static class GuesserHelper
                 }
             }
         }
+
         return false;
     }
+
     public static int GetColorFromMsg(string msg)
     {
         if (ComfirmIncludeMsg(msg, "红|紅|red")) return 0;
@@ -68,7 +73,9 @@ public static class GuesserHelper
         if (ComfirmIncludeMsg(msg, "珊瑚|珊瑚|coral")) return 17;
         else return -1;
     }
+
     private static bool ComfirmIncludeMsg(string msg, string key) => key.Split('|').Any(msg.Contains);
+
     public static bool GuesserMsg(PlayerControl pc, string msg, out bool spam)
     {
         spam = false;
@@ -108,9 +115,12 @@ public static class GuesserHelper
             if (!Guess(pc, target, role, out var reason))
                 Utils.SendMessage(reason, pc.PlayerId);
         }
+
         return true;
     }
-    public static bool Guess(PlayerControl guesser, PlayerControl target, CustomRoles role, out string reason, bool isUi = false)
+
+    public static bool Guess(PlayerControl guesser, PlayerControl target, CustomRoles role, out string reason,
+        bool isUi = false)
     {
         reason = string.Empty;
 
@@ -120,56 +130,70 @@ public static class GuesserHelper
             reason = GetString("GGGuessMax");
             return false;
         }
+
         if (guesser.GetRoleClass() is EvilGuesser egClass && egClass.GuessLimit < 1)
         {
             reason = GetString("EGGuessMax");
             return false;
         }
+
         if (role == CustomRoles.SuperStar || target.Is(CustomRoles.SuperStar))
         {
             reason = GetString("GuessSuperStar");
             return false;
         }
+
         if (role == CustomRoles.GM || target.Is(CustomRoles.GM))
         {
             reason = GetString("GuessGM");
             return false;
         }
-        if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessTaskDoneSnitch.GetBool())
+
+        if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && guesser.Is(CustomRoles.EvilGuesser) &&
+            !EvilGuesser.OptionCanGuessTaskDoneSnitch.GetBool())
         {
             reason = GetString("EGGuessSnitchTaskDone");
             return false;
         }
+
         if (role.IsAddon())
         {
             if (
                 guesser.Is(CustomRoles.NiceGuesser) && !NiceGuesser.OptionCanGuessAddons.GetBool() ||
                 guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessAddons.GetBool()
-                )
+            )
             {
                 reason = GetString("GuessAdtRole");
                 return false;
             }
         }
+
         if (role.IsVanilla())
         {
             if (
                 guesser.Is(CustomRoles.NiceGuesser) && !NiceGuesser.OptionCanGuessVanilla.GetBool() ||
                 guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessVanilla.GetBool()
-                )
+            )
             {
                 reason = GetString("GuessVanillaRole");
                 return false;
             }
         }
+
         if (guesser == target)
         {
-            if (!isUi) Utils.SendMessage(GetString("LaughToWhoGuessSelf"), guesser.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
-            else guesser.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoGuessSelf"));
+            if (!isUi)
+                Utils.SendMessage(GetString("LaughToWhoGuessSelf"), guesser.PlayerId,
+                    Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
+            else
+                guesser.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" +
+                                  GetString("LaughToWhoGuessSelf"));
             guesserSuicide = true;
         }
-        else if (guesser.Is(CustomRoles.NiceGuesser) && role.IsCrewmate() && !NiceGuesser.OptionCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate)) guesserSuicide = true;
-        else if (guesser.Is(CustomRoles.EvilGuesser) && role.IsImpostor() && !EvilGuesser.OptionCanGuessImp.GetBool()) guesserSuicide = true;
+        else if (guesser.Is(CustomRoles.NiceGuesser) && role.IsCrewmate() &&
+                 !NiceGuesser.OptionCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate)) guesserSuicide = true;
+        else if (guesser.Is(CustomRoles.EvilGuesser) && role.IsImpostor() && !EvilGuesser.OptionCanGuessImp.GetBool())
+            guesserSuicide = true;
         else if (!target.Is(role)) guesserSuicide = true;
 
         Logger.Info($"{guesser.GetNameWithRole()} 猜测了 {target.GetNameWithRole()}", "Guesser");
@@ -196,14 +220,20 @@ public static class GuesserHelper
             //死者检查
             Utils.NotifyRoles(isForMeeting: true, NoCache: true);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle"))); }, 0.6f, "Guess Msg");
-
+            _ = new LateTask(
+                () =>
+                {
+                    Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255,
+                        Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")));
+                }, 0.6f, "Guess Msg");
         }, 0.2f, "Guesser Kill");
 
         return true;
     }
+
     public static TextMeshPro nameText(this PlayerControl p) => p.cosmetics.nameText;
     public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
+
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
         id = byte.MaxValue;
@@ -236,6 +266,7 @@ public static class GuesserHelper
                 error = GetString("GuessMultipleColor");
                 return false;
             }
+
             id = list.FirstOrDefault().PlayerId;
         }
 
@@ -265,6 +296,7 @@ public static class GuesserHelper
     private static Dictionary<CustomRoleTypes, SpriteRenderer> RoleSelectButtons;
     private static List<SpriteRenderer> PageButtons;
     public static CustomRoleTypes currentTeamType;
+
     static void GuesserSelectRole(CustomRoleTypes Role, bool SetPage = true)
     {
         currentTeamType = Role;
@@ -276,11 +308,22 @@ public static class GuesserHelper
             {
                 if (RoleBtn == null) continue;
                 index++;
-                if (index <= (Page - 1) * 40) { RoleBtn.gameObject.SetActive(false); continue; }
-                if (Page * 40 < index) { RoleBtn.gameObject.SetActive(false); continue; }
+                if (index <= (Page - 1) * 40)
+                {
+                    RoleBtn.gameObject.SetActive(false);
+                    continue;
+                }
+
+                if (Page * 40 < index)
+                {
+                    RoleBtn.gameObject.SetActive(false);
+                    continue;
+                }
+
                 RoleBtn.gameObject.SetActive(RoleButton.Key == Role);
             }
         }
+
         foreach (var RoleButton in RoleSelectButtons)
         {
             if (RoleButton.Value == null) continue;
@@ -290,12 +333,13 @@ public static class GuesserHelper
 
     private static Color32 myColor = Color.white;
     public static TextMeshPro textTemplate;
+
     public static void ShowGuessPanel(byte playerId, MeetingHud __instance)
     {
-
         PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
 
-        if (PlayerControl.LocalPlayer.cosmetics.ColorId >= 0 && PlayerControl.LocalPlayer.cosmetics.ColorId < Palette.PlayerColors.Count)
+        if (PlayerControl.LocalPlayer.cosmetics.ColorId >= 0 &&
+            PlayerControl.LocalPlayer.cosmetics.ColorId < Palette.PlayerColors.Count)
         {
             myColor = Palette.PlayerColors[PlayerControl.LocalPlayer.cosmetics.ColorId];
             myColor = Utils.ShadeColor(myColor, -2f);
@@ -312,7 +356,8 @@ public static class GuesserHelper
             PageButtons = new();
             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
-            Transform container = UnityEngine.Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
+            Transform container =
+                UnityEngine.Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
             container.gameObject.AddComponent<TransitionOpen>();
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
@@ -322,7 +367,8 @@ public static class GuesserHelper
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
-            if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("RoleTextMeeting") != null)
+                UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);
@@ -331,7 +377,8 @@ public static class GuesserHelper
             Transform exitButtonMask = UnityEngine.Object.Instantiate(maskTemplate, exitButtonParent);
             exitButtonMask.transform.localScale = new Vector3(2.88f, 0.8f, 1f);
             exitButtonMask.transform.localPosition = new Vector3(0f, 0f, 1f);
-            exitButton.gameObject.GetComponent<SpriteRenderer>().sprite = smallButtonTemplate.GetComponent<SpriteRenderer>().sprite;
+            exitButton.gameObject.GetComponent<SpriteRenderer>().sprite =
+                smallButtonTemplate.GetComponent<SpriteRenderer>().sprite;
             exitButtonParent.transform.localPosition = new Vector3(3.88f, 2.12f, -200f);
             exitButtonParent.transform.localScale = new Vector3(0.22f, 0.9f, 1f);
             exitButtonParent.transform.SetAsFirstSibling();
@@ -347,7 +394,7 @@ public static class GuesserHelper
             Transform selectedButton = null;
 
             int tabCount = 0;
-            List<int> CustomRoleTypesIndex = new() { 1, 0, 2, 3 }; 
+            List<int> CustomRoleTypesIndex = new() { 1, 0, 2, 3 };
             for (int index = 0; index < 4; index++)
             {
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
@@ -357,9 +404,11 @@ public static class GuesserHelper
                 }
                 else
                 {
-                    if (!NiceGuesser.OptionCanGuessCrew.GetBool() && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && index == 1) continue;
+                    if (!NiceGuesser.OptionCanGuessCrew.GetBool() &&
+                        !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && index == 1) continue;
                     if (!NiceGuesser.OptionCanGuessAddons.GetBool() && index == 3) continue;
                 }
+
                 Transform TeambuttonParent = new GameObject().transform;
                 TeambuttonParent.SetParent(container);
                 Transform Teambutton = UnityEngine.Object.Instantiate(buttonTemplate, TeambuttonParent);
@@ -368,7 +417,8 @@ public static class GuesserHelper
                 TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
                 Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.GetSprite("GuessPlateWithKPD");
                 Teambutton.GetComponent<SpriteRenderer>().color = myColor;
-                RoleSelectButtons.Add((CustomRoleTypes)CustomRoleTypesIndex[index], Teambutton.GetComponent<SpriteRenderer>());
+                RoleSelectButtons.Add((CustomRoleTypes)CustomRoleTypesIndex[index],
+                    Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-2.75f + tabCount++ * 1.73f, 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
                 Teamlabel.color = Utils.GetCustomRoleTypeColor((CustomRoleTypes)CustomRoleTypesIndex[index]);
@@ -390,28 +440,36 @@ public static class GuesserHelper
                         }
                     }));
                 }
-                if (PlayerControl.LocalPlayer.IsAlive()) CreateTeamButton(Teambutton, (CustomRoleTypes)CustomRoleTypesIndex[index]);
+
+                if (PlayerControl.LocalPlayer.IsAlive())
+                    CreateTeamButton(Teambutton, (CustomRoleTypes)CustomRoleTypesIndex[index]);
             }
+
             static void ReloadPage()
             {
                 PageButtons[0].color = new(1, 1, 1, 1f);
                 PageButtons[1].color = new(1, 1, 1, 1f);
-                if (RoleButtons[currentTeamType].Count / MaxOneScreenRole + (RoleButtons[currentTeamType].Count % MaxOneScreenRole != 0 ? 1 : 0) < Page)
+                if (RoleButtons[currentTeamType].Count / MaxOneScreenRole +
+                    (RoleButtons[currentTeamType].Count % MaxOneScreenRole != 0 ? 1 : 0) < Page)
                 {
                     Page -= 1;
                     PageButtons[1].color = new(1, 1, 1, 0.1f);
                 }
-                else if (RoleButtons[currentTeamType].Count / MaxOneScreenRole + (RoleButtons[currentTeamType].Count % MaxOneScreenRole != 0 ? 1 : 0) < Page + 1)
+                else if (RoleButtons[currentTeamType].Count / MaxOneScreenRole +
+                         (RoleButtons[currentTeamType].Count % MaxOneScreenRole != 0 ? 1 : 0) < Page + 1)
                 {
                     PageButtons[1].color = new(1, 1, 1, 0.1f);
                 }
+
                 if (Page <= 1)
                 {
                     Page = 1;
                     PageButtons[0].color = new(1, 1, 1, 0.1f);
                 }
+
                 GuesserSelectRole(currentTeamType, false);
             }
+
             static void CreatePage(bool IsNext, MeetingHud __instance, Transform container)
             {
                 var buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
@@ -434,6 +492,7 @@ public static class GuesserHelper
                 Pagelabel.autoSizeTextContainer = true;
                 if (!IsNext && Page <= 1) Pagebutton.GetComponent<SpriteRenderer>().color = new(1, 1, 1, 0.1f);
                 Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => ClickEvent()));
+
                 void ClickEvent()
                 {
                     if (IsNext) Page += 1;
@@ -441,21 +500,28 @@ public static class GuesserHelper
                     if (Page < 1) Page = 1;
                     ReloadPage();
                 }
+
                 PageButtons.Add(Pagebutton.GetComponent<SpriteRenderer>());
             }
+
             if (PlayerControl.LocalPlayer.IsAlive())
             {
                 CreatePage(false, __instance, container);
                 CreatePage(true, __instance, container);
             }
+
             int ind = 0;
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
-                if (!EvilGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && role.IsVanilla()) continue;
-                if (!NiceGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
-                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel) continue;
+                if (!EvilGuesser.OptionCanGuessVanilla.GetBool() &&
+                    PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && role.IsVanilla()) continue;
+                if (!NiceGuesser.OptionCanGuessVanilla.GetBool() &&
+                    PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
+                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar
+                    or CustomRoles.GuardianAngel) continue;
                 CreateRole(role);
             }
+
             void CreateRole(CustomRoles role)
             {
                 if (40 <= i[(int)role.GetCustomRoleTypes()]) i[(int)role.GetCustomRoleTypes()] = 0;
@@ -472,6 +538,7 @@ public static class GuesserHelper
                 {
                     RoleButtons.Add(role.GetCustomRoleTypes(), new());
                 }
+
                 RoleButtons[role.GetCustomRoleTypes()].Add(button);
                 buttons.Add(button);
                 int row = i[(int)role.GetCustomRoleTypes()] / 5;
@@ -487,46 +554,53 @@ public static class GuesserHelper
                 int copiedIndex = i[(int)role.GetCustomRoleTypes()];
 
                 button.GetComponent<PassiveButton>().OnClick = new();
-                if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
-                {
-                    if (selectedButton != button)
+                if (PlayerControl.LocalPlayer.IsAlive())
+                    button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
                     {
-                        selectedButton = button;
-                        buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = x == selectedButton ? Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole()) : myColor);
-                    }
-                    else
-                    {
-                        if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || !PlayerControl.LocalPlayer.IsAlive()) return;
-
-                        Logger.Msg($"Click: {pc.GetNameWithRole()} => {role}", "Guesser UI");
-
-                        if (!PlayerControl.LocalPlayer.IsAlive())
+                        if (selectedButton != button)
                         {
-                            PlayerControl.LocalPlayer.ShowPopUp(GetString("GuessDead"));
+                            selectedButton = button;
+                            buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = x == selectedButton
+                                ? Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole())
+                                : myColor);
                         }
                         else
                         {
-                            if (AmongUsClient.Instance.AmHost)
+                            if (!(__instance.state == MeetingHud.VoteStates.Voted ||
+                                  __instance.state == MeetingHud.VoteStates.NotVoted) ||
+                                !PlayerControl.LocalPlayer.IsAlive()) return;
+
+                            Logger.Msg($"Click: {pc.GetNameWithRole()} => {role}", "Guesser UI");
+
+                            if (!PlayerControl.LocalPlayer.IsAlive())
                             {
-                                if (!Guess(PlayerControl.LocalPlayer, pc, role, out var reason, true))
-                                    PlayerControl.LocalPlayer.ShowPopUp(reason);
+                                PlayerControl.LocalPlayer.ShowPopUp(GetString("GuessDead"));
                             }
-                            else SendRPC(playerId, role);
+                            else
+                            {
+                                if (AmongUsClient.Instance.AmHost)
+                                {
+                                    if (!Guess(PlayerControl.LocalPlayer, pc, role, out var reason, true))
+                                        PlayerControl.LocalPlayer.ShowPopUp(reason);
+                                }
+                                else SendRPC(playerId, role);
+                            }
+
+                            // Reset the GUI
+                            __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
+                            UnityEngine.Object.Destroy(container.gameObject);
+                            textTemplate.enabled = false;
                         }
-
-                        // Reset the GUI
-                        __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                        UnityEngine.Object.Destroy(container.gameObject);
-                        textTemplate.enabled = false;
-
-                    }
-                }));
+                    }));
                 i[(int)role.GetCustomRoleTypes()]++;
                 ind++;
             }
+
             container.transform.localScale *= 0.75f;
-            GuesserSelectRole(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessImp.GetBool() ?
-                CustomRoleTypes.Crewmate : CustomRoleTypes.Impostor);
+            GuesserSelectRole(
+                PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessImp.GetBool()
+                    ? CustomRoleTypes.Crewmate
+                    : CustomRoleTypes.Impostor);
             ReloadPage();
         }
         catch (Exception ex)
@@ -538,11 +612,13 @@ public static class GuesserHelper
 
     private static void SendRPC(byte playerId, CustomRoles role)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guess, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.Guess, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write((byte)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();

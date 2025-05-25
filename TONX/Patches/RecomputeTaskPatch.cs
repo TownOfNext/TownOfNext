@@ -31,6 +31,7 @@ class CustomTaskCountsPatch
         return false;
     }
 }
+
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class CompleteTaskPatch
 {

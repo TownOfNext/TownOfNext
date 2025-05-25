@@ -13,6 +13,7 @@ public class AirShipElectricalDoors
         if (Main.NormalOptions.MapId != 4) return;
         Instance.Initialize();
     }
+
     public static byte[] GetClosedDoors()
     {
         List<byte> DoorsArray = new();
@@ -23,6 +24,7 @@ public class AirShipElectricalDoors
             if (door != null && !door.IsOpen)
                 DoorsArray.Add(i);
         }
+
         return DoorsArray?.ToArray();
     }
     // 0: BottomRightHort
@@ -38,6 +40,7 @@ public class AirShipElectricalDoors
     // 10: LeftDoorTop
     // 11: LeftDoorBottom
 }
+
 [HarmonyPatch(typeof(ElectricalDoors), nameof(ElectricalDoors.Initialize))]
 class ElectricalDoorsInitializePatch
 {
@@ -56,6 +59,7 @@ class ElectricalDoorsInitializePatch
             else
                 closedoors += $", {num}";
         }
+
         Logger.Info($"ClosedDoors:{closedoors}", "ElectricalDoors Initialize");
     }
 }

@@ -21,12 +21,19 @@ public static class CustomRoleManager
     public static Dictionary<CustomRoles, SimpleRoleInfo> AllRolesInfo = new(CustomRolesHelper.AllRoles.Length);
     public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
 
-    public static SimpleRoleInfo GetRoleInfo(this CustomRoles role) => AllRolesInfo.ContainsKey(role) ? AllRolesInfo[role] : null;
+    public static SimpleRoleInfo GetRoleInfo(this CustomRoles role) =>
+        AllRolesInfo.ContainsKey(role) ? AllRolesInfo[role] : null;
+
     public static RoleBase GetRoleClass(this PlayerControl player) => GetByPlayerId(player.PlayerId);
-    public static RoleBase GetByPlayerId(byte playerId) => AllActiveRoles.TryGetValue(playerId, out var roleBase) ? roleBase : null;
+
+    public static RoleBase GetByPlayerId(byte playerId) =>
+        AllActiveRoles.TryGetValue(playerId, out var roleBase) ? roleBase : null;
+
     public static void Do<T>(this List<T> list, Action<T> action) => list.ToArray().Do(action);
+
     // == CheckMurder 相关处理 ==
     public static Dictionary<byte, MurderInfo> CheckMurderInfos = new();
+
     /// <summary>
     ///
     /// </summary>
@@ -34,6 +41,7 @@ public static class CustomRoleManager
     /// <param name="attemptTarget">>实际被击杀的玩家，不变</param>
     public static bool OnCheckMurder(PlayerControl attemptKiller, PlayerControl attemptTarget)
         => OnCheckMurder(attemptKiller, attemptTarget, attemptKiller, attemptTarget);
+
     /// <summary>
     ///
     /// </summary>
@@ -41,11 +49,13 @@ public static class CustomRoleManager
     /// <param name="attemptTarget">>实际被击杀的玩家，不变</param>
     /// <param name="appearanceKiller">视觉上的击杀者，可变</param>
     /// <param name="appearanceTarget">视觉上被击杀的玩家，可变</param>
-    public static bool OnCheckMurder(PlayerControl attemptKiller, PlayerControl attemptTarget, PlayerControl appearanceKiller, PlayerControl appearanceTarget, Action actionAfterAll = null)
+    public static bool OnCheckMurder(PlayerControl attemptKiller, PlayerControl attemptTarget,
+        PlayerControl appearanceKiller, PlayerControl appearanceTarget, Action actionAfterAll = null)
     {
         Logger.Info($"Attempt：{attemptKiller.GetNameWithRole()} => {attemptTarget.GetNameWithRole()}", "CheckMurder");
         if (appearanceKiller != attemptKiller || appearanceTarget != attemptTarget)
-            Logger.Info($"Apperance：{appearanceKiller.GetNameWithRole()} => {appearanceTarget.GetNameWithRole()}", "CheckMurder");
+            Logger.Info($"Apperance：{appearanceKiller.GetNameWithRole()} => {appearanceTarget.GetNameWithRole()}",
+                "CheckMurder");
 
         var info = new MurderInfo(attemptKiller, attemptTarget, appearanceKiller, appearanceTarget);
 
@@ -75,6 +85,7 @@ public static class CustomRoleManager
                     }
                 }
             }
+
             // 凶杀检查击杀
             if (!DoubleTrigger.OnCheckMurderAsKiller(info))
             {
@@ -84,6 +95,7 @@ public static class CustomRoleManager
                     return false;
                 }
             }
+
             if (killer.IsKiller && targetRole != null)
             {
                 // 被害者检查击杀
@@ -93,6 +105,7 @@ public static class CustomRoleManager
                     return false;
                 }
             }
+
             if (killer.IsKiller)
             {
                 // 其他职业类对击杀事件的事后检查
@@ -106,12 +119,15 @@ public static class CustomRoleManager
                 }
             }
         }
+
         if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 1)
         {
-            if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && attemptTarget.CanBeMadmate())
+            if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() &&
+                attemptTarget.CanBeMadmate())
             {
                 attemptTarget.RpcSetCustomRole(CustomRoles.Madmate);
-                Logger.Info($"注册附加职业：{attemptTarget.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
+                Logger.Info($"注册附加职业：{attemptTarget.GetNameWithRole()} => {CustomRoles.Madmate}",
+                    "AssignCustomSubRoles");
                 attemptTarget.ShowPopUp(Translator.GetString("BecomeMadmateCuzMadmateMode"));
                 attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
                 return false;
@@ -143,6 +159,7 @@ public static class CustomRoleManager
         {
             goto StopMurder;
         }
+
         StopMurder:
         {
             if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()} 无法被击杀", "CheckMurder");
@@ -150,6 +167,7 @@ public static class CustomRoleManager
             return false;
         }
     }
+
     /// <summary>
     /// MurderPlayer 事件的处理
     /// </summary>
@@ -212,11 +230,13 @@ public static class CustomRoleManager
         Utils.SyncAllSettings();
         Utils.NotifyRoles();
     }
+
     /// <summary>
     /// 其他玩家视角下的 MurderPlayer 事件
     /// 初始化时使用 OnMurderPlayerOthers+= 注册
     /// </summary>
     public static HashSet<Action<MurderInfo>> OnMurderPlayerOthers = new();
+
     /// <summary>
     /// 其他玩家视角下的 CheckMurderPlayer 事件
     /// 在击杀事件当时玩家的 CheckMurderPlayer 函数调用前检查
@@ -224,6 +244,7 @@ public static class CustomRoleManager
     /// 返回 false 以阻止本次击杀事件
     /// </summary>
     public static HashSet<Func<MurderInfo, bool>> OnCheckMurderPlayerOthers_Before = new();
+
     /// <summary>
     /// 其他玩家视角下的 CheckMurderPlayer 事件
     /// 在击杀事件当时玩家的 CheckMurderPlayer 函数调用后检查
@@ -233,6 +254,7 @@ public static class CustomRoleManager
     public static HashSet<Func<MurderInfo, bool>> OnCheckMurderPlayerOthers_After = new();
 
     private static Dictionary<byte, long> LastSecondsUpdate = new();
+
     public static void OnFixedUpdate(PlayerControl player)
     {
         if (GameStates.IsInTask)
@@ -253,6 +275,7 @@ public static class CustomRoleManager
             }
         }
     }
+
     /// <summary>
     /// 其他玩家视角下的帧 Task 处理事件
     /// 用于干涉其他职业
@@ -271,10 +294,12 @@ public static class CustomRoleManager
                 cancel = true;
             }
         }
+
         if (Options.DeadImpCantSabotage.GetBool() && player.IsImp()) cancel = true;
         if (Fool.OptionImpFoolCanNotSabotage.GetBool() && player.Is(CustomRoles.Fool) && player.IsImp()) cancel = true;
         return !cancel;
     }
+
     // ==初始化处理 ==
     [GameModuleInitializer]
     public static void Initialize()
@@ -291,6 +316,7 @@ public static class CustomRoleManager
         OnCheckMurderPlayerOthers_After.Clear();
         OnFixedUpdateOthers.Clear();
     }
+
     public static void CreateInstance(bool forSubRoles = false)
     {
         if (forSubRoles)
@@ -309,6 +335,7 @@ public static class CustomRoleManager
             }
         }
     }
+
     public static void CreateInstance(CustomRoles role, PlayerControl player)
     {
         if (AllRolesInfo.TryGetValue(role, out var roleInfo))
@@ -319,11 +346,13 @@ public static class CustomRoleManager
         {
             OtherRolesAdd(player);
         }
+
         if (player.Data.Role.Role == RoleTypes.Shapeshifter)
         {
             Main.CheckShapeshift.TryAdd(player.PlayerId, false);
         }
     }
+
     public static void OtherRolesAdd(PlayerControl pc)
     {
         foreach (var subRole in pc.GetCustomSubRoles())
@@ -387,6 +416,7 @@ public static class CustomRoleManager
             }
         }
     }
+
     /// <summary>
     /// 从收到的RPC中取得目标并传给职业类
     /// </summary>
@@ -397,10 +427,12 @@ public static class CustomRoleManager
         var playerId = reader.ReadByte();
         GetByPlayerId(playerId)?.ReceiveRPC(reader);
     }
+
     //NameSystem
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = new();
     public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = new();
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = new();
+
     /// <summary>
     /// 无论 seer,seen 是否持有职业职业都会触发的 Mark 获取事件
     /// 会默认为全体职业注册
@@ -416,8 +448,10 @@ public static class CustomRoleManager
         {
             sb.Append(marker(seer, seen, isForMeeting));
         }
+
         return sb.ToString();
     }
+
     /// <summary>
     /// 无论 seer,seen 是否持有职业职业都会触发的 LowerText 获取事件
     /// 会默认为全体职业注册
@@ -427,15 +461,18 @@ public static class CustomRoleManager
     /// <param name="isForMeeting">是否正在会议中</param>
     /// <param name="isForHud">是否显示在模组端的HUD</param>
     /// <returns>组合后的全部 LowerText</returns>
-    public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false,
+        bool isForHud = false)
     {
         var sb = new StringBuilder(100);
         foreach (var lower in LowerOthers)
         {
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
+
         return sb.ToString();
     }
+
     /// <summary>
     /// 无论 seer,seen 是否持有职业职业都会触发的 Suffix 获取事件
     /// 会默认为全体职业注册
@@ -451,10 +488,13 @@ public static class CustomRoleManager
         {
             sb.Append(suffix(seer, seen, isForMeeting));
         }
+
         return sb.ToString();
     }
+
     //ChatMessages
     public static HashSet<Action<MessageControl>> ReceiveMessage = new();
+
     /// <summary>
     /// 玩家收到消息后调用的函数
     /// 无论您是否发送者都会调用，因此您可能需要判断该消息是否是您自己发送的
@@ -485,14 +525,18 @@ public static class CustomRoleManager
         AllActiveRoles.Values.ToArray().Do(roleClass => roleClass.Dispose());
     }
 }
+
 public class MurderInfo
 {
     /// <summary>实际击杀者，不变</summary>
     public PlayerControl AttemptKiller { get; }
+
     /// <summary>实际被击杀的玩家，不变</summary>
     public PlayerControl AttemptTarget { get; }
+
     /// <summary>视觉上的击杀者，可变</summary>
     public PlayerControl AppearanceKiller { get; set; }
+
     /// <summary>视觉上被击杀的玩家，可变</summary>
     public PlayerControl AppearanceTarget { get; set; }
 
@@ -500,10 +544,12 @@ public class MurderInfo
     /// 目标是否可以被击杀，由于目标导致的无法击杀将该值赋值为 false
     /// </summary>
     public bool CanKill = true;
+
     /// <summary>
     /// 击杀者是否真的会进行击杀，由于击杀者导致的无法击杀将该值赋值为 false
     /// </summary>
     public bool DoKill = true;
+
     /// <summary>
     /// 是否发生从梯子上摔死等意外
     /// </summary>
@@ -512,15 +558,19 @@ public class MurderInfo
     // 使用 (killer, target) = info.AttemptTuple; 即可获得数据
     public (PlayerControl killer, PlayerControl target) AttemptTuple => (AttemptKiller, AttemptTarget);
     public (PlayerControl killer, PlayerControl target) AppearanceTuple => (AppearanceKiller, AppearanceTarget);
+
     /// <summary>
     /// 真的是自杀
     /// </summary>
     public bool IsSuicide => AttemptKiller.PlayerId == AttemptTarget.PlayerId;
+
     /// <summary>
     /// 原版视角下的自杀
     /// </summary>
     public bool IsFakeSuicide => AppearanceKiller.PlayerId == AppearanceTarget.PlayerId;
-    public MurderInfo(PlayerControl attemptKiller, PlayerControl attemptTarget, PlayerControl appearanceKiller, PlayerControl appearancetarget)
+
+    public MurderInfo(PlayerControl attemptKiller, PlayerControl attemptTarget, PlayerControl appearanceKiller,
+        PlayerControl appearancetarget)
     {
         AttemptKiller = attemptKiller;
         AttemptTarget = attemptTarget;
@@ -533,10 +583,12 @@ public enum CustomRoles
 {
     //Default
     Crewmate = 0,
+
     //Impostor(Vanilla)
     Impostor,
     Shapeshifter,
     Phantom,
+
     //Impostor
     BountyHunter,
     Fireworker,
@@ -582,12 +634,14 @@ public enum CustomRoles
     Stealth,
     Messenger,
     Insider,
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
     Scientist,
     Tracker,
     Noisemaker,
+
     //Crewmate
     Luckey,
     LazyGuy,
@@ -619,6 +673,7 @@ public enum CustomRoles
     Medium,
     Observer,
     DoveOfPeace,
+
     //Neutral
     Arsonist,
     Jester,
@@ -628,17 +683,17 @@ public enum CustomRoles
     Terrorist,
     Executioner,
     Jackal,
-    Innocent, 
+    Innocent,
     Pelican,
-    Revolutionist, 
+    Revolutionist,
     Hater,
     Konan, //TODO
     Demon,
-    Stalker, 
+    Stalker,
     Workaholic,
-    Collector, 
-    Provocateur, 
-    Sunnyboy, 
+    Collector,
+    Provocateur,
+    Sunnyboy,
     BloodKnight,
     Follower,
     Succubus,
@@ -647,7 +702,7 @@ public enum CustomRoles
 
     //SoloKombat
     KB_Normal,
-    
+
     //GM
     GM,
 
@@ -677,6 +732,7 @@ public enum CustomRoles
     Bait,
     Beartrap,
 }
+
 public enum CustomRoleTypes
 {
     Crewmate,
@@ -684,6 +740,7 @@ public enum CustomRoleTypes
     Neutral,
     Addon
 }
+
 public enum HasTask
 {
     True,

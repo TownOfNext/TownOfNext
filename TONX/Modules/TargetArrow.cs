@@ -12,15 +12,18 @@ static class TargetArrow
     {
         public byte From;
         public byte To;
+
         public ArrowInfo(byte from, byte to)
         {
             From = from;
             To = to;
         }
+
         public bool Equals(ArrowInfo obj)
         {
             return From == obj.From && To == obj.To;
         }
+
         public override string ToString()
         {
             return $"(From:{From} To:{To})";
@@ -28,7 +31,9 @@ static class TargetArrow
     }
 
     static Dictionary<ArrowInfo, string> TargetArrows = new();
-    static readonly string[] Arrows = {
+
+    static readonly string[] Arrows =
+    {
         "↑",
         "↗",
         "→",
@@ -45,6 +50,7 @@ static class TargetArrow
     {
         TargetArrows.Clear();
     }
+
     /// <summary>
     /// 新たにターゲット矢印対象を登録
     /// </summary>
@@ -57,6 +63,7 @@ static class TargetArrow
         if (!TargetArrows.Any(a => a.Key.Equals(arrowInfo)))
             TargetArrows[arrowInfo] = "・";
     }
+
     /// <summary>
     /// ターゲットの削除
     /// </summary>
@@ -71,6 +78,7 @@ static class TargetArrow
             TargetArrows.Remove(a);
         }
     }
+
     /// <summary>
     /// タイプの同じターゲットの全削除
     /// </summary>
@@ -83,6 +91,7 @@ static class TargetArrow
             TargetArrows.Remove(arrowInfo);
         }
     }
+
     /// <summary>
     /// 見ることのできるすべてのターゲット矢印を取得
     /// </summary>
@@ -95,8 +104,10 @@ static class TargetArrow
         {
             arrows += TargetArrows[arrowInfo];
         }
+
         return arrows;
     }
+
     /// <summary>
     /// FixedUpdate毎にターゲット矢印を確認
     /// 更新があったらNotifyRolesを発行
@@ -123,6 +134,7 @@ static class TargetArrow
                 update = true;
                 continue;
             }
+
             //対象の方角ベクトルを取る
             var dir = target.transform.position - seer.transform.position;
             int index;
@@ -140,6 +152,7 @@ static class TargetArrow
                 var angle = Vector3.SignedAngle(Vector3.down, dir, Vector3.back) + 180 + 22.5;
                 index = ((int)(angle / 45)) % 8;
             }
+
             var arrow = Arrows[index];
             if (TargetArrows[arrowInfo] != arrow)
             {
@@ -147,6 +160,7 @@ static class TargetArrow
                 update = true;
             }
         }
+
         if (update)
         {
             Utils.NotifyRoles(SpecifySeer: seer);

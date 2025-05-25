@@ -11,6 +11,7 @@ class ExileControllerWrapUpPatch
 {
     public static List<Action> ActionsOnWrapUp = new();
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
+
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -42,12 +43,14 @@ class ExileControllerWrapUpPatch
             }
         }
     }
+
     static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.OverrideExiledPlayer)
         {
             exiled = AntiBlackout_LastExiled;
         }
+
         var mapId = Main.NormalOptions.MapId;
         // エアシップではまだ湧かない
         if ((MapNames)mapId != MapNames.Airship)
@@ -57,6 +60,7 @@ class ExileControllerWrapUpPatch
                 state.HasSpawned = true;
             }
         }
+
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return; //ホスト以外はこれ以降の処理を実行しません
         AntiBlackout.RestoreIsDead(doSend: false);
@@ -79,13 +83,15 @@ class ExileControllerWrapUpPatch
                 roleClass.OnExileWrapUp(exiled, ref DecidedWinner);
             }
 
-            if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) PlayerState.GetByPlayerId(exiled.PlayerId).SetDead();
+            if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist)
+                PlayerState.GetByPlayerId(exiled.PlayerId).SetDead();
         }
 
         foreach (var pc in Main.AllPlayerControls)
         {
             pc.ResetKillCooldown();
         }
+
         if (RandomSpawn.IsRandomSpawn())
         {
             RandomSpawn.SpawnMap map;
@@ -109,6 +115,7 @@ class ExileControllerWrapUpPatch
                     break;
             }
         }
+
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
@@ -121,7 +128,10 @@ class ExileControllerWrapUpPatch
                 pc.RpcResetAbilityCooldown();
             }
         }
-        if (Camouflage.IsCamouflage && Utils.IsActive(SystemTypes.Comms)) foreach (var pc in Main.AllPlayerControls) Camouflage.RpcSetSkin(pc); // 会议结束后恢复小黑人
+
+        if (Camouflage.IsCamouflage && Utils.IsActive(SystemTypes.Comms))
+            foreach (var pc in Main.AllPlayerControls)
+                Camouflage.RpcSetSkin(pc); // 会议结束后恢复小黑人
         Utils.NotifyRoles();
     }
 

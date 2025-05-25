@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
+
 public sealed class Miner : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -17,18 +17,21 @@ public sealed class Miner : RoleBase, IImpostor
             null,
             "mn|礦工"
         );
+
     public Miner(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
     public override bool GetAbilityButtonText(out string text)
     {
         text = Translator.GetString("MinerTeleButtonText");
         return Main.LastEnteredVent.ContainsKey(Player.PlayerId);
     }
+
     public override void OnShapeshift(PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost) return;

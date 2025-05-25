@@ -10,6 +10,7 @@ namespace TONX;
 class ShowFolderPatch
 {
     private static TaskFolder CustomRolesFolder;
+
     public static void Prefix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
@@ -24,6 +25,7 @@ class ShowFolderPatch
             __instance.Root.SubFolders.Add(rolesFolder);
         }
     }
+
     public static void Postfix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
         Logger.Info("Opened " + taskFolder.FolderName, "TaskFolder");
@@ -32,7 +34,8 @@ class ShowFolderPatch
         float maxHeight = 0f;
         if (CustomRolesFolder != null && CustomRolesFolder.FolderName == taskFolder.FolderName)
         {
-            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.Where(role => role.Role == RoleTypes.Crewmate).FirstOrDefault();
+            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles
+                .Where(role => role.Role == RoleTypes.Crewmate).FirstOrDefault();
             foreach (var cRole in CustomRolesHelper.AllRoles)
             {
                 /*if(cRole == CustomRoles.Crewmate ||
@@ -57,7 +60,8 @@ class ShowFolderPatch
 
                 button.FileImage.color = roleColor;
                 button.RolloverHandler.OutColor = roleColor;
-                button.RolloverHandler.OverColor = new Color(roleColor.r * 0.5f, roleColor.g * 0.5f, roleColor.b * 0.5f);
+                button.RolloverHandler.OverColor =
+                    new Color(roleColor.r * 0.5f, roleColor.g * 0.5f, roleColor.b * 0.5f);
             }
         }
     }
@@ -77,10 +81,14 @@ class TaskAddButtonUpdatePatch
                 __instance.Overlay.enabled = PlayerCustomRole == FileCustomRole;
             }
         }
-        catch { }
+        catch
+        {
+        }
+
         return true;
     }
 }
+
 [HarmonyPatch(typeof(TaskAddButton), nameof(TaskAddButton.AddTask))]
 class AddTaskButtonPatch
 {
@@ -96,7 +104,10 @@ class AddTaskButtonPatch
                 return false;
             }
         }
-        catch { }
+        catch
+        {
+        }
+
         return true;
     }
 }

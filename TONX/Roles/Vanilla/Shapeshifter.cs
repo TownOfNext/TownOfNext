@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
@@ -13,10 +12,12 @@ public sealed class Shapeshifter : RoleBase, IImpostor, IKiller
             player => new Shapeshifter(player),
             RoleTypes.Shapeshifter
         );
+
     public Shapeshifter(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 }

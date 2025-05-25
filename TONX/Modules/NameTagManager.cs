@@ -17,8 +17,13 @@ public static class NameTagManager
     public static readonly string TAGS_DIRECTORY_PATH = @"./TONX_Data/NameTags/";
     private static Dictionary<string, NameTag> NameTags = new();
     public static IReadOnlyDictionary<string, NameTag> AllNameTags => NameTags;
-    public static IReadOnlyDictionary<string, NameTag> AllInternalNameTags => AllNameTags.Where(t => t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
-    public static IReadOnlyDictionary<string, NameTag> AllExternalNameTags => AllNameTags.Where(t => !t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
+
+    public static IReadOnlyDictionary<string, NameTag> AllInternalNameTags =>
+        AllNameTags.Where(t => t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
+
+    public static IReadOnlyDictionary<string, NameTag> AllExternalNameTags =>
+        AllNameTags.Where(t => !t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
+
     public static NameTag DeepClone(NameTag tag)
     {
         NameTag newTag = new();
@@ -27,6 +32,7 @@ public static class NameTagManager
         newTag.Suffix = CloneCom(tag.Suffix);
         newTag.Name = CloneCom(tag.Name);
         return newTag;
+
         static Component? CloneCom(Component? com)
         {
             if (com == null) return null;
@@ -40,6 +46,7 @@ public static class NameTagManager
             };
         }
     }
+
     public static void ApplyFor(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
@@ -54,26 +61,35 @@ public static class NameTagManager
                 name = Palette.GetColorName(Camouflage.PlayerSkins[PlayerControl.LocalPlayer.PlayerId].ColorId);
         }
 
-        if (NameTags.ContainsKey(player.FriendCode) && (GameStates.IsLobby || Options.AllowPlayerPlayWithColoredNameByCustomTags.GetBool()))
+        if (NameTags.ContainsKey(player.FriendCode) &&
+            (GameStates.IsLobby || Options.AllowPlayerPlayWithColoredNameByCustomTags.GetBool()))
         {
-            name = NameTags[player.FriendCode].Apply(name, player.AmOwner, !GameStates.IsLobby, !Options.NonModPleyerCanShowUpperCustomTag.GetBool() && !player.IsModClient());
+            name = NameTags[player.FriendCode].Apply(name, player.AmOwner, !GameStates.IsLobby,
+                !Options.NonModPleyerCanShowUpperCustomTag.GetBool() && !player.IsModClient());
         }
         else if (player.AmOwner && GameStates.IsLobby)
             name = Options.GetSuffixMode() switch
             {
                 SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>TONX v{Main.PluginVersion}</color>",
-                SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
-                SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
-                SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
-                SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
-                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
-                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
+                SuffixModes.Streaming => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
+                SuffixModes.Recording => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
+                SuffixModes.RoomHost => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
+                SuffixModes.OriginalName => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
+                SuffixModes.DoNotKillMe => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
+                SuffixModes.NoAndroidPlz => name +=
+                    $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
                 _ => name
             };
 
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);
     }
+
     public static void ReloadTag(string? friendCode)
     {
         if (friendCode == null)
@@ -87,7 +103,10 @@ public static class NameTagManager
         string path = $"{TAGS_DIRECTORY_PATH}{friendCode}.json";
         if (File.Exists(path))
         {
-            try { ReadTagsFromFile(path); }
+            try
+            {
+                ReadTagsFromFile(path);
+            }
             catch (Exception ex)
             {
                 Logger.Error($"Load Tag From: {path} Failed\n" + ex.ToString(), "NameTagManager", false);
@@ -99,6 +118,7 @@ public static class NameTagManager
             NameTags.Add(friendCode, tag);
         }
     }
+
     public static void Init()
     {
         NameTags = new();
@@ -107,7 +127,10 @@ public static class NameTagManager
         var files = Directory.EnumerateFiles(TAGS_DIRECTORY_PATH, "*.json", SearchOption.AllDirectories);
         foreach (string file in files)
         {
-            try { ReadTagsFromFile(file); }
+            try
+            {
+                ReadTagsFromFile(file);
+            }
             catch (Exception ex)
             {
                 Logger.Error($"Load Tag From: {file} Failed\n" + ex.ToString(), "NameTagManager", false);
@@ -118,6 +141,7 @@ public static class NameTagManager
 
         Logger.Msg($"{NameTags.Count} Name Tags Loaded", "NameTagManager");
     }
+
     public static void ReadTagsFromFile(string path)
     {
         if (path.ToLower().Contains("template")) return;
@@ -131,6 +155,7 @@ public static class NameTagManager
             Logger.Info($"Name Tag Loaded: {friendCode}", "NameTagManager");
         }
     }
+
     public static NameTag? GetTagFromJObject(JObject obj)
     {
         var tag = new NameTag();
@@ -198,6 +223,7 @@ public static class NameTagManager
 
         return tag;
     }
+
     public class NameTag
     {
         public bool Isinternal { get; set; } = false;
@@ -205,6 +231,7 @@ public static class NameTagManager
         public Component? Prefix { get; set; }
         public Component? Suffix { get; set; }
         public Component? Name { get; set; }
+
         public string Apply(string name, bool host, bool onlyName = false, bool inOneLine = false)
         {
             if (Name != null)
@@ -222,7 +249,8 @@ public static class NameTagManager
                 var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
                 upper += Options.CurrentGameMode switch
                 {
-                    CustomGameMode.SoloKombat => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
+                    CustomGameMode.SoloKombat =>
+                        $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
                     _ => $"<color=#87cefa>{Main.PluginVersion}</color>",
                 };
                 name = upper + "</size>\r\n" + name;
@@ -233,9 +261,11 @@ public static class NameTagManager
                 if (upperText is not null and not "")
                     name = upperText + "\r\n" + name;
             }
+
             return name;
         }
     }
+
     public class Component
     {
         public float? SizePercentage { get; set; }
@@ -243,6 +273,7 @@ public static class NameTagManager
         public Color32? TextColor { get; set; }
         public ColorGradient? Gradient { get; set; }
         public bool Spaced { get; set; } = true;
+
         public string Generate(bool applySpace = true, bool applySize = true)
         {
             if (Text == null) return "";
@@ -254,17 +285,21 @@ public static class NameTagManager
             return text;
         }
     }
+
     public class ColorGradient
     {
         public List<Color> Colors { get; private set; }
         private float Spacing;
+
         public ColorGradient(params Color[] colors)
         {
             Colors = new();
             Colors.AddRange(colors);
             Spacing = 1f / (Colors.Count - 1);
         }
+
         public bool IsValid => Colors.Count >= 2;
+
         public string Apply(string input)
         {
             if (input.Length == 0) return input;
@@ -277,8 +312,10 @@ public static class NameTagManager
                 var color = Evaluate(step * i);
                 sb.Append(Utils.ColorString(color, c.ToString()));
             }
+
             return sb.ToString();
         }
+
         public Color Evaluate(float percent)
         {
             if (percent > 1) percent = 1;

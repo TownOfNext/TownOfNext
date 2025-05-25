@@ -72,6 +72,7 @@ public static class InGameRoleInfoMenu
         }
         //HudManager.Instance?.gameObject.SetActive(false);
     }
+
     public static void Hide()
     {
         if (Showing)

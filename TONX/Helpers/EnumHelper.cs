@@ -10,6 +10,7 @@ public static class EnumHelper
     /// <typeparam name="T">取得したいenumの型</typeparam>
     /// <returns>Tのすべての値</returns>
     public static T[] GetAllValues<T>() where T : Enum => Enum.GetValues(typeof(T)) as T[];
+
     /// <summary>
     /// enumのすべての名前を取得します
     /// </summary>

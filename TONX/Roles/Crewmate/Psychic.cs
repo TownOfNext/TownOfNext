@@ -3,10 +3,10 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
+
 public sealed class Psychic : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -21,11 +21,12 @@ public sealed class Psychic : RoleBase
             "psy|愚者|愚",
             "#6F698C"
         );
+
     public Psychic(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         RedNameInited = false;
     }
@@ -35,6 +36,7 @@ public sealed class Psychic : RoleBase
     static OptionItem OptionCkshowEvil;
     static OptionItem OptionNBshowEvil;
     static OptionItem OptionNEshowEvil;
+
     enum OptionName
     {
         PsychicCanSeeNum,
@@ -45,6 +47,7 @@ public sealed class Psychic : RoleBase
     }
 
     private bool RedNameInited;
+
     private static void SetupOptionItem()
     {
         OptionRedNameNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.PsychicCanSeeNum, new(1, 15, 1), 3, false)
@@ -54,27 +57,31 @@ public sealed class Psychic : RoleBase
         OptionNBshowEvil = BooleanOptionItem.Create(RoleInfo, 13, OptionName.NBareRed, false, false);
         OptionNEshowEvil = BooleanOptionItem.Create(RoleInfo, 14, OptionName.NEareRed, true, false);
     }
+
     public override void OnStartMeeting()
     {
         if (OptionFreshEachMeeting.GetBool() || !RedNameInited) GetRedNames();
     }
+
     private void GetRedNames()
     {
         List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
-        x.Is(CustomRoleTypes.Impostor) || x.Is(CustomRoles.Madmate) ||
-        (x.IsCrewKiller() && OptionCkshowEvil.GetBool()) ||
-        (x.IsNeutralEvil() && OptionNEshowEvil.GetBool()) ||
-        (x.IsNeutralBenign() && OptionNBshowEvil.GetBool())
+            x.Is(CustomRoleTypes.Impostor) || x.Is(CustomRoles.Madmate) ||
+            (x.IsCrewKiller() && OptionCkshowEvil.GetBool()) ||
+            (x.IsNeutralEvil() && OptionNEshowEvil.GetBool()) ||
+            (x.IsNeutralBenign() && OptionNBshowEvil.GetBool())
         ).ToList();
 
         List<byte> BadList = new();
         BadListPc.Do(x => BadList.Add(x.PlayerId));
         List<byte> AllList = new();
-        Main.AllAlivePlayerControls.Where(x => !BadList.Contains(x.PlayerId) && !x.Is(CustomRoles.Psychic)).Do(x => AllList.Add(x.PlayerId));
+        Main.AllAlivePlayerControls.Where(x => !BadList.Contains(x.PlayerId) && !x.Is(CustomRoles.Psychic))
+            .Do(x => AllList.Add(x.PlayerId));
 
         int ENum = 1;
         for (int i = 1; i < OptionRedNameNum.GetInt(); i++)
-            if (IRandom.Instance.Next(0, 100) < 18) ENum++;
+            if (IRandom.Instance.Next(0, 100) < 18)
+                ENum++;
         int BNum = OptionRedNameNum.GetInt() - ENum;
         ENum = Math.Min(ENum, BadList.Count);
         BNum = Math.Min(BNum, AllList.Count);
@@ -95,13 +102,12 @@ public sealed class Psychic : RoleBase
             AllList.RemoveAll(RedNames.Contains);
         }
 
-    EndOfSelect:
+        EndOfSelect:
 
         Logger.Info($"需要{OptionRedNameNum.GetInt()}个红名，其中需要{ENum}个邪恶。计算后显示红名{RedNames.Count}个", "Psychic");
         RedNames.Do(x => Logger.Info($"红名：{x}: {Main.AllPlayerNames[x]}", "Psychic"));
 
         NameColorManager.RemoveAll(Player.PlayerId);
         RedNames.Do(id => NameColorManager.Add(Player.PlayerId, id, "#ff1919"));
-
     }
 }

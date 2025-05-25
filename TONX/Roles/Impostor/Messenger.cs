@@ -24,11 +24,12 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             SetupOptionItems,
             "me|信差"
         );
+
     public Messenger(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
+        : base(
+            RoleInfo,
+            player
+        )
     {
         canSeeDeadMark = OptionCanSeeDeadMark.GetBool();
         canSeeImpostorMark = OptionCanSeeImpostorMark.GetBool();
@@ -38,6 +39,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         CustomRoleManager.OnMurderPlayerOthers.Add(HandleMurderRoomNotify);
         instances.Add(this);
     }
+
     public override void OnDestroy()
     {
         instances.Remove(this);
@@ -47,6 +49,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
     private static OptionItem OptionCanSeeImpostorMark;
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionCanSeeMurderRoom;
+
     private enum OptionName
     {
         MessengerCanSeeDeadMark,
@@ -54,6 +57,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         MessengerCanSeeKillFlash,
         MessengerCanSeeMurderRoom,
     }
+
     private static bool canSeeDeadMark;
     private static bool canSeeImpostorMark;
     private static bool canSeeKillFlash;
@@ -66,10 +70,14 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
     private static void SetupOptionItems()
     {
         OptionCanSeeDeadMark = BooleanOptionItem.Create(RoleInfo, 10, OptionName.MessengerCanSeeDeadMark, true, false);
-        OptionCanSeeImpostorMark = BooleanOptionItem.Create(RoleInfo, 11, OptionName.MessengerCanSeeImpostorMark, true, false);
-        OptionCanSeeKillFlash = BooleanOptionItem.Create(RoleInfo, 12, OptionName.MessengerCanSeeKillFlash, true, false);
-        OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.MessengerCanSeeMurderRoom, true, false, OptionCanSeeKillFlash);
+        OptionCanSeeImpostorMark =
+            BooleanOptionItem.Create(RoleInfo, 11, OptionName.MessengerCanSeeImpostorMark, true, false);
+        OptionCanSeeKillFlash =
+            BooleanOptionItem.Create(RoleInfo, 12, OptionName.MessengerCanSeeKillFlash, true, false);
+        OptionCanSeeMurderRoom = BooleanOptionItem.Create(RoleInfo, 13, OptionName.MessengerCanSeeMurderRoom, true,
+            false, OptionCanSeeKillFlash);
     }
+
     /// <summary>相方がキルした部屋を通知する設定がオンなら各プレイヤーに通知を行う</summary>
     private static void HandleMurderRoomNotify(MurderInfo info)
     {
@@ -88,6 +96,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         {
             return;
         }
+
         var admins = AdminProvider.CalculateAdmin();
         var builder = new StringBuilder(512);
 
@@ -99,11 +108,13 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             {
                 continue;
             }
+
             // インポスターがいるなら星マークを付ける
             if (canSeeImpostorMark && entry.NumImpostors > 0)
             {
                 builder.Append(ImpostorMark);
             }
+
             // 部屋名と合計プレイヤー数を表記
             builder.Append(DestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));
             builder.Append(": ");
@@ -114,6 +125,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
                 builder.Append('(').Append(Translator.GetString("Deadbody"));
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
             }
+
             builder.Append('\n');
         }
 
@@ -130,6 +142,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         }, 4f, "Messenger Admin Message");
         return;
     }
+
     private void OnMurderPlayer(MurderInfo info)
     {
         // 生きてる間に相方のキルでキルフラが鳴った場合に通知を出す
@@ -137,8 +150,10 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         {
             return;
         }
+
         RpcCreateMurderNotify(info.AttemptTarget.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway);
     }
+
     private void RpcCreateMurderNotify(SystemTypes room)
     {
         CreateMurderNotify(room);
@@ -148,10 +163,12 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             sender.Writer.Write((byte)room);
         }
     }
+
     public override void ReceiveRPC(MessageReader reader)
     {
         CreateMurderNotify((SystemTypes)reader.ReadByte());
     }
+
     /// <summary>
     /// 名前の下にキル発生通知を出す
     /// </summary>
@@ -168,6 +185,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             Utils.NotifyRoles(SpecifySeer: Player);
         }
     }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         // 古い通知の削除処理 Mod入りは自分でやる
@@ -175,10 +193,12 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         {
             return;
         }
+
         if (activeNotifies.Count <= 0)
         {
             return;
         }
+
         // NotifyRolesを実行するかどうかのフラグ
         var doNotifyRoles = false;
         // 古い通知があれば削除
@@ -190,11 +210,13 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
                 doNotifyRoles = true;
             }
         }
+
         if (doNotifyRoles && AmongUsClient.Instance.AmHost)
         {
             Utils.NotifyRoles(SpecifySeer: Player);
         }
     }
+
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -202,13 +224,18 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         {
             return base.GetSuffix(seer, seen, isForMeeting);
         }
-        var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
-        return Utils.ColorString(Color.green, $"{Translator.GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
+
+        var roomNames = activeNotifies.Select(notify =>
+            DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
+        return Utils.ColorString(Color.green,
+            $"{Translator.GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
     }
+
     public bool CheckKillFlash(MurderInfo info) =>
         canSeeKillFlash && !info.IsSuicide && !info.IsAccident && info.AttemptKiller.Is(CustomRoleTypes.Impostor);
 
     private static readonly string ImpostorMark = "★".Color(Palette.ImpostorRed);
+
     /// <summary>相方がキルしたときに名前の下に通知を表示する長さ</summary>
     private static readonly TimeSpan NotifyDuration = TimeSpan.FromSeconds(10);
 
@@ -216,6 +243,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
     {
         /// <summary>通知が作成された時間</summary>
         public DateTime CreatedAt { get; init; }
+
         /// <summary>キルが起きた部屋</summary>
         public SystemTypes Room { get; init; }
     }
