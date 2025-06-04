@@ -56,13 +56,13 @@ internal class ControllerManagerUpdatePatch
                 if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
                 else
                 {
-                    InGameRoleInfoMenu.SetRoleInfoRefByPlayer(PlayerControl.LocalPlayer);
+                    InGameRoleInfoMenu.SetRoleInfoRef(PlayerControl.LocalPlayer);
                     InGameRoleInfoMenu.Show();
                 }
                 HudManagerInitializePatch.RoleInfoButton?.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }
-        else if (InGameRoleInfoMenu.Showing && !InGameRoleInfoMenu.IsCheckingThroughSettingsMenu)
+        else if (InGameRoleInfoMenu.Showing)
         {
             InGameRoleInfoMenu.Hide();
             HudManagerInitializePatch.RoleInfoButton?.SelectButton(false);

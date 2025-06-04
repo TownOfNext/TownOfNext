@@ -328,20 +328,8 @@ namespace TONX
             __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
             __instance.Value = __instance.oldValue = option.CurrentValue;
             __instance.ValueText.text = option.GetString();
-            if (option is RoleSpawnChanceOptionItem item) CreateInfoButton(__instance, item.RoleId);
 
             return false;
-        }
-        public static void CreateInfoButton(StringOption __instance, Roles.Core.CustomRoles role)
-        {
-            var infoButton = Object.Instantiate(__instance.PlusBtn, __instance.PlusBtn.transform.parent);
-            infoButton.name = role + "InfoButton";
-            infoButton.transform.localPosition += new Vector3(1.0f, 0f, 0f);
-            infoButton.gameObject.GetComponentInChildren<TMPro.TextMeshPro>().text = "?";
-            infoButton.interactableHoveredColor = Main.ModColor32;
-            infoButton.OnMouseOver.AddListener((Action)(() => { Logger.Info($"{infoButton.name}|I'm Hovered", "OnMouseOver"); }));
-            infoButton.OnClick = new();
-            infoButton.OnClick.AddListener((Action)(() => { InGameRoleInfoMenu.SetRoleInfoRefByRole(role); InGameRoleInfoMenu.Show(); }));
         }
     }
 

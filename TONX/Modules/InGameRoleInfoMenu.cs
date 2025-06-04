@@ -1,16 +1,13 @@
 ﻿using TMPro;
-using System;
-using UnityEngine;
-using Object = UnityEngine.Object;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Descriptions;
+using UnityEngine;
 
 namespace TONX.Modules;
 
 public static class InGameRoleInfoMenu
 {
     public static bool Showing => Fill != null && Fill.active && Menu != null && Menu.active;
-    public static bool IsCheckingThroughSettingsMenu => GameSettingMenu.Instance?.isActiveAndEnabled ?? false;
 
     public static GameObject Fill;
     public static SpriteRenderer FillSP => Fill.GetComponent<SpriteRenderer>();
@@ -21,7 +18,6 @@ public static class InGameRoleInfoMenu
     public static GameObject AddonsInfo;
     public static TextMeshPro MainInfoTMP => MainInfo.GetComponent<TextMeshPro>();
     public static TextMeshPro AddonsInfoTMP => AddonsInfo.GetComponent<TextMeshPro>();
-    public static PassiveButton BackButton;
 
     public static void Init()
     {
@@ -39,7 +35,7 @@ public static class InGameRoleInfoMenu
         Menu.transform.SetLocalZ(-990f);
 
         Object.Destroy(Menu.transform.FindChild("Title Text").gameObject);
-        // Object.Destroy(Menu.transform.FindChild("BackButton").gameObject);
+        Object.Destroy(Menu.transform.FindChild("BackButton").gameObject);
         Object.Destroy(Menu.transform.FindChild("EvenMoreInfo").gameObject);
 
         MainInfo = Menu.transform.FindChild("InfoText_TMP").gameObject;
@@ -55,42 +51,20 @@ public static class InGameRoleInfoMenu
         AddonsInfo.DestroyTranslator();
         AddonsInfo.transform.SetLocalX(2.3f);
         AddonsInfo.transform.localScale = new(0.7f, 0.7f, 0.7f);
-
-        BackButton = Menu.transform.FindChild("BackButton").GetComponent<PassiveButton>();
-        BackButton.gameObject.name = "RoleInfoBackButton";
-        BackButton.transform.localScale = new Vector3(0.66f, 0.66f, 0.66f);
-        BackButton.transform.localPosition = new Vector3(0f, -1.5f, 3.0f);
-        BackButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().DestroyTranslator();
-        BackButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = "X";
-        BackButton.OnClick = new();
-        BackButton.OnClick.AddListener((Action)(() => { Hide(); HudManagerInitializePatch.RoleInfoButton?.SelectButton(false); }));
     }
 
-    public static void SetRoleInfoRefByPlayer(PlayerControl player)
+    public static void SetRoleInfoRef(PlayerControl player)
     {
         if (player == null) return;
-        if (!Fill || !Menu || !BackButton) Init();
+        if (!Fill || !Menu) Init();
 
         MainInfoTMP.text = player?.GetCustomRole().GetRoleInfo()?.Description?.FullFormatHelp ?? "None";
         AddonsInfoTMP.text = AddonDescription.FullFormatHelpByPlayer(player);
     }
-    public static void SetRoleInfoRefByRole(CustomRoles role)
-    {
-        if (!Fill || !Menu || !BackButton) Init();
-
-        if (role.IsAddon())
-        {
-            MainInfoTMP.text = "";
-            AddonsInfoTMP.text = AddonDescription.FullFormatHelpBySubRole(role) ?? "None";
-            return;
-        }
-        MainInfoTMP.text = role.GetRoleInfo()?.Description?.FullFormatHelp ?? "None";
-        AddonsInfoTMP.text = "";
-    }
 
     public static void Show()
     {
-        if (!Fill || !Menu ||!BackButton) Init();
+        if (!Fill || !Menu) Init();
         if (!Showing)
         {
             Fill?.SetActive(true);

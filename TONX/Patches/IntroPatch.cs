@@ -9,10 +9,23 @@ using static TONX.Translator;
 
 namespace TONX;
 
-[HarmonyPatch(typeof(IntroCutscene))]
-class IntroCutscenePatch
+[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+class SetUpRoleTextCoBeginPatch
 {
-    [HarmonyPatch(nameof(IntroCutscene.ShowRole)), HarmonyPostfix]
+    public static void CoBegin_Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+    {
+        //ShowRoleに直接パッチあて出来ないためCoBegin中にパッチを当てる
+        var patcher = new CoroutinPatcher(__result);
+        //ShowRoleはステートマシンクラスになっているためその実行前にパッチを当てる
+        //元々Postfixだが、タイミング的にはPrefixの方が適切なのでPrefixに当てる
+        patcher.AddPrefix(typeof(IntroCutscene._ShowRole_d__41), () => SetUpRoleTextPatch.ShowRole_Postfix(__instance));
+        __result = patcher.EnumerateWithPatch();
+    }
+}
+// Patchが当たらないが念のためコメントアウト
+//[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
+class SetUpRoleTextPatch
+{
     public static void ShowRole_Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
@@ -37,6 +50,9 @@ class IntroCutscenePatch
             __instance.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
         }, 0.0001f, "Override Role Text");
     }
+}
+class IntroCutscenePatch
+{
     [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPrefix]
     public static void CoBegin_Prefix()
     {

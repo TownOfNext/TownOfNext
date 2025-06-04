@@ -145,7 +145,7 @@ internal class KickPlayerPatch
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
 internal class InnerNetObjectSerializePatch
 {
-    public static void Prefix(InnerNetClient __instance, ref bool __result)
+    public static void Prefix(InnerNetClient __instance)
     {
         if (AmongUsClient.Instance.AmHost)
             GameOptionsSender.SendAllGameOptions();

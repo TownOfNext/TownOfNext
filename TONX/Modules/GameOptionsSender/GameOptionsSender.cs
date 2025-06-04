@@ -26,7 +26,6 @@ public abstract class GameOptionsSender
 
     public abstract IGameOptions BasedGameOptions { get; }
     public abstract bool IsDirty { get; protected set; }
-    public byte[] ByteArray = new byte[0]; // 送信時に使い回す配列
 
     public virtual void SendGameOptions()
     {

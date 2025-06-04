@@ -50,9 +50,9 @@ public static class Utils
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
             writer.Write(text);
-            writer.EndMessage();
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
             if (Options.EndWhenPlayerBug.GetBool())
             {
                 _ = new LateTask(() =>
@@ -766,6 +766,7 @@ public static class Utils
 
         sb.Append("<size=70%>\n");
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) cloneRoles = cloneRoles.OrderBy(SoloKombatManager.GetRankOfScore).ToList();
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
             sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, true));
