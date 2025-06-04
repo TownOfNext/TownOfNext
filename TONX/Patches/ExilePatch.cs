@@ -43,7 +43,7 @@ class ExileControllerWrapUpPatch
         }
     }
     // Patchが当たらないが念のためコメントアウト
-    //[HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
+    // [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
     class AirshipExileControllerPatch
     {
         public static void Postfix(AirshipExileController __instance)

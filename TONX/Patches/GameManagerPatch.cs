@@ -21,7 +21,7 @@ class GameManagerSerializeFix
                 if (hasBody) writer.EndMessage();
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();
-            }          
+            }
         }
         __instance.ClearDirtyBits();
         __result = flag;

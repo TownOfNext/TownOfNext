@@ -23,7 +23,7 @@ class SetUpRoleTextCoBeginPatch
     }
 }
 // Patchが当たらないが念のためコメントアウト
-//[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
+// [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
     public static void ShowRole_Postfix(IntroCutscene __instance)
