@@ -78,7 +78,7 @@ public static class BanManager
     public static void AddBanPlayer(ClientData player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        if (player.IsBannedPlayer())
+        if (!player.IsBannedPlayer())
         {
             File.AppendAllText(BAN_LIST_PATH, $"{player.FriendCode},{player.GetHashedPuid()},{player.PlayerName}\n");
             Logger.SendInGame(string.Format(GetString("Message.AddedPlayerToBanList"), player.PlayerName));
