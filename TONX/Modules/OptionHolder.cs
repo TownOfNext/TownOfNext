@@ -153,6 +153,7 @@ public static class Options
     public static OptionItem DisableUploadData;
     public static OptionItem DisableStartReactor;
     public static OptionItem DisableResetBreaker;
+    public static OptionItem DisableFixWeatherNode;
 
     public static OptionItem DisableMeeting;
     public static OptionItem DisableCloseDoor;
@@ -857,6 +858,8 @@ public static class Options
         DisableStartReactor = BooleanOptionItem.Create(3_002_006, "DisableStartReactorTask", false, TabGroup.GameSettings, false).SetParent(DisableTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableResetBreaker = BooleanOptionItem.Create(3_002_007, "DisableResetBreakerTask", false, TabGroup.GameSettings, false).SetParent(DisableTasks)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableFixWeatherNode = BooleanOptionItem.Create(3_002_008, "DisableFixWeatherNodeTask", false, TabGroup.GameSettings, false).SetParent(DisableTasks)
             .SetGameMode(CustomGameMode.Standard);
 
         DisableMeeting = BooleanOptionItem.Create(3_003_001, "DisableMeeting", false, TabGroup.GameSettings, false)
