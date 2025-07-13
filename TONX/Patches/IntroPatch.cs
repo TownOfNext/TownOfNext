@@ -12,7 +12,7 @@ namespace TONX;
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
 class SetUpRoleTextCoBeginPatch
 {
-    public static void CoBegin_Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+    public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
         //ShowRoleに直接パッチあて出来ないためCoBegin中にパッチを当てる
         var patcher = new CoroutinPatcher(__result);
@@ -51,6 +51,7 @@ class SetUpRoleTextPatch
         }, 0.0001f, "Override Role Text");
     }
 }
+[HarmonyPatch(typeof(IntroCutscene))]
 class IntroCutscenePatch
 {
     [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPrefix]
