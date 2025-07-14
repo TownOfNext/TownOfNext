@@ -713,9 +713,13 @@ class EnterVentPatch
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
+
+        // 因为不能直接给CoEnterVent打补丁，所以将补丁置于EnterVent期间
+        CoEnterVentPatch.Prefix(pc.MyPhysics, __instance.Id);
     }
 }
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
+// 虽然Patch无法生效，但保险起见还是将其注释掉
+// [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
 class CoEnterVentPatch
 {
     public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
@@ -727,8 +731,8 @@ class CoEnterVentPatch
         var user = __instance.myPlayer;
 
         if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
-            (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
-            !user.CanUseImpostorVentButton()) //インポスターベントも使えない
+            (user.Data.Role.Role != RoleTypes.Engineer && // 非工程师
+            !user.CanUseImpostorVentButton()) // 无法使用内鬼跳管按钮
         )
         {
             _ = new LateTask(() =>
