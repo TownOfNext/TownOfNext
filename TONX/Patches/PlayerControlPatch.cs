@@ -742,8 +742,7 @@ class CoEnterVentPatch
                 if (!GameStates.IsMeeting)
                 {
                     __instance.RpcBootFromVent(id);
-                    if (__instance.myPlayer.walkingToVent == true)
-                        __instance.myPlayer.walkingToVent = false;
+                    __instance.myPlayer.walkingToVent = false;
                 }
             }, 0.5f, "Cancel Vent");
         }

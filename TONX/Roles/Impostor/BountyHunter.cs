@@ -80,8 +80,6 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         byte targetId = reader.ReadByte();
 
         Target = Utils.GetPlayerById(targetId);
