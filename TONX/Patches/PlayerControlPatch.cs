@@ -713,7 +713,9 @@ class EnterVentPatch
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
-
+    }
+    public static void Prefix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+    {
         // 因为不能直接给CoEnterVent打补丁，所以将补丁置于EnterVent期间
         CoEnterVentPatch.Prefix(pc.MyPhysics, __instance.Id);
     }
