@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 using TONX.Attributes;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -125,8 +126,8 @@ class HudManagerPatch
                     LowerInfoText.fontSizeMin = 2.0f;
                     LowerInfoText.fontSizeMax = 2.0f;
                 }
-
-                LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat) LowerInfoText.text = SoloKombatManager.GetHudText();
+                else LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
                 LowerInfoText.enabled = LowerInfoText.text != "";
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
@@ -325,6 +326,34 @@ class TaskPanelBehaviourPatch
 
                     if (MeetingStates.FirstMeeting)
                         AllText += $"\r\n\r\n</color><size=70%>{GetString("PressF1ShowRoleDescription")}</size>";
+
+                    break;
+
+                case CustomGameMode.SoloKombat:
+
+                    var lpc = PlayerControl.LocalPlayer;
+
+                    AllText += "\r\n";
+                    AllText += $"\r\n{GetString("PVP.ATK")}: {lpc.ATK()}";
+                    AllText += $"\r\n{GetString("PVP.DF")}: {lpc.DF()}";
+                    AllText += $"\r\n{GetString("PVP.RCO")}: {lpc.HPRECO()}";
+                    AllText += "\r\n";
+
+                    Dictionary<byte, string> SummaryText = new();
+                    foreach (var id in PlayerState.AllPlayerStates.Keys)
+                    {
+                        string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
+                        string summary = $"{SoloKombatManager.GetDisplayScore(id)}  {Utils.ColorString(Main.PlayerColors[id], name)}";
+                        if (SoloKombatManager.GetDisplayScore(id).Trim() == "") continue;
+                        SummaryText[id] = summary;
+                    }
+
+                    List<(int, byte)> list = new();
+                    foreach (var id in PlayerState.AllPlayerStates.Keys) list.Add((SoloKombatManager.GetRankOfScore(id), id));
+                    list.Sort();
+                    foreach (var id in list.Where(x => SummaryText.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText[id.Item2];
+
+                    AllText = $"<size=80%>{AllText}</size>";
 
                     break;
             }
