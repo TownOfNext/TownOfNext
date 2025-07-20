@@ -22,15 +22,6 @@ internal class ChangeRoleSettings
         {
             //注:この時点では役職は設定されていません。
             Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-            if (Options.DisableVanillaRoles.GetBool())
-            {
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Tracker, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Noisemaker, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Phantom, 0, 0);
-            }
 
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
@@ -148,7 +139,11 @@ internal class SelectRolesPatch
             SelectAddonRoles();
             CalculateVanillaRoleCount();
 
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat) foreach (var kv in RoleResult.Where(x => x.Value == CustomRoles.KB_Normal)) AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+            {
+                foreach (var kv in RoleResult.Where(x => x.Value == CustomRoles.KB_Normal))
+                    AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
+            }
             else
             {
                 // 指定原版特殊职业数量

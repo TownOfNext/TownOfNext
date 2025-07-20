@@ -338,7 +338,17 @@ internal static class SoloKombatManager
     }
 
     [HarmonyPriority(0)]
-    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
+    [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
+    class EnterVentPatch
+    {
+        public static void Prefix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+        {
+            // 因为不能直接给CoEnterVent打补丁，所以将补丁置于EnterVent期间
+            CoEnterVentPatch.Prefix(pc.MyPhysics, __instance.Id);
+        }
+    }
+    // 虽然Patch无法生效，但保险起见还是将其注释掉
+    // [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
     class CoEnterVentPatch
     {
         public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
@@ -348,7 +358,7 @@ internal static class SoloKombatManager
             {
                 new LateTask(() =>
                 {
-                    __instance.BootFromVent(id);
+                    __instance.RpcBootFromVent(id);
                 }, 0.5f, "Fix DesyncImpostor Stuck");
             }
             return true;

@@ -706,7 +706,7 @@ public static class Utils
 
         foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles.Concat(CustomRolesHelper.AllAddOns))
         {
-            if (!role.IsEnable()) continue;
+            if (!role.IsEnable() || (role.IsVanilla() && Options.DisableVanillaRoles.GetBool())) continue;
             sbs[customRoleTypes.IndexOf(role.GetCustomRoleTypes())].Append(
                 $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
                 $"{GetRoleDisplaySpawnMode(role, false, false)}" +

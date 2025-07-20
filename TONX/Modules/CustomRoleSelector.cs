@@ -24,7 +24,6 @@ internal static class CustomRoleSelector
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
 
         int readyRoleNum = 0;
-        int readyNeutralNum = 0;
 
         List<CustomRoles> rolesToAssign = new();
 
@@ -47,15 +46,24 @@ internal static class CustomRoleSelector
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
-            if (role.IsVanilla() || role.IsAddon() || !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) || option.Selections.Length != 3) continue;
-            if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
-            if (role is CustomRoles.Mare or CustomRoles.Concealer && Main.NormalOptions.MapId == 5) continue;
+            if (role.IsVanilla())
+            {
+                if (role is CustomRoles.Crewmate or CustomRoles.Impostor) continue;
+                if (role.GetCount() == 0 || Options.DisableVanillaRoles.GetBool()) continue;
+                if (rd.Next(0, 100) > role.GetChance()) continue;
+            }
+            else
+            {
+                if (role.IsAddon() || !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) || option.Selections.Length != 3) continue;
+                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
+                if (role is CustomRoles.Mare or CustomRoles.Concealer && Main.NormalOptions.MapId == 5) continue;
+            }
             for (int i = 0; i < role.GetAssignCount(); i++)
                 roleList.Add(role);
         }
 
         // 职业设置为：优先
-        foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2))
+        foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2).Concat(roleList.Where(x => x.IsVanilla())))
         {
             if (role.IsImpostor()) ImpOnList.Add(role);
             else if (role.IsNeutral()) NeutralOnList.Add(role);
@@ -68,97 +76,32 @@ internal static class CustomRoleSelector
             else if (role.IsNeutral()) NeutralRateList.Add(role);
             else roleRateList.Add(role);
         }
-        
-        if (!Options.DisableHiddenRoles.GetBool())
-        {
-            foreach (var role in roleList.Where(x => x.GetRoleInfo()?.Hidden ?? false))
-            {
-                if (role.IsImpostor()) ImpOnList.Add(role);
-                else if (role.IsNeutral()) NeutralOnList.Add(role);
-                else roleOnList.Add(role);
-            }
-        }
 
-        // 抽取优先职业（内鬼）
-        while (ImpOnList.Count > 0)
+        void AssignRoles(List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
         {
-            var select = ImpOnList[rd.Next(0, ImpOnList.Count)];
-            ImpOnList.Remove(select);
-            rolesToAssign.Add(select);
-            readyRoleNum++;
-            Logger.Info(select.ToString() + " 加入内鬼职业待选列表（优先）", "CustomRoleSelector");
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-            if (readyRoleNum >= optImpNum) break;
-        }
-        // 优先职业不足以分配，开始分配启用的职业（内鬼）
-        if (readyRoleNum < playerCount && readyRoleNum < optImpNum)
-        {
-            while (ImpRateList.Count > 0)
+            readyCurrentTeamRoleNum = 0;
+            if (lastReadyRoleNum >= optRoleNum) return;
+            while (currentRoleList.Count > 0)
             {
-                var select = ImpRateList[rd.Next(0, ImpRateList.Count)];
-                ImpRateList.Remove(select);
+                if (readyRoleNum >= playerCount) return;
+                var select = currentRoleList[rd.Next(0, currentRoleList.Count)];
+                currentRoleList.Remove(select);
                 rolesToAssign.Add(select);
                 readyRoleNum++;
-                Logger.Info(select.ToString() + " 加入内鬼职业待选列表", "CustomRoleSelector");
-                if (readyRoleNum >= playerCount) goto EndOfAssign;
-                if (readyRoleNum >= optImpNum) break;
+                readyCurrentTeamRoleNum += select.GetAssignCount();
+                Logger.Info(select.ToString() + $" 加入{(select.IsImpostor() ? "内鬼" : select.IsNeutral() ? "中立" : "船员")}职业待选列表", "CustomRoleSelector");
+                if (readyCurrentTeamRoleNum >= optRoleNum) return;
             }
         }
 
-        // 抽取优先职业（中立）
-        while (NeutralOnList.Count > 0 && optNeutralNum > 0)
-        {
-            var select = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
-            NeutralOnList.Remove(select);
-            rolesToAssign.Add(select);
-            readyRoleNum++;
-            readyNeutralNum += select.GetAssignCount();
-            Logger.Info(select.ToString() + " 加入中立职业待选列表（优先）", "CustomRoleSelector");
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-            if (readyNeutralNum >= optNeutralNum) break;
-        }
-        // 优先职业不足以分配，开始分配启用的职业（中立）
-        if (readyRoleNum < playerCount && readyNeutralNum < optNeutralNum)
-        {
-            while (NeutralRateList.Count > 0 && optNeutralNum > 0)
-            {
-                var select = NeutralRateList[rd.Next(0, NeutralRateList.Count)];
-                NeutralRateList.Remove(select);
-                rolesToAssign.Add(select);
-                readyRoleNum++;
-                readyNeutralNum += select.GetAssignCount();
-                Logger.Info(select.ToString() + " 加入中立职业待选列表", "CustomRoleSelector");
-                if (readyRoleNum >= playerCount) goto EndOfAssign;
-                if (readyNeutralNum >= optNeutralNum) break;
-            }
-        }
+        AssignRoles(ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
+        AssignRoles(ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        AssignRoles(NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
+        AssignRoles(NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
+        AssignRoles(roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
+        AssignRoles(roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
 
-        // 抽取优先职业
-        while (roleOnList.Count > 0)
-        {
-            var select = roleOnList[rd.Next(0, roleOnList.Count)];
-            roleOnList.Remove(select);
-            rolesToAssign.Add(select);
-            readyRoleNum++;
-            Logger.Info(select.ToString() + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-        }
-        // 优先职业不足以分配，开始分配启用的职业
-        if (readyRoleNum < playerCount)
-        {
-            while (roleRateList.Count > 0)
-            {
-                var select = roleRateList[rd.Next(0, roleRateList.Count)];
-                roleRateList.Remove(select);
-                rolesToAssign.Add(select);
-                readyRoleNum++;
-                Logger.Info(select.ToString() + " 加入船员职业待选列表", "CustomRoleSelector");
-                if (readyRoleNum >= playerCount) goto EndOfAssign;
-            }
-        }
-
-    // 职业抽取结束
-    EndOfAssign:
+        // 职业抽取结束
 
         // 隐藏职业
         if (!Options.DisableHiddenRoles.GetBool())
@@ -257,11 +200,11 @@ internal static class CustomRoleSelector
         {
             switch (role.GetRoleInfo()?.BaseRoleType.Invoke())
             {
-                case RoleTypes.Scientist: addScientistNum++; break;
                 case RoleTypes.Engineer: addEngineerNum++; break;
-                case RoleTypes.Shapeshifter: addShapeshifterNum++; break;
+                case RoleTypes.Scientist: addScientistNum++; break;
                 case RoleTypes.Tracker: addTrackerNum++; break;
                 case RoleTypes.Noisemaker: addNoisemakerNum++; break;
+                case RoleTypes.Shapeshifter: addShapeshifterNum++; break;
                 case RoleTypes.Phantom: addPhantomNum++; break;
             }
         }
@@ -272,9 +215,9 @@ internal static class CustomRoleSelector
         {
             RoleTypes.Engineer => addEngineerNum,
             RoleTypes.Scientist => addScientistNum,
-            RoleTypes.Shapeshifter => addShapeshifterNum,
             RoleTypes.Tracker => addTrackerNum,
             RoleTypes.Noisemaker => addNoisemakerNum,
+            RoleTypes.Shapeshifter => addShapeshifterNum,
             RoleTypes.Phantom => addPhantomNum,
             _ => 0
         };

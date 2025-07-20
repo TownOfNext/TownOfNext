@@ -59,6 +59,7 @@ public static class NameTagManager
             name = NameTags[player.FriendCode].Apply(name, player.AmOwner, !GameStates.IsLobby, !Options.NonModPleyerCanShowUpperCustomTag.GetBool() && !player.IsModClient());
         }
         else if (player.AmOwner && GameStates.IsLobby)
+        {
             name = Options.GetSuffixMode() switch
             {
                 SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>TONX v{Main.PluginVersion}</color>",
@@ -70,9 +71,20 @@ public static class NameTagManager
                 SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
                 _ => name
             };
+            if (GameStates.IsOnlineGame)
+            {
+                var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
+                upper += Options.CurrentGameMode switch
+                {
+                    CustomGameMode.SoloKombat => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
+                    _ => $"<color=#87cefa>{Main.PluginVersion}</color>",
+                };
+                name = upper + "</size>\r\n" + name;
+            }
+        }
 
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
-            player.RpcSetName(name);
+                player.RpcSetName(name);
     }
     public static void ReloadTag(string? friendCode)
     {
@@ -217,17 +229,7 @@ public static class NameTagManager
 
             name = Prefix?.Generate(true, !inOneLine) + name + Suffix?.Generate(true, !inOneLine);
 
-            if (host && GameStates.IsOnlineGame && UpperText == null)
-            {
-                var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
-                upper += Options.CurrentGameMode switch
-                {
-                    CustomGameMode.SoloKombat => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
-                    _ => $"<color=#87cefa>{Main.PluginVersion}</color>",
-                };
-                name = upper + "</size>\r\n" + name;
-            }
-            else if (!inOneLine)
+            if (!inOneLine)
             {
                 var upperText = UpperText?.Generate(false);
                 if (upperText is not null and not "")
