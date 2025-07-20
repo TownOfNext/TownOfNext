@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace TONX;
 
-// ²Î¿¼£ºhttps://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
+// å‚è€ƒï¼šhttps://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
 public static class TONXOnlySearch
 {
     public const string FilterText = "TONX";

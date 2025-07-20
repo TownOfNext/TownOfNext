@@ -14,7 +14,7 @@ class ChanceChangePatch
         if (__instance.Role.Role is RoleTypes.GuardianAngel /*|| (__instance.Role.Role is RoleTypes.Phantom && !DebugModeManager.IsDebugMode)*/)
         {
             string disableText = $" ({GetString("Disabled")})";
-            //+-ボタンを非表示
+            // 隐藏+-按钮
             foreach (var button in __instance.GetComponentsInChildren<PassiveButton>())
             {
                 button.gameObject.SetActive(false);

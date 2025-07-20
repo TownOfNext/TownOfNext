@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TONX;
 
-//参考元 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
+//参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 class DisableDevice
 {
     public static bool DoDisable => Options.DisableDevices.GetBool();

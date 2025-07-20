@@ -58,8 +58,7 @@ public class MapBehaviourPatch
             if (pc == null || __instance.countOverlay.gameObject.active) continue;
             herePoint.gameObject.SetActive(true);
 
-            // Thanks to https://github.com/scp222thj/MalumMenu/blob/main/src/Cheats/MinimapHandler.cs
-
+            // 参考: https://github.com/scp222thj/MalumMenu/blob/main/src/Cheats/MinimapHandler.cs
             // 设置图标颜色
             herePoint.material.SetColor(PlayerMaterial.BodyColor, pc.Data.Color);
             herePoint.material.SetColor(PlayerMaterial.BackColor, pc.Data.ShadowColor);
