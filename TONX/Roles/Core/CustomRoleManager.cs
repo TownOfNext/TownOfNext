@@ -209,8 +209,18 @@ public static class CustomRoleManager
 
         Utils.TargetDies(info);
 
-        Utils.SyncAllSettings();
-        Utils.NotifyRoles();
+        if (Options.LowLoadMode.GetBool())
+        {
+            appearanceKiller.MarkDirtySettings();
+            appearanceTarget.MarkDirtySettings();
+            Utils.NotifyRoles(appearanceKiller);
+            Utils.NotifyRoles(appearanceTarget);
+        }
+        else
+        {
+            Utils.SyncAllSettings();
+            Utils.NotifyRoles();
+        }
     }
     /// <summary>
     /// 其他玩家视角下的 MurderPlayer 事件

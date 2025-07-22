@@ -225,7 +225,6 @@ internal class RPCHandlerPatch
                     list.Add(OptionItem.AllOptions[i]);
                 Logger.Info($"{startAmount}-{lastAmount}:{list.Count}/{OptionItem.AllOptions.Count}", "SyncCustomSettings");
                 foreach (var co in list) co.SetValue(reader.ReadPackedInt32());
-                OptionShower.BuildText();
                 break;
             case CustomRPC.SetDeathReason:
                 RPC.GetDeathReason(reader);
@@ -266,7 +265,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.RestTONXSetting:
                 OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValue(x.DefaultValue, false));
-                OptionShower.BuildText();
                 break;
             case CustomRPC.SuicideWithAnime:
                 var playerId = reader.ReadByte();

@@ -19,19 +19,6 @@ internal class ControllerManagerUpdatePatch
         //切换自定义设置的页面
         if (GameStates.IsLobby && !ChatUpdatePatch.Active)
         {
-            //カスタム設定切り替え
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                if (Input.GetKey(KeyCode.LeftControl)) OptionShower.Previous();
-                else OptionShower.Next();
-            }
-            for (var i = 0; i < 9; i++)
-            {
-                if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
-                {
-                    OptionShower.currentPage = i;
-                }
-            }
             // 現在の設定を文字列形式のデータに変換してコピー
             if (GetKeysDown(KeyCode.O, KeyCode.LeftAlt))
             {
@@ -155,7 +142,6 @@ internal class ControllerManagerUpdatePatch
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RestTONXSetting, SendOption.Reliable, -1);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
-            OptionShower.BuildText();
         }
         //放逐自己
         if (GetKeysDown(KeyCode.Return, KeyCode.E, KeyCode.LeftShift) && GameStates.IsInGame)

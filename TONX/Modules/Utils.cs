@@ -565,7 +565,10 @@ public static class Utils
         var ProgressText = new StringBuilder();
         var State = PlayerState.GetByPlayerId(playerId);
         var role = State.MainRole;
-        if (GetPlayerById(playerId).GetCustomRole() == CustomRoles.KB_Normal) ProgressText.Append(SoloKombatManager.GetDisplayScore(playerId));
+        if (GetPlayerById(playerId).GetCustomRole() == CustomRoles.KB_Normal)
+        {
+            ProgressText.Append(SoloKombatManager.GetDisplayScore(playerId));
+        }
         else
         {
             var roleClass = CustomRoleManager.GetByPlayerId(playerId);

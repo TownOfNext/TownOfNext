@@ -446,6 +446,7 @@ class FixedUpdatePatch
     private static StringBuilder Mark = new(20);
     private static StringBuilder Suffix = new(120);
     private static int LevelKickBufferTime = 10;
+    private static Dictionary<byte, int> BufferTime = new();
     public static void Postfix(PlayerControl __instance)
     {
         var player = __instance;
@@ -455,10 +456,22 @@ class FixedUpdatePatch
 
         if (!GameStates.IsModHost) return;
 
+        bool lowLoad = false;
+        if (Options.LowLoadMode.GetBool())
+        {
+            BufferTime.TryAdd(player.PlayerId, 10);
+            BufferTime[player.PlayerId]--;
+            if (BufferTime[player.PlayerId] > 0) lowLoad = true;
+            else BufferTime[player.PlayerId] = 10;
+        }
+
         Zoom.OnFixedUpdate();
-        NameNotifyManager.OnFixedUpdate(player);
-        TargetArrow.OnFixedUpdate(player);
-        LocateArrow.OnFixedUpdate(player);
+        if (!lowLoad)
+        {
+            NameNotifyManager.OnFixedUpdate(player);
+            TargetArrow.OnFixedUpdate(player);
+            LocateArrow.OnFixedUpdate(player);
+        }
 
         CustomRoleManager.OnFixedUpdate(player);
 
@@ -476,7 +489,7 @@ class FixedUpdatePatch
             }
 
             //踢出低等级的人
-            if (GameStates.IsLobby && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
+            if (!lowLoad && GameStates.IsLobby && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
                 (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
                 player.Data.FriendCode == ""
                 ))
@@ -522,7 +535,7 @@ class FixedUpdatePatch
         //役職テキストの表示
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
         var RoleText = RoleTextTransform.GetComponent<TMPro.TextMeshPro>();
-        if (RoleText != null && __instance != null)
+        if (RoleText != null && __instance != null && !lowLoad)
         {
             if (GameStates.IsLobby)
             {
