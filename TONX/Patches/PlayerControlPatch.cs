@@ -714,25 +714,27 @@ class EnterVentPatch
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
     }
-    public static void Prefix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
-    {
-        // 因为不能直接给CoEnterVent打补丁，所以将补丁置于EnterVent期间
-        CoEnterVentPatch.Prefix(pc.MyPhysics, __instance.Id);
-    }
 }
-// 虽然Patch无法生效，但保险起见还是将其注释掉
-// [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
+
+[HarmonyPatch(typeof(PlayerPhysics._CoEnterVent_d__47), nameof(PlayerPhysics._CoEnterVent_d__47.MoveNext))]
 class CoEnterVentPatch
 {
-    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    private static int _LastInstances = -1;
+    public static bool Prefix(PlayerPhysics._CoEnterVent_d__47 __instance)
     {
+        var key = __instance.GetHashCode();
+
+        if (key == _LastInstances) return true;
+        _LastInstances = key;
+
         if (!AmongUsClient.Instance.AmHost) return true;
+        var playerPhysics = __instance.__4__this;
+        var id = __instance.id;
+        Logger.Info($"{playerPhysics.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
-        Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
+        var user = playerPhysics.myPlayer;
 
-        var user = __instance.myPlayer;
-
-        if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
+        if ((!user.GetRoleClass()?.OnEnterVent(playerPhysics, id) ?? false) ||
             (user.Data.Role.Role != RoleTypes.Engineer && // 非工程师
             !user.CanUseImpostorVentButton()) // 无法使用内鬼跳管按钮
         )
@@ -741,8 +743,8 @@ class CoEnterVentPatch
             {
                 if (!GameStates.IsMeeting)
                 {
-                    __instance.RpcBootFromVent(id);
-                    __instance.myPlayer.walkingToVent = false;
+                    playerPhysics.RpcBootFromVent(id);
+                    playerPhysics.myPlayer.walkingToVent = false;
                 }
             }, 0.5f, "Cancel Vent");
         }
