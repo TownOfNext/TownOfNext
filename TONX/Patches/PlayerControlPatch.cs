@@ -715,19 +715,18 @@ class EnterVentPatch
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
     }
 }
-
 [HarmonyPatch(typeof(PlayerPhysics._CoEnterVent_d__47), nameof(PlayerPhysics._CoEnterVent_d__47.MoveNext))]
 class CoEnterVentPatch
 {
-    private static int _LastInstances = -1;
+    private static int _LastInstance = -1;
     public static bool Prefix(PlayerPhysics._CoEnterVent_d__47 __instance)
     {
-        var key = __instance.GetHashCode();
-
-        if (key == _LastInstances) return true;
-        _LastInstances = key;
-
         if (!AmongUsClient.Instance.AmHost) return true;
+
+        var key = __instance.GetHashCode();
+        if (key == _LastInstance) return true;
+        _LastInstance = key;
+
         var playerPhysics = __instance.__4__this;
         var id = __instance.id;
         Logger.Info($"{playerPhysics.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
