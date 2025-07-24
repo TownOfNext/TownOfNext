@@ -12,40 +12,32 @@ namespace TONX;
 [HarmonyPatch(typeof(IntroCutscene))]
 class IntroCutscenePatch
 {
-    [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPostfix]
-    public static void CoBegin_Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.IEnumerator __result)
-    {
-        // 因为不能直接给ShowRole打补丁，所以要在CoBegin期间打补丁
-        var patcher = new CoroutinPatcher(__result);
-        // ShowRole是状态机类，所以要在运行之前打补丁
-        // 原本是Postfix，但是Prefix的时间比较合适
-        patcher.AddPrefix(typeof(IntroCutscene._ShowRole_d__41), () => ShowRole_Postfix(__instance));
-        __result = patcher.EnumerateWithPatch();
-    }
-    // 虽然Patch无法生效，但保险起见还是将其注释掉
-    // [HarmonyPatch(nameof(IntroCutscene.ShowRole)), HarmonyPostfix]
-    public static void ShowRole_Postfix(IntroCutscene __instance)
+    // 通过Patch原函数MoveNext的方法解决状态机无法打补丁的问题
+    [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
+    [HarmonyPostfix]
+    public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__41 __instance)
     {
         if (!GameStates.IsModHost) return;
+        var introCutscene = __instance.__4__this;
         _ = new LateTask(() =>
         {
-            CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
+            var role = PlayerControl.LocalPlayer.GetCustomRole();
             if (!role.IsVanilla())
             {
-                __instance.YouAreText.color = Utils.GetRoleColor(role);
-                __instance.RoleText.text = Utils.GetRoleName(role);
-                __instance.RoleText.color = Utils.GetRoleColor(role);
-                __instance.RoleText.fontWeight = TMPro.FontWeight.Thin;
-                __instance.RoleText.SetOutlineColor(Utils.ShadeColor(Utils.GetRoleColor(role), 0.1f).SetAlpha(0.38f));
-                __instance.RoleText.SetOutlineThickness(0.17f);
-                __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
-                __instance.RoleBlurbText.text = PlayerControl.LocalPlayer.GetRoleInfo();
+                introCutscene.YouAreText.color = Utils.GetRoleColor(role);
+                introCutscene.RoleText.text = Utils.GetRoleName(role);
+                introCutscene.RoleText.color = Utils.GetRoleColor(role);
+                introCutscene.RoleText.fontWeight = TMPro.FontWeight.Thin;
+                introCutscene.RoleText.SetOutlineColor(Utils.ShadeColor(Utils.GetRoleColor(role), 0.1f).SetAlpha(0.38f));
+                introCutscene.RoleText.SetOutlineThickness(0.17f);
+                introCutscene.RoleBlurbText.color = Utils.GetRoleColor(role);
+                introCutscene.RoleBlurbText.text = PlayerControl.LocalPlayer.GetRoleInfo();
             }
             foreach (var subRole in PlayerState.GetByPlayerId(PlayerControl.LocalPlayer.PlayerId).SubRoles)
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
+                introCutscene.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
             if (!PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) && !PlayerControl.LocalPlayer.Is(CustomRoles.Neptune) && CustomRoles.Neptune.IsExist())
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
-            __instance.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
+                introCutscene.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
+            introCutscene.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
         }, 0.0001f, "Override Role Text");
     }
     [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPrefix]

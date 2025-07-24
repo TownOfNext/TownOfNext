@@ -27,34 +27,19 @@ class ExileControllerWrapUpPatch
         }
     }
 
-    [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.Animate))]
-    class AirshipStatusPatch
-    {
-        public static void Postfix(AirshipExileController __instance, ref Il2CppSystem.Collections.IEnumerator __result)
-        {
-            // 因为不能直接给WrapUpAndSpawn打补丁，所以要在Animate期间打补丁
-            var pathcer = new CoroutinPatcher(__result);
-            // WrapUpAndSpawn是状态机类，所以要在运行之前打补丁
-            // 原本是Postfix，但是Prefix的时间比较合适
-            pathcer.AddPrefix(typeof(AirshipExileController._WrapUpAndSpawn_d__11), () =>
-                AirshipExileControllerPatch.Postfix(__instance)
-            );
-            __result = pathcer.EnumerateWithPatch();
-        }
-    }
-    // 虽然Patch无法生效，但保险起见还是将其注释掉
-    // [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
+    [HarmonyPatch(typeof(AirshipExileController._WrapUpAndSpawn_d__11), nameof(AirshipExileController._WrapUpAndSpawn_d__11.MoveNext))]
     class AirshipExileControllerPatch
     {
-        public static void Postfix(AirshipExileController __instance)
+        public static void Postfix(AirshipExileController._WrapUpAndSpawn_d__11 __instance)
         {
+            var airshipExileController = __instance.__4__this;
             try
             {
-                WrapUpPostfix(__instance.initData.networkedPlayer);
+                WrapUpPostfix(airshipExileController.initData.networkedPlayer);
             }
             finally
             {
-                WrapUpFinalizer(__instance.initData.networkedPlayer);
+                WrapUpFinalizer(airshipExileController.initData.networkedPlayer);
             }
         }
     }
