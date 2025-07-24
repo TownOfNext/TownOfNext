@@ -26,8 +26,7 @@ class ExileControllerWrapUpPatch
             }
         }
     }
-    
-    
+
     [HarmonyPatch(typeof(AirshipExileController._WrapUpAndSpawn_d__11), nameof(AirshipExileController._WrapUpAndSpawn_d__11.MoveNext))]
     class AirshipExileControllerPatch
     {

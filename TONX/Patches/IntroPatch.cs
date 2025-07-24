@@ -12,7 +12,7 @@ namespace TONX;
 [HarmonyPatch(typeof(IntroCutscene))]
 class IntroCutscenePatch
 {
-    // 通过Patch原函数MoveNext的方法解决解决
+    // 通过Patch原函数MoveNext的方法解决状态机无法打补丁的问题
     [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
     [HarmonyPostfix]
     public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__41 __instance)
