@@ -22,13 +22,15 @@
 	<ItemGroup>
 		<!-- nuget.bepinex.dev -->
 		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.4.15" PrivateAssets="all" />
-		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.0.1" PrivateAssets="all" ExcludeAssets="runtime" />
-		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.735" Private="false" ExcludeAssets="runtime;native" />
+		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.738" Private="false" ExcludeAssets="runtime;native" />
 		<!-- nuget.org -->
-		<PackageReference Include="Costura.Fody" Version="5.7.0" PrivateAssets="all" />
-		<PackageReference Include="GitInfo" Version="3.3.3" />
-		<PackageReference Include="Microsoft.VisualStudio.VsixColorCompiler" Version="17.5.33428.366" />
-		<PackageReference Include="YamlDotNet" Version="13.7.1" />
+		<PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" PrivateAssets="all" />
+		<PackageReference Include="GitInfo" Version="3.5.0" />
+		<PackageReference Include="NextBepLoader.BepInEx.IL2CPP.MSBuild" Version="2.1.0-dev-6">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="YamlDotNet" Version="16.3.0" />
 	</ItemGroup>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
