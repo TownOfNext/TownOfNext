@@ -87,7 +87,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> LongMode { get; private set; }
+    public static ConfigEntry<OutfitType> SwitchOutfitType { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -176,7 +176,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        LongMode = Config.Bind("Client Options", "LongMode", false);
+        SwitchOutfitType = Config.Bind("Client Options", "SwitchOutfitType", OutfitType.NormalMode);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -411,4 +411,11 @@ public enum TieMode
     Default,
     All,
     Random
+}
+
+public enum OutfitType
+{
+    NormalMode,
+    HorseMode,
+    LongMode
 }

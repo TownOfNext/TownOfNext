@@ -8,18 +8,18 @@ namespace TONX;
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
 public static class OptionsMenuBehaviourStartPatch
 {
-    private static ClientOptionItem UnlockFPS;
-    private static ClientOptionItem LongMode;
-    private static ClientOptionItem AutoStartGame;
-    private static ClientOptionItem AutoEndGame;
-    private static ClientOptionItem ForceOwnLanguage;
-    private static ClientOptionItem ForceOwnLanguageRoleName;
-    private static ClientOptionItem EnableCustomButton;
-    private static ClientOptionItem EnableCustomSoundEffect;
+    private static ClientOptionItem<bool> UnlockFPS;
+    private static ClientOptionItem<OutfitType> SwitchOutfitType;
+    private static ClientOptionItem<bool> AutoStartGame;
+    private static ClientOptionItem<bool> AutoEndGame;
+    private static ClientOptionItem<bool> ForceOwnLanguage;
+    private static ClientOptionItem<bool> ForceOwnLanguageRoleName;
+    private static ClientOptionItem<bool> EnableCustomButton;
+    private static ClientOptionItem<bool> EnableCustomSoundEffect;
     private static ClientActionItem UnloadMod;
     private static ClientActionItem DumpLog;
-    private static ClientOptionItem VersionCheat;
-    private static ClientOptionItem GodMode;
+    private static ClientOptionItem<bool> VersionCheat;
+    private static ClientOptionItem<bool> GodMode;
 
 
     private static bool reseted = false;
@@ -38,20 +38,29 @@ public static class OptionsMenuBehaviourStartPatch
 
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
-            UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
+            UnlockFPS = ClientOptionItem<bool>.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
             static void UnlockFPSButtonToggle()
             {
                 Application.targetFrameRate = Main.UnlockFPS.Value ? 240 : 60;
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
-        if (LongMode == null || LongMode.ToggleButton == null)
+        if (SwitchOutfitType == null || SwitchOutfitType.ToggleButton == null)
         {
-            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance);
+            SwitchOutfitType = ClientOptionItem<OutfitType>.Create("SwitchOutfitType", Main.SwitchOutfitType, __instance, SwitchMode);
+            static void SwitchMode()
+            {
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                    if (pc.BodyType == PlayerBodyTypes.Normal)
+                        pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                }
+            }
         }
         if (AutoStartGame == null || AutoStartGame.ToggleButton == null)
         {
-            AutoStartGame = ClientOptionItem.Create("AutoStartGame", Main.AutoStartGame, __instance, AutoStartButtonToggle);
+            AutoStartGame = ClientOptionItem<bool>.Create("AutoStartGame", Main.AutoStartGame, __instance, AutoStartButtonToggle);
             static void AutoStartButtonToggle()
             {
                 if (Main.AutoStartGame.Value == false && GameStates.IsCountDown)
@@ -62,23 +71,23 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if (AutoEndGame == null || AutoEndGame.ToggleButton == null)
         {
-            AutoEndGame = ClientOptionItem.Create("AutoEndGame", Main.AutoEndGame, __instance);
+            AutoEndGame = ClientOptionItem<bool>.Create("AutoEndGame", Main.AutoEndGame, __instance);
         }
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
-            ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
+            ForceOwnLanguage = ClientOptionItem<bool>.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
         }
         if (ForceOwnLanguageRoleName == null || ForceOwnLanguageRoleName.ToggleButton == null)
         {
-            ForceOwnLanguageRoleName = ClientOptionItem.Create("ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, __instance);
+            ForceOwnLanguageRoleName = ClientOptionItem<bool>.Create("ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, __instance);
         }
         if (EnableCustomButton == null || EnableCustomButton.ToggleButton == null)
         {
-            EnableCustomButton = ClientOptionItem.Create("EnableCustomButton", Main.EnableCustomButton, __instance);
+            EnableCustomButton = ClientOptionItem<bool>.Create("EnableCustomButton", Main.EnableCustomButton, __instance);
         }
         if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
         {
-            EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
+            EnableCustomSoundEffect = ClientOptionItem<bool>.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
         }
         if (UnloadMod == null || UnloadMod.ToggleButton == null)
         {
@@ -90,11 +99,11 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
-            VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+            VersionCheat = ClientOptionItem<bool>.Create("VersionCheat", Main.VersionCheat, __instance);
         }
         if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
-            GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+            GodMode = ClientOptionItem<bool>.Create("GodMode", Main.GodMode, __instance);
         }
 
         if (ModUnloaderScreen.Popup == null)

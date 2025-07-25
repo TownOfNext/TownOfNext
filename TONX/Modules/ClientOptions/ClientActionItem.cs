@@ -6,6 +6,7 @@ namespace TONX.Modules.ClientOptions;
 
 public class ClientActionItem
 {
+    private string Name;
     public ToggleButtonBehaviour ToggleButton { get; private set; }
     public Action OnClickAction { get; protected set; }
 
@@ -97,6 +98,7 @@ public class ClientActionItem
                 2.2f - (0.5f * (numItems / 2)),
                 -6f);
             ToggleButton.name = name;
+            Rename(name);
             ToggleButton.Text.text = Translator.GetString(name);
             ToggleButton.Background.color = Color.white;
             var passiveButton = ToggleButton.GetComponent<PassiveButton>();
@@ -130,5 +132,13 @@ public class ClientActionItem
     public void OnClick()
     {
         OnClickAction?.Invoke();
+    }
+    
+    protected void Rename(string name = null)
+    {
+        if (name != null)
+            Name = name;
+        name ??= Name;
+        ToggleButton.Text.text = Translator.GetString(name);
     }
 }
