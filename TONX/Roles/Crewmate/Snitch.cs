@@ -126,7 +126,8 @@ public class Snitch : RoleBase
             }
             return Utils.ColorString(RoleInfo.RoleColor, mark);
         }
-        else if (seen.GetRoleClass() is Snitch snitch && snitch.IsExposed)
+
+        if (seen.GetRoleClass() is Snitch snitch && snitch.IsExposed)
         {
             //seenがタスク終わりそうなスニッチの時
             return Utils.ColorString(RoleInfo.RoleColor, "★");

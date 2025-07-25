@@ -103,7 +103,8 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -227,14 +228,16 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
+
+        if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);

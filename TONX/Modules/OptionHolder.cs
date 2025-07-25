@@ -460,7 +460,7 @@ public static class Options
         if (!CustomRoleSpawnChances.TryGetValue(role, out var option)) return 0;
         if (option.Selections.Length == 2) return option.GetInt() == 0 ? 0 : 2;
         if (option.Selections.Length == 3) return option.GetInt();
-        else return option.GetInt() switch
+        return option.GetInt() switch
         {
             0 => 0,
             1 => 5,

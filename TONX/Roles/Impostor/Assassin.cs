@@ -74,15 +74,12 @@ public sealed class Assassin : RoleBase, IImpostor
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
         if (Shapeshifting) return true;
-        else
-        {
-            MarkedPlayer = target.PlayerId;
-            SendRPC();
-            killer.ResetKillCooldown();
-            killer.SetKillCooldownV2();
-            killer.RPCPlayCustomSound("Clothe");
-            return false;
-        }
+        MarkedPlayer = target.PlayerId;
+        SendRPC();
+        killer.ResetKillCooldown();
+        killer.SetKillCooldownV2();
+        killer.RPCPlayCustomSound("Clothe");
+        return false;
     }
     private bool Shapeshifting;
     public override void OnShapeshift(PlayerControl target)

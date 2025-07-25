@@ -66,7 +66,7 @@ public static class GuesserHelper
         if (ComfirmIncludeMsg(msg, "灰|灰|gray")) return 15;
         if (ComfirmIncludeMsg(msg, "茶|茶|tan")) return 16;
         if (ComfirmIncludeMsg(msg, "珊瑚|珊瑚|coral")) return 17;
-        else return -1;
+        return -1;
     }
     private static bool ComfirmIncludeMsg(string msg, string key) => key.Split('|').Any(msg.Contains);
     public static bool GuesserMsg(PlayerControl pc, string msg, out bool spam)
@@ -93,7 +93,8 @@ public static class GuesserHelper
             Utils.SendMessage(GetFormatString(), pc.PlayerId);
             return true;
         }
-        else if (operate == 2)
+
+        if (operate == 2)
         {
             spam = true;
             if (!AmongUsClient.Instance.AmHost) return true;
@@ -231,7 +232,8 @@ public static class GuesserHelper
                 error = GetString("GuessNull");
                 return false;
             }
-            else if (list.Count != 1)
+
+            if (list.Count != 1)
             {
                 error = GetString("GuessMultipleColor");
                 return false;
