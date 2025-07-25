@@ -61,9 +61,8 @@ public class OptionBackupData
     where TKey : Enum
     {
         var value = AllValues
-            .OfType<OptionBackupValueBase<TKey, TValue>>()
-            .Where(val => val.OptionName.Equals(name)).
-            FirstOrDefault();
+            .OfType<OptionBackupValueBase<TKey, TValue>>().
+            FirstOrDefault(val => val.OptionName.Equals(name));
 
         return value == null ? default : value.Value;
     }

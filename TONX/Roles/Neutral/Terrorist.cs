@@ -17,7 +17,7 @@ public sealed class Terrorist : RoleBase
             SetupOptionItem,
             "te|恐怖",
             "#00ff00",
-            introSound: () => ShipStatus.Instance.CommonTasks.Where(task => task.TaskType == TaskTypes.FixWiring).FirstOrDefault().MinigamePrefab.OpenSound
+            introSound: () => ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring).MinigamePrefab.OpenSound
         );
     public Terrorist(PlayerControl player)
     : base(
