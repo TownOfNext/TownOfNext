@@ -531,7 +531,7 @@ class FixedUpdatePatch
                     if (Main.ForkId != ver.forkId) // フォークIDが違う場合
                         __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.5>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
-                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#fcc5f8>{__instance.name}</color>" : $"<color=#ffff00><size=1.5>{ver.tag}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text = ver.tag == $"{Main.GitCommit}({Main.GitBranch})" ? $"<color=#fcc5f8>{__instance.name}</color>" : $"<color=#ffff00><size=1.5>{ver.tag}</size>\n{__instance?.name}</color>";
                     else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.5>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
                 else __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;

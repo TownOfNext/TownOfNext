@@ -187,7 +187,7 @@ internal class RPCHandlerPatch
                         Main.playerVersion[__instance.PlayerId] = Main.playerVersion[0];
 
                     // Kick Unmached Player Start
-                    if (AmongUsClient.Instance.AmHost && tag != $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})")
+                    if (AmongUsClient.Instance.AmHost && tag != $"{Main.GitCommit}({Main.GitBranch})")
                     {
                         if (forkId != Main.ForkId)
                             _ = new LateTask(() =>
@@ -413,11 +413,11 @@ internal static class RPC
             bool cheating = Main.VersionCheat.Value;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
             writer.Write(cheating ? Main.playerVersion[0].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[0].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+            writer.Write(cheating ? Main.playerVersion[0].tag : $"{Main.GitCommit}({Main.GitBranch})");
             writer.Write(cheating ? Main.playerVersion[0].forkId : Main.ForkId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+        Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId);
     }
     public static void SendDeathReason(byte playerId, CustomDeathReason deathReason)
     {

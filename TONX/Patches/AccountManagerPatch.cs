@@ -18,11 +18,11 @@ public static class UpdateFriendCodeUIPatch
         string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
 
 #if CANARY
-        versionText = $"<color=#fffe1e>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";
+        versionText = $"<color=#fffe1e>{Main.ModName}</color> - {Main.GitCommit}";
 #endif
 
 #if DEBUG
-        versionText = $"<color=#00a4ff>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
+        versionText = $"<color=#00a4ff>{Main.GitBranch}</color> - {Main.GitCommit}";
 #endif
 
         credentialsText += versionText;

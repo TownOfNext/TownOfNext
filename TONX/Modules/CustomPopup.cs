@@ -6,6 +6,8 @@ using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+#pragma warning disable CS8602 // 解引用可能出现空引用。
+
 namespace TONX;
 
 #nullable enable
@@ -20,7 +22,7 @@ public static class CustomPopup
     public static PassiveButton? ActionButtonPrefab;
     public static List<PassiveButton>? ActionButtons;
 
-    private static bool busy = false;
+    private static bool busy;
 
     /// <summary>
     /// 显示一个全屏信息显示界面
@@ -30,7 +32,11 @@ public static class CustomPopup
     /// <param name="buttons">按钮（文字，点击事件）</param>
     public static void Show(string title, string info, List<(string, Action)>? buttons)
     {
-        if (busy || Fill == null || InfoScreen == null || ActionButtonPrefab == null || TitleTMP == null || InfoTMP == null) Init();
+        if (busy || !Fill || !InfoScreen || !ActionButtonPrefab || !TitleTMP || !InfoTMP)
+        {
+            Init();
+            if (!Fill || !InfoScreen || !ActionButtonPrefab || !TitleTMP || !InfoTMP) return;
+        }
 
         busy = true;
 
@@ -42,7 +48,7 @@ public static class CustomPopup
 
         if (buttons != null)
         {
-            foreach (var buttonInfo in buttons.Where(b => b.Item1?.Trim() is not null and not ""))
+            foreach (var buttonInfo in buttons.Where(b => b.Item1.Trim() is not null and not ""))
             {
                 var (text, action) = buttonInfo;
                 var button = Object.Instantiate(ActionButtonPrefab, InfoScreen.transform);
@@ -54,10 +60,7 @@ public static class CustomPopup
                     InfoScreen.SetActive(false);
                     Fill.SetActive(false);
                 }));
-                if (action != null)
-                {
-                    button.OnClick.AddListener(action);
-                }
+                button.OnClick.AddListener(action);
                 button.transform.SetLocalX(0);
                 button.gameObject.SetActive(true);
                 ActionButtons.Add(button);
@@ -83,7 +86,7 @@ public static class CustomPopup
 
         busy = false;
     }
-    private static (string title, string info, List<(string, Action)>? buttons)? waitToShow = null;
+    private static (string title, string info, List<(string, Action)>? buttons)? waitToShow;
     public static void ShowLater(string title, string info, List<(string, Action)>? buttons) => waitToShow = (title, info, buttons);
     private static string waitToUpdateText = string.Empty;
     public static void UpdateTextLater(string info) => waitToUpdateText = info;
@@ -135,4 +138,3 @@ public static class CustomPopup
         }
     }
 }
-#nullable disable
