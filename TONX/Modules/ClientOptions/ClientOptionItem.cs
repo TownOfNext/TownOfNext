@@ -21,7 +21,7 @@ public sealed class ClientOptionItem<T> : ClientActionItem
     private ConfigEntry<T> Config { get; }
 
     /// <summary>
-    ///     Modオプション画面にconfigのトグルを追加します
+    /// Modオプション画面にconfigのトグルを追加します
     /// </summary>
     /// <param name="name">ボタンラベルの翻訳キーとボタンのオブジェクト名</param>
     /// <param name="config">対応するconfig</param>

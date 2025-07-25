@@ -35,7 +35,7 @@ static class ExtendedPlayerControl
             player.GetRoleClass()?.Dispose();
             PlayerState.GetByPlayerId(player.PlayerId).SetMainRole(role);
         }
-        else
+        else //500:NoSubRole 501~:SubRole
         {
             PlayerState.GetByPlayerId(player.PlayerId).SetSubRole(role);
         }
