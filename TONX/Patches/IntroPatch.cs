@@ -103,7 +103,6 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-
         if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();

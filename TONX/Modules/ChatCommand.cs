@@ -303,13 +303,11 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.ShowActiveRoles(playerId);
             return;
         }
-
         if (!GetRoleByInputName(input, out var role))
         {
             Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-
         Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
     }
     public static void SpecifyRole(string input, byte playerId)

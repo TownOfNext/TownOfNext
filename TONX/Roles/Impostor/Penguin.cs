@@ -121,7 +121,6 @@ class Penguin : RoleBase, IImpostor
             RemoveVictim();
             return true;
         }
-
         info.DoKill = false;
         AddVictim(target);
         return false;

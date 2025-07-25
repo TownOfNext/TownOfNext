@@ -139,7 +139,6 @@ public static class CustomRoleManager
             actionAfterAll?.Invoke();
             return true;
         }
-
         goto StopMurder; 
     StopMurder:
         {

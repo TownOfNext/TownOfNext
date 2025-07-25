@@ -88,7 +88,6 @@ public sealed class Swooper : RoleBase, IImpostor
             NameNotifyManager.Notify(player, GetString("SwooperInvisStateOut"));
             return;
         }
-
         if (remainTime <= 10)
         {
             if (!player.IsModClient()) player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));

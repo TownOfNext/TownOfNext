@@ -38,7 +38,6 @@ public static class ConfirmEjections
             text += "\n\t\t——" + GetString("ByBard");
             goto EndOfSession;
         }
-
         if (decidedWinner) // 已经决定胜利者
         {
             text = string.Format(GetString("ExiledWrongPerson"), coloredPlayerName, coloredRoleName);

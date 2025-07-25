@@ -103,7 +103,6 @@ class RandomSpawn
                         AirshipSpawn(player);
                         return!IsRandomSpawn();
                     }
-
                     Logger.Info("ポジションは湧き位置ではありません", "RandomSpawn");
                 }
                 //Logger.Info($"{player.name} pos:{position} minSid={minSid}", "SnapTo");

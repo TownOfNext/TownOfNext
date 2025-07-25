@@ -275,7 +275,6 @@ public class ModUpdater
                 File.Delete(DownloadFileTempPath);
                 return (false, GetString("updateFileMd5Incorrect"));
             }
-
             var fileName = Assembly.GetExecutingAssembly().Location;
             File.Move(fileName, fileName + ".bak");
             File.Move("BepInEx/plugins/TONX.dll.temp", fileName);

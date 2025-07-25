@@ -93,7 +93,6 @@ static class CustomRolesHelper
                 _ => 0
             };
         }
-
         return Options.GetRoleCount(role);
     }
     public static int GetChance(this CustomRoles role)

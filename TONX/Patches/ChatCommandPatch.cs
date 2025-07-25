@@ -44,7 +44,6 @@ internal class ChatCommands
             __instance.freeChatField.textArea.Clear();
             return false;
         }
-
         if (SendTargetPatch.SendTarget != SendTargetPatch.SendTargets.Default)
         {
             switch (SendTargetPatch.SendTarget)

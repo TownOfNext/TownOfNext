@@ -388,7 +388,6 @@ internal class SelectRolesPatch
                 StoragedData.Add((__instance, roleType));
                 return false;
             }
-
             return true;
         }
         public static void Release()
