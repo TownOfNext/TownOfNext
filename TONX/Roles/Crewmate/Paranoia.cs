@@ -75,10 +75,7 @@ public sealed class Paranoia : RoleBase
             //ポータブルボタン時はベントから追い出す必要はない
             return true;
         }
-        else
-        {
-            Player.Notify(Translator.GetString("SkillMaxUsage"));
-        }
+        Player.Notify(Translator.GetString("SkillMaxUsage"));
         return false;
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)

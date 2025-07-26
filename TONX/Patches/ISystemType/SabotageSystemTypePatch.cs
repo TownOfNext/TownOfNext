@@ -45,10 +45,7 @@ public static class SabotageSystemTypeUpdateSystemPatch
             //その他処理が必要であれば処理
             return roleClass.OnInvokeSabotage(nextSabotage);
         }
-        else
-        {
-            return CanSabotage(player);
-        }
+        return CanSabotage(player);
     }
     private static bool CanSabotage(PlayerControl player)
     {

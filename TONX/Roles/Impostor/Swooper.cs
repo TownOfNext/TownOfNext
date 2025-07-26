@@ -88,7 +88,7 @@ public sealed class Swooper : RoleBase, IImpostor
             NameNotifyManager.Notify(player, GetString("SwooperInvisStateOut"));
             return;
         }
-        else if (remainTime <= 10)
+        if (remainTime <= 10)
         {
             if (!player.IsModClient()) player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
         }
@@ -104,31 +104,29 @@ public sealed class Swooper : RoleBase, IImpostor
             NameNotifyManager.Notify(Player, GetString("SwooperInvisStateOut"));
             return false;
         }
-        else
+
+        new LateTask(() =>
         {
-            new LateTask(() =>
+            if (CanGoInvis())
             {
-                if (CanGoInvis())
-                {
-                    VentedId = ventId;
+                VentedId = ventId;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34, SendOption.Reliable, Player.GetClientId());
-                    writer.WritePacked(ventId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, 34, SendOption.Reliable, Player.GetClientId());
+                writer.WritePacked(ventId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
 
-                    InvisTime = now;
-                    SendRPC();
+                InvisTime = now;
+                SendRPC();
 
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisState"), SwooperDuration.GetFloat());
-                }
-                else
-                {
-                    physics.RpcBootFromVent(ventId);
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisInCooldown"));
-                }
-            }, 0.5f, "Swooper Vent");
-            return true;
-        }
+                NameNotifyManager.Notify(Player, GetString("SwooperInvisState"), SwooperDuration.GetFloat());
+            }
+            else
+            {
+                physics.RpcBootFromVent(ventId);
+                NameNotifyManager.Notify(Player, GetString("SwooperInvisInCooldown"));
+            }
+        }, 0.5f, "Swooper Vent");
+        return true;
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {

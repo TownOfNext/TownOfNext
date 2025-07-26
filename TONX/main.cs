@@ -87,7 +87,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> LongMode { get; private set; }
+    public static ConfigEntry<OutfitType> SwitchOutfitType { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -166,6 +166,17 @@ public class Main : BasePlugin
         TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
         TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
 
+    // 防止不必要的警告
+#pragma warning disable CS0618 // 类型或成员已过时
+    public const string GitBaseTag = ThisAssembly.Git.BaseTag;
+    public const string GitCommit = ThisAssembly.Git.Commit;
+    public const string GitCommits = ThisAssembly.Git.Commits;
+    public const string GitBranch = ThisAssembly.Git.Branch;
+    public const bool GitIsDirty = ThisAssembly.Git.IsDirty;
+    public const string GitSha = ThisAssembly.Git.Sha;
+    public const string GitTag = ThisAssembly.Git.Tag;
+#pragma warning restore CS0618
+    
     public override void Load()
     {
         Instance = this;
@@ -176,7 +187,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        LongMode = Config.Bind("Client Options", "LongMode", false);
+        SwitchOutfitType = Config.Bind("Client Options", "SwitchOutfitType", OutfitType.NormalMode);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -307,12 +318,12 @@ public class Main : BasePlugin
         TONX.Logger.Info($"{Application.version}", "AmongUs Version");
 
         var handler = TONX.Logger.Handler("GitVersion");
-        handler.Info($"{nameof(ThisAssembly.Git.BaseTag)}: {ThisAssembly.Git.BaseTag}");
-        handler.Info($"{nameof(ThisAssembly.Git.Commit)}: {ThisAssembly.Git.Commit}");
-        handler.Info($"{nameof(ThisAssembly.Git.Commits)}: {ThisAssembly.Git.Commits}");
-        handler.Info($"{nameof(ThisAssembly.Git.IsDirty)}: {ThisAssembly.Git.IsDirty}");
-        handler.Info($"{nameof(ThisAssembly.Git.Sha)}: {ThisAssembly.Git.Sha}");
-        handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
+        handler.Info($"{nameof(Main.GitBaseTag)}: {Main.GitBaseTag}");
+        handler.Info($"{nameof(Main.GitCommit)}: {Main.GitCommit}");
+        handler.Info($"{nameof(Main.GitCommits)}: {Main.GitCommits}");
+        handler.Info($"{nameof(Main.GitIsDirty)}: {Main.GitIsDirty}");
+        handler.Info($"{nameof(Main.GitSha)}: {Main.GitSha}");
+        handler.Info($"{nameof(Main.GitTag)}: {Main.GitTag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
@@ -411,4 +422,11 @@ public enum TieMode
     Default,
     All,
     Random
+}
+
+public enum OutfitType
+{
+    NormalMode,
+    HorseMode,
+    LongMode
 }

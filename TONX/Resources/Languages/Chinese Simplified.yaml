@@ -1020,13 +1020,17 @@ ForceOwnLanguage: "强制模组使用您的语言"
 ForceOwnLanguageRoleName: "强制用您的语言显示职业名"
 VersionCheat: "绕过版本同步检查"
 GodMode: "上帝模式"
-LongMode: "愚人节长颈豆模式"
+SwitchOutfitType: "切换形象"
 AutoStartGame: "人满自动开始游戏"
 AutoEndGame: "结束时自动返回大厅"
 SwitchVanilla: "切换为原版"
 FastBoot: "快速启动模式"
 EnableCustomButton: "使用模组按钮样式"
 EnableCustomSoundEffect: "开启模组技能音效"
+
+Value.HorseMode: "愚人节牧马模式"
+Value.LongMode: "愚人节长颈豆模式"
+Value.NormalMode: "经典豆子模式"
 
 # 头衔管理 / Custom Titles
 NameTagOptions: "头衔管理"

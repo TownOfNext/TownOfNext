@@ -94,7 +94,7 @@ public static class Utils
     {
         try
         {
-            var client = AmongUsClient.Instance.allClients.ToArray().Where(cd => cd.Id == id).FirstOrDefault();
+            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == id);
             return client;
         }
         catch
@@ -118,14 +118,11 @@ public static class Utils
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
-                {
-                    if (mapId == 2) return false;
-                    else
-                    {
-                        var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
-                        return ReactorSystemType != null && ReactorSystemType.IsActive;
-                    }
-                }
+            {
+                if (mapId == 2) return false;
+                var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                return ReactorSystemType != null && ReactorSystemType.IsActive;
+            }
             case SystemTypes.Laboratory:
                 {
                     if (mapId != 2) return false;
@@ -139,18 +136,16 @@ public static class Utils
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.Comms:
-                {
-                    if (mapId is 1 or 5)
+            {
+                if (mapId is 1 or 5)
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
                     }
-                    else
-                    {
-                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
-                        return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
-                    }
-                }
+
+                var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
+                return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
+            }
             case SystemTypes.HeliSabotage:
                 {
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
@@ -186,19 +181,17 @@ public static class Utils
             }
             return;
         }
-        else
+
+        opt.SetFloat(
+            FloatOptionNames.ImpostorLightMod,
+            opt.GetFloat(FloatOptionNames.CrewLightMod));
+        if (IsActive(SystemTypes.Electrical))
         {
             opt.SetFloat(
                 FloatOptionNames.ImpostorLightMod,
-                opt.GetFloat(FloatOptionNames.CrewLightMod));
-            if (IsActive(SystemTypes.Electrical))
-            {
-                opt.SetFloat(
-                FloatOptionNames.ImpostorLightMod,
                 opt.GetFloat(FloatOptionNames.ImpostorLightMod) / 5);
-            }
-            return;
         }
+        return;
     }
     //誰かが死亡したときのメソッド
     public static void TargetDies(MurderInfo info)
@@ -908,12 +901,12 @@ public static class Utils
         {
             return cachedPlayer;
         }
-        var player = Main.AllPlayerControls.Where(pc => pc.PlayerId == playerId).FirstOrDefault();
+        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == playerId);
         cachedPlayers[playerId] = player;
         return player;
     }
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
-        GameData.Instance.AllPlayers.ToArray().Where(info => info.PlayerId == PlayerId).FirstOrDefault();
+        GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder SelfSuffix = new(20);
     private static StringBuilder TargetMark = new(20);
@@ -1244,35 +1237,33 @@ public static class Utils
         {
             return ChatSummary[id] ?? "";
         }
-        else
-        {
-            builder.Append(Main.AllPlayerNames[id]);
-            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));
-            builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
-            builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
-            ChatSummary[id] = builder.ToString();
-            builder = new StringBuilder();
-            // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
-            // 1em ≒ 2个半角字符
-            // 空格是0.5em
-            // SJIS的字母是一个字节，日语、汉语基本上是两个字节
-            var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
-            //最大11.5emとする(★+日本語10文字分+半角空白)
-            var pos = Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
-            builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
-            builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
-            // "(00/00) " = 4em
-            pos += 4f;
-            if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
-            // "Lover's Suicide " = 8em
-            // "断开连接 " = 4.5em
-            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
-            builder.AppendFormat("<pos={0}em>", pos);
-            builder.Append(GetTrueRoleName(id, false));
-            builder.Append(GetSubRolesText(id));
-            builder.Append("</pos>");
-        }
+
+        builder.Append(Main.AllPlayerNames[id]);
+        builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+        if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));
+        builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+        builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
+        ChatSummary[id] = builder.ToString();
+        builder = new StringBuilder();
+        // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
+        // 1em ≒ 2个半角字符
+        // 空格是0.5em
+        // SJIS的字母是一个字节，日语、汉语基本上是两个字节
+        var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        //最大11.5emとする(★+日本語10文字分+半角空白)
+        var pos = Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
+        builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
+        builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
+        // "(00/00) " = 4em
+        pos += 4f;
+        if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
+        // "Lover's Suicide " = 8em
+        // "断开连接 " = 4.5em
+        pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
+        builder.AppendFormat("<pos={0}em>", pos);
+        builder.Append(GetTrueRoleName(id, false));
+        builder.Append(GetSubRolesText(id));
+        builder.Append("</pos>");
         return builder.ToString();
     }
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);

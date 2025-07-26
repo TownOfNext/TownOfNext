@@ -91,7 +91,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
         {
             return isForHud ? GetString("BKSkillNotice") : "";
         }
-        else return isForHud
+        return isForHud
             ? string.Format(GetString("BKSkillTimeRemain"), ProtectStartTime + OptionProtectDuration.GetFloat() - Utils.GetTimeStamp())
             : GetString("BKInProtectForUnModed");
     }

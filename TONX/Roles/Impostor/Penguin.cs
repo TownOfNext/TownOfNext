@@ -121,12 +121,9 @@ class Penguin : RoleBase, IImpostor
             RemoveVictim();
             return true;
         }
-        else
-        {
-            info.DoKill = false;
-            AddVictim(target);
-            return false;
-        }
+        info.DoKill = false;
+        AddVictim(target);
+        return false;
     }
     public bool OverrideKillButtonText(out string text)
     {

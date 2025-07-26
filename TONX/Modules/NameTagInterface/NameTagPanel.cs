@@ -61,12 +61,9 @@ public static class NameTagPanel
             TagOptionsButton.Background.color = Palette.DisabledGrey;
             return;
         }
-        else
-        {
-            TagOptionsButton.Text.text = GetString("NameTagOptions");
-            TagOptionsButton.GetComponent<PassiveButton>().enabled = true;
-            TagOptionsButton.Background.color = Main.ModColor32;
-        }
+        TagOptionsButton.Text.text = GetString("NameTagOptions");
+        TagOptionsButton.GetComponent<PassiveButton>().enabled = true;
+        TagOptionsButton.Background.color = Main.ModColor32;
 
         if (CustomBackground == null)
         {

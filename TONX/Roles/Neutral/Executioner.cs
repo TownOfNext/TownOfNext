@@ -80,8 +80,8 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         foreach (var target in Main.AllPlayerControls)
         {
             if (playerId == target.PlayerId) continue;
-            else if (!CanTargetImpostor && target.Is(CustomRoleTypes.Impostor)) continue;
-            else if (!CanTargetNeutralKiller && target.IsNeutralKiller()) continue;
+            if (!CanTargetImpostor && target.Is(CustomRoleTypes.Impostor)) continue;
+            if (!CanTargetNeutralKiller && target.IsNeutralKiller()) continue;
             if (target.Is(CustomRoles.GM)) continue;
 
             targetList.Add(target);

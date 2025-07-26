@@ -303,15 +303,12 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.ShowActiveRoles(playerId);
             return;
         }
-        else if (!GetRoleByInputName(input, out var role))
+        if (!GetRoleByInputName(input, out var role))
         {
             Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-        else
-        {
-            Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
-        }
+        Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
     }
     public static void SpecifyRole(string input, byte playerId)
     {
@@ -325,12 +322,14 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.ShowActiveRoles(playerId);
             return;
         }
-        else if (!GetRoleByInputName(input, out var role))
+
+        if (!GetRoleByInputName(input, out var role))
         {
             Utils.SendMessage(GetString("Message.DirectorModeCanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-        else if (!Options.EnableDirectorMode.GetBool())
+
+        if (!Options.EnableDirectorMode.GetBool())
         {
             Utils.SendMessage(string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableDirectorMode")));
         }

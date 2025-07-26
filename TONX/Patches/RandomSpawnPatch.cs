@@ -103,10 +103,7 @@ class RandomSpawn
                         AirshipSpawn(player);
                         return!IsRandomSpawn();
                     }
-                    else
-                    {
-                        Logger.Info("ポジションは湧き位置ではありません", "RandomSpawn");
-                    }
+                    Logger.Info("ポジションは湧き位置ではありません", "RandomSpawn");
                 }
                 //Logger.Info($"{player.name} pos:{position} minSid={minSid}", "SnapTo");
             }
@@ -169,11 +166,9 @@ public static class SpawnInMinigameSpawnAtPatch
             __instance.StartCoroutine(__instance.CoSpawnAt(PlayerControl.LocalPlayer, spawnPoint));
             return false;
         }
-        else
-        {
-            AirshipSpawn(PlayerControl.LocalPlayer);
-            return true;
-        }
+
+        AirshipSpawn(PlayerControl.LocalPlayer);
+        return true;
     }
     }
 

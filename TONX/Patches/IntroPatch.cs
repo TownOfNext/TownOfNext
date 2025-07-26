@@ -103,7 +103,7 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
+        if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -195,7 +195,7 @@ class IntroCutscenePatch
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+        return RoleManager.Instance.AllRoles.FirstOrDefault(role => role.Role == roleType).IntroSound;
     }
     private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end)
     {
@@ -227,14 +227,16 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        else if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
+
+        if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);

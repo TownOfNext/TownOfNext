@@ -139,10 +139,7 @@ public static class CustomRoleManager
             actionAfterAll?.Invoke();
             return true;
         }
-        else
-        {
-            goto StopMurder;
-        }
+        goto StopMurder; 
     StopMurder:
         {
             if (!info.CanKill) Logger.Info($"{appearanceTarget.GetNameWithRole()} 无法被击杀", "CheckMurder");

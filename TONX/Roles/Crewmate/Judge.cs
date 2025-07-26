@@ -149,8 +149,8 @@ public sealed class Judge : RoleBase, IMeetingButton
         {
             Utils.SendMessage(GuesserHelper.GetFormatString(), pc.PlayerId);
             return true;
-        }
-        else if (operate == 2)
+        } 
+        if (operate == 2)
         {
             spam = true;
             if (!AmongUsClient.Instance.AmHost) return true;
