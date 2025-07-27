@@ -46,16 +46,14 @@ internal static class CustomRoleSelector
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
+            if (role is CustomRoles.Crewmate or CustomRoles.Impostor or CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
             if (role.IsVanilla())
             {
-                if (role is CustomRoles.Crewmate or CustomRoles.Impostor) continue;
-                if (role.GetCount() == 0 || Options.DisableVanillaRoles.GetBool()) continue;
-                if (rd.Next(0, 100) > role.GetChance()) continue;
+                if (Options.DisableVanillaRoles.GetBool() || role.GetCount() == 0 || rd.Next(0, 100) > role.GetChance()) continue;
             }
             else
             {
                 if (role.IsAddon() || !Options.CustomRoleSpawnChances.TryGetValue(role, out var option) || option.Selections.Length != 3) continue;
-                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal) continue;
                 if (role is CustomRoles.Mare or CustomRoles.Concealer && Main.NormalOptions.MapId == 5) continue;
             }
             for (int i = 0; i < role.GetAssignCount(); i++)
