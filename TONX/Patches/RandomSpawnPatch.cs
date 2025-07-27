@@ -166,7 +166,6 @@ public static class SpawnInMinigameSpawnAtPatch
             __instance.StartCoroutine(__instance.CoSpawnAt(PlayerControl.LocalPlayer, spawnPoint));
             return false;
         }
-
         AirshipSpawn(PlayerControl.LocalPlayer);
         return true;
     }

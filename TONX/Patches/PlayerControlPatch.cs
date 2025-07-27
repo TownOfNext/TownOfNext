@@ -756,7 +756,7 @@ class CoEnterVentPatch
                 if (!GameStates.IsMeeting)
                 {
                     playerPhysics.RpcBootFromVent(id);
-                    playerPhysics.myPlayer.walkingToVent = false;
+                    if (user.AmOwner) user.walkingToVent = false;
                 }
             }, 0.5f, "Cancel Vent");
         }

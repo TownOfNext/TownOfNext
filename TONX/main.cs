@@ -423,7 +423,6 @@ public enum TieMode
     All,
     Random
 }
-
 public enum OutfitType
 {
     NormalMode,

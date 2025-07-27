@@ -93,7 +93,6 @@ public static class GuesserHelper
             Utils.SendMessage(GetFormatString(), pc.PlayerId);
             return true;
         }
-
         if (operate == 2)
         {
             spam = true;
@@ -232,7 +231,6 @@ public static class GuesserHelper
                 error = GetString("GuessNull");
                 return false;
             }
-
             if (list.Count != 1)
             {
                 error = GetString("GuessMultipleColor");

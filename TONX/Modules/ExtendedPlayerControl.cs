@@ -39,7 +39,6 @@ static class ExtendedPlayerControl
         {
             PlayerState.GetByPlayerId(player.PlayerId).SetSubRole(role);
         }
-
         CustomRoleManager.CreateInstance(role, player);
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);

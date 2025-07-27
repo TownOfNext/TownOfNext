@@ -27,10 +27,8 @@ public class ModUpdater
         "file:///D:/Desktop/TONX/info.json",
         "file:///D:/Desktop/info.json",
 #else
-        "https://raw.githubusercontent.com/KARPED1EM/TownOfNext/TONX/info.json",
-        "https://cdn.jsdelivr.net/gh/KARPED1EM/TownOfNext/info.json",
-        "https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
-        "https://gitee.com/leeverz/TownOfNext/raw/TONX/info.json",
+        "https://raw.githubusercontent.com/TownOfNext/TownOfNext/TONX/info.json",
+        "https://cdn.jsdelivr.net/gh/TownOfNext/TownOfNext/info.json",
 #endif
     };
     private static IReadOnlyList<string> GetInfoFileUrlList()

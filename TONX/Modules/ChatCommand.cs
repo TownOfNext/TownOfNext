@@ -322,13 +322,11 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.ShowActiveRoles(playerId);
             return;
         }
-
         if (!GetRoleByInputName(input, out var role))
         {
             Utils.SendMessage(GetString("Message.DirectorModeCanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-
         if (!Options.EnableDirectorMode.GetBool())
         {
             Utils.SendMessage(string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableDirectorMode")));

@@ -113,10 +113,10 @@ public static class Utils
         switch (type)
         {
             case SystemTypes.Electrical:
-                {
-                    var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
-                    return SwitchSystem != null && SwitchSystem.IsActive;
-                }
+            {
+                var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
+                return SwitchSystem != null && SwitchSystem.IsActive;
+            }
             case SystemTypes.Reactor:
             {
                 if (mapId == 2) return false;
@@ -124,38 +124,37 @@ public static class Utils
                 return ReactorSystemType != null && ReactorSystemType.IsActive;
             }
             case SystemTypes.Laboratory:
-                {
-                    if (mapId != 2) return false;
-                    var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
-                    return ReactorSystemType != null && ReactorSystemType.IsActive;
-                }
+            {
+                if (mapId != 2) return false;
+                var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                return ReactorSystemType != null && ReactorSystemType.IsActive;
+            }
             case SystemTypes.LifeSupp:
-                {
-                    if (mapId is 2 or 4) return false;
-                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
-                    return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
-                }
+            {
+                if (mapId is 2 or 4) return false;
+                var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
+                return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
+            }
             case SystemTypes.Comms:
             {
                 if (mapId is 1 or 5)
-                    {
-                        var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
-                        return HqHudSystemType != null && HqHudSystemType.IsActive;
-                    }
-
+                {
+                    var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
+                    return HqHudSystemType != null && HqHudSystemType.IsActive;
+                }
                 var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
                 return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
             }
             case SystemTypes.HeliSabotage:
-                {
-                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
-                    return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
-                }
+            {
+                var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+            }
             case SystemTypes.MushroomMixupSabotage:
-                {
-                    var mushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
-                    return mushroomMixupSabotageSystem != null && mushroomMixupSabotageSystem.IsActive;
-                }
+            {
+                var mushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
+                return mushroomMixupSabotageSystem != null && mushroomMixupSabotageSystem.IsActive;
+            }
             default:
                 return false;
         }
@@ -181,7 +180,6 @@ public static class Utils
             }
             return;
         }
-
         opt.SetFloat(
             FloatOptionNames.ImpostorLightMod,
             opt.GetFloat(FloatOptionNames.CrewLightMod));
@@ -1237,7 +1235,6 @@ public static class Utils
         {
             return ChatSummary[id] ?? "";
         }
-
         builder.Append(Main.AllPlayerNames[id]);
         builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
         if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));

@@ -227,7 +227,6 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -235,7 +234,6 @@ class IntroCutscenePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-
         if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();

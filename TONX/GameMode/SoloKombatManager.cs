@@ -96,7 +96,6 @@ internal static class SoloKombatManager
         LastHurt = new();
         originalSpeed = new();
         BackCountdown = new();
-        TeleportToBlackRoom = new();
         KBScore = new();
         RoundTime = KB_GameTime.GetInt() + 8;
 
@@ -107,7 +106,6 @@ internal static class SoloKombatManager
             PlayerHPReco.TryAdd(pc.PlayerId, KB_RecoverPerSecond.GetFloat());
             PlayerATK.TryAdd(pc.PlayerId, KB_ATK.GetFloat());
             PlayerDF.TryAdd(pc.PlayerId, 0f);
-            TeleportToBlackRoom.TryAdd(pc.PlayerId, false);
             KBScore.TryAdd(pc.PlayerId, Options.EnableGM.GetBool() && pc.AmOwner ? -1 : 0);
             LastHurt.TryAdd(pc.PlayerId, Utils.GetTimeStamp());
         }
@@ -222,7 +220,8 @@ internal static class SoloKombatManager
     public static void OnPlayerAttack(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || Options.CurrentGameMode != CustomGameMode.SoloKombat) return;
-        if (!killer.SoloAlive() || !target.SoloAlive() || target.inVent) return;
+        if (!killer.SoloAlive() || !target.SoloAlive()) return;
+        if (target.inVent || target.walkingToVent || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return;
 
         var dmg = killer.ATK() - target.DF();
         PlayerHP[target.PlayerId] = Math.Max(0f, target.HP() - dmg);
@@ -248,7 +247,6 @@ internal static class SoloKombatManager
     public static void OnPlayerBack(PlayerControl pc)
     {
         BackCountdown.Remove(pc.PlayerId);
-        TeleportToBlackRoom[pc.PlayerId] = false;
         PlayerHP[pc.PlayerId] = pc.HPMAX();
         SendRPCSyncKBPlayer(pc.PlayerId);
 
@@ -294,16 +292,7 @@ internal static class SoloKombatManager
         originalSpeed.Remove(target.PlayerId);
         originalSpeed.Add(target.PlayerId, Main.AllPlayerSpeed[target.PlayerId]);
 
-        if (KB_BootVentWhenDead.GetBool())
-        {
-            new LateTask(() =>
-            {
-                if (target?.inVent ?? false) target?.MyPhysics?.ExitAllVents();
-                TeleportToBlackRoom[target.PlayerId] = true;
-                Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
-            }, 1.2f, "Ready to Teleport");
-        }
-        else Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
+        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
         Main.AllPlayerSpeed[target.PlayerId] = 0.3f;
         target.MarkDirtySettings();
 
@@ -351,7 +340,6 @@ internal static class SoloKombatManager
 
     private static Dictionary<byte, int> BackCountdown = new();
     private static Dictionary<byte, long> LastHurt = new();
-    private static Dictionary<byte, bool> TeleportToBlackRoom = new();
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class FixedUpdatePatch
@@ -368,7 +356,7 @@ internal static class SoloKombatManager
                     // 锁定死亡玩家在小黑屋
                     var pos = Utils.GetBlackRoomPS();
                     var dis = Vector2.Distance(pos, pc.GetTruePosition());
-                    if (dis > 1f && (TeleportToBlackRoom[pc.PlayerId] || !KB_BootVentWhenDead.GetBool())) Utils.TP(pc.NetTransform, pos);
+                    if (dis > 1f) Utils.TP(pc.NetTransform, pos);
                 }
 
                 if (LastFixedUpdate == Utils.GetTimeStamp()) return;

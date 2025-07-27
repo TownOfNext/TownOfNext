@@ -104,7 +104,6 @@ public sealed class Swooper : RoleBase, IImpostor
             NameNotifyManager.Notify(Player, GetString("SwooperInvisStateOut"));
             return false;
         }
-
         new LateTask(() =>
         {
             if (CanGoInvis())
