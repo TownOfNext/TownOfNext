@@ -501,6 +501,7 @@ MenuTitle.Advanced: "★ 高级设定"
 MenuTitle.Addon.Common: "◈ 通用附加"
 MenuTitle.Addon.Crew: "◇ 船员附加"
 MenuTitle.Addon.Imp: "◆ 内鬼附加"
+MenuTitle.GameMode: "▣ 游戏模式相关设定"
 
 # 游戏&系统选项 / System&Game Settings
 DisableMeeting: "禁用会议与报告尸体"
