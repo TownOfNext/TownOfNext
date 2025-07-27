@@ -45,6 +45,7 @@ public sealed class Psychic : RoleBase
     }
 
     private bool RedNameInited;
+    private List<byte> RedNames;
     private static void SetupOptionItem()
     {
         OptionRedNameNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.PsychicCanSeeNum, new(1, 15, 1), 3, false)
@@ -54,9 +55,15 @@ public sealed class Psychic : RoleBase
         OptionNBshowEvil = BooleanOptionItem.Create(RoleInfo, 13, OptionName.NBareRed, false, false);
         OptionNEshowEvil = BooleanOptionItem.Create(RoleInfo, 14, OptionName.NEareRed, true, false);
     }
-    public override void OnStartMeeting()
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (OptionFreshEachMeeting.GetBool() || !RedNameInited) GetRedNames();
+        NameColorManager.RemoveAll(Player.PlayerId);
+        RedNames.Do(id => NameColorManager.Add(Player.PlayerId, id, "#ff1919"));
+    }
+    public override void AfterMeetingTasks()
+    {
+        NameColorManager.RemoveAll(Player.PlayerId);
     }
     private void GetRedNames()
     {
@@ -79,8 +86,8 @@ public sealed class Psychic : RoleBase
         ENum = Math.Min(ENum, BadList.Count);
         BNum = Math.Min(BNum, AllList.Count);
 
-        List<byte> RedNames = new();
-        if (ENum < 1) goto EndOfSelect;
+        RedNames = new();
+        if (ENum < 1) return;
 
         for (int i = 0; i < ENum && BadList.Count >= 1; i++)
         {
@@ -95,13 +102,8 @@ public sealed class Psychic : RoleBase
             AllList.RemoveAll(RedNames.Contains);
         }
 
-    EndOfSelect:
-
         Logger.Info($"需要{OptionRedNameNum.GetInt()}个红名，其中需要{ENum}个邪恶。计算后显示红名{RedNames.Count}个", "Psychic");
         RedNames.Do(x => Logger.Info($"红名：{x}: {Main.AllPlayerNames[x]}", "Psychic"));
-
-        NameColorManager.RemoveAll(Player.PlayerId);
-        RedNames.Do(id => NameColorManager.Add(Player.PlayerId, id, "#ff1919"));
-
+        RedNameInited = true;
     }
 }
