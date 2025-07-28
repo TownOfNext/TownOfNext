@@ -38,43 +38,23 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2025.4.20"; // 16.0.5
+    public const string LowestSupportedVersion = "2025.4.15"; // 16.0.5
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "3.0.2";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
-    public static readonly bool ShowWebsiteButton = true;
+    public static readonly bool ShowWebsiteButton = false;
     public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
     public static readonly bool ShowQQButton = false;
     public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
     public static readonly bool ShowDiscordButton = false;
     public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
     public static readonly bool ShowGithubUrl = true;
-    public static readonly string GithubRepoUrl = "https://github.com/KARPED1EM/TownOfNext";
+    public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
     // ==========
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
-    public static Color UnityModColor
-    {
-        get
-        {
-            if (!_unityModColor.HasValue)
-            {
-                if (ColorUtility.TryParseHtmlString(ModColor, out var unityColor))
-                {
-                    _unityModColor = unityColor;
-                }
-                else
-                {
-                    // failure
-                    return Color.gray;
-                }
-            }
-            return _unityModColor.Value;
-        }
-    }
-    private static Color? _unityModColor;
     public static BepInEx.Logging.ManualLogSource Logger;
     public static bool hasArgumentException = false;
     public static string ExceptionMessage;

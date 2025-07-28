@@ -75,7 +75,7 @@ internal static class CustomRoleSelector
             else roleRateList.Add(role);
         }
 
-        void AssignRoles(List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
+        void SelectRoles(List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
         {
             readyCurrentTeamRoleNum = 0;
             if (lastReadyRoleNum >= optRoleNum) return;
@@ -92,12 +92,12 @@ internal static class CustomRoleSelector
             }
         }
 
-        AssignRoles(ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
-        AssignRoles(ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
-        AssignRoles(NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
-        AssignRoles(NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
-        AssignRoles(roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
-        AssignRoles(roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
+        SelectRoles(ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
+        SelectRoles(ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        SelectRoles(NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
+        SelectRoles(NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
+        SelectRoles(roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
+        SelectRoles(roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
 
         // 职业抽取结束
 

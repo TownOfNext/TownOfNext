@@ -153,13 +153,17 @@ public static class LobbyViewSettingsPanePatch
 
         return infoPanelOption;
     }
+    private static float _timer = 1f;
 
     [HarmonyPatch(nameof(LobbyViewSettingsPane.Update)), HarmonyPostfix]
     public static void Update_Postfix(LobbyViewSettingsPane __instance)
     {
         if ((int)__instance.currentTab < 3551) return;
 
-        var isOdd = true;
+        _timer += Time.deltaTime;
+        if (_timer < 0.1f) return;
+        _timer = 0f;
+
         var offset = 2f;
         var isFirst = true;
 
@@ -169,14 +173,14 @@ public static class LobbyViewSettingsPanePatch
             {
                 if (isFirst) isFirst = false;
                 var option = kvp.Value;
-                UpdateOption(ref isOdd, option, ref offset, option.GetString() + " x " + kvp.Key.GetCount());
+                UpdateOption(option, ref offset, option.GetString() + " x " + kvp.Key.GetCount());
             }
         }
         else
         {
             foreach (var option in OptionItem.AllOptions)
             {
-                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue; 
+                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;
                 if (option.IsText)
                 {
                     if (isFirst)
@@ -195,7 +199,7 @@ public static class LobbyViewSettingsPanePatch
                     continue;
                 }
                 if (isFirst) isFirst = false;
-                UpdateOption(ref isOdd, option, ref offset, option.GetString());
+                UpdateOption(option, ref offset, option.GetString());
             }
         }
         __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
@@ -214,7 +218,7 @@ public static class LobbyViewSettingsPanePatch
         }
     }
 
-    private static void UpdateOption(ref bool isOdd, OptionItem option, ref float offset, string settingText)
+    private static void UpdateOption(OptionItem option, ref float offset, string settingText)
     {
         if (option?.ViewOptionBehaviour == null || option.ViewOptionBehaviour.gameObject == null) return;
 
@@ -234,7 +238,7 @@ public static class LobbyViewSettingsPanePatch
         
         if (enabled)
         {
-            infoPanelOption.labelBackground.color = option is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
+            infoPanelOption.labelBackground.color = option is IRoleOptionItem roleOption ? roleOption.RoleColor : Color.white;
             infoPanelOption.titleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
             infoPanelOption.settingText.text = settingText;
 
@@ -247,8 +251,6 @@ public static class LobbyViewSettingsPanePatch
                 LobbyViewSettingsPane.START_POS_X + 2f,
                 offset,
                 -2f);
-
-            isOdd = !isOdd;
         }
     }
     private const float HeaderSpacingY = 0.2f;

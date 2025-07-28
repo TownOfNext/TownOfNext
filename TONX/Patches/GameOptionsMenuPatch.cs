@@ -231,7 +231,6 @@ public class GameOptionsMenuUpdatePatch
             _timer = 0f;
 
             var offset = 2.4f;
-            var isOdd = true;
             var isFirst = true;
 
             foreach (var option in OptionItem.AllOptions)
@@ -255,7 +254,7 @@ public class GameOptionsMenuUpdatePatch
                     continue;
                 }
                 if (isFirst) isFirst = false;
-                UpdateOption(ref isOdd, option, ref offset);
+                UpdateOption(option, ref offset);
             }
 
             __instance.scrollBar.ContentYBounds.max = (-offset) - 1.5f;
@@ -272,7 +271,7 @@ public class GameOptionsMenuUpdatePatch
             categoryHeader.transform.localPosition = new(GameOptionsMenu.HEADER_X, offset, -2f);
         }
     }
-    private static void UpdateOption(ref bool isOdd, OptionItem item, ref float offset)
+    private static void UpdateOption(OptionItem item, ref float offset)
     {
         if (item?.OptionBehaviour == null || item.OptionBehaviour.gameObject == null) return;
 
@@ -293,7 +292,7 @@ public class GameOptionsMenuUpdatePatch
         if (enabled)
         {
             // 交替改变颜色以方便查看
-            stringOption.LabelBackground.color = item is IRoleOptionItem roleOption ? roleOption.RoleColor : (isOdd ? Color.cyan : Color.white);
+            stringOption.LabelBackground.color = item is IRoleOptionItem roleOption ? roleOption.RoleColor : Color.white;
 
             offset -= GameOptionsMenu.SPACING_Y;
             if (item.IsHeader)
@@ -305,8 +304,6 @@ public class GameOptionsMenuUpdatePatch
                 GameOptionsMenu.START_POS_X,
                 offset,
                 -2f);
-
-            isOdd = !isOdd;
         }
     }
 
