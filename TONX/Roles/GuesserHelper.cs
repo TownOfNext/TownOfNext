@@ -313,7 +313,8 @@ public static class GuesserHelper
             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
             Transform container = UnityEngine.Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
-            container.gameObject.AddComponent<TransitionOpen>();
+            var to = container.gameObject.AddComponent<TransitionOpen>();
+            to.targetSize = 0.75f;
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
 
@@ -524,7 +525,6 @@ public static class GuesserHelper
                 i[(int)role.GetCustomRoleTypes()]++;
                 ind++;
             }
-            container.transform.localScale *= 0.75f;
             GuesserSelectRole(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessImp.GetBool() ?
                 CustomRoleTypes.Crewmate : CustomRoleTypes.Impostor);
             ReloadPage();
