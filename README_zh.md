@@ -10,9 +10,8 @@
 
   <h1>:fire: 公告 :fire:</h1>
   <p>TOHE 项目已于2023年5月20日停止开发，最终版本为 <a href="https://github.com/KARPED1EM/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>。</p>
-  <p>为了延续 TOHE 的香火并为其他分支项目提供基础，我们基于新的 TOH 基础重建了项目并将其更名为 TONX。但由于资源有限，TONX 在发布 <a href="https://github.com/KARPED1EM/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> 版本后也已停止开发。</p>
-  <p>虽然项目仍保持开源，但已停止主动维护。我们可能会审查并接受某些以兼容性为重点的拉取请求，但仅确保其安全性。</p>
-  <p>我们很抱歉无法为超出官方维护范围的版本提供发布包。如果您需要，请考虑联系PR提交者或自行编译代码。</p>
+  <p>为了延续 TOHE 的香火并为其他分支项目提供基础，我们基于新的 TOH 基础重建了项目并将其更名为 TONX。但由于资源有限，TONX 官方版本在发布 <a href="https://github.com/KARPED1EM/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> 版本后也已停止开发。</p>
+  <p>我们可能会继续提供部分非官方版本，并可能会审查和接受某些以兼容性为重点的拉取请求，但仅确保其安全性。</p>
 
   </br></br>
 
