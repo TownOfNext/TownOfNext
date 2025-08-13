@@ -635,6 +635,7 @@ public enum CustomRoles
     Terrorist,
     Executioner,
     Jackal,
+    Sidekick,
     Innocent, 
     Pelican,
     Revolutionist, 
