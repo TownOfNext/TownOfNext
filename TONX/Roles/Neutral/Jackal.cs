@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System.Linq;
+using UnityEngine;
 
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
@@ -95,19 +96,23 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
         if (!OptionCanRecruitSidekick.GetBool() || HasRecruited) return true;
         target.ChangeRole(CustomRoles.Sidekick);
-        Logger.Info($"豺狼{killer.GetNameWithRole()}招募了{target.GetNameWithRole()}", "Jackal");
+        Logger.Info($"豺狼{killer?.Data?.PlayerName}招募了{target?.Data?.PlayerName}", "Jackal");
+        HasRecruited = true;
         Utils.NotifyRoles();
         return false;
     }
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
     {
         if (!OptionSidekickCanBecomeJackal.GetBool()) return;
-        foreach (var sidekick in Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick)))
+        new LateTask(() =>
         {
-            sidekick.ChangeRole(CustomRoles.Jackal);
-            Logger.Info($"跟班{sidekick.GetNameWithRole()}上位", "Jackal");
-        }
-        Utils.NotifyRoles();
+            foreach (var sidekick in Main.AllPlayerControls.Where(p => p.IsAlive() && p.Is(CustomRoles.Sidekick)).ToList())
+            {
+                sidekick.ChangeRole(CustomRoles.Jackal);
+                Logger.Info($"跟班{sidekick?.Data?.PlayerName}上位", "Jackal");
+            }
+            Utils.NotifyRoles();
+        }, 0.2f, "Sidekick become Jackal");
     }
     public static void OnMurderPlayerOthers(MurderInfo info)
     {
@@ -119,4 +124,10 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             pc.Notify(Translator.GetString("JackalResetKillCooldown"));
         }
     }
+    public bool OverrideKillButtonText(out string text)
+    {
+        text = Translator.GetString("JackalButtonText");
+        return !HasRecruited;
+    }
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(HasRecruited ? Color.gray : Color.yellow, HasRecruited ? "(0)" : "(1)");
 }

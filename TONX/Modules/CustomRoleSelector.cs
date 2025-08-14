@@ -84,8 +84,8 @@ internal static class CustomRoleSelector
                 if (readyRoleNum >= playerCount) return;
                 var select = currentRoleList[rd.Next(0, currentRoleList.Count)];
                 currentRoleList.Remove(select);
-                rolesToAssign.Add(select);
-                readyRoleNum++;
+                for (int i = 0; i < select.GetAssignCount(); i++) rolesToAssign.Add(select);
+                readyRoleNum += select.GetAssignCount();
                 readyCurrentTeamRoleNum += select.GetAssignCount();
                 Logger.Info(select.ToString() + $" 加入{(select.IsImpostor() ? "内鬼" : select.IsNeutral() ? "中立" : "船员")}职业待选列表", "CustomRoleSelector");
                 if (readyCurrentTeamRoleNum >= optRoleNum) return;

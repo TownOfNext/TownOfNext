@@ -16,7 +16,7 @@ public sealed class Sidekick : RoleBase, IKiller
             CustomRoleTypes.Neutral,
             51800,
             null,
-            "sd|跟班",
+            "sk|跟班",
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
@@ -37,7 +37,6 @@ public sealed class Sidekick : RoleBase, IKiller
     public static bool CanUseSabotage;
     private static bool HasImpostorVision;
 
-    public float CalculateKillCooldown() => 255f;
     public bool CanUseSabotageButton() => CanUseSabotage;
     public bool CanUseImpostorVentButton() => CanVent;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision);

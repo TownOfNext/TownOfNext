@@ -11,7 +11,6 @@ using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
-using static TONX.MeetingHudPatch;
 
 namespace TONX.Roles.Core;
 
