@@ -16,6 +16,8 @@ public class CreditsControllerPatch
 
                 $"KARPED1EM - {GetString("Creater")}",
                 $"SHAAARKY - {GetString("Collaborators")}",
+                $"Slok7565 - {GetString("Collaborators")}",
+                $"Mousse - {GetString("Collaborators")}",
 
                 $"IRIDESCENT - {GetString("Art")}",
                 $"Endrmen40409 - {GetString("Art")}",
@@ -25,8 +27,6 @@ public class CreditsControllerPatch
                 $"天寸梦初 - {GetString("PullRequester")}",
                 $"喜 - {GetString("PullRequester")}",
                 $"Tommy-XL - {GetString("PullRequester")}",
-                $"Slok7565 - {GetString("PullRequester")}",
-                $"Mousse - {GetString("PullRequester")}",
 
                 $"Commandf1 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
@@ -101,19 +101,19 @@ public class CreditsControllerPatch
 
         AddTitleToCredits(Utils.ColorString(Main.ModColor32, Main.ModName));
         AddPersonToCredits(devList);
-        AddSpcaeToCredits();
+        AddSpaceToCredits();
 
         AddTitleToCredits(GetString("Translator"));
         AddPersonToCredits(translatorList);
-        AddSpcaeToCredits();
+        AddSpaceToCredits();
 
         AddTitleToCredits(GetString("Acknowledgement"));
         AddPersonToCredits(acList);
-        AddSpcaeToCredits();
+        AddSpaceToCredits();
 
         return credits;
 
-        void AddSpcaeToCredits()
+        void AddSpaceToCredits()
         {
             AddTitleToCredits(string.Empty);
         }

@@ -213,13 +213,6 @@ internal class SelectRolesPatch
                 state.SetMainRole(role);
             }
 
-            // 个人竞技模式用
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
-            {
-                foreach (var pair in PlayerState.AllPlayerStates) ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-                goto EndOfSelectRolePatch;
-            }
-
             foreach (var (player, role) in RoleResult.Where(kvp => !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
             {
                 SetColorPatch.IsAntiGlitchDisabled = true;
@@ -228,6 +221,13 @@ internal class SelectRolesPatch
                 Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignCustomRoles");
 
                 SetColorPatch.IsAntiGlitchDisabled = false;
+            }
+
+            // 个人竞技模式用
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+            {
+                foreach (var pair in PlayerState.AllPlayerStates) ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                goto EndOfSelectRolePatch;
             }
 
             foreach (var pair in PlayerState.AllPlayerStates)
@@ -347,7 +347,7 @@ internal class SelectRolesPatch
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.PlayerId == player.PlayerId) continue; // 暂时不对玩家自己注册职业
-            if (seer.PlayerId == hostId) player.SetRole(hostRole, false); // 确定房主视角职业显示
+            if (seer.PlayerId == hostId) player.SetRole(hostRole, true); // 确定房主视角职业显示
             else senders[seer.PlayerId].RpcSetRole(player, RoleTypes.Scientist, seer.GetClientId());
         }
         player.Data.IsDead = true;
@@ -416,9 +416,9 @@ internal class SelectRolesPatch
             {
                 foreach (var seer in Main.AllPlayerControls)
                 {
-                    if (seer.PlayerId == player.PlayerId) continue; // 暂时不对玩家自己注册职业且跳过房主视角
+                    if (seer.PlayerId == player.PlayerId) continue; // 暂时不对玩家自己注册职业
                     var assignRole = DesyncImpostorList.Contains(seer.PlayerId) ? RoleTypes.Scientist : role;
-                    if (seer.PlayerId == 0) player.SetRole(role, false); // 确定房主视角职业显示
+                    if (seer.PlayerId == 0) player.SetRole(role, true); // 确定房主视角职业显示
                     else senders[seer.PlayerId].RpcSetRole(player, assignRole, seer.GetClientId());
                 }
             }

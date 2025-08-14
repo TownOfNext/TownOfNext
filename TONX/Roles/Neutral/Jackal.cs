@@ -36,6 +36,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         HasImpostorVision = OptionHasImpostorVision.GetBool();
         ResetKillCooldown = OptionResetKillCooldownWhenSbGetKilled.GetBool();
 
+        HasRecruited = false;
         CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
     }
 
@@ -45,10 +46,17 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public static OptionItem OptionCanWinBySabotageWhenNoImpAlive;
     private static OptionItem OptionHasImpostorVision;
     private static OptionItem OptionResetKillCooldownWhenSbGetKilled;
+    public static OptionItem OptionCanRecruitSidekick;
+    public static OptionItem OptionSidekickCanVent;
+    public static OptionItem OptionSidekickCanUseSabotage;
+    public static OptionItem OptionSidekickHasImpostorVision;
+    public static OptionItem OptionSidekickCanBecomeJackal;
     enum OptionName
     {
         JackalCanWinBySabotageWhenNoImpAlive,
         ResetKillCooldownWhenPlayerGetKilled,
+        JackalCanRecruitSidekick,
+        SidekickCanBecomeJackal,
     }
     private static float KillCooldown;
     public static bool CanVent;
@@ -56,6 +64,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool WinBySabotage;
     private static bool HasImpostorVision;
     private static bool ResetKillCooldown;
+    public bool HasRecruited;
 
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
 
@@ -68,12 +77,38 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         OptionCanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(RoleInfo, 14, OptionName.JackalCanWinBySabotageWhenNoImpAlive, true, false, OptionCanUseSabotage);
         OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.ImpostorVision, true, false);
         OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(RoleInfo, 15, OptionName.ResetKillCooldownWhenPlayerGetKilled, true, false);
+        OptionCanRecruitSidekick = BooleanOptionItem.Create(RoleInfo, 16, OptionName.JackalCanRecruitSidekick, true, false);
+        OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 17, GeneralOption.CanVent, true, false, OptionCanRecruitSidekick);
+        OptionSidekickCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 18, GeneralOption.CanUseSabotage, true, false, OptionCanRecruitSidekick);
+        OptionSidekickHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 19, GeneralOption.ImpostorVision, true, false, OptionCanRecruitSidekick);
+        OptionSidekickCanBecomeJackal = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanBecomeJackal, true, false, OptionCanRecruitSidekick);
     }
     public float CalculateKillCooldown() => KillCooldown;
     public bool CanUseSabotageButton() => CanUseSabotage;
     public bool CanUseImpostorVentButton() => CanVent;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision);
     public void ApplySchrodingerCatOptions(IGameOptions option) => ApplyGameOptions(option);
+    public bool OnCheckMurderAsKiller(MurderInfo info)
+    {
+        var killer = info.AttemptKiller;
+        var target = info.AttemptTarget;
+        if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
+        if (!OptionCanRecruitSidekick.GetBool() || HasRecruited) return true;
+        target.ChangeRole(CustomRoles.Sidekick);
+        Logger.Info($"豺狼{killer.GetNameWithRole()}招募了{target.GetNameWithRole()}", "Jackal");
+        Utils.NotifyRoles();
+        return false;
+    }
+    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
+    {
+        if (!OptionSidekickCanBecomeJackal.GetBool()) return;
+        foreach (var sidekick in Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick)))
+        {
+            sidekick.ChangeRole(CustomRoles.Jackal);
+            Logger.Info($"跟班{sidekick.GetNameWithRole()}上位", "Jackal");
+        }
+        Utils.NotifyRoles();
+    }
     public static void OnMurderPlayerOthers(MurderInfo info)
     {
         if (!ResetKillCooldown || info.IsSuicide || info.IsAccident) return;

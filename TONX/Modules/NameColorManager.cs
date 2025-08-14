@@ -44,6 +44,12 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Charmed];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];
 
+        // 豺狼阵营
+        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Sidekick)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+
         if (!string.IsNullOrEmpty(color)) return true;
         return seer == target 
            || (Main.GodMode.Value && seer.AmOwner) 
