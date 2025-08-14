@@ -35,7 +35,6 @@ public sealed class Sidekick : RoleBase, IKiller
     }
     public static bool CanVent;
     public static bool CanUseSabotage;
-    public static bool WinBySabotage;
     private static bool HasImpostorVision;
 
     public float CalculateKillCooldown() => 255f;

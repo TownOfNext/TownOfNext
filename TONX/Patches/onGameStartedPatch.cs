@@ -315,10 +315,15 @@ internal class SelectRolesPatch
             AmongUsClient.Instance.SendAllStreamedObjects();
         }
         Logger.Info("Set Disconnected", "SelectRolesPatch");
-        foreach (var (player, role) in RoleResult)
+        foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
             if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? role is CustomRoles.KB_Normal)) player.SetRole(RoleTypes.Crewmate, true);
             else player.RpcSetRoleDesync(role.GetRoleTypes(), player.GetClientId());
+        }
+        foreach (var player in Main.AllPlayerControls.Where(p => !RoleResult.ContainsKey(p))) // 给GM或未被分配到职业的玩家注册职业
+        {
+            if (player.PlayerId == 0) player.SetRole(RoleTypes.Crewmate, true);
+            else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
         Logger.Info("Assign Self", "SelectRolesPatch");
         foreach (var pc in Main.AllPlayerControls)
