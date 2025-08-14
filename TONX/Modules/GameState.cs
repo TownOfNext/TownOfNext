@@ -113,6 +113,10 @@ public class PlayerState
         if (SubRoles.Contains(role))
             SubRoles.Remove(role);
     }
+    public void RemoveAllSubRoles()
+    {
+        SubRoles.Clear();
+    }
 
     public void SetDead()
     {
