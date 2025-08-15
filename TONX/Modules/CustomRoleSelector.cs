@@ -63,19 +63,19 @@ internal static class CustomRoleSelector
         // 职业设置为：优先
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2).Concat(roleList.Where(x => x.IsVanilla())))
         {
-            if (role.IsImpostor()) ImpOnList.Add(role);
-            else if (role.IsNeutral()) NeutralOnList.Add(role);
-            else roleOnList.Add(role);
+            if (role.IsImpostor()) for (int i = 0; i < role.GetAssignCount(); i++) ImpOnList.Add(role);
+            else if (role.IsNeutral()) for (int i = 0; i < role.GetAssignCount(); i++) NeutralOnList.Add(role);
+            else for (int i = 0; i < role.GetAssignCount(); i++) roleOnList.Add(role);
         }
         // 职业设置为：启用
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 1))
         {
-            if (role.IsImpostor()) ImpRateList.Add(role);
-            else if (role.IsNeutral()) NeutralRateList.Add(role);
-            else roleRateList.Add(role);
+            if (role.IsImpostor()) for (int i = 0; i < role.GetAssignCount(); i++) ImpRateList.Add(role);
+            else if (role.IsNeutral()) for (int i = 0; i < role.GetAssignCount(); i++) NeutralRateList.Add(role);
+            else for (int i = 0; i < role.GetAssignCount(); i++) roleRateList.Add(role);
         }
 
-        void SelectRoles(List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
+        void SelectRoles(string team, List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
         {
             readyCurrentTeamRoleNum = 0;
             if (lastReadyRoleNum >= optRoleNum) return;
@@ -84,20 +84,20 @@ internal static class CustomRoleSelector
                 if (readyRoleNum >= playerCount) return;
                 var select = currentRoleList[rd.Next(0, currentRoleList.Count)];
                 currentRoleList.Remove(select);
-                for (int i = 0; i < select.GetAssignCount(); i++) rolesToAssign.Add(select);
-                readyRoleNum += select.GetAssignCount();
-                readyCurrentTeamRoleNum += select.GetAssignCount();
-                Logger.Info(select.ToString() + $" 加入{(select.IsImpostor() ? "内鬼" : select.IsNeutral() ? "中立" : "船员")}职业待选列表", "CustomRoleSelector");
+                rolesToAssign.Add(select);
+                readyRoleNum ++;
+                readyCurrentTeamRoleNum ++;
+                Logger.Info(select.ToString() + $" 加入{team}职业待选列表", "CustomRoleSelector");
                 if (readyCurrentTeamRoleNum >= optRoleNum) return;
             }
         }
 
-        SelectRoles(ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
-        SelectRoles(ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
-        SelectRoles(NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
-        SelectRoles(NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
-        SelectRoles(roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
-        SelectRoles(roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
+        SelectRoles("内鬼(优先)", ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
+        SelectRoles("内鬼(启用)", ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        SelectRoles("中立(优先)", NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
+        SelectRoles("中立(启用)", NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
+        SelectRoles("船员(优先)", roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
+        SelectRoles("船员(启用)", roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
 
         // 职业抽取结束
 

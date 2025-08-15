@@ -2,10 +2,8 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns;
@@ -293,20 +291,19 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            // 给玩家自己注册职业
+            AssignForSelf();
         }
         catch (Exception ex)
         {
             Utils.ErrorEnd("Select Role Postfix");
             ex.Message.Split(@"\r\n").Do(line => Logger.Fatal(line, "Select Role Postfix"));
         }
-
-        // 结束职业分配
-        AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp());
     }
-    private static IEnumerator CoEndAssign()
+    private static void AssignForSelf()
     {
         Dictionary<byte, bool> realDisconnectInfo = new();
-        Logger.Info("Assign Others", "SelectRolesPatch");
         foreach (var pc in Main.AllPlayerControls)
         {
             realDisconnectInfo[pc.PlayerId] = pc.Data.Disconnected;
@@ -315,19 +312,16 @@ internal class SelectRolesPatch
             AmongUsClient.Instance.SendAllStreamedObjects();
         }
         Logger.Info("Set Disconnected", "SelectRolesPatch");
-        List<byte> AssignedPlayers = new();
         foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
-            AssignedPlayers.Add(player.PlayerId);
             if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? role is CustomRoles.KB_Normal)) player.SetRole(RoleTypes.Crewmate, true);
             else player.RpcSetRoleDesync(role.GetRoleTypes(), player.GetClientId());
         }
-        foreach (var player in Main.AllPlayerControls.Where(p => !AssignedPlayers.Contains(p.PlayerId)).ToList()) // 给GM或未被分配到职业的玩家注册职业
+        foreach (var player in Main.AllPlayerControls.Where(p => !RoleResult.Select(r => r.Key.PlayerId).ToList().Contains(p.PlayerId)).ToList()) // 给GM或未被分配到职业的玩家注册职业
         {
             if (player.PlayerId == 0) player.SetRole(RoleTypes.Crewmate, true);
             else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
-        AssignedPlayers.Clear();
         Logger.Info("Assign Self", "SelectRolesPatch");
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -340,7 +334,6 @@ internal class SelectRolesPatch
             }
         }
         Logger.Info("Recover Disconnect Data", "SelectRolesPatch");
-        yield break;
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
     {

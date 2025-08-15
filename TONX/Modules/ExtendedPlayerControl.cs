@@ -35,7 +35,7 @@ static class ExtendedPlayerControl
             player.GetRoleClass()?.Dispose();
             PlayerState.GetByPlayerId(player.PlayerId).SetMainRole(role);
         }
-        else //500:NoSubRole 501~:SubRole
+        else // 500:NoSubRole 501~:SubRole
         {
             PlayerState.GetByPlayerId(player.PlayerId).SetSubRole(role);
         }
@@ -57,32 +57,21 @@ static class ExtendedPlayerControl
     }
     public static void ChangeRole(this PlayerControl player, CustomRoles newRole)
     {
-        if (player == null) return;
-        player.GetRoleClass()?.Dispose();
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player == null || player.Is(newRole)) return;
+
         RoleTypes NewRoleType = newRole.GetRoleTypes();
         bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? newRole is CustomRoles.KB_Normal;
-        if (NewIsDesync) // 重新注册反向职业
+        foreach (var seer in Main.AllPlayerControls)
         {
-            foreach (var seer in Main.AllPlayerControls)
-            {
-                if (seer.PlayerId == 0) player.SetRole(RoleTypes.Crewmate, true); // 确定房主视角职业显示
-                else if (seer.PlayerId == player.PlayerId) player.RpcSetRoleDesync(NewRoleType, player.GetClientId());
-                else player.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
-            }
-        }
-        else // 重新注册正常职业
-        {
-            foreach (var seer in Main.AllPlayerControls)
-            {
-                if (seer.PlayerId == 0) player.SetRole(NewRoleType, true); // 确定房主视角职业显示
-                else if (seer.PlayerId == player.PlayerId) player.RpcSetRoleDesync(NewRoleType, player.GetClientId());
-                else player.RpcSetRoleDesync(seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? seer.GetCustomRole() is CustomRoles.KB_Normal ? RoleTypes.Scientist : NewRoleType, seer.GetClientId());
-            }
+            if (seer.PlayerId == 0) player.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
+            else if (seer.PlayerId == player.PlayerId) player.RpcSetRoleDesync(NewRoleType, player.GetClientId());
+            else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? seer.GetCustomRole() is CustomRoles.KB_Normal) ?
+                RoleTypes.Scientist : NewRoleType, seer.GetClientId());
         }
         Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
-        PlayerState.GetByPlayerId(player.PlayerId).SetMainRole(newRole);
-        RpcSetCustomRole(player, newRole);
-        CustomRoleManager.CreateInstance(newRole, player);
+
+        player.RpcSetCustomRole(newRole);
         player.ResetKillCooldown();
         player.GetPlayerTaskState().hasTasks = Utils.HasTasks(player.Data, false);
     }
