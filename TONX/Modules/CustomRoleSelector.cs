@@ -85,8 +85,8 @@ internal static class CustomRoleSelector
                 var select = currentRoleList[rd.Next(0, currentRoleList.Count)];
                 currentRoleList.Remove(select);
                 rolesToAssign.Add(select);
-                readyRoleNum ++;
-                readyCurrentTeamRoleNum ++;
+                readyRoleNum++;
+                readyCurrentTeamRoleNum++;
                 Logger.Info(select.ToString() + $" 加入{team}职业待选列表", "CustomRoleSelector");
                 if (readyCurrentTeamRoleNum >= optRoleNum) return;
             }
