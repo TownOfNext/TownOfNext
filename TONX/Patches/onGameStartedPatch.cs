@@ -1,7 +1,9 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using Hazel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Attributes;
@@ -293,7 +295,7 @@ internal class SelectRolesPatch
             SetColorPatch.IsAntiGlitchDisabled = false;
 
             // 给玩家自己注册职业
-            AssignForSelf();
+            AmongUsClient.Instance.StartCoroutine(CoAssignForSelf().WrapToIl2Cpp());
         }
         catch (Exception ex)
         {
@@ -301,7 +303,7 @@ internal class SelectRolesPatch
             ex.Message.Split(@"\r\n").Do(line => Logger.Fatal(line, "Select Role Postfix"));
         }
     }
-    private static void AssignForSelf()
+    private static IEnumerator CoAssignForSelf()
     {
         Dictionary<byte, bool> realDisconnectInfo = new();
         foreach (var pc in Main.AllPlayerControls)
@@ -334,6 +336,7 @@ internal class SelectRolesPatch
             }
         }
         Logger.Info("Recover Disconnect Data", "SelectRolesPatch");
+        yield break;
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
     {
