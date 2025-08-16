@@ -152,5 +152,5 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         text = Translator.GetString("JackalButtonText");
         return LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
 }

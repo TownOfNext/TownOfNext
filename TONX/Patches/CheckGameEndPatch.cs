@@ -71,6 +71,11 @@ class GameEndChecker
                         .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
+                case CustomWinner.Jackal:
+                    Main.AllPlayerControls
+                        .Where(pc => (pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Sidekick)) && !pc.Is(CustomRoles.Charmed))
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    break;
                 case CustomWinner.Succubus:
                     Main.AllPlayerControls
                         .Where(pc => pc.Is(CustomRoles.Succubus) || pc.Is(CustomRoles.Charmed))
@@ -260,7 +265,6 @@ class GameEndChecker
             {
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
-                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
             }
             else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
             {
