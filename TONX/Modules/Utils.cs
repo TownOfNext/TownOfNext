@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using TONX.GameModes;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
@@ -551,27 +552,23 @@ public static class Utils
 
         return enabled ? text : "";
     }
+
     private static string GetProgressText(byte playerId, bool comms = false)
     {
         var ProgressText = new StringBuilder();
         var State = PlayerState.GetByPlayerId(playerId);
         var role = State.MainRole;
-        if (GetPlayerById(playerId).GetCustomRole() == CustomRoles.KB_Normal)
-        {
-            ProgressText.Append(SoloKombatManager.GetDisplayScore(playerId));
-        }
-        else
-        {
-            var roleClass = CustomRoleManager.GetByPlayerId(playerId);
-            ProgressText.Append(GetTaskProgressText(playerId, comms));
-            if (roleClass != null)
-            {
-                ProgressText.Append(roleClass.GetProgressText(comms));
-            }
 
-            //SubRoles
-            ProgressText.Append(TicketsStealer.GetProgressText(playerId, comms));
+        var roleClass = CustomRoleManager.GetByPlayerId(playerId);
+        ProgressText.Append(GetTaskProgressText(playerId, comms));
+        if (roleClass != null)
+        {
+            ProgressText.Append(roleClass.GetProgressText(comms));
         }
+
+        //SubRoles
+        ProgressText.Append(TicketsStealer.GetProgressText(playerId, comms));
+
         return ProgressText.ToString();
     }
     public static string GetTaskProgressText(byte playerId, bool comms = false)
@@ -982,8 +979,6 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
                 //KB自身名字后缀
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && seer.GetCustomRole() == CustomRoles.KB_Normal)
-                    SelfSuffix.Append(SoloKombatManager.GetDisplayHealth(seer));
 
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isForMeeting);
@@ -1002,12 +997,7 @@ public static class Utils
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && seer.GetCustomRole() == CustomRoles.KB_Normal)
-                {
-                    SoloKombatManager.GetNameNotify(seer, ref SelfName);
-                    SelfName = $"<size={fontSize}>{text}</size>\r\n{SelfName}";
-                }
-                else SelfName = SelfRoleName + "\r\n" + SelfName;
+                SelfName = SelfRoleName + "\r\n" + SelfName;
                 SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix.ToString();
                 if (!isForMeeting) SelfName += "\r\n";
 
@@ -1070,10 +1060,6 @@ public static class Utils
                     TargetSuffix.Append(seerRole?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                     //seerに関わらず発動するSuffix
                     TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
-
-                    //KB目标玩家名字后缀
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        TargetSuffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                     // 空でなければ先頭に改行を挿入
                     if (TargetSuffix.Length > 0)

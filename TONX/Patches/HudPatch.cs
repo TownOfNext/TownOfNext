@@ -9,6 +9,8 @@ using UnityEngine;
 using TONX.Modules;
 using static TONX.Translator;
 using System;
+using TONX.GameModes;
+using TONX.Roles.GameMode;
 
 namespace TONX;
 
@@ -126,8 +128,7 @@ class HudManagerPatch
                     LowerInfoText.fontSizeMin = 2.0f;
                     LowerInfoText.fontSizeMax = 2.0f;
                 }
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat) LowerInfoText.text = SoloKombatManager.GetHudText();
-                else LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+                LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
                 LowerInfoText.enabled = LowerInfoText.text != "";
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
@@ -334,17 +335,18 @@ class TaskPanelBehaviourPatch
                     var lpc = PlayerControl.LocalPlayer;
 
                     AllText += "\r\n";
-                    AllText += $"\r\n{GetString("PVP.ATK")}: {lpc.ATK()}";
-                    AllText += $"\r\n{GetString("PVP.DF")}: {lpc.DF()}";
-                    AllText += $"\r\n{GetString("PVP.RCO")}: {lpc.HPRECO()}";
+                    AllText += $"\r\n{GetString("PVP.ATK")}: {(lpc.GetRoleClass() as KB_Normal)?.ATK}";
+                    AllText += $"\r\n{GetString("PVP.DF")}: {(lpc.GetRoleClass() as KB_Normal)?.DF}";
+                    AllText += $"\r\n{GetString("PVP.RCO")}: {(lpc.GetRoleClass() as KB_Normal)?.HPReco}";
                     AllText += "\r\n";
 
                     Dictionary<byte, string> SummaryText = new();
                     foreach (var id in PlayerState.AllPlayerStates.Keys)
                     {
                         string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-                        string summary = $"{SoloKombatManager.GetDisplayScore(id)}  {Utils.ColorString(Main.PlayerColors[id], name)}";
-                        if (SoloKombatManager.GetDisplayScore(id).Trim() == "") continue;
+                        var score = (Utils.GetPlayerById(id).GetRoleClass() as KB_Normal)?.Score;
+                        string summary = $"{score}  {Utils.ColorString(Main.PlayerColors[id], name)}";
+                        if (score.ToString().Trim() == "") continue;
                         SummaryText[id] = summary;
                     }
 

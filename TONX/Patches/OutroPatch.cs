@@ -108,7 +108,7 @@ class SetEverythingUpPatch
         var AdditionalWinnerText = new StringBuilder(32);
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
-        if (Options.CurrentGameMode == CustomGameMode.SoloKombat && CustomWinnerHolder.WinnerTeam is not CustomWinner.Error and not CustomWinner.None and not CustomWinner.Draw)
+        if (Options.CurrentGameMode is CustomGameMode.SoloKombat && CustomWinnerHolder.WinnerTeam is not CustomWinner.Error and not CustomWinner.None and not CustomWinner.Draw)
         {
             var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
             __instance.WinText.text = Main.AllPlayerNames[winnerId] + GetString("Win");

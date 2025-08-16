@@ -178,7 +178,7 @@ internal class SelectRolesPatch
             foreach (var sd in RpcSetRoleReplacer.StoragedData)
             {
                 var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
-                if (kp.Value == CustomRoles.KB_Normal || kp.Value.GetRoleInfo().IsDesyncImpostor || kp.Value == CustomRoles.CrewPostor)
+                if (kp.Value.GetRoleInfo().IsDesyncImpostor || kp.Value == CustomRoles.CrewPostor)
                 {
                     Logger.Warn($"反向原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
                     continue;
@@ -218,7 +218,11 @@ internal class SelectRolesPatch
             // 个人竞技模式用
             if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
             {
-                foreach (var pair in PlayerState.AllPlayerStates) ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                foreach (var pair in PlayerState.AllPlayerStates)
+                {
+                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                }
+                CustomRoleManager.CreateInstance();
                 goto EndOfSelectRolePatch;
             }
 

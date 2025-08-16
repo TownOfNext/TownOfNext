@@ -36,9 +36,9 @@ class ChanceChangePatch
 [HarmonyPatch(typeof(GameOptionsManager), nameof(GameOptionsManager.SwitchGameMode))]
 class SwitchGameModePatch
 {
-    public static void Postfix(GameModes gameMode)
+    public static void Postfix(AmongUs.GameOptions.GameModes gameMode)
     {
-        if (gameMode == GameModes.HideNSeek)
+        if (gameMode == AmongUs.GameOptions.GameModes.HideNSeek)
         {
             ErrorText.Instance.HnSFlag = true;
             ErrorText.Instance.AddError(ErrorCode.HnsUnload);

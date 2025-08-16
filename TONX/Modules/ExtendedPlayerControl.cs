@@ -398,7 +398,6 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.IsEaten()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
-        if (pc.GetCustomRole() == CustomRoles.KB_Normal) roleCanUse = pc.SoloAlive();
 
         return roleCanUse ?? pc.Is(CustomRoleTypes.Impostor);
     }
