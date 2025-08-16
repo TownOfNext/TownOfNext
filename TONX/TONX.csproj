@@ -36,4 +36,12 @@
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
 		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
 	</Target>
+
+    <Target Name="UpdateMD5" AfterTargets="Build">
+        <PropertyGroup>
+            <OutputDll>$(OutputPath)$(AssemblyName).dll</OutputDll>
+            <InfoJsonPath>$([System.IO.Path]::GetFullPath('$(ProjectDir)..\info.json'))</InfoJsonPath>
+        </PropertyGroup>
+        <Exec Command="PowerShell -Command &quot;$dllPath = '$(OutputDll)';$jsonPath = '$(InfoJsonPath)';$md5 = (Get-FileHash -Path $dllPath -Algorithm MD5).Hash.ToLower();$json = Get-Content $jsonPath -Raw | ConvertFrom-Json;$json.md5 = $md5;$json | ConvertTo-Json -Depth 10 | Set-Content $jsonPath;&quot;" Condition="Exists('$(OutputDll)') AND Exists('$(InfoJsonPath)')" />
+    </Target>
 </Project>
