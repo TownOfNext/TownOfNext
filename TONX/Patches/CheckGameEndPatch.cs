@@ -5,6 +5,7 @@ using Hazel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TONX.GameModes;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
@@ -226,7 +227,7 @@ class GameEndChecker
 
             if (CustomRoles.Sunnyboy.IsExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
 
-            var counts = EnumHelper.GetAllValues<CountTypes>().Skip(2)
+            var counts = EnumHelper.GetAllValues<CountTypes>().Where(x => x is not CountTypes.None and not CountTypes.OutOfGame)
                 .ToDictionary(
                     type => type,
                     Utils.AlivePlayersCount
@@ -253,7 +254,7 @@ class GameEndChecker
             var nonZeroEntries = counts.Where(kvp => kvp.Key is not CountTypes.Crew && kvp.Value > 0).ToList();
             switch (nonZeroEntries.Count)
             {
-                case 1 when nonZeroEntries[0].Value > crewCount:
+                case 1 when nonZeroEntries[0].Value >= crewCount:
                     reason = GameOverReason.ImpostorsByKill;
                     var winnerTeam = nonZeroEntries.First().Key;
                     CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winnerTeam);
