@@ -42,47 +42,48 @@ internal static class SoloKombatManager
     public static OptionItem KB_KillBonusMultiplier;
     public static OptionItem KB_BootVentWhenDead;
 
+    private static Color32 SoloKombatColor = new Color32(245, 82, 82, byte.MaxValue);
     public static void SetupCustomOption()
     {
         TextOptionItem.Create(10_100_001, "MenuTitle.GameMode", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue));
+            .SetColor(SoloKombatColor);
         KB_GameTime = IntegerOptionItem.Create(10_000_001, "KB_GameTime", new(30, 300, 5), 180, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
         KB_ATKCooldown = FloatOptionItem.Create(10_000_002, "KB_ATKCooldown", new(1f, 10f, 0.1f), 1f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Seconds);
         KB_HPMax = FloatOptionItem.Create(10_000_003, "KB_HPMax", new(10f, 990f, 5f), 100f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Health);
         KB_ATK = FloatOptionItem.Create(10_000_004, "KB_ATK", new(1f, 100f, 1f), 8f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Health);
         KB_RecoverPerSecond = FloatOptionItem.Create(10_000_005, "KB_RecoverPerSecond", new(1f, 180f, 1f), 2f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Health);
         KB_RecoverAfterSecond = IntegerOptionItem.Create(10_000_006, "KB_RecoverAfterSecond", new(0, 60, 1), 8, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Seconds);
         KB_ResurrectionWaitingTime = IntegerOptionItem.Create(10_000_007, "KB_ResurrectionWaitingTime", new(5, 990, 1), 15, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Seconds);
         KB_KillBonusMultiplier = FloatOptionItem.Create(10_000_008, "KB_KillBonusMultiplier", new(0.25f, 5f, 0.25f), 1.25f, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+            .SetColor(SoloKombatColor)
             .SetValueFormat(OptionFormat.Multiplier);
         KB_BootVentWhenDead = BooleanOptionItem.Create(10_000_009, "KB_BootVentWhenDead", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(new Color32(245, 82, 82, byte.MaxValue));
+            .SetColor(SoloKombatColor);
     }
 
     [GameModuleInitializer]
