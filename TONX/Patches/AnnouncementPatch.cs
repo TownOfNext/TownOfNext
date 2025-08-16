@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TONX;
 
@@ -56,8 +57,8 @@ public class ModNewsHistory
         //uint langId = (uint)SupportedLangs.SChinese;
         while (!reader.EndOfStream)
         {
-            string line = reader.ReadLine();
-            if (line.StartsWith("#Number:")) mn.Number = int.Parse(line.Replace("#Number:", string.Empty));
+            var line = reader.ReadLine();
+            if (line!.StartsWith("#Number:")) mn.Number = int.Parse(line.Replace("#Number:", string.Empty));
             else if (line.StartsWith("#LangId:")) langId = uint.Parse(line.Replace("#LangId:", string.Empty));
             else if (line.StartsWith("#Title:")) mn.Title = line.Replace("#Title:", string.Empty);
             else if (line.StartsWith("#SubTitle:")) mn.SubTitle = line.Replace("#SubTitle:", string.Empty);
@@ -66,9 +67,45 @@ public class ModNewsHistory
             else if (line.StartsWith("#---")) continue;
             else
             {
+                const string pattern = @"\[(.*?)\]\((.*?)\)"; // 匹配Markdown链接，在公告中为 [内容](地址)
+                const string boldPattern = @"\*\*(.*?)\*\*"; // 匹配Markdown加粗，公告中为 **内容**
+                const string italicPattern = @"\*(.*?)\*"; // 匹配Markdown斜体，公告中为 *内容*
+                const string deleteLinePattern = @"\~\~(.*?)\~\~"; // 匹配Markdown删除线，公告中为 ~~内容~~
+
+                var regex = new Regex(pattern);
+                var boldRegex = new Regex(boldPattern);
+                var italicRegex = new Regex(italicPattern);
+                var deleteLineRegex = new Regex(deleteLinePattern);
+
+                line = regex.Replace(line, match =>
+                {
+                    var value1 = match.Groups[1].Value;
+                    var value2 = match.Groups[2].Value;
+                    return $"<color=#cdfffd><nobr><link={value2}>{value1}</nobr></link></color> ";
+                });
+
+                line = boldRegex.Replace(line, match =>
+                {
+                    var value = match.Groups[1].Value;
+                    return $"<b>{value}</b>";
+                });
+
+                line = italicRegex.Replace(line, match =>
+                {
+                    var value = match.Groups[1].Value;
+                    return $"<i>{value}</i>";
+                });
+
+                line = deleteLineRegex.Replace(line, match =>
+                {
+                    var value = match.Groups[1].Value;
+                    return $"<s>{value}</s>";
+                });
+
                 if (line.StartsWith("## ")) line = line.Replace("## ", "<b>") + "</b>";
-                else if (line.StartsWith("- ")) line = line.Replace("- ", "・");
-                text += $"\n{line}";
+                else if (line.StartsWith("- ") && !line.StartsWith(" - ")) line = line.Replace("- ", "・");
+
+                text += $"{line}\n";
             }
         }
         mn.Lang = langId;
