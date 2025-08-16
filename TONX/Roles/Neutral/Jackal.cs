@@ -37,7 +37,9 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         HasImpostorVision = OptionHasImpostorVision.GetBool();
         ResetKillCooldown = OptionResetKillCooldownWhenSbGetKilled.GetBool();
 
-        HasRecruited = false;
+        LeftRecruitCount = OptionJackalRecruitLimit.GetInt();
+        KillCount = 0;
+
         CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
     }
 
@@ -48,6 +50,10 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     private static OptionItem OptionHasImpostorVision;
     private static OptionItem OptionResetKillCooldownWhenSbGetKilled;
     public static OptionItem OptionCanRecruitSidekick;
+    public static OptionItem OptionJackalRecruitLimit;
+    public static OptionItem OptionNeededKillCountToRecruit;
+    public static OptionItem OptionSidekickCanKill;
+    public static OptionItem OptionSidekickKillCooldown;
     public static OptionItem OptionSidekickCanVent;
     public static OptionItem OptionSidekickCanUseSabotage;
     public static OptionItem OptionSidekickHasImpostorVision;
@@ -57,6 +63,9 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         JackalCanWinBySabotageWhenNoImpAlive,
         ResetKillCooldownWhenPlayerGetKilled,
         JackalCanRecruitSidekick,
+        JackalRecruitLimit,
+        NeededKillsToRecruit,
+        SidekickCanKill,
         SidekickCanBecomeJackal,
     }
     private static float KillCooldown;
@@ -65,7 +74,8 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool WinBySabotage;
     private static bool HasImpostorVision;
     private static bool ResetKillCooldown;
-    public bool HasRecruited;
+    public int LeftRecruitCount;
+    public int KillCount;
 
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
 
@@ -75,14 +85,21 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, true, false);
         OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false);
-        OptionCanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(RoleInfo, 14, OptionName.JackalCanWinBySabotageWhenNoImpAlive, true, false, OptionCanUseSabotage);
-        OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.ImpostorVision, true, false);
-        OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(RoleInfo, 15, OptionName.ResetKillCooldownWhenPlayerGetKilled, true, false);
+        OptionCanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(RoleInfo, 13, OptionName.JackalCanWinBySabotageWhenNoImpAlive, true, false, OptionCanUseSabotage);
+        OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 14, GeneralOption.ImpostorVision, true, false);
+        OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(RoleInfo, 15, OptionName.ResetKillCooldownWhenPlayerGetKilled, false, false);
         OptionCanRecruitSidekick = BooleanOptionItem.Create(RoleInfo, 16, OptionName.JackalCanRecruitSidekick, true, false);
-        OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 17, GeneralOption.CanVent, true, false, OptionCanRecruitSidekick);
-        OptionSidekickCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 18, GeneralOption.CanUseSabotage, true, false, OptionCanRecruitSidekick);
-        OptionSidekickHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 19, GeneralOption.ImpostorVision, true, false, OptionCanRecruitSidekick);
-        OptionSidekickCanBecomeJackal = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanBecomeJackal, true, false, OptionCanRecruitSidekick);
+        OptionJackalRecruitLimit = IntegerOptionItem.Create(RoleInfo, 17, OptionName.JackalRecruitLimit, new(1, 15, 1), 1, false, OptionCanRecruitSidekick)
+            .SetValueFormat(OptionFormat.Players);
+        OptionNeededKillCountToRecruit = IntegerOptionItem.Create(RoleInfo, 18, OptionName.NeededKillsToRecruit, new(0, 14, 1), 0, false, OptionCanRecruitSidekick)
+            .SetValueFormat(OptionFormat.Times);
+        OptionSidekickCanKill = BooleanOptionItem.Create(RoleInfo, 19, OptionName.SidekickCanKill, false, false, OptionCanRecruitSidekick);
+        OptionSidekickKillCooldown = FloatOptionItem.Create(RoleInfo, 20, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false, OptionSidekickCanKill)
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 21, GeneralOption.CanVent, true, false, OptionCanRecruitSidekick);
+        OptionSidekickCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 22, GeneralOption.CanUseSabotage, false, false, OptionCanRecruitSidekick);
+        OptionSidekickHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 23, GeneralOption.ImpostorVision, true, false, OptionCanRecruitSidekick);
+        OptionSidekickCanBecomeJackal = BooleanOptionItem.Create(RoleInfo, 24, OptionName.SidekickCanBecomeJackal, true, false, OptionCanRecruitSidekick);
     }
     public float CalculateKillCooldown() => KillCooldown;
     public bool CanUseSabotageButton() => CanUseSabotage;
@@ -94,11 +111,16 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         var killer = info.AttemptKiller;
         var target = info.AttemptTarget;
         if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
-        if (!OptionCanRecruitSidekick.GetBool() || HasRecruited) return true;
+        if (!OptionCanRecruitSidekick.GetBool() || LeftRecruitCount <= 0) return true;
+        if (KillCount < OptionNeededKillCountToRecruit.GetInt())
+        {
+            KillCount++;
+            return true;
+        }
         target.ChangeRole(CustomRoles.Sidekick);
         PlayerState.GetByPlayerId(target.PlayerId).RemoveAllSubRoles();
         Logger.Info($"豺狼{killer?.Data?.PlayerName}招募了{target?.Data?.PlayerName}", "Jackal");
-        HasRecruited = true;
+        LeftRecruitCount--;
         Utils.NotifyRoles();
         return false;
     }
@@ -113,7 +135,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
                 Logger.Info($"跟班{sidekick?.Data?.PlayerName}上位", "Jackal");
             }
             Utils.NotifyRoles();
-        }, 0.2f, "Sidekick become Jackal");
+        }, 0.1f, "Sidekick become Jackal");
     }
     public static void OnMurderPlayerOthers(MurderInfo info)
     {
@@ -128,7 +150,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public bool OverrideKillButtonText(out string text)
     {
         text = Translator.GetString("JackalButtonText");
-        return !HasRecruited;
+        return LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(HasRecruited ? Color.gray : Color.yellow, HasRecruited ? "(0)" : "(1)");
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
 }
