@@ -74,9 +74,10 @@ internal static class SoloKombatManager
         RoundTime = KB_GameTime.GetInt() + 8;
     }
     
+    private static Dictionary<byte, int> KBScore = new();
     public static int GetRankOfScore(byte playerId)
     {
-        Dictionary<byte, int> KBScore = new();
+        if (!GameStates.IsLobby)
         foreach (var player in Main.AllPlayerControls)
         {
             var role = player.GetRoleClass() as KB_Normal;
