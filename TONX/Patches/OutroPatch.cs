@@ -41,7 +41,7 @@ class EndGamePatch
             var targetId = kvp.Key;
             sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({Utils.GetTrueRoleName(targetId, false)}{Utils.GetSubRolesText(targetId, summary: true)}) [{Utils.GetVitalText(kvp.Key)}]".RemoveHtmlTags());
             if (killerId != byte.MaxValue && killerId != targetId)
-                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({Utils.GetTrueRoleName(targetId, false)}{Utils.GetSubRolesText(killerId, summary: true)})".RemoveHtmlTags());
+                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({Utils.GetTrueRoleName(killerId, false)}{Utils.GetSubRolesText(killerId, summary: true)})".RemoveHtmlTags());
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = string.Empty;
