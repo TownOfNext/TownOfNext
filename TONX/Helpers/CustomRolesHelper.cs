@@ -44,10 +44,17 @@ static class CustomRolesHelper
     }
     public static bool IsGameModeRole(this CustomRoles role)
     {
-        var roleInfo = role.GetRoleInfo();
-        if (roleInfo != null)
-            return roleInfo.CustomRoleType == CustomRoleTypes.GameMode;
-        return false;
+        try
+        {
+            var roleInfo = role.GetRoleInfo();
+            if (roleInfo != null)
+                return roleInfo.CustomRoleType == CustomRoleTypes.GameMode;
+        }
+        catch
+        {
+            /* ignored */
+        }
+        return (int)role is >= 400 and < 500 && role is not CustomRoles.GM;
     }
 
     public static bool IsHidden(this CustomRoles role, out HiddenRoleInfo hiddenRoleInfo)

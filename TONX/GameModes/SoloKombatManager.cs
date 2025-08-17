@@ -78,15 +78,16 @@ internal static class SoloKombatManager
     public static int GetRankOfScore(byte playerId)
     {
         if (!GameStates.IsLobby)
-        foreach (var player in Main.AllPlayerControls)
-        {
-            var role = player.GetRoleClass() as KB_Normal;
-            KBScore.Add(player.PlayerId, role.Score);
-        }
+            foreach (var player in Main.AllPlayerControls)
+            {
+                var role = player.GetRoleClass() as KB_Normal;
+                KBScore.TryAdd(player.PlayerId, role?.Score ?? 0);
+                KBScore[player.PlayerId] = role?.Score ?? 0;
+            }
         try
         {
             int ms = KBScore[playerId];
-            int rank = 1 + KBScore.Values.Where(x => x > ms).Count();
+            int rank = 1 + KBScore.Values.Count(x => x > ms);
             rank += KBScore.Where(x => x.Value == ms).ToList().IndexOf(new(playerId, ms));
             return rank;
         }

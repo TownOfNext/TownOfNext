@@ -28,7 +28,8 @@ public sealed class KB_Normal : RoleBase, IKiller
     public KB_Normal(PlayerControl player)
         : base(
             RoleInfo,
-            player
+            player,
+            () => HasTask.False
         )
     {
         _HPMax = _HP = KB_HPMax.GetFloat();
@@ -144,7 +145,7 @@ public sealed class KB_Normal : RoleBase, IKiller
 
         if (_BackCountdown > 0)
         {
-            Player.Notify(string.Format(Translator.GetString("KBBackCountDown"), _BackCountdown));
+            Player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown));
         }
             
         

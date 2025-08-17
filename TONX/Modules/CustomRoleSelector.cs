@@ -46,8 +46,8 @@ internal static class CustomRoleSelector
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
-            if (role.IsGameModeRole()) return;
-            if (role is CustomRoles.Crewmate or CustomRoles.Impostor or CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.Sidekick) continue;
+            if (role.IsGameModeRole() || !role.IsValid()) return;
+            if (role is CustomRoles.Crewmate or CustomRoles.Impostor) continue;
             if (role.IsVanilla())
             {
                 if (Options.DisableVanillaRoles.GetBool() || role.GetCount() == 0 || rd.Next(0, 100) > role.GetChance()) continue;
