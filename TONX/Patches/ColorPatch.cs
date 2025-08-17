@@ -15,7 +15,7 @@ class ButtonRolloverHandlerPatch
     [HarmonyPatch(nameof(ButtonRolloverHandler.ChangeOutColor)), HarmonyPrefix]
     public static void ChangeOutColor_Prefix(ButtonRolloverHandler __instance, ref Color color)
     {
-        if (color.r == 0 && color.g == 1 && color.b is > 0.163f and < 0.165f && color.a == 1)
+        if (color is { r: 0, g: 1, b: > 0.163f and < 0.165f, a: 1 })
             color = new Color32(255, 129, 166, 255);
     }
 }
