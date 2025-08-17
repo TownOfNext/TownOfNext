@@ -1,6 +1,4 @@
-﻿using HarmonyLib;
-
-namespace TONX.Patches;
+﻿namespace TONX.Patches;
 
 [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
 public static class SabotageButtonDoClickPatch

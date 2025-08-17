@@ -1,5 +1,3 @@
-using System;
-
 namespace TONX;
 
 public abstract class ValueRule<T>
@@ -70,7 +68,7 @@ public class FloatValueRule : ValueRule<float>
 
     public override float GetValueByIndex(int index)
     {
-        //Íè¤áÕ`²îŒ²ß¤ÇdecimalĞÍ¤Ë¤·¤ÆÓ‹Ëã¤·¡¢floatĞÍ¤Ë¤·¤Æ·µ¤¹
+        //ï¿½ï¿½ï¿½ï¿½`ï¿½îŒï¿½ß¤ï¿½decimalï¿½Í¤Ë¤ï¿½ï¿½ï¿½Ó‹ï¿½ã¤·ï¿½ï¿½floatï¿½Í¤Ë¤ï¿½ï¿½Æ·ï¿½ï¿½ï¿½
         decimal ss = RepeatIndex(index) * (decimal)Step + (decimal)MinValue;
         return (float)ss;
     }

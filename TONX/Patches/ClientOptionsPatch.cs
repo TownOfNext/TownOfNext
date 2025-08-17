@@ -1,6 +1,4 @@
-using System;
 using BepInEx.Configuration;
-using HarmonyLib;
 using TONX.Modules.ClientOptions;
 using TONX.Modules.NameTagInterface;
 using UnityEngine;

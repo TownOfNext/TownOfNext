@@ -1,7 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using TONX.Roles.Core;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;

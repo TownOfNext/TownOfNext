@@ -2,7 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
-using System;
+
 namespace TONX;
 
 public class CustomRpcSender

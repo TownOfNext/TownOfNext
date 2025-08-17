@@ -1,6 +1,3 @@
-using HarmonyLib;
-using System;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(HashRandom))]

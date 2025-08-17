@@ -1,8 +1,6 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
-using System.Linq;
-using TONX.Roles.Core;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 

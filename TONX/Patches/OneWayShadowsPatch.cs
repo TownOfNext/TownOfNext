@@ -1,6 +1,3 @@
-using HarmonyLib;
-using TONX.Roles.Core;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(OneWayShadows), nameof(OneWayShadows.IsIgnored))]

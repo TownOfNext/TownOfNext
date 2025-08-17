@@ -1,8 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using TONX.Roles.Core;
 using UnityEngine;
 
 namespace TONX.Roles.Neutral;

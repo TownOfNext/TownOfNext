@@ -1,16 +1,12 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace TONX;
 

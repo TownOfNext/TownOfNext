@@ -1,7 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-
-using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;

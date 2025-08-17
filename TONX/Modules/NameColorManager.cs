@@ -1,6 +1,5 @@
 using Hazel;
 using TONX.Roles.AddOns.Common;
-using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;

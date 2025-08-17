@@ -2,9 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
-using System.Linq;
 using TONX.Roles.AddOns.Common;
-using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using Mathf = UnityEngine.Mathf;
 

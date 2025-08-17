@@ -1,7 +1,3 @@
-using HarmonyLib;
-
-using TONX.Roles.Core;
-
 namespace TONX;
 
 //参考：https://github.com/yukieiji/ExtremeRoles/blob/master/ExtremeRoles/Patches/AirShipStatusPatch.cs

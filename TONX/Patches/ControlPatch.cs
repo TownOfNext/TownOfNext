@@ -1,6 +1,4 @@
-using HarmonyLib;
 using Hazel;
-using System.Linq;
 using TONX.Modules;
 using UnityEngine;
 
@@ -86,7 +84,7 @@ internal class ControllerManagerUpdatePatch
         //打开游戏目录
         if (GetKeysDown(KeyCode.F10))
         {
-            Utils.OpenDirectory(System.Environment.CurrentDirectory);
+            Utils.OpenDirectory(Environment.CurrentDirectory);
         }
 
         //-- 下面是主机专用的命令--//

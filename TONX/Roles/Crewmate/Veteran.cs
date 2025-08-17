@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Veteran : RoleBase

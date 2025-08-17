@@ -1,7 +1,4 @@
 using AmongUs.GameOptions;
-using TONX.Roles.Core;
-using System;
-using System.Collections.Generic;
 using Hazel;
 
 namespace TONX.Roles.Neutral;

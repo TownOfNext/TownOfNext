@@ -1,19 +1,16 @@
 {
-  "version": "3.0.2",
-  "minVer": "latest",
-  "creation": "1",
-  "allowStart": "true",
-  
-  "md5": "ef1ca4af6f9b9f0cde422b0eaaebfda4",
-  
-  "announcement": {
-    "SChinese": "创建/加入公开游戏暂时不可用\n这是由于游戏服务器变更导致H系暂时无法在公开房间游玩\n私人房间暂时不受影响",
-    "English": "Create/join public lobbies is temporarily unavailable\nThis change is due to a server-side update that makes modded public lobbies unavailable for vanilla.\nPrivate lobbies are not affected.\nCurrently, this change is NOT permanent."
-  },
-
-  "url": {
-    "github": "https://github.com/TownOfNext/TownOfNext/releases/latest/download/TONX.dll",
-    "gitee": "https://gitee.com/leeverz/TownOfNext/releases/download/{{version}}/TONX.dll",
-    "cos": "null"
-  }
+    "version":  "3.0.2",
+    "minVer":  "latest",
+    "creation":  "1",
+    "allowStart":  "true",
+    "md5":  "536a77d44e099f67f2c92dff05f3e66e",
+    "announcement":  {
+                         "SChinese":  "创建/加入公开游戏暂时不可用\n这是由于游戏服务器变更导致H系暂时无法在公开房间游玩\n私人房间暂时不受影响",
+                         "English":  "Create/join public lobbies is temporarily unavailable\nThis change is due to a server-side update that makes modded public lobbies unavailable for vanilla.\nPrivate lobbies are not affected.\nCurrently, this change is NOT permanent."
+                     },
+    "url":  {
+                "github":  "https://github.com/TownOfNext/TownOfNext/releases/latest/download/TONX.dll",
+                "gitee":  "https://gitee.com/leeverz/TownOfNext/releases/download/{{version}}/TONX.dll",
+                "cos":  "null"
+            }
 }

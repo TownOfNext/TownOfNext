@@ -1,5 +1,3 @@
-using System;
-
 namespace TONX;
 
 public class Xorshift : IRandom

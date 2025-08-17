@@ -1,15 +1,10 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using HarmonyLib;
 using Hazel;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns;
-using TONX.Roles.Core;
 using static TONX.Modules.CustomRoleSelector;
 
 namespace TONX;

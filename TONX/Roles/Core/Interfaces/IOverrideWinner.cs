@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TONX.Roles.Core.Interfaces;
 
 public interface IOverrideWinner

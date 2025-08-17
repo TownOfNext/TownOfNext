@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-
-namespace TONX;
+﻿namespace TONX;
 
 [HarmonyPatch(typeof(NotificationPopper), nameof(NotificationPopper.AddDisconnectMessage))]
 public class NotificationPopperPatch

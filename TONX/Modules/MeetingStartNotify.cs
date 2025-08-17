@@ -1,9 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TONX.Roles.Core;
-using static TONX.Translator;
+﻿using System.Text;
 
 namespace TONX;
 

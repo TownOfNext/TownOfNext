@@ -1,7 +1,4 @@
 using AmongUs.GameOptions;
-using System;
-using System.Collections.Generic;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Neutral;
 public sealed class Jester : RoleBase

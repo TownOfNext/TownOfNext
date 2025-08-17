@@ -1,10 +1,6 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using Il2CppSystem.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;

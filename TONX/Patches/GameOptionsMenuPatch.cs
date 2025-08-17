@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
 using UnityEngine;
@@ -42,10 +38,10 @@ public static class GameSettingMenuPatch
             {
                 TabGroup.SystemSettings => Main.ModColor32,
                 TabGroup.GameSettings => new Color32(89, 239, 131, 255),
-                TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Impostor),
-                TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Crewmate),
-                TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Neutral),
-                TabGroup.Addons => Utils.GetCustomRoleTypeColor(Roles.Core.CustomRoleTypes.Addon),
+                TabGroup.ImpostorRoles => Utils.GetCustomRoleTypeColor(CustomRoleTypes.Impostor),
+                TabGroup.CrewmateRoles => Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate),
+                TabGroup.NeutralRoles => Utils.GetCustomRoleTypeColor(CustomRoleTypes.Neutral),
+                TabGroup.Addons => Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon),
                 TabGroup.OtherRoles => new Color32(118, 184, 224, 255),
                 _ => Color.white,
             };

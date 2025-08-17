@@ -1,6 +1,4 @@
 using AmongUs.GameOptions;
-using System;
-using System.Linq;
 using TONX.Roles.Core.Descriptions;
 using UnityEngine;
 using static TONX.Options;

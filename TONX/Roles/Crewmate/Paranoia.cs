@@ -1,6 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Collections.Generic;
-using TONX.Roles.Core;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Paranoia : RoleBase

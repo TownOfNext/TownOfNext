@@ -1,5 +1,3 @@
-using HarmonyLib;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Toggle))]

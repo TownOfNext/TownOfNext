@@ -1,5 +1,3 @@
-using HarmonyLib;
-using System;
 using TMPro;
 using TONX.Templates;
 using UnityEngine;

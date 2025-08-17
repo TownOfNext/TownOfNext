@@ -1,5 +1,4 @@
 using BepInEx.Configuration;
-using System;
 using UnityEngine;
 
 namespace TONX.Modules.ClientOptions;

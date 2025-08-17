@@ -1,7 +1,4 @@
-﻿using System;
-using HarmonyLib;
-
-namespace TONX;
+﻿namespace TONX;
 
 public static class AprilFoolsModePatch
 {

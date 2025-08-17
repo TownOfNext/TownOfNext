@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using TONX.Attributes;
-using TONX.Roles.Core;
 using UnityEngine;
 using static TONX.Options;
 
@@ -37,7 +35,7 @@ public static class Beartrap
         if (!playerIdList.Contains(target.PlayerId) || info.IsSuicide) return;
 
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeed¤Çáá¤Û¤É‚Ž¤ò‘ø¤¹¤Î¤Ç´úÈë¤·¤Æ¤¤¤Þ¤¹¡£
+        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedï¿½ï¿½ï¿½ï¿½Û¤É‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¤Ç´ï¿½ï¿½ë¤·ï¿½Æ¤ï¿½ï¿½Þ¤ï¿½ï¿½ï¿½
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>

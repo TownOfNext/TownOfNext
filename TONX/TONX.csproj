@@ -13,6 +13,7 @@
 		<Configurations>Debug;Release</Configurations>
 		<BaseOutputPath>..\Export</BaseOutputPath>
 		<NoWarn>MSB3246, CA2211, IDE0044, IDE0028, IDE0300</NoWarn>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>

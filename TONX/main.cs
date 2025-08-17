@@ -2,16 +2,10 @@ using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using TONX.Attributes;
 using TONX.Modules;
-using TONX.Roles.Core;
 using UnityEngine;
 
 [assembly: AssemblyFileVersion(TONX.Main.PluginVersion)]
