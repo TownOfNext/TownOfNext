@@ -102,23 +102,20 @@ public sealed class KB_Normal : RoleBase, IKiller
                 break;
         }
     }
-
-    private long _lastFixedUpdate;
+    
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!GameStates.IsInTask) return;
         if (!AmongUsClient.Instance.AmHost) return;
-        
-        if (!SoloAlive())
-        {
-            var pos = Utils.GetBlackRoomPS();
-            var dis = Vector2.Distance(pos, Player.GetTruePosition());
-            if (dis > 1f) Utils.TP(Player.NetTransform, pos);
-        }
-        
-        if (_lastFixedUpdate == Utils.GetTimeStamp()) return;
-        _lastFixedUpdate = Utils.GetTimeStamp();
-        
+
+        if (SoloAlive()) return;
+        var pos = Utils.GetBlackRoomPS();
+        var dis = Vector2.Distance(pos, Player.GetTruePosition());
+        if (dis > 1f) Utils.TP(Player.NetTransform, pos);
+    }
+
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
         if (_LastHurt + KB_RecoverAfterSecond.GetInt() < Utils.GetTimeStamp()
             && _HP < _HPMax
             && SoloAlive()
