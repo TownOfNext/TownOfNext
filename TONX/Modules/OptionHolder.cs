@@ -495,7 +495,7 @@ public static class Options
         CustomRoleCounts = new();
         CustomRoleSpawnChances = new();
 
-        var sortedRoleInfo = CustomRoleManager.AllRolesInfo.Values.Where(role => role.RoleName.GetRoleInfo()?.Hidden == null).OrderBy(role => role.ConfigId);
+        var sortedRoleInfo = CustomRoleManager.AllRolesInfo.Values.Where(role => role.Hidden == null).OrderBy(role => role.ConfigId);
 
         // 各职业的总体设定
         ImpKnowAlliesRole = BooleanOptionItem.Create(1_000_001, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)

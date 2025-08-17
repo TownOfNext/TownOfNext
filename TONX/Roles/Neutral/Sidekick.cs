@@ -56,10 +56,4 @@ public sealed class Sidekick : RoleBase, IKiller, ISchrodingerCatOwner
         if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
         return true;
     }
-    
-    public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
-    {
-        if (!seen.Is(CountTypes.Jackal)) return;
-        enabled = true;
-    }
 }

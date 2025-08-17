@@ -43,6 +43,7 @@ public sealed class KB_Normal : RoleBase, IKiller
 
     public bool CanUseSabotageButton() => false;
     public bool CanUseKillButton() => SoloAlive();
+    public float CalculateKillCooldown() => CanUseKillButton()? KB_ATKCooldown.GetFloat() : 255f;
 
     private float _HP;
     private float _HPMax;

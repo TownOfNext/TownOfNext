@@ -180,3 +180,14 @@ public enum CountTypes
     BloodKnight =  CustomWinner.BloodKnight,
     Succubus =  CustomWinner.Succubus,
 }
+
+public enum RealTeamTypes
+{
+    Crew = CustomWinner.Crewmate,
+    Impostor =  CustomWinner.Impostor,
+    Jackal = CustomWinner.Jackal,
+    Pelican =  CustomWinner.Pelican,
+    Demon = CustomWinner.Demon,
+    BloodKnight =  CustomWinner.BloodKnight,
+    Succubus =  CustomWinner.Succubus,
+}

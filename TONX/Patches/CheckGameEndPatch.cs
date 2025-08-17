@@ -59,30 +59,7 @@ class GameEndChecker
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
             }
-
-            switch (CustomWinnerHolder.WinnerTeam)
-            {
-                case CustomWinner.Crewmate:
-                    Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Charmed))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Impostor:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Jackal:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Sidekick)) && !pc.Is(CustomRoles.Charmed))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Succubus:
-                    Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoles.Succubus) || pc.Is(CustomRoles.Charmed))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-            }
+            
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 //抢夺胜利
@@ -263,8 +240,9 @@ class GameEndChecker
                     reason = GameOverReason.ImpostorsByKill;
                     var winnerTeam = nonZeroEntries.First().Key;
                     CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winnerTeam);
-                    if (winnerTeam is not CountTypes.Impostor)
-                        CustomWinnerHolder.WinnerRoles.Add((CustomRoles)(CustomWinner)nonZeroEntries.First().Key);
+                    Main.AllPlayerControls
+                        .Where(pc => (CustomWinner)pc.GetRealTeamTypes() == (CustomWinner)winnerTeam)
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case 0:
                     reason = GameOverReason.CrewmatesByVote;

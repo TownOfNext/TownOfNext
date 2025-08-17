@@ -46,7 +46,7 @@ internal static class CustomRoleSelector
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
-            if (role.IsGameModeRole() || !role.IsValid()) return;
+            if (role.IsGameModeRole() || !role.IsValid()) continue;
             if (role is CustomRoles.Crewmate or CustomRoles.Impostor) continue;
             if (role.IsVanilla())
             {
@@ -109,7 +109,7 @@ internal static class CustomRoleSelector
             {
                 if (!role.IsHidden(out var hiddenRoleInfo) || hiddenRoleInfo.TargetRole == null) continue;
                 if (rd.Next(0, 100) < hiddenRoleInfo.Probability && rolesToAssign.Remove(hiddenRoleInfo.TargetRole.Value)) 
-                    rolesToAssign.Add(CustomRoles.Sunnyboy);
+                    rolesToAssign.Add(role);
             } 
         }
 

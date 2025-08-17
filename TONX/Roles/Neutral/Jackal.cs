@@ -163,10 +163,4 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(Translator.GetString("JackalNeededKillsToRecruit"), LeftKills));
         
     }
-
-    public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
-    {
-        if (!seen.Is(CountTypes.Jackal)) return;
-        enabled = true;
-    }
 }
