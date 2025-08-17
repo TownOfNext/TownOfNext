@@ -7,7 +7,6 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 using TONX.Modules;
-using static TONX.Translator;
 using System;
 using TONX.GameModes;
 using TONX.Roles.GameMode;
@@ -228,7 +227,7 @@ class SetVentOutlinePatch
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
     }
 }
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), new System.Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
 class SetHudActivePatch
 {
     public static bool IsActive = false;

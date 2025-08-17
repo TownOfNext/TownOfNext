@@ -5,7 +5,6 @@ using System.Linq;
 using TONX.Modules;
 using UnityEngine;
 using System.Collections.Generic;
-using static TONX.Translator;
 
 namespace TONX;
 

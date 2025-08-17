@@ -4,7 +4,6 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using TONX.Templates;
-using static TONX.Translator;
 
 namespace TONX;
 

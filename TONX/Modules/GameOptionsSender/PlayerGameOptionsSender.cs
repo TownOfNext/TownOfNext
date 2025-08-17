@@ -1,9 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.Linq;
 using InnerNet;
-using System.Data;
 using System.Linq;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core;

@@ -48,7 +48,7 @@ public sealed class Escapist : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Marked ? Translator.GetString("EscapistTeleportButtonText") : Translator.GetString("EscapistMarkButtonText");
+        text = Marked ? GetString("EscapistTeleportButtonText") : GetString("EscapistMarkButtonText");
         return !Shapeshifting;
     }
     public override void OnShapeshift(PlayerControl target)

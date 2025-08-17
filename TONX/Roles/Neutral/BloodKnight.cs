@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner

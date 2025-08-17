@@ -2,8 +2,6 @@
 using TMPro;
 using UnityEngine;
 
-using static TONX.Translator;
-
 namespace TONX;
 
 [HarmonyPatch(typeof(AccountTab), nameof(AccountTab.Awake))]

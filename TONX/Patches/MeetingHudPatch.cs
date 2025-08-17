@@ -96,7 +96,7 @@ public static class MeetingHudPatch
             {
                 var pc = Utils.GetPlayerById(pva.TargetPlayerId);
                 if (pc == null) continue;
-                var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
+                var roleTextMeeting = Object.Instantiate(pva.NameText);
                 roleTextMeeting.transform.SetParent(pva.NameText.transform);
                 roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
                 roleTextMeeting.fontSize = 1.5f;

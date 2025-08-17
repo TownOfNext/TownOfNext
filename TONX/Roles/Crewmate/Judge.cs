@@ -5,7 +5,6 @@ using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Judge : RoleBase, IMeetingButton

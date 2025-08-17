@@ -616,9 +616,9 @@ public static class Options
 
         #region Options of Lover
         SetupAddonOptions(80100, TabGroup.Addons, CustomRoles.Lovers, Rates, false);
-        LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
+        LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
             .SetGameMode(CustomGameMode.Standard);
-        LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lovers])
+        LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
             .SetGameMode(CustomGameMode.Standard);
         #endregion
 
@@ -1142,7 +1142,7 @@ public static class Options
         var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, RoleSpwanModes, role, roleColor)
             .SetColor(broken ? Palette.DisabledGrey : Utils.GetRoleColor(role))
             .SetHeader(true)
-            .SetAddDesc(broken ? Utils.ColorString(Palette.DisabledGrey, Translator.GetString("RoleBroken")) : "")
+            .SetAddDesc(broken ? Utils.ColorString(Palette.DisabledGrey, GetString("RoleBroken")) : "")
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false)

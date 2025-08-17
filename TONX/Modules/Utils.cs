@@ -1,11 +1,9 @@
-using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes;
 using InnerNet;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,7 +20,6 @@ using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -1381,7 +1378,7 @@ public static class Utils
             2 => new(42.6f, -19.9f), // Polus
             4 => new(-16.8f, -6.2f), // Airship
             5 => new(9.4f, 17.9f), // The Fungle
-            _ => throw new System.NotImplementedException(),
+            _ => throw new NotImplementedException(),
         };
     }
 }

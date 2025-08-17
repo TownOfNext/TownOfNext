@@ -1,13 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Roles.Core;
-using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TONX.Roles.Neutral;
 public sealed class Revolutionist : RoleBase

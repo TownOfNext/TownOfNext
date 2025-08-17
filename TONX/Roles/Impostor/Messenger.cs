@@ -111,7 +111,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             // 死体があったら死体の数を書く
             if (canSeeDeadMark && entry.NumDeadBodies > 0)
             {
-                builder.Append('(').Append(Translator.GetString("Deadbody"));
+                builder.Append('(').Append(GetString("Deadbody"));
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
             }
             builder.Append('\n');
@@ -119,7 +119,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
 
         // 送信
         var message = builder.ToString();
-        var title = Utils.ColorString(Color.green, Translator.GetString("LastAdminInfo"));
+        var title = Utils.ColorString(Color.green, GetString("LastAdminInfo"));
 
         _ = new LateTask(() =>
         {
@@ -203,7 +203,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             return base.GetSuffix(seer, seen, isForMeeting);
         }
         var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
-        return Utils.ColorString(Color.green, $"{Translator.GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
+        return Utils.ColorString(Color.green, $"{GetString("MurderNotify")}: {string.Join(", ", roomNames)}");
     }
     public bool CheckKillFlash(MurderInfo info) =>
         canSeeKillFlash && !info.IsSuicide && !info.IsAccident && info.AttemptKiller.Is(CustomRoleTypes.Impostor);

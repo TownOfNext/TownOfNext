@@ -51,8 +51,8 @@ public sealed class SpeedBooster : RoleBase
         if (!MyTaskState.HasCompletedEnoughCountOfTasks(BoostTimes))
         {
             Main.AllPlayerSpeed[playerId] += UpSpeed;
-            if (Main.AllPlayerSpeed[playerId] > 3) Player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
-            else Player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[playerId].ToString("0.0#####")));
+            if (Main.AllPlayerSpeed[playerId] > 3) Player.Notify(GetString("SpeedBoosterSpeedLimit"));
+            else Player.Notify(string.Format(GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[playerId].ToString("0.0#####")));
             Logger.Info("增速者触发加速:" + Player.GetNameWithRole(), "SpeedBooster");
         }
         cancel = false;

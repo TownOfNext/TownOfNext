@@ -16,7 +16,7 @@ public static class ServerAddManager
         serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = new();
 
-        if (Translator.IsChineseUser)
+        if (IsChineseUser)
         {
             regionInfos.Add(CreateHttp("au-cn.niko233.me", "Niko233(CN)", 443, true));
             regionInfos.Add(CreateHttp("nb.8w.fan", "<color=#00FF00>新猫服</color><color=#ffff00>[宁波]</color>", 443, true));
@@ -78,7 +78,7 @@ public static class ServerAddManager
         };
 
         if (server.TranslateName != StringNames.NoTranslation)
-            name = Translator.GetString(ServerManager.DefaultRegions.FirstOrDefault(x => x.Name == name).TranslateName);
+            name = GetString(ServerManager.DefaultRegions.FirstOrDefault(x => x.Name == name).TranslateName);
         PingTrackerUpdatePatch.ServerName = Utils.ColorString(color, $"{name} <size=60%>Server</size>");
     }
 

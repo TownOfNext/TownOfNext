@@ -14,7 +14,7 @@ class ShowFolderPatch
     {
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
         {
-            TaskFolder rolesFolder = UnityEngine.Object.Instantiate<TaskFolder>(
+            TaskFolder rolesFolder = Object.Instantiate<TaskFolder>(
                 __instance.RootFolderPrefab,
                 __instance.transform
             );
@@ -43,7 +43,7 @@ class ShowFolderPatch
                 cRole == CustomRoles.Shapeshifter
                 ) continue;*/
 
-                TaskAddButton button = UnityEngine.Object.Instantiate<TaskAddButton>(__instance.RoleButton);
+                TaskAddButton button = Object.Instantiate<TaskAddButton>(__instance.RoleButton);
                 button.Text.text = Utils.GetRoleName(cRole);
                 __instance.AddFileAsChild(CustomRolesFolder, button, ref xCursor, ref yCursor, ref maxHeight);
                 var roleBehaviour = new RoleBehaviour

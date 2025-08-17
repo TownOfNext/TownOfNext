@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX;

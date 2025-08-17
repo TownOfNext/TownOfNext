@@ -8,7 +8,6 @@ using UnityEngine;
 using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Templates;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -100,7 +99,7 @@ class SetEverythingUpPatch
         var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
         WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
         WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
-        var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
+        var WinnerText = WinnerTextObject.GetComponent<TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
         WinnerText.fontSizeMin = 3f;
         WinnerText.text = "";
 

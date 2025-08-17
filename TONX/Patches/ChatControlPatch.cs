@@ -34,10 +34,10 @@ public static class SendTargetPatch
     public static void Update_Postfix(ChatController __instance)
     {
         if (SendTargetShower == null) return;
-        string text = Translator.GetString($"SendTargets.{Enum.GetName(SendTarget)}");
+        string text = GetString($"SendTargets.{Enum.GetName(SendTarget)}");
         if (AmongUsClient.Instance.AmHost && GameStates.IsInGame && __instance.IsOpenOrOpening)
         {
-            text += "<size=75%>" + Translator.GetString("SendTargetSwitchNotice") + "</size>";
+            text += "<size=75%>" + GetString("SendTargetSwitchNotice") + "</size>";
             if (Input.GetKey(KeyCode.LeftShift)) SendTarget = SendTargets.All;
             else if (Input.GetKey(KeyCode.LeftControl)) SendTarget = SendTargets.Dead;
             else SendTarget = SendTargets.Default;

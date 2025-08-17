@@ -111,7 +111,7 @@ public static class CustomRoleManager
             {
                 attemptTarget.RpcSetCustomRole(CustomRoles.Madmate);
                 Logger.Info($"注册附加职业：{attemptTarget.GetNameWithRole()} => {CustomRoles.Madmate}", "AssignCustomSubRoles");
-                attemptTarget.ShowPopUp(Translator.GetString("BecomeMadmateCuzMadmateMode"));
+                attemptTarget.ShowPopUp(GetString("BecomeMadmateCuzMadmateMode"));
                 attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
                 return false;
             }

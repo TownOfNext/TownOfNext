@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using AmongUs.GameOptions;
 using HarmonyLib;
 using TONX.Modules.OptionItems;
 using TONX.Modules.OptionItems.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 using Object = UnityEngine.Object;
 
 namespace TONX;

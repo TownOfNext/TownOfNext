@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Descriptions;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Modules;
 

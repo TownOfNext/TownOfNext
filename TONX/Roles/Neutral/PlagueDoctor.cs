@@ -7,7 +7,6 @@ using System.Text;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 
@@ -209,7 +208,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
                 if (oldRate >= 100) continue;
 
                 //範囲外は除外
-                var distance = UnityEngine.Vector3.Distance(player.transform.position, target.transform.position);
+                var distance = Vector3.Distance(player.transform.position, target.transform.position);
                 if (distance > InfectDistance) continue;
 
                 var newRate = oldRate + Time.fixedDeltaTime / InfectTime * 100;

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -20,7 +19,7 @@ public class ErrorText : MonoBehaviour
     {
         if (_instance != null)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         else
         {
@@ -77,7 +76,7 @@ public class ErrorText : MonoBehaviour
             AllErrors.RemoveAll(err => ToRemove.Contains(err));
             UpdateText();
             if (HnSFlag)
-                Destroy(this.gameObject);
+                Destroy(gameObject);
         }
     }
     public void LateUpdate()
@@ -151,14 +150,14 @@ public class ErrorText : MonoBehaviour
         public readonly int ErrorType2;
         public readonly int ErrorLevel;
         public float Timer { get; private set; }
-        public string Message => GetString(this.ToString());
+        public string Message => GetString(ToString());
         public ErrorData(ErrorCode code)
         {
-            this.Code = code;
-            this.ErrorType1 = (int)code / 10000;
-            this.ErrorType2 = (int)code / 10 - ErrorType1 * 1000; // xxxyyy - xxx000
-            this.ErrorLevel = (int)code - (int)code / 10 * 10;
-            this.Timer = 0f;
+            Code = code;
+            ErrorType1 = (int)code / 10000;
+            ErrorType2 = (int)code / 10 - ErrorType1 * 1000; // xxxyyy - xxx000
+            ErrorLevel = (int)code - (int)code / 10 * 10;
+            Timer = 0f;
         }
         public override string ToString()
         {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static TONX.Translator;
 
 namespace TONX.Roles.Impostor;
 public sealed class Capitalist : RoleBase, IImpostor

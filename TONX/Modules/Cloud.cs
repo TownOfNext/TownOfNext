@@ -63,12 +63,12 @@ internal class Cloud
                 ClientSocket.Close();
             }
 
-            Utils.SendMessage(Translator.GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
+            Utils.SendMessage(GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
 
         }
         catch (Exception e)
         {
-            Utils.SendMessage(Translator.GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
+            Utils.SendMessage(GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
             Logger.Exception(e, "SentLobbyToQQ");
             throw;
         }

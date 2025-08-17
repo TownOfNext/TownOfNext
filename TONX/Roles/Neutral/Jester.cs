@@ -38,7 +38,7 @@ public sealed class Jester : RoleBase
         if (!AmongUsClient.Instance.AmHost || Player.PlayerId != exiled.PlayerId) return null;
 
         DecidedWinner = true;
-        WinDescriptionText.Add(Translator.GetString("ExiledJester"));
+        WinDescriptionText.Add(GetString("ExiledJester"));
         return () =>
         {
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Jester);

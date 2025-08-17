@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TONX.Attributes;
-using static TONX.Translator;
 
 namespace TONX;
 

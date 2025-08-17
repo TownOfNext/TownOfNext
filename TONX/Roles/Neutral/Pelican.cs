@@ -189,7 +189,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("PelicanButtonText");
+        text = GetString("PelicanButtonText");
         return true;
     }
 }

@@ -41,7 +41,7 @@ public sealed class BoobyTrap : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("BoobyTrapKillButtonText");
+        text = GetString("BoobyTrapKillButtonText");
         return true;
     }
     public void OnMurderPlayerAsKiller(MurderInfo info)

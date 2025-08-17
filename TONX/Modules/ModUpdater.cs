@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using TMPro;
 using TONX.Modules;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -3,7 +3,6 @@ using Hazel;
 
 using TONX.Modules;
 using TONX.Roles.Core;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class Mario : RoleBase

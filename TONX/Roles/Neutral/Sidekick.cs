@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using UnityEngine;
 
 namespace TONX.Roles.Neutral;
 

@@ -6,7 +6,6 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner

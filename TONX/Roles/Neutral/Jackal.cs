@@ -145,12 +145,12 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         {
             pc.SetKillCooldownV2(0);
             RPC.PlaySoundRPC(pc.PlayerId, Sounds.ImpTransform);
-            pc.Notify(Translator.GetString("JackalResetKillCooldown"));
+            pc.Notify(GetString("JackalResetKillCooldown"));
         }
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("JackalButtonText");
+        text = GetString("JackalButtonText");
         return LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
@@ -160,7 +160,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         if (!Is(seen) || isForMeeting) return "";
         var LeftKills = OptionNeededKillCountToRecruit.GetInt() - KillCount;
         if (LeftKills == 0) return "";
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(Translator.GetString("JackalNeededKillsToRecruit"), LeftKills));
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("JackalNeededKillsToRecruit"), LeftKills));
         
     }
 }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TONX.Roles.Neutral;
 public sealed class Executioner : RoleBase, IAdditionalWinner
@@ -138,7 +137,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         if (exiled.PlayerId != TargetId) return null;
 
         TargetExiled = true;
-        WinDescriptionText.Add(Translator.GetString("ExiledExeTarget"));
+        WinDescriptionText.Add(GetString("ExiledExeTarget"));
         DecidedWinner = true;
 
         return () =>

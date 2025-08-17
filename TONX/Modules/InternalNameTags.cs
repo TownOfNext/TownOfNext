@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static TONX.NameTagManager;
-using static TONX.Translator;
 
 namespace TONX;
 

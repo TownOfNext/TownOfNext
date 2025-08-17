@@ -58,8 +58,8 @@ public sealed class Transporter : RoleBase
             Utils.TP(tar2.NetTransform, pos);
             tar1.RPCPlayCustomSound("Teleport");
             tar2.RPCPlayCustomSound("Teleport");
-            tar1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), tar2.GetRealName())));
-            tar2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), tar1.GetRealName())));
+            tar1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(GetString("TeleportedByTransporter"), tar2.GetRealName())));
+            tar2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(GetString("TeleportedByTransporter"), tar1.GetRealName())));
         }
 
         return false;

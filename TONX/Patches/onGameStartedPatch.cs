@@ -11,7 +11,6 @@ using TONX.Modules;
 using TONX.Roles.AddOns;
 using TONX.Roles.Core;
 using static TONX.Modules.CustomRoleSelector;
-using static TONX.Translator;
 
 namespace TONX;
 

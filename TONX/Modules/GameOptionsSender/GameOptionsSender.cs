@@ -45,7 +45,7 @@ public abstract class GameOptionsSender
         else
         {
             writer.Recycle();
-            Logger.Error("オプションのキャストに失敗しました", this.ToString());
+            Logger.Error("オプションのキャストに失敗しました", ToString());
         }
         writer.EndMessage();
 

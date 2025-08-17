@@ -1,5 +1,4 @@
 using HarmonyLib;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -10,7 +10,6 @@ using TONX.Roles.Core;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 public static class GuesserHelper

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX.Roles.Neutral;
 public sealed class God : RoleBase, IOverrideWinner

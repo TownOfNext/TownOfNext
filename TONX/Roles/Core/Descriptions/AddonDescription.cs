@@ -16,8 +16,8 @@ public static class AddonDescription
         foreach (var subRole in subRoles)
         {
             if (subRoles.IndexOf(subRole) != 0) builder.AppendFormat("<size={0}>\n", BlankLineSize);
-            builder.AppendFormat("<size={0}>{1}\n", FirstHeaderSize, Translator.GetRoleString(subRole.ToString()).Color(Utils.GetRoleColor(subRole).ToReadableColor()));
-            builder.AppendFormat("<size={0}>{1}\n", BodySize, Translator.GetString($"{subRole}InfoLong"));
+            builder.AppendFormat("<size={0}>{1}\n", FirstHeaderSize, GetRoleString(subRole.ToString()).Color(Utils.GetRoleColor(subRole).ToReadableColor()));
+            builder.AppendFormat("<size={0}>{1}\n", BodySize, GetString($"{subRole}InfoLong"));
             // 职业设定
             if (Options.CustomRoleSpawnChances.TryGetValue(subRole, out var opt))
                 Utils.ShowChildrenSettings(opt, ref builder, forChat: true);
@@ -29,8 +29,8 @@ public static class AddonDescription
     {
         var builder = new StringBuilder(512);
         builder.AppendFormat("<size={0}>\n", BlankLineSize);
-        builder.AppendFormat("<size={0}>{1}\n", FirstHeaderSize, Translator.GetRoleString(subRole.ToString()).Color(Utils.GetRoleColor(subRole).ToReadableColor()));
-        builder.AppendFormat("<size={0}>{1}\n", BodySize, Translator.GetString($"{subRole}InfoLong"));
+        builder.AppendFormat("<size={0}>{1}\n", FirstHeaderSize, GetRoleString(subRole.ToString()).Color(Utils.GetRoleColor(subRole).ToReadableColor()));
+        builder.AppendFormat("<size={0}>{1}\n", BodySize, GetString($"{subRole}InfoLong"));
         // 职业设定
         if (Options.CustomRoleSpawnChances.TryGetValue(subRole, out var opt))
             Utils.ShowChildrenSettings(opt, ref builder, forChat: true);

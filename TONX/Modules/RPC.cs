@@ -9,7 +9,6 @@ using TONX.Modules;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Crewmate;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -525,7 +524,7 @@ internal static class RPC
         state.RealKiller.Item2 = killerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, SendOption.Reliable, -1);
         writer.Write(targetId);
         writer.Write(killerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -533,7 +532,7 @@ internal static class RPC
     public static void NotificationPop(string text)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPop, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPop, SendOption.Reliable, -1);
         writer.Write(text);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         NotificationPopperPatch.AddItem(text);

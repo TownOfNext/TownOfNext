@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TONX.Roles.Core;
 using UnityEngine;
 using static TONX.Options;
-using static TONX.Translator;
 
 namespace TONX.Roles.AddOns;
 public class AddOnsAssignData

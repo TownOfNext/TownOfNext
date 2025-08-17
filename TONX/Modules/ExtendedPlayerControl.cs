@@ -1,6 +1,4 @@
-using AmongUs.Data;
 using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -15,7 +13,6 @@ using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 

@@ -157,6 +157,6 @@ public sealed class Stealth : RoleBase, IImpostor
         {
             return base.GetSuffix(seer, seen, isForMeeting);
         }
-        return string.Format(Translator.GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
+        return string.Format(GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }
 }

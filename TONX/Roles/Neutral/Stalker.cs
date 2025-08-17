@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-
-using static TONX.Options;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 

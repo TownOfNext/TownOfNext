@@ -1,12 +1,10 @@
 using System;
-using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 using static TONX.GameModes.SoloKombatManager;
-using static TONX.Translator;
 
 namespace TONX.Roles.GameMode;
 
@@ -164,7 +162,7 @@ public sealed class KB_Normal : RoleBase, IKiller
         var playerId = Player.PlayerId;
         var rank = GetRankOfScore(playerId);
         var score =  $"{Score}";
-        text = string.Format(Translator.GetString("KBDisplayScore"), rank.ToString(), score);
+        text = string.Format(GetString("KBDisplayScore"), rank.ToString(), score);
         var color = Utils.GetRoleColor(CustomRoles.KB_Normal);
         text = Utils.ColorString(color, text);
         enabled = true;
@@ -204,7 +202,7 @@ public sealed class KB_Normal : RoleBase, IKiller
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(Translator.GetString("KBTimeRemain"), RoundTime.ToString());
+        return string.Format(GetString("KBTimeRemain"), RoundTime.ToString());
     }
 
     public bool OverrideKillButtonText(out string text)
@@ -243,17 +241,17 @@ public sealed class KB_Normal : RoleBase, IKiller
             case 0:
                 addin = killerRole._HPMax * addRate;
                 killerRole._HPMax += addin;
-                killer.Notify(string.Format(Translator.GetString("KB_Buff_HPMax"), addin.ToString("0.0#####")));
+                killer.Notify(string.Format(GetString("KB_Buff_HPMax"), addin.ToString("0.0#####")));
                 break;
             case 1:
                 addin = killerRole.HPReco * addRate * 2;
                 killerRole.HPReco += addin;
-                killer.Notify( string.Format(Translator.GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
+                killer.Notify( string.Format(GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
                 break;
             case 2:
                 addin = killerRole.ATK * addRate;
                 killerRole.ATK += addin;
-                killer.Notify(string.Format(Translator.GetString("KB_Buff_ATK"), addin.ToString("0.0#####")));
+                killer.Notify(string.Format(GetString("KB_Buff_ATK"), addin.ToString("0.0#####")));
                 break;
         }
     }

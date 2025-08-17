@@ -164,7 +164,7 @@ public sealed class BallLightning : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("BallLightningButtonText");
+        text = GetString("BallLightningButtonText");
         return true;
     }
 }

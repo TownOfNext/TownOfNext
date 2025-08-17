@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
-using Hazel;
-using LibCpp2IL;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +11,6 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
 using UnityEngine;
-using static TONX.Translator;
 
 namespace TONX;
 
@@ -684,7 +681,7 @@ class PlayerStartPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
+        var roleText = Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
         roleText.transform.localScale = new(1f, 1f, 1f);

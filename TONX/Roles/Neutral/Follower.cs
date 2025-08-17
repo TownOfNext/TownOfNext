@@ -117,9 +117,9 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         killer.SetKillCooldownV2();
         killer.RPCPlayCustomSound("Bet");
 
-        killer.Notify(Translator.GetString("FollowerBetPlayer"));
+        killer.Notify(GetString("FollowerBetPlayer"));
         if (OptionBetTargetKnowFollower.GetBool())
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), Translator.GetString("FollowerBetOnYou")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), GetString("FollowerBetOnYou")));
 
         Logger.Info($"赌徒下注：{killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Follower");
 
@@ -146,7 +146,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("FollowerKillButtonText");
+        text = GetString("FollowerKillButtonText");
         return true;
     }
 }

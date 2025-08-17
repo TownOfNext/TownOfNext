@@ -159,7 +159,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = Translator.GetString("DemonButtonText");
+        text = GetString("DemonButtonText");
         return true;
     }
 }
