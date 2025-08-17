@@ -2,10 +2,11 @@ using AmongUs.GameOptions;
 
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
+using UnityEngine;
 
 namespace TONX.Roles.Neutral;
 
-public sealed class Sidekick : RoleBase, IKiller
+public sealed class Sidekick : RoleBase, IKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -41,6 +42,8 @@ public sealed class Sidekick : RoleBase, IKiller
     public static bool CanUseSabotage;
     private static bool HasImpostorVision;
 
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
+
     public bool CanUseKillButton() => CanKill;
     public float CalculateKillCooldown() => CanUseKillButton() ? KillCooldown : 255f;
     public bool CanUseSabotageButton() => CanUseSabotage;
@@ -52,5 +55,11 @@ public sealed class Sidekick : RoleBase, IKiller
         var target = info.AttemptTarget;
         if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
         return true;
+    }
+    
+    public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
+    {
+        if (!seen.Is(CountTypes.Jackal)) return;
+        enabled = true;
     }
 }
