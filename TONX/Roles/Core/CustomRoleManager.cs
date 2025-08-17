@@ -651,9 +651,9 @@ public enum CustomRoles
     Succubus,
     PlagueDoctor,
     SchrodingerCat,
-
+    
     //SoloKombat
-    KB_Normal,
+    KB_Normal = 400,
     
     //GM
     GM,
@@ -689,7 +689,8 @@ public enum CustomRoleTypes
     Crewmate,
     Impostor,
     Neutral,
-    Addon
+    Addon,
+    GameMode
 }
 public enum HasTask
 {

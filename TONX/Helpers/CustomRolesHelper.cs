@@ -148,13 +148,13 @@ static class CustomRolesHelper
 }
 public enum CountTypes
 {
-    OutOfGame,
-    None,
-    Crew,
-    Impostor,
-    Jackal,
-    Pelican,
-    Demon,
-    BloodKnight,
-    Succubus,
+    OutOfGame = -1,
+    None = -2,
+    Crew = CustomWinner.Crewmate,
+    Impostor =  CustomWinner.Impostor,
+    Jackal = CustomWinner.Jackal,
+    Pelican =  CustomWinner.Pelican,
+    Demon = CustomWinner.Demon,
+    BloodKnight =  CustomWinner.BloodKnight,
+    Succubus =  CustomWinner.Succubus,
 }

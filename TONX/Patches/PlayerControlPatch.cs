@@ -54,13 +54,6 @@ class CheckMurderPatch
     {
         if (!AmongUsClient.Instance.AmHost) return false;
 
-        if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
-        {
-            SoloKombatManager.OnPlayerAttack(__instance, target);
-            __instance.RpcMurderPlayer(target, false);
-            return false;
-        }
-
         // 処理は全てCustomRoleManager側で行う
         if (!CustomRoleManager.OnCheckMurder(__instance, target))
         {
@@ -582,8 +575,6 @@ class FixedUpdatePatch
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
                     if (NameNotifyManager.GetNameNotify(target, out var name))
                         RealName = name;
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        SoloKombatManager.GetNameNotify(target, ref RealName);
                 }
 
                 //NameColorManager準拠の処理
@@ -620,9 +611,6 @@ class FixedUpdatePatch
 
                 //seerに関わらず発動するSuffix
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
-
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                    Suffix.Append(SoloKombatManager.GetDisplayHealth(target));
 
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                     Mark = isBlocked ? "(true)" : "(false)";

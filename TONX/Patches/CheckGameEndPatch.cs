@@ -5,6 +5,7 @@ using Hazel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TONX.GameModes;
 using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Neutral;
@@ -28,7 +29,7 @@ class GameEndChecker
         if (Options.NoGameEnd.GetBool() && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         //廃村用に初期値を設定
-        var reason = GameOverReason.ImpostorsByKill;
+        GameOverReason reason;
 
         //ゲーム終了判定
         predicate.CheckForEndGame(out reason);
@@ -231,71 +232,47 @@ class GameEndChecker
 
             if (CustomRoles.Sunnyboy.IsExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
 
-            int Imp = Utils.AlivePlayersCount(CountTypes.Impostor);
-            int Crew = Utils.AlivePlayersCount(CountTypes.Crew);
-            int JK = Utils.AlivePlayersCount(CountTypes.Jackal);
-            int PL = Utils.AlivePlayersCount(CountTypes.Pelican);
-            int DM = Utils.AlivePlayersCount(CountTypes.Demon);
-            int BK = Utils.AlivePlayersCount(CountTypes.BloodKnight);
-            int SC = Utils.AlivePlayersCount(CountTypes.Succubus);
+            var counts = EnumHelper.GetAllValues<CountTypes>().Where(x => x is not CountTypes.None and not CountTypes.OutOfGame)
+                .ToDictionary(
+                    type => type,
+                    Utils.AlivePlayersCount
+                );
 
-            foreach (var dualPc in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Schizophrenic)))
-            {
-                if (dualPc.Is(CountTypes.Impostor)) Imp++;
-                else if (dualPc.Is(CountTypes.Crew)) Crew++;
-                else if (dualPc.Is(CountTypes.Succubus)) SC++;
-            }
+            foreach (var dualPc in Main.AllAlivePlayerControls
+                         .Where(p => p.Is(CustomRoles.Schizophrenic)
+                                     && p.GetCountTypes() is not CountTypes.OutOfGame and not CountTypes.None))
+                counts[dualPc.GetCountTypes()]++;
 
-            if (Imp == 0 && Crew == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0) //全灭
+            if (counts.Values.Sum() == 0)
             {
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                return true;
             }
-            else if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) //恋人胜利
+            if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) //恋人胜利
             {
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
+                return true;
             }
-            else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= Imp) //内鬼胜利
+            var crewCount = counts.First(kvp => kvp.Key is CountTypes.Crew).Value;
+            var nonZeroEntries = counts.Where(kvp => kvp.Key is not CountTypes.Crew && kvp.Value > 0).ToList();
+            switch (nonZeroEntries.Count)
             {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
+                case 1 when nonZeroEntries[0].Value >= crewCount:
+                    reason = GameOverReason.ImpostorsByKill;
+                    var winnerTeam = nonZeroEntries.First().Key;
+                    CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winnerTeam);
+                    if (winnerTeam is not CountTypes.Impostor)
+                        CustomWinnerHolder.WinnerRoles.Add((CustomRoles)(CustomWinner)nonZeroEntries.First().Key);
+                    break;
+                case 0:
+                    reason = GameOverReason.CrewmatesByVote;
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                    break;
+                default:
+                    return false;//胜利条件未达成
             }
-            else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= JK) //豺狼胜利
-            {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
-            }
-            else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
-            {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pelican);
-                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
-            }
-            else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && SC == 0 && Crew <= DM) //玩家胜利
-            {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Demon);
-                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Demon);
-            }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && SC == 0 && Crew <= BK) //嗜血骑士胜利
-            {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
-                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
-            }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && Crew <= SC) //魅魔胜利
-            {
-                reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);
-            }
-            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0) //船员胜利
-            {
-                reason = GameOverReason.CrewmatesByVote;
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
-            }
-            else return false; //胜利条件未达成
-
             return true;
         }
     }

@@ -178,7 +178,7 @@ internal class SelectRolesPatch
             foreach (var sd in RpcSetRoleReplacer.StoragedData)
             {
                 var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
-                if (kp.Value == CustomRoles.KB_Normal || kp.Value.GetRoleInfo().IsDesyncImpostor || kp.Value == CustomRoles.CrewPostor)
+                if (kp.Value.GetRoleInfo().IsDesyncImpostor || kp.Value == CustomRoles.CrewPostor)
                 {
                     Logger.Warn($"反向原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
                     continue;
@@ -213,6 +213,17 @@ internal class SelectRolesPatch
                 state.SetMainRole(role);
             }
 
+            // 个人竞技模式用
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
+            {
+                foreach (var pair in PlayerState.AllPlayerStates)
+                {
+                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                }
+                CustomRoleManager.CreateInstance();
+                goto EndOfSelectRolePatch;
+            }
+
             foreach (var (player, role) in RoleResult.Where(kvp => !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
             {
                 SetColorPatch.IsAntiGlitchDisabled = true;
@@ -221,13 +232,6 @@ internal class SelectRolesPatch
                 Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignCustomRoles");
 
                 SetColorPatch.IsAntiGlitchDisabled = false;
-            }
-
-            // 个人竞技模式用
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
-            {
-                foreach (var pair in PlayerState.AllPlayerStates) ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-                goto EndOfSelectRolePatch;
             }
 
             foreach (var pair in PlayerState.AllPlayerStates)
