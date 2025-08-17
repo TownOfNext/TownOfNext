@@ -15,7 +15,7 @@ public sealed class Bard : RoleBase, IImpostor
             null,
             "ba|吟游詩人|诗人"
 #if RELEASE
-    ,
+            ,
             Hidden: new HiddenRoleInfo(5, CustomRoles.Arrogance)
 #endif
 

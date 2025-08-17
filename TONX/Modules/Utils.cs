@@ -535,7 +535,8 @@ public static class Utils
         seen ??= seer;
         var comms = IsActive(SystemTypes.Comms) || Concealer.IsHidding;
         bool enabled = seer == seen
-            || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool());
+            || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool())
+            || Options.CurrentGameMode == CustomGameMode.SoloKombat;
         string text = GetProgressText(seen.PlayerId, comms);
 
         //seer側による変更

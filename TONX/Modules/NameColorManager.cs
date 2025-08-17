@@ -39,7 +39,10 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
 
         // 豺狼阵营
-        if (seer.Is(RealTeamTypes.Jackal) && target.Is(RealTeamTypes.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Sidekick)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
+        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
 
         // 魅魔阵营
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
@@ -47,15 +50,17 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];
 
         if (!string.IsNullOrEmpty(color)) return true;
-        return seer == target 
-           || (Main.GodMode.Value && seer.AmOwner) 
-           || seer.Is(CustomRoles.GM)
-           || target.Is(CustomRoles.GM)
-           || seer.Is(CustomRoles.God)
+        return seer == target
+            || (Main.GodMode.Value && seer.AmOwner)
+            || seer.Is(CustomRoles.GM)
+            || target.Is(CustomRoles.GM)
+            || seer.Is(CustomRoles.God)
+            || seer.Is(CustomRoles.KB_Normal)
+            || target.Is(CustomRoles.KB_Normal)
                
-           || SuperStar.KnowTargetRoleColor(target, isMeeting)
-           || Workaholic.KnowTargetRoleColor(target, isMeeting)
-           || Mare.KnowTargetRoleColor(target, isMeeting);
+            || SuperStar.KnowTargetRoleColor(target, isMeeting)
+            || Workaholic.KnowTargetRoleColor(target, isMeeting)
+            || Mare.KnowTargetRoleColor(target, isMeeting);
     }
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {

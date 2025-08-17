@@ -33,7 +33,7 @@ public sealed class KB_Normal : RoleBase, IKiller
         ATK =  KB_ATK.GetFloat();
         DF = 0F;
         
-        Score = Options.EnableGM.GetBool() && Player.AmOwner ? -1 : 0;
+        Score = 0;
         _LastHurt = Utils.GetTimeStamp();
     }
 
@@ -47,25 +47,22 @@ public sealed class KB_Normal : RoleBase, IKiller
     private long _LastHurt;
     private int _BackCountdown;
     public float HPReco { get; private set; }
-
     public float ATK { get; private set; }
-
     public float DF { get; private set; }
     public int Score { get; private set; }
 
-
     private bool SoloAlive() => _HP > 0f;
 
-    private enum RoleRpcRype
+    private enum RoleRpcType
     {
         SyncKBPlayer,
         SyncKBBackCountdown,
     }
-    
+
     private void SendRPCSyncKBPlayer()
     {
         var sender = CreateSender();
-        sender.Writer.Write((byte)RoleRpcRype.SyncKBPlayer);
+        sender.Writer.Write((byte)RoleRpcType.SyncKBPlayer);
         sender.Writer.Write(_HPMax);
         sender.Writer.Write(_HP);
         sender.Writer.Write(HPReco);
@@ -76,19 +73,18 @@ public sealed class KB_Normal : RoleBase, IKiller
     private void SendRPCSyncKBBackCountdown()
     {
         var sender = CreateSender();
-        sender.Writer.Write((byte)RoleRpcRype.SyncKBBackCountdown);
+        sender.Writer.Write((byte)RoleRpcType.SyncKBBackCountdown);
         sender.Writer.Write(_BackCountdown);
     }
-
     public override void ReceiveRPC(MessageReader reader)
     {
-        var rpcType = (RoleRpcRype)reader.ReadByte();
+        var rpcType = (RoleRpcType)reader.ReadByte();
         switch (rpcType)
         {
-            case RoleRpcRype.SyncKBBackCountdown:
+            case RoleRpcType.SyncKBBackCountdown:
                 _BackCountdown = reader.ReadInt32();
                 break;
-            case RoleRpcRype.SyncKBPlayer:
+            case RoleRpcType.SyncKBPlayer:
                 _HPMax = reader.ReadSingle();
                 _HP = reader.ReadSingle();
                 HPReco = reader.ReadSingle();
@@ -98,7 +94,6 @@ public sealed class KB_Normal : RoleBase, IKiller
                 break;
         }
     }
-    
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!GameStates.IsInTask) return;
@@ -109,7 +104,6 @@ public sealed class KB_Normal : RoleBase, IKiller
         var dis = Vector2.Distance(pos, Player.GetTruePosition());
         if (dis > 1f) Utils.TP(Player.NetTransform, pos);
     }
-
     public override void OnSecondsUpdate(PlayerControl player, long now)
     {
         if (_LastHurt + KB_RecoverAfterSecond.GetInt() < Utils.GetTimeStamp()
@@ -121,51 +115,35 @@ public sealed class KB_Normal : RoleBase, IKiller
             _HP =  Math.Min(_HPMax, _HP);
             SendRPCSyncKBPlayer();
         }
-        
         if (SoloAlive())
         {
             var pos = Utils.GetBlackRoomPS();
             var dis = Vector2.Distance(pos, Player.GetTruePosition());
             if (dis < 1.2f) PlayerRandomSpawn();
         }
-
         if (_BackCountdown > 0)
         {
             _BackCountdown--;
-            if (_BackCountdown <= 0) 
-                OnPlayerBack();
+            if (_BackCountdown <= 0) OnPlayerBack();
             SendRPCSyncKBBackCountdown();
         }
-
         if (_BackCountdown > 0)
         {
             Player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown));
         }
-            
-        
         Utils.NotifyRoles(Player);
     }
-
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        var role = seen?.GetRoleClass() as KB_Normal;
-        if (seen == null)
-            role = this;
-        if (role == null) return "";
+        seen ??= seer;
+        var role = seen.GetRoleClass() as KB_Normal;
+        return role == null ? "" : GetHealthText(role);
+    }
+    public static string GetHealthText(KB_Normal role)
+    {
         return role.SoloAlive() ? Utils.ColorString(GetHealthColor(role), $"{(int)role._HP}/{(int)role._HPMax}") : "";
     }
-
-    public override void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
-    {
-        var playerId = Player.PlayerId;
-        var rank = GetRankOfScore(playerId);
-        var score =  $"{Score}";
-        text = string.Format(GetString("KBDisplayScore"), rank.ToString(), score);
-        var color = Utils.GetRoleColor(CustomRoles.KB_Normal);
-        text = Utils.ColorString(color, text);
-        enabled = true;
-    }
-
+    public override string GetProgressText(bool comms = false) => GetDisplayScore(Player.PlayerId);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = (info.AttemptKiller, info.AttemptTarget);
@@ -190,8 +168,6 @@ public sealed class KB_Normal : RoleBase, IKiller
         killer.SetKillCooldownV2(KB_ATKCooldown.GetFloat(), target);
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
-        // if (!target.IsModClient() && !target.AmOwner)
-        //     target.SetKillCooldown();
 
         targetRole.SendRPCSyncKBPlayer();
         Utils.NotifyRoles(killer);
@@ -202,13 +178,11 @@ public sealed class KB_Normal : RoleBase, IKiller
     {
         return string.Format(GetString("KBTimeRemain"), RoundTime.ToString());
     }
-
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("DemonButtonText");
         return true;
     }
-
     private static void OnPlayerDead(PlayerControl target)
     {
         var targetRole = target.GetRoleClass() as KB_Normal;
@@ -221,7 +195,6 @@ public sealed class KB_Normal : RoleBase, IKiller
         targetRole._BackCountdown = KB_ResurrectionWaitingTime.GetInt();
         targetRole.SendRPCSyncKBBackCountdown();
     }
-
     private static void OnPlayerKill(PlayerControl killer)
     {
         var killerRole = killer.GetRoleClass() as KB_Normal;

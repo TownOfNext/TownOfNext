@@ -136,17 +136,6 @@ static class ExtendedPlayerControl
 
         return PlayerState.GetByPlayerId(player.PlayerId)?.CountType ?? CountTypes.None;
     }
-
-    public static RealTeamTypes GetRealTeamTypes(this PlayerControl player)
-    {
-        var teamType = (RealTeamTypes)player.GetCountTypes();
-        var subRoleList = player.GetCustomSubRoles();
-        if (subRoleList.Contains(CustomRoles.Madmate))
-            teamType = RealTeamTypes.Impostor;
-        else if (subRoleList.Contains(CustomRoles.Charmed))
-            teamType = RealTeamTypes.Succubus;
-        return teamType;
-    }
     public static void RpcSetNameEx(this PlayerControl player, string name)
     {
         foreach (var seer in Main.AllPlayerControls)
@@ -718,7 +707,6 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
-    public static bool Is(this PlayerControl target, RealTeamTypes type) { return target.GetRealTeamTypes() == type; }
     public static bool IsEaten(this PlayerControl target) => GameStates.IsInGame && Pelican.IsEaten(target.PlayerId);
     public static bool IsAlive(this PlayerControl target)
     {

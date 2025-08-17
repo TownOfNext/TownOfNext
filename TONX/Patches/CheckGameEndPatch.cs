@@ -53,6 +53,7 @@ class GameEndChecker
                 CustomWinnerHolder.WinnerIds.Clear();
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
+                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Sidekick);
             }
             
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
@@ -204,15 +205,14 @@ class GameEndChecker
 
             if (CustomRoles.Sunnyboy.IsExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
 
-            var counts = EnumHelper.GetAllValues<CountTypes>().Where(x => x is not CountTypes.None and not CountTypes.OutOfGame)
+            var counts = EnumHelper.GetAllValues<CountTypes>()
+                .Where(x => x is not CountTypes.None and not CountTypes.OutOfGame)
                 .ToDictionary(
                     type => type,
                     Utils.AlivePlayersCount
                 );
 
-            foreach (var dualPc in Main.AllAlivePlayerControls
-                         .Where(p => p.Is(CustomRoles.Schizophrenic)
-                                     && p.GetCountTypes() is not CountTypes.OutOfGame and not CountTypes.None))
+            foreach (var dualPc in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Schizophrenic) && p.GetCountTypes() is CountTypes.Impostor or CountTypes.Crew))
                 counts[dualPc.GetCountTypes()]++;
 
             if (counts.Values.Sum() == 0)
@@ -233,18 +233,31 @@ class GameEndChecker
             {
                 case 1 when nonZeroEntries[0].Value >= crewCount:
                     reason = GameOverReason.ImpostorsByKill;
-                    var winnerTeam = nonZeroEntries.First().Key;
-                    CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winnerTeam);
+                    var winnerTeam = (CustomWinner)nonZeroEntries.First().Key;
+                    CustomWinnerHolder.ResetAndSetWinner(winnerTeam);
                     Main.AllPlayerControls
-                        .Where(pc => (CustomWinner)pc.GetRealTeamTypes() == (CustomWinner)winnerTeam)
+                        .Where(pc => (CustomWinner)pc.GetCountTypes() == winnerTeam && !pc.GetCustomSubRoles().Contains(CustomRoles.Madmate) && !pc.GetCustomSubRoles().Contains(CustomRoles.Charmed))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    switch (winnerTeam)
+                    {
+                        case CustomWinner.Impostor:
+                            Main.AllPlayerControls
+                                .Where(pc => pc.GetCustomSubRoles().Contains(CustomRoles.Madmate))
+                                .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                            break;
+                        case CustomWinner.Succubus:
+                            Main.AllPlayerControls
+                                .Where(pc => pc.GetCustomSubRoles().Contains(CustomRoles.Charmed))
+                                .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                            break;
+                    }
                     break;
                 case 0:
                     reason = GameOverReason.CrewmatesByVote;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
                     break;
                 default:
-                    return false;//胜利条件未达成
+                    return false; // 胜利条件未达成
             }
             return true;
         }

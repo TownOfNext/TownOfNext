@@ -170,21 +170,10 @@ public enum CountTypes
     OutOfGame = -1,
     None = -2,
     Crew = CustomWinner.Crewmate,
-    Impostor =  CustomWinner.Impostor,
+    Impostor = CustomWinner.Impostor,
     Jackal = CustomWinner.Jackal,
-    Pelican =  CustomWinner.Pelican,
+    Pelican = CustomWinner.Pelican,
     Demon = CustomWinner.Demon,
-    BloodKnight =  CustomWinner.BloodKnight,
-    Succubus =  CustomWinner.Succubus,
-}
-
-public enum RealTeamTypes
-{
-    Crew = CustomWinner.Crewmate,
-    Impostor =  CustomWinner.Impostor,
-    Jackal = CustomWinner.Jackal,
-    Pelican =  CustomWinner.Pelican,
-    Demon = CustomWinner.Demon,
-    BloodKnight =  CustomWinner.BloodKnight,
-    Succubus =  CustomWinner.Succubus,
+    BloodKnight = CustomWinner.BloodKnight,
+    Succubus = CustomWinner.Succubus,
 }

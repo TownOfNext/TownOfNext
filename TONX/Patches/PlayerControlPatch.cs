@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.GameMode;
 using TONX.Roles.Impostor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -605,11 +606,18 @@ class FixedUpdatePatch
                 //seerに関わらず発動するSuffix
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
+                //seer作为GM在个人竞技中的Suffix
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.GM && seer != target)
+                {
+                    var role = target.GetRoleClass() as KB_Normal;
+                    Suffix.Append(role == null ? "" : KB_Normal.GetHealthText(role));
+                }
+
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
-                    Mark = isBlocked ? "(true)" : "(false)";
-                }*/
-                if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
-                    RealName = $"<size=0>{RealName}</size> ";
+                        Mark = isBlocked ? "(true)" : "(false)";
+                    }*/
+                    if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
+                        RealName = $"<size=0>{RealName}</size> ";
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
                 //Mark・Suffixの適用

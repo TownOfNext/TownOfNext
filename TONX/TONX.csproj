@@ -38,7 +38,7 @@
 		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
 	</Target>
 
-    <Target Name="UpdateMD5" AfterTargets="Build">
+    <Target Name="UpdateMD5" AfterTargets="Build" Condition="'$(EnableMD5Update)' == 'true'">
         <PropertyGroup>
             <OutputDll>$(OutputPath)$(AssemblyName).dll</OutputDll>
             <InfoJsonPath>$([System.IO.Path]::GetFullPath('$(ProjectDir)..\info.json'))</InfoJsonPath>

@@ -327,19 +327,22 @@ class TaskPanelBehaviourPatch
 
                     var lpc = PlayerControl.LocalPlayer;
 
-                    AllText += "\r\n";
-                    AllText += $"\r\n{GetString("PVP.ATK")}: {(lpc.GetRoleClass() as KB_Normal)?.ATK}";
-                    AllText += $"\r\n{GetString("PVP.DF")}: {(lpc.GetRoleClass() as KB_Normal)?.DF}";
-                    AllText += $"\r\n{GetString("PVP.RCO")}: {(lpc.GetRoleClass() as KB_Normal)?.HPReco}";
+                    if (lpc.GetCustomRole() is CustomRoles.KB_Normal)
+                    {
+                        AllText += "\r\n";
+                        AllText += $"\r\n{GetString("PVP.ATK")}: {(lpc.GetRoleClass() as KB_Normal)?.ATK}";
+                        AllText += $"\r\n{GetString("PVP.DF")}: {(lpc.GetRoleClass() as KB_Normal)?.DF}";
+                        AllText += $"\r\n{GetString("PVP.RCO")}: {(lpc.GetRoleClass() as KB_Normal)?.HPReco}";  
+                    }
                     AllText += "\r\n";
 
                     Dictionary<byte, string> SummaryText = new();
                     foreach (var id in PlayerState.AllPlayerStates.Keys)
                     {
+                        if (Utils.GetPlayerById(id).GetCustomRole() is CustomRoles.GM) continue;
                         string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-                        var score = (Utils.GetPlayerById(id).GetRoleClass() as KB_Normal)?.Score;
-                        string summary = $"{score}  {Utils.ColorString(Main.PlayerColors[id], name)}";
-                        if (score.ToString().Trim() == "") continue;
+                        string summary = $"{SoloKombatManager.GetDisplayScore(id)}  {Utils.ColorString(Main.PlayerColors[id], name)}";
+                        if (SoloKombatManager.GetDisplayScore(id).ToString().Trim() == "") continue;
                         SummaryText[id] = summary;
                     }
 
