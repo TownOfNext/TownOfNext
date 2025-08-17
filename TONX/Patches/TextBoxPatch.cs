@@ -21,8 +21,9 @@ public class TextBoxPatch
         { "！", "! " },
     };
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
-    public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
+    public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] ref string input, [HarmonyArgument(1)] string inputCompo = "")
     {
+        input = input.Replace("\r\n", " ");
         __instance.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
         if (input.Length < 1) return true;
         string before = input[^1..];
