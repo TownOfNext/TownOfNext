@@ -6,6 +6,7 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
+
 public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -153,4 +154,13 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         return LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        seen ??= seer;
+        if (!Is(seen) || isForMeeting) return "";
+        var LeftKills = OptionNeededKillCountToRecruit.GetInt() - KillCount;
+        if (LeftKills == 0) return "";
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(Translator.GetString("JackalNeededKillsToRecruit"), LeftKills));
+        
+    }
 }
