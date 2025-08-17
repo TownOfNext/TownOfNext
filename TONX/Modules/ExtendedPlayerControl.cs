@@ -61,12 +61,12 @@ static class ExtendedPlayerControl
         if (player == null || player.Is(newRole)) return;
 
         RoleTypes NewRoleType = newRole.GetRoleTypes();
-        bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? newRole is CustomRoles.KB_Normal;
+        bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? false;
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.PlayerId == 0) player.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
             else if (seer.PlayerId == player.PlayerId) player.RpcSetRoleDesync(NewRoleType, player.GetClientId());
-            else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? seer.GetCustomRole() is CustomRoles.KB_Normal) ?
+            else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
                 RoleTypes.Scientist : NewRoleType, seer.GetClientId());
         }
         Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
@@ -427,7 +427,6 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseImpostorVentButton();
-        if (pc.GetCustomRole() == CustomRoles.KB_Normal) roleCanUse = true;
 
         return roleCanUse ?? false;
     }

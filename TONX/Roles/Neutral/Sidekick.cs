@@ -20,7 +20,7 @@ public sealed class Sidekick : RoleBase, IKiller
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
-            Hidden: true
+            Hidden: new HiddenRoleInfo(0, null)
         );
     public Sidekick(PlayerControl player)
     : base(

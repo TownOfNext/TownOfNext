@@ -342,7 +342,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 !role.IsEnable()
                 || role.IsAddon()
                 || role.IsVanilla()
-                || role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.KB_Normal
+                || role.IsGameModeRole()
+                || role is CustomRoles.GM or CustomRoles.NotAssigned
                 || !Options.CustomRoleSpawnChances.ContainsKey(role))
             {
                 Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);

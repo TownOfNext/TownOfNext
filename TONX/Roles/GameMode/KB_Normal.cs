@@ -6,6 +6,7 @@ using TONX.Roles.Core;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 using static TONX.GameModes.SoloKombatManager;
+using static TONX.Translator;
 
 namespace TONX.Roles.GameMode;
 
@@ -149,47 +150,6 @@ public sealed class KB_Normal : RoleBase, IKiller
         
         Utils.NotifyRoles(Player);
     }
-    
-    private void OnPlayerBack()
-    {
-        _BackCountdown = -1;
-        _HP = _HPMax;
-        SendRPCSyncKBPlayer();
-
-        _LastHurt = Utils.GetTimeStamp();
-        Main.AllPlayerSpeed[Player.PlayerId] = Main.AllPlayerSpeed[Player.PlayerId] - 0.3f + _OriginalSpeed;
-        Player.MarkDirtySettings();
-        RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskComplete);
-        Player.SetKillCooldown();
-        PlayerRandomSpawn();
-    }
-    private void PlayerRandomSpawn()
-    {
-        RandomSpawn.SpawnMap map;
-        switch (Main.NormalOptions.MapId)
-        {
-            case 0:
-                map = new RandomSpawn.SkeldSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 1:
-                map = new RandomSpawn.MiraHQSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 2:
-                map = new RandomSpawn.PolusSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 4:
-                map = new RandomSpawn.AirshipSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 5:
-                map = new RandomSpawn.FungleSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-        }
-    }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -199,23 +159,16 @@ public sealed class KB_Normal : RoleBase, IKiller
         if (role == null) return "";
         return role.SoloAlive() ? Utils.ColorString(GetHealthColor(role), $"{(int)role._HP}/{(int)role._HPMax}") : "";
     }
-    
-    private static Color32 GetHealthColor(KB_Normal role)
-    {
-        var x = (int)(role._HP / role._HPMax * 10 * 50);
-        var R = 255; var G = 255; var B = 0;
-        if (x > 255) R -= x - 255; else G = x;
-        return new Color32((byte)R, (byte)G, (byte)B, byte.MaxValue);
-    }
 
-    public override string GetProgressText(bool comms = false)
+    public override void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
     {
         var playerId = Player.PlayerId;
         var rank = GetRankOfScore(playerId);
         var score =  $"{Score}";
-        var text = string.Format(Translator.GetString("KBDisplayScore"), rank.ToString(), score);
+        text = string.Format(Translator.GetString("KBDisplayScore"), rank.ToString(), score);
         var color = Utils.GetRoleColor(CustomRoles.KB_Normal);
-        return Utils.ColorString(color, text);
+        text = Utils.ColorString(color, text);
+        enabled = true;
     }
 
     public bool OnCheckMurderAsKiller(MurderInfo info)
@@ -249,6 +202,16 @@ public sealed class KB_Normal : RoleBase, IKiller
         Utils.NotifyRoles(killer);
         Utils.NotifyRoles(target);
         return false;
+    }
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        return string.Format(Translator.GetString("KBTimeRemain"), RoundTime.ToString());
+    }
+
+    public bool OverrideKillButtonText(out string text)
+    {
+        text = GetString("DemonButtonText");
+        return true;
     }
 
     private static void OnPlayerDead(PlayerControl target)
@@ -295,8 +258,51 @@ public sealed class KB_Normal : RoleBase, IKiller
                 break;
         }
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    private static Color32 GetHealthColor(KB_Normal role)
     {
-        return string.Format(Translator.GetString("KBTimeRemain"), RoundTime.ToString());
+        var x = (int)(role._HP / role._HPMax * 10 * 50);
+        var R = 255; var G = 255; var B = 0;
+        if (x > 255) R -= x - 255; else G = x;
+        return new Color32((byte)R, (byte)G, (byte)B, byte.MaxValue);
+    }
+    private void OnPlayerBack()
+    {
+        _BackCountdown = -1;
+        _HP = _HPMax;
+        SendRPCSyncKBPlayer();
+
+        _LastHurt = Utils.GetTimeStamp();
+        Main.AllPlayerSpeed[Player.PlayerId] = Main.AllPlayerSpeed[Player.PlayerId] - 0.3f + _OriginalSpeed;
+        Player.MarkDirtySettings();
+        RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskComplete);
+        Player.SetKillCooldown();
+        PlayerRandomSpawn();
+    }
+    private void PlayerRandomSpawn()
+    {
+        RandomSpawn.SpawnMap map;
+        switch (Main.NormalOptions.MapId)
+        {
+            case 0:
+                map = new RandomSpawn.SkeldSpawnMap();
+                map.RandomTeleport(Player);
+                break;
+            case 1:
+                map = new RandomSpawn.MiraHQSpawnMap();
+                map.RandomTeleport(Player);
+                break;
+            case 2:
+                map = new RandomSpawn.PolusSpawnMap();
+                map.RandomTeleport(Player);
+                break;
+            case 4:
+                map = new RandomSpawn.AirshipSpawnMap();
+                map.RandomTeleport(Player);
+                break;
+            case 5:
+                map = new RandomSpawn.FungleSpawnMap();
+                map.RandomTeleport(Player);
+                break;
+        }
     }
 }

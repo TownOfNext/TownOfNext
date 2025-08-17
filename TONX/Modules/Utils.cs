@@ -480,7 +480,6 @@ public static class Utils
         var States = PlayerState.GetByPlayerId(p.PlayerId);
         if (p.Role.IsImpostor && p.GetCustomRole() is not CustomRoles.CrewPostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
-        if (p.GetCustomRole() == CustomRoles.KB_Normal) return false;
         // 死んでいて，死人のタスク免除が有効なら確定でfalse
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool())
         {
@@ -544,7 +543,7 @@ public static class Utils
         seen ??= seer;
         var comms = IsActive(SystemTypes.Comms) || Concealer.IsHidding;
         bool enabled = seer == seen
-            || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool()) || seen.GetCustomRole() == CustomRoles.KB_Normal;
+            || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherTasks.GetBool());
         string text = GetProgressText(seen.PlayerId, comms);
 
         //seer側による変更
@@ -1066,9 +1065,6 @@ public static class Utils
                     {
                         TargetSuffix.Insert(0, "\r\n");
                     }
-
-                    if (Options.CurrentGameMode == CustomGameMode.SoloKombat && target.GetCustomRole() == CustomRoles.KB_Normal)
-                        TargetRoleText = $"<size={fontSize}>{GetProgressText(seer, target)}</size>\r\n";
 
                     //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                     string TargetPlayerName = target.GetRealName(isForMeeting);

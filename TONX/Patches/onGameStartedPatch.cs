@@ -320,7 +320,7 @@ internal class SelectRolesPatch
         Logger.Info("Set Disconnected", "SelectRolesPatch");
         foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
-            if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? role is CustomRoles.KB_Normal)) player.SetRole(RoleTypes.Crewmate, true);
+            if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? false)) player.SetRole(RoleTypes.Crewmate, true);
             else player.RpcSetRoleDesync(role.GetRoleTypes(), player.GetClientId());
         }
         foreach (var player in Main.AllPlayerControls.Where(p => !RoleResult.Select(r => r.Key.PlayerId).ToList().Contains(p.PlayerId)).ToList()) // 给GM或未被分配到职业的玩家注册职业
@@ -344,7 +344,7 @@ internal class SelectRolesPatch
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
     {
-        if (!role.IsEnable() && role is not CustomRoles.KB_Normal) return;
+        if (!role.IsEnable() && !role.IsGameModeRole()) return;
 
         var hostId = PlayerControl.LocalPlayer.PlayerId;
 

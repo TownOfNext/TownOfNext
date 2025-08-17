@@ -71,7 +71,6 @@ public class PlayerState
             roleInfo.CountType :
             role switch
             {
-                CustomRoles.KB_Normal => CountTypes.Impostor,
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
