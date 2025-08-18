@@ -58,7 +58,7 @@ public class PlayerState
                 _ => CustomRoles.Crewmate,
             };
     }
-    public void SetMainRole(CustomRoles role)
+    public void SetMainRole(CustomRoles role, bool recordRole = true)
     {
         MainRole = role;
 
@@ -69,8 +69,10 @@ public class PlayerState
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
+
+        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false, bool recordRole = true)
     {
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
@@ -101,15 +103,13 @@ public class PlayerState
             SubRoles.Remove(CustomRoles.Madmate);
         }
 
+        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
     }
-    public void RemoveSubRole(CustomRoles role)
+    public void RemoveSubRole(CustomRoles role, bool recordRole = true)
     {
-        if (SubRoles.Contains(role))
-            SubRoles.Remove(role);
-    }
-    public void RemoveAllSubRoles()
-    {
-        SubRoles.Clear();
+        if (!SubRoles.Contains(role)) return;
+        SubRoles.Remove(role);
+        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
     }
 
     public void SetDead()

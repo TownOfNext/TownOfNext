@@ -147,7 +147,7 @@ class IntroCutscenePatch
                 break;
         }
 
-        if (role.GetRoleInfo()?.IntroSound is AudioClip introSound)
+        if (role.GetRoleInfo()?.IntroSound is { } introSound)
         {
             PlayerControl.LocalPlayer.Data.Role.IntroSound = introSound;
         }

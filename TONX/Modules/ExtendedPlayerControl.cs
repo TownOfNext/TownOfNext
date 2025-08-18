@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System.Text;
 using TONX.Modules;
+using TONX.Roles.AddOns;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Impostor;
@@ -50,7 +51,7 @@ static class ExtendedPlayerControl
     public static void ChangeRole(this PlayerControl player, CustomRoles newRole)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (player == null || player.Is(newRole)) return;
+        if (player == null || player.Is(newRole) || newRole >= CustomRoles.NotAssigned) return;
 
         RoleTypes NewRoleType = newRole.GetRoleTypes();
         bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? false;
@@ -62,6 +63,10 @@ static class ExtendedPlayerControl
                 RoleTypes.Scientist : NewRoleType, seer.GetClientId());
         }
         Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
+
+        var state = PlayerState.GetByPlayerId(player.PlayerId);
+        var remove = state.SubRoles.Where(r => !(AddOnsAssignData.GetAddonAssignData(r)?.AssignTypes.Contains(newRole.GetCustomRoleTypes()) ?? false)).ToList();
+        remove.ForEach(r => state.RemoveSubRole(r, false));
 
         player.RpcSetCustomRole(newRole);
         player.ResetKillCooldown();

@@ -10,7 +10,7 @@ public static class ServerAddManager
     [PluginModuleInitializer]
     public static void Init()
     {
-        serverManager.AvailableRegions = ServerManager.DefaultRegions;
+        // serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = new();
 
         if (IsChineseUser)
@@ -20,7 +20,6 @@ public static class ServerAddManager
             regionInfos.Add(CreateHttp("bj.8w.fan", "<color=#9900CC>新猫服</color><color=#ffff00>[北京]</color>", 443, true));
             regionInfos.Add(CreateHttp("player.fangkuai.fun", "<color=#00ffff>方块</color><color=#FF44FF>宿迁私服</color>", 443, true));
             regionInfos.Add(CreateHttp("auhk.fangkuai.fun", "<color=#00ffff>方块</color><color=#FFC0CB>香港私服</color>", 443, true));
-
         }
         regionInfos.Add(CreateHttp("au-as.duikbo.at", "Modded Asia (MAS)", 443, true));
         regionInfos.Add(CreateHttp("www.aumods.org", "Modded NA (MNA)", 443, true));

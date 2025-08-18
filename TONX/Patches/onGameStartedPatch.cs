@@ -5,6 +5,7 @@ using System.Collections;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns;
+using UnityEngine;
 using static TONX.Modules.CustomRoleSelector;
 
 namespace TONX;
@@ -48,6 +49,9 @@ internal class ChangeRoleSettings
             Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
 
             Main.LastNotifyNames = new();
+
+            Utils.RolesRecord = new();
+            Utils.CanRecord = false;
 
             Main.PlayerColors = new();
             //名前の記録
@@ -254,6 +258,9 @@ internal class SelectRolesPatch
                     break;
             }
 
+            // 给玩家自己注册职业
+            AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp());
+
             GameOptionsSender.AllSenders.Clear();
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -261,23 +268,22 @@ internal class SelectRolesPatch
                     new PlayerGameOptionsSender(pc)
                 );
             }
-
             /*
-            //インポスターのゴーストロールがクルーになるバグ対策
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc.Data.Role.IsImpostor || Main.ResetCamPlayerList.Contains(pc.PlayerId))
+                //インポスターのゴーストロールがクルーになるバグ対策
+                foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    pc.Data.Role.DefaultGhostRole = RoleTypes.ImpostorGhost;
+                    if (pc.Data.Role.IsImpostor || Main.ResetCamPlayerList.Contains(pc.PlayerId))
+                    {
+                        pc.Data.Role.DefaultGhostRole = RoleTypes.ImpostorGhost;
+                    }
                 }
-            }
             */
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
 
-            // 给玩家自己注册职业
-            AmongUsClient.Instance.StartCoroutine(CoAssignForSelf().WrapToIl2Cpp());
+            Utils.CanRecord = true;
+            foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         }
         catch (Exception ex)
         {
@@ -285,8 +291,10 @@ internal class SelectRolesPatch
             ex.Message.Split(@"\r\n").Do(line => Logger.Fatal(line, "Select Role Postfix"));
         }
     }
-    private static IEnumerator CoAssignForSelf()
+    private static IEnumerator CoEndAssign()
     {
+        yield return new WaitForSeconds(1.0f);
+
         Dictionary<byte, bool> realDisconnectInfo = new();
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -296,6 +304,8 @@ internal class SelectRolesPatch
             AmongUsClient.Instance.SendAllStreamedObjects();
         }
         Logger.Info("Set Disconnected", "CoAssignForSelf");
+        yield return new WaitForSeconds(1.0f);
+
         foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
             if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? false)) player.SetRole(RoleTypes.Crewmate, true);
@@ -307,6 +317,8 @@ internal class SelectRolesPatch
             else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
         Logger.Info("Assign Self", "CoAssignForSelf");
+        yield return new WaitForSeconds(0.5f);
+
         foreach (var pc in Main.AllPlayerControls)
         {
             bool disconnected = realDisconnectInfo[pc.PlayerId];

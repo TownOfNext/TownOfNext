@@ -116,7 +116,6 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             return true;
         }
         target.ChangeRole(CustomRoles.Sidekick);
-        PlayerState.GetByPlayerId(target.PlayerId).RemoveAllSubRoles();
         Logger.Info($"豺狼{killer?.Data?.PlayerName}招募了{target?.Data?.PlayerName}", "Jackal");
         LeftRecruitCount--;
         Utils.NotifyRoles();
