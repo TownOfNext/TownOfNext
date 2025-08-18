@@ -84,14 +84,14 @@ class GameEndChecker
                 // 中立共同胜利
                 if (Options.NeutralWinTogether.GetBool() && Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.IsNeutral()))
                 {
-                    Main.AllPlayerControls.Where(p => p.IsNeutral())
+                    Main.AllPlayerControls.Where(p => p.IsNeutral() && !CustomWinnerHolder.WinnerIds.Contains(p.PlayerId))
                         .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
                 }
                 else if (Options.NeutralRoleWinTogether.GetBool())
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.IsNeutral()))
                     {
-                        Main.AllPlayerControls.Where(p => p.GetCustomRole() == pc.GetCustomRole())
+                        Main.AllPlayerControls.Where(p => p.GetCustomRole() == pc.GetCustomRole() && !CustomWinnerHolder.WinnerIds.Contains(p.PlayerId))
                             .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
                     }
                 }
@@ -221,7 +221,7 @@ class GameEndChecker
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
                 return true;
             }
-            if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) //恋人胜利
+            if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // 恋人胜利
             {
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
@@ -231,7 +231,7 @@ class GameEndChecker
             var nonZeroEntries = counts.Where(kvp => kvp.Key is not CountTypes.Crew && kvp.Value > 0).ToList();
             switch (nonZeroEntries.Count)
             {
-                case 1 when nonZeroEntries[0].Value >= crewCount:
+                case 1 when nonZeroEntries[0].Value >= crewCount && !CustomRoles.Sheriff.IsExist():
                     reason = GameOverReason.ImpostorsByKill;
                     var winnerTeam = (CustomWinner)nonZeroEntries.First().Key;
                     CustomWinnerHolder.ResetAndSetWinner(winnerTeam);
@@ -255,6 +255,9 @@ class GameEndChecker
                 case 0:
                     reason = GameOverReason.CrewmatesByVote;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                    Main.AllPlayerControls
+                        .Where(pc => (CustomWinner)pc.GetCountTypes() == CustomWinner.Crewmate && !pc.GetCustomSubRoles().Contains(CustomRoles.Madmate) && !pc.GetCustomSubRoles().Contains(CustomRoles.Charmed))
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 default:
                     return false; // 胜利条件未达成

@@ -30,9 +30,9 @@ public sealed class KB_Normal : RoleBase, IKiller
     {
         _HPMax = _HP = KB_HPMax.GetFloat();
         HPReco = KB_RecoverPerSecond.GetFloat();
-        ATK =  KB_ATK.GetFloat();
+        ATK = KB_ATK.GetFloat();
         DF = 0F;
-        
+
         Score = 0;
         _LastHurt = Utils.GetTimeStamp();
     }

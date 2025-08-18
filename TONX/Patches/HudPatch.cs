@@ -52,7 +52,7 @@ class HudManagerPatch
     {
         if (!GameStates.IsModHost) return;
 
-        if (HudManagerInitializePatch.RoleInfoButton != null) 
+        if (HudManagerInitializePatch.RoleInfoButton != null)
         {
             var template = HudManager.Instance.MapButton;
             var RoleInfoButton = HudManagerInitializePatch.RoleInfoButton;
@@ -62,7 +62,7 @@ class HudManagerPatch
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
-        var TaskTextPrefix = "";
+
         //壁抜け
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
@@ -129,11 +129,6 @@ class HudManagerPatch
                     LowerInfoText.enabled = false;
                 }
 
-                if (player.Is(CustomRoles.Madmate) || player.GetCustomRole() is CustomRoles.Jester)
-                {
-                    TaskTextPrefix += GetString(StringNames.FakeTasks);
-                }
-
                 if (player.CanUseKillButton())
                 {
                     __instance.KillButton.ToggleVisible(player.IsAlive() && GameStates.IsInTask);
@@ -144,7 +139,7 @@ class HudManagerPatch
                     __instance.KillButton.SetDisabled();
                     __instance.KillButton.ToggleVisible(false);
                 }
-                
+
                 bool CanUseVent = player.CanUseImpostorVentButton();
                 __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
                 player.Data.Role.CanVent = CanUseVent;
@@ -157,7 +152,24 @@ class HudManagerPatch
                 __instance.AbilityButton.Show();
                 __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
                 __instance.AbilityButton.SetInfiniteUses();
-                if (LowerInfoText != null) LowerInfoText.enabled = false;
+
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && player.GetCustomRole() is CustomRoles.GM)
+                {
+                    if (LowerInfoText == null)
+                    {
+                        LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.buttonLabelText);
+                        LowerInfoText.transform.parent = __instance.transform;
+                        LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                        LowerInfoText.alignment = TMPro.TextAlignmentOptions.Center;
+                        LowerInfoText.overflowMode = TMPro.TextOverflowModes.Overflow;
+                        LowerInfoText.enableWordWrapping = false;
+                        LowerInfoText.color = Palette.EnabledColor;
+                        LowerInfoText.fontSizeMin = 2.0f;
+                        LowerInfoText.fontSizeMax = 2.0f;
+                    }
+                    LowerInfoText.text = string.Format(GetString("KBTimeRemain"), SoloKombatManager.RoundTime.ToString());
+                    LowerInfoText.enabled = true;
+                }
             }
         }
 

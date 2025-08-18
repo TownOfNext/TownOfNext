@@ -21,7 +21,7 @@ public class SimpleRoleInfo
     public bool IsEnable = false;
     public OptionCreatorDelegate OptionCreator;
     public string ChatCommand;
-    /// <summary>����ҕ��Τߥ���ݥ����`��Ҋ������</summary>
+    /// <summary>本人視点のみインポスターに見える役職</summary>
     public bool IsDesyncImpostor;
     private Func<AudioClip> introSound;
     public AudioClip IntroSound => introSound?.Invoke();
@@ -30,19 +30,19 @@ public class SimpleRoleInfo
     public HiddenRoleInfo Hidden;
 
     /// <summary>
-    /// �����趨�ϵ���С����/�������/һ��λ��
+    /// 人数设定上的最小人数/最大人数/一单位数
     /// </summary>
     public IntegerValueRule AssignCountRule;
     /// <summary>
-    /// ����Ӧ�÷������
-    /// ���γ��x���� = �O������ / AssignUnitCount
+    /// 人数应该分配多少
+    /// 役職の抽選回数 = 設定人数 / AssignUnitCount
     /// </summary>
     public int AssignUnitCount => AssignCountRule?.Step ?? 1;
     /// <summary>
-    /// �g�H�˥������󤵤���������U
+    /// 実際にアサインされる役職の内訳
     /// </summary>
     public CustomRoles[] AssignUnitRoles;
-    /// <summary>�����h���v�S</summary>
+    /// <summary>役職の説明関係</summary>
     public RoleDescription Description { get; private set; }
 
     private SimpleRoleInfo(

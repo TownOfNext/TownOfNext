@@ -144,16 +144,8 @@ internal class SelectRolesPatch
             }
 
             // 注册反向职业
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
-            {
-                foreach (var kv in RoleResult.Where(x => x.Value == CustomRoles.KB_Normal))
-                    AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: RoleTypes.Impostor);
-            }
-            else
-            {
-                foreach (var kv in RoleResult.Where(x => x.Value.GetRoleInfo().IsDesyncImpostor || x.Value == CustomRoles.CrewPostor))
-                    AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: kv.Value.GetRoleInfo().BaseRoleType.Invoke());
-            }
+            foreach (var kv in RoleResult.Where(x => x.Value.GetRoleInfo().IsDesyncImpostor || x.Value == CustomRoles.CrewPostor))
+                AssignDesyncRole(kv.Value, kv.Key, senders, BaseRole: kv.Value.GetRoleInfo().BaseRoleType.Invoke());
         }
         catch (Exception ex)
         {
@@ -207,17 +199,6 @@ internal class SelectRolesPatch
                 state.SetMainRole(role);
             }
 
-            // 个人竞技模式用
-            if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
-            {
-                foreach (var pair in PlayerState.AllPlayerStates)
-                {
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-                }
-                CustomRoleManager.CreateInstance();
-                goto EndOfSelectRolePatch;
-            }
-
             foreach (var (player, role) in RoleResult.Where(kvp => !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
             {
                 SetColorPatch.IsAntiGlitchDisabled = true;
@@ -233,6 +214,9 @@ internal class SelectRolesPatch
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
             }
             CustomRoleManager.CreateInstance();
+
+            // 个人竞技模式用
+            if (Options.CurrentGameMode == CustomGameMode.SoloKombat) goto EndOfSelectRolePatch;
 
             if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
             else if (CustomRoles.Lovers.IsEnable() && rd.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
@@ -311,7 +295,7 @@ internal class SelectRolesPatch
             pc.Data.MarkDirty();
             AmongUsClient.Instance.SendAllStreamedObjects();
         }
-        Logger.Info("Set Disconnected", "SelectRolesPatch");
+        Logger.Info("Set Disconnected", "CoAssignForSelf");
         foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
             if (player.PlayerId == 0 && (role.GetRoleInfo()?.IsDesyncImpostor ?? false)) player.SetRole(RoleTypes.Crewmate, true);
@@ -322,7 +306,7 @@ internal class SelectRolesPatch
             if (player.PlayerId == 0) player.SetRole(RoleTypes.Crewmate, true);
             else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
-        Logger.Info("Assign Self", "SelectRolesPatch");
+        Logger.Info("Assign Self", "CoAssignForSelf");
         foreach (var pc in Main.AllPlayerControls)
         {
             bool disconnected = realDisconnectInfo[pc.PlayerId];
@@ -333,7 +317,7 @@ internal class SelectRolesPatch
                 AmongUsClient.Instance.SendAllStreamedObjects();
             }
         }
-        Logger.Info("Recover Disconnect Data", "SelectRolesPatch");
+        Logger.Info("Recover Disconnect Data", "CoAssignForSelf");
         yield break;
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
@@ -353,7 +337,7 @@ internal class SelectRolesPatch
             else senders[seer.PlayerId].RpcSetRole(player, RoleTypes.Scientist, seer.GetClientId());
         }
         player.Data.IsDead = true;
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignCustomSubRoles");
+        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignCustomRoles");
     }
     private static void AssignLoversRoles(int RawCount = -1)
     {

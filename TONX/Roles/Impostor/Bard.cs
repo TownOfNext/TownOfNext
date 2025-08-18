@@ -27,7 +27,7 @@ public sealed class Bard : RoleBase, IImpostor
         player
     )
     { }
-    
+
     private float KillCooldown;
     public override void Add() => KillCooldown = Options.DefaultKillCooldown;
     public float CalculateKillCooldown() => KillCooldown;
