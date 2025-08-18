@@ -268,15 +268,16 @@ internal class SelectRolesPatch
                     new PlayerGameOptionsSender(pc)
                 );
             }
+
             /*
-                //インポスターのゴーストロールがクルーになるバグ対策
-                foreach (var pc in PlayerControl.AllPlayerControls)
+            //インポスターのゴーストロールがクルーになるバグ対策
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc.Data.Role.IsImpostor || Main.ResetCamPlayerList.Contains(pc.PlayerId))
                 {
-                    if (pc.Data.Role.IsImpostor || Main.ResetCamPlayerList.Contains(pc.PlayerId))
-                    {
-                        pc.Data.Role.DefaultGhostRole = RoleTypes.ImpostorGhost;
-                    }
+                    pc.Data.Role.DefaultGhostRole = RoleTypes.ImpostorGhost;
                 }
+            }
             */
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
