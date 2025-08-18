@@ -107,8 +107,7 @@ public class PlayerState
     }
     public void RemoveSubRole(CustomRoles role, bool recordRole = true)
     {
-        if (!SubRoles.Contains(role)) return;
-        SubRoles.Remove(role);
+        if (!SubRoles.Remove(role)) return;
         if (recordRole) Utils.RecordPlayerRoles(PlayerId);
     }
 
