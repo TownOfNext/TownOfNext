@@ -18,7 +18,7 @@ class EmergencyMinigamePatch
 {
     public static void Postfix(EmergencyMinigame __instance)
     {
-        //if (Options.CurrentGameMode == CustomGameMode.HideAndSeek) __instance.Close();
+        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) __instance.Close();
     }
 }
 [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]

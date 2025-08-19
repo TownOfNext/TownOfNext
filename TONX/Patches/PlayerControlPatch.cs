@@ -538,11 +538,6 @@ class FixedUpdatePatch
             }
             if (GameStates.IsInGame)
             {
-                //if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
-                //{
-                //    var hasRole = main.AllPlayerCustomRoles.TryGetValue(__instance.PlayerId, out var role);
-                //    if (hasRole) RoleTextData = Utils.GetRoleTextHideAndSeek(__instance.Data.Role.Role, role);
-                //}
                 (RoleText.enabled, RoleText.text) = Utils.GetRoleNameAndProgressTextData(PlayerControl.LocalPlayer, __instance);
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {

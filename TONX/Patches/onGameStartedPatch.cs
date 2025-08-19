@@ -260,31 +260,6 @@ internal class SelectRolesPatch
 
             // 给玩家自己注册职业
             AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp());
-
-            GameOptionsSender.AllSenders.Clear();
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                GameOptionsSender.AllSenders.Add(
-                    new PlayerGameOptionsSender(pc)
-                );
-            }
-
-            /*
-            //インポスターのゴーストロールがクルーになるバグ対策
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc.Data.Role.IsImpostor || Main.ResetCamPlayerList.Contains(pc.PlayerId))
-                {
-                    pc.Data.Role.DefaultGhostRole = RoleTypes.ImpostorGhost;
-                }
-            }
-            */
-            Utils.CountAlivePlayers(true);
-            Utils.SyncAllSettings();
-            SetColorPatch.IsAntiGlitchDisabled = false;
-
-            Utils.CanRecord = true;
-            foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         }
         catch (Exception ex)
         {
@@ -331,6 +306,20 @@ internal class SelectRolesPatch
             }
         }
         Logger.Info("Recover Disconnect Data", "CoAssignForSelf");
+        yield return new WaitForSeconds(1.0f);
+
+        GameOptionsSender.AllSenders.Clear();
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
+        }
+
+        Utils.CountAlivePlayers(true);
+        Utils.SyncAllSettings();
+        SetColorPatch.IsAntiGlitchDisabled = false;
+
+        Utils.CanRecord = true;
+        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         yield break;
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
