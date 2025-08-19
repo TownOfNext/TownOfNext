@@ -48,10 +48,23 @@ static class ExtendedPlayerControl
         writer.WritePacked((int)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ChangeRole(this PlayerControl player, CustomRoles newRole)
+    public static void RpcChangeRole(this PlayerControl player, CustomRoles newRole)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player == null || player.Is(newRole) || newRole >= CustomRoles.NotAssigned) return;
+
+        player.RpcChangeBaseRole(newRole);
+        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
+
+        AddOnsAssignData.RemoveImcompatibleAddons(player);
+        player.RpcSetCustomRole(newRole);
+        player.ResetKillCooldown();
+        player.GetPlayerTaskState().hasTasks = Utils.HasTasks(player.Data, false);
+    }
+    public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player == null) return;
 
         RoleTypes NewRoleType = newRole.GetRoleTypes();
         bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? false;
@@ -62,20 +75,29 @@ static class ExtendedPlayerControl
             else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
                 RoleTypes.Scientist : NewRoleType, seer.GetClientId());
         }
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
-
-        var state = PlayerState.GetByPlayerId(player.PlayerId);
-        var remove = state.SubRoles.Where(r => !(AddOnsAssignData.GetAddonAssignData(r)?.AssignTypes.Contains(newRole.GetCustomRoleTypes()) ?? false)).ToList();
-        remove.ForEach(r => state.RemoveSubRole(r, false));
-
-        player.RpcSetCustomRole(newRole);
-        player.ResetKillCooldown();
-        player.GetPlayerTaskState().hasTasks = Utils.HasTasks(player.Data, false);
     }
 
     public static void RpcExile(this PlayerControl player)
     {
         RPC.ExileAsync(player);
+    }
+    public static void RpcRevive(this PlayerControl player)
+    {
+        if (player == null) return;
+        if (!player.Data.IsDead && player.IsAlive()) return;
+
+        if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
+
+        PlayerState.GetByPlayerId(player.PlayerId).IsDead = false;
+        PlayerState.GetByPlayerId(player.PlayerId).DeathReason = CustomDeathReason.etc;
+
+        player.RpcChangeBaseRole(player.GetCustomRole());
+        player.ResetKillCooldown();
+        player.SyncSettings();
+        player.SetKillCooldown();
+        player.RpcResetAbilityCooldown();
+
+        Utils.NotifyRoles(SpecifySeer: player);
     }
     public static ClientData GetClient(this PlayerControl player)
     {

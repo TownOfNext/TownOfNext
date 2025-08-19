@@ -2,12 +2,12 @@ using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns;
+
 public class AddOnsAssignData
 {
     static Dictionary<CustomRoles, AddOnsAssignData> AllData = new();
     public CustomRoles Role { get; private set; }
     public int IdStart { get; private set; }
-    public List<CustomRoleTypes> AssignTypes { get; private set; }
     OptionItem CrewmateMaximum;
     OptionItem CrewmateFixedRole;
     OptionItem CrewmateAssignTarget;
@@ -53,10 +53,8 @@ public class AddOnsAssignData
     {
         IdStart = idStart;
         Role = role;
-        AssignTypes = new();
         if (assignCrewmate)
         {
-            AssignTypes.Add(CustomRoleTypes.Crewmate);
             CrewmateMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
@@ -70,7 +68,6 @@ public class AddOnsAssignData
 
         if (assignImpostor)
         {
-            AssignTypes.Add(CustomRoleTypes.Impostor);
             ImpostorMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 3, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
@@ -84,7 +81,6 @@ public class AddOnsAssignData
 
         if (assignNeutral)
         {
-            AssignTypes.Add(CustomRoleTypes.Neutral);
             NeutralMaximum = IntegerOptionItem.Create(idStart++, "RoleTypesMaximum", new(0, 15, 1), 1, tab, false)
                 .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.Players);
@@ -185,9 +181,10 @@ public class AddOnsAssignData
 
         return candidates;
     }
-    public static AddOnsAssignData GetAddonAssignData(CustomRoles role)
+    public static void RemoveImcompatibleAddons(PlayerControl player)
     {
-        if (!role.IsAddon()) return null;
-        return AllData.ContainsKey(role) ? AllData[role] : null;
+        var state = PlayerState.GetByPlayerId(player.PlayerId);
+        var remove = state.SubRoles.Where(r => !CheckRoleConflict(player, r)).ToList();
+        remove.ForEach(r => state.RemoveSubRole(r, false));
     }
 }

@@ -17,7 +17,6 @@ internal static class SoloKombatManager
     public static OptionItem KB_RecoverPerSecond;
     public static OptionItem KB_ResurrectionWaitingTime;
     public static OptionItem KB_KillBonusMultiplier;
-    public static OptionItem KB_BootVentWhenDead;
 
     public static void SetupCustomOption()
     {
@@ -57,9 +56,6 @@ internal static class SoloKombatManager
             .SetGameMode(CustomGameMode.SoloKombat)
             .SetColor(Utils.GetRoleColor(CustomRoles.KB_Normal))
             .SetValueFormat(OptionFormat.Multiplier);
-        KB_BootVentWhenDead = BooleanOptionItem.Create(10_000_009, "KB_BootVentWhenDead", true, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.SoloKombat)
-            .SetColor(Utils.GetRoleColor(CustomRoles.KB_Normal));
     }
 
     [GameModuleInitializer]

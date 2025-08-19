@@ -115,7 +115,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             KillCount++;
             return true;
         }
-        target.ChangeRole(CustomRoles.Sidekick);
+        target.RpcChangeRole(CustomRoles.Sidekick);
         Logger.Info($"豺狼{killer?.Data?.PlayerName}招募了{target?.Data?.PlayerName}", "Jackal");
         LeftRecruitCount--;
         Utils.NotifyRoles();
@@ -128,7 +128,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         {
             foreach (var sidekick in Main.AllPlayerControls.Where(p => p.IsAlive() && p.Is(CustomRoles.Sidekick)).ToList())
             {
-                sidekick.ChangeRole(CustomRoles.Jackal);
+                sidekick.RpcChangeRole(CustomRoles.Jackal);
                 Logger.Info($"跟班{sidekick?.Data?.PlayerName}上位", "Jackal");
             }
             Utils.NotifyRoles();

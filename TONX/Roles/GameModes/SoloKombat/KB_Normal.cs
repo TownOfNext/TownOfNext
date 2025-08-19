@@ -38,20 +38,17 @@ public sealed class KB_Normal : RoleBase, IKiller
     }
 
     public bool CanUseSabotageButton() => false;
-    public bool CanUseKillButton() => SoloAlive();
-    public float CalculateKillCooldown() => CanUseKillButton()? KB_ATKCooldown.GetFloat() : 255f;
+    public bool CanUseKillButton() => true;
+    public float CalculateKillCooldown() => KB_ATKCooldown.GetFloat();
 
     private float _HP;
     private float _HPMax;
-    private float _OriginalSpeed;
     private long _LastHurt;
     private int _BackCountdown;
     public float HPReco { get; private set; }
     public float ATK { get; private set; }
     public float DF { get; private set; }
     public int Score { get; private set; }
-
-    private bool SoloAlive() => _HP > 0f;
 
     private enum RoleRpcType
     {
@@ -94,44 +91,31 @@ public sealed class KB_Normal : RoleBase, IKiller
                 break;
         }
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnSecondsUpdate(PlayerControl player, long now)
     {
         if (!GameStates.IsInTask) return;
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (SoloAlive()) return;
-        var pos = Utils.GetBlackRoomPS();
-        var dis = Vector2.Distance(pos, Player.GetTruePosition());
-        if (dis > 1f) Utils.TP(Player.NetTransform, pos);
-    }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
         if (_LastHurt + KB_RecoverAfterSecond.GetInt() < Utils.GetTimeStamp()
             && _HP < _HPMax
-            && SoloAlive()
-            && !Player.inVent)
+            && !player.Data.IsDead
+            && !player.inVent)
         {
             _HP += HPReco;
-            _HP =  Math.Min(_HPMax, _HP);
+            _HP = Math.Min(_HPMax, _HP);
             SendRPCSyncKBPlayer();
-        }
-        if (SoloAlive())
-        {
-            var pos = Utils.GetBlackRoomPS();
-            var dis = Vector2.Distance(pos, Player.GetTruePosition());
-            if (dis < 1.2f) PlayerRandomSpawn();
         }
         if (_BackCountdown > 0)
         {
             _BackCountdown--;
-            if (_BackCountdown <= 0) OnPlayerBack();
+            if (_BackCountdown <= 0) OnPlayerBack(player);
             SendRPCSyncKBBackCountdown();
         }
         if (_BackCountdown > 0)
         {
-            Player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown));
+            player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown));
         }
-        Utils.NotifyRoles(Player);
+        Utils.NotifyRoles(player);
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -141,27 +125,23 @@ public sealed class KB_Normal : RoleBase, IKiller
     }
     public static string GetHealthText(KB_Normal role)
     {
-        return role.SoloAlive() ? Utils.ColorString(GetHealthColor(role), $"{(int)role._HP}/{(int)role._HPMax}") : "";
+        return !role.Player.Data.IsDead ? Utils.ColorString(GetHealthColor(role), $"{(int)role._HP}/{(int)role._HPMax}") : "";
+    }
+    private static Color32 GetHealthColor(KB_Normal role)
+    {
+        var x = (int)(role._HP / role._HPMax * 10 * 50);
+        var R = 255; var G = 255; var B = 0;
+        if (x > 255) R -= x - 255; else G = x;
+        return new Color32((byte)R, (byte)G, (byte)B, byte.MaxValue);
     }
     public override string GetProgressText(bool comms = false) => GetDisplayScore(Player.PlayerId);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = (info.AttemptKiller, info.AttemptTarget);
-        if (killer == null || target == null) return false;
-        var killerRole = killer.GetRoleClass() as KB_Normal;
-        var targetRole = target.GetRoleClass() as KB_Normal;
-        if (killerRole == null || targetRole == null) return false;
-        if (!killerRole.SoloAlive() || !targetRole.SoloAlive()) return false;
-        if (target.inVent || target.walkingToVent || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()) return false;
+        if (target.GetRoleClass() is not KB_Normal targetRole) return false;
 
-        var dmg = killerRole.ATK - targetRole.DF;
+        var dmg = ATK - targetRole.DF;
         targetRole._HP = Math.Max(0f, targetRole._HP - dmg);
-
-        if (!targetRole.SoloAlive())
-        {
-            OnPlayerDead(target);
-            OnPlayerKill(killer);
-        }
 
         targetRole._LastHurt = Utils.GetTimeStamp();
 
@@ -172,37 +152,35 @@ public sealed class KB_Normal : RoleBase, IKiller
         targetRole.SendRPCSyncKBPlayer();
         Utils.NotifyRoles(killer);
         Utils.NotifyRoles(target);
+
+        if (targetRole._HP <= 0f)
+        {
+            RewardKiller(killer);
+            return true;
+        }
+
         return false;
+    }
+    public override bool OnCheckMurderAsTarget(MurderInfo info)
+    {
+        _BackCountdown = KB_ResurrectionWaitingTime.GetInt();
+        SendRPCSyncKBBackCountdown();
+        return true;
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(GetString("KBTimeRemain"), RoundTime.ToString());
+        return Utils.ColorString(Color.white, string.Format(GetString("KBTimeRemain"), RoundTime.ToString()));
     }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("DemonButtonText");
         return true;
     }
-    private static void OnPlayerDead(PlayerControl target)
+    private void RewardKiller(PlayerControl killer)
     {
-        var targetRole = target.GetRoleClass() as KB_Normal;
-        targetRole!._OriginalSpeed = Main.AllPlayerSpeed[target.PlayerId];
-        
-        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
-        Main.AllPlayerSpeed[target.PlayerId] = 0.3f;
-        target.MarkDirtySettings();
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) PlayerControl.LocalPlayer.KillFlash();
 
-        targetRole._BackCountdown = KB_ResurrectionWaitingTime.GetInt();
-        targetRole.SendRPCSyncKBBackCountdown();
-    }
-    private static void OnPlayerKill(PlayerControl killer)
-    {
-        var killerRole = killer.GetRoleClass() as KB_Normal;
-        killer.KillFlash();
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
-            PlayerControl.LocalPlayer.KillFlash();
-
-        killerRole!.Score++;
+        Score++;
 
         var addRate = IRandom.Instance.Next(3, 5 + GetRankOfScore(killer.PlayerId)) / 100f;
         addRate *= KB_KillBonusMultiplier.GetFloat();
@@ -210,40 +188,32 @@ public sealed class KB_Normal : RoleBase, IKiller
         switch (IRandom.Instance.Next(0, 3))
         {
             case 0:
-                addin = killerRole._HPMax * addRate;
-                killerRole._HPMax += addin;
+                addin = _HPMax * addRate;
+                _HPMax += addin;
                 killer.Notify(string.Format(GetString("KB_Buff_HPMax"), addin.ToString("0.0#####")));
                 break;
             case 1:
-                addin = killerRole.HPReco * addRate * 2;
-                killerRole.HPReco += addin;
+                addin = HPReco * addRate * 2;
+                HPReco += addin;
                 killer.Notify( string.Format(GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
                 break;
             case 2:
-                addin = killerRole.ATK * addRate;
-                killerRole.ATK += addin;
+                addin = ATK * addRate;
+                ATK += addin;
                 killer.Notify(string.Format(GetString("KB_Buff_ATK"), addin.ToString("0.0#####")));
                 break;
         }
     }
-    private static Color32 GetHealthColor(KB_Normal role)
-    {
-        var x = (int)(role._HP / role._HPMax * 10 * 50);
-        var R = 255; var G = 255; var B = 0;
-        if (x > 255) R -= x - 255; else G = x;
-        return new Color32((byte)R, (byte)G, (byte)B, byte.MaxValue);
-    }
-    private void OnPlayerBack()
+    private void OnPlayerBack(PlayerControl player)
     {
         _BackCountdown = -1;
         _HP = _HPMax;
         SendRPCSyncKBPlayer();
-
+        player.RpcRevive();
         _LastHurt = Utils.GetTimeStamp();
-        Main.AllPlayerSpeed[Player.PlayerId] = Main.AllPlayerSpeed[Player.PlayerId] - 0.3f + _OriginalSpeed;
-        Player.MarkDirtySettings();
-        RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskComplete);
-        Player.SetKillCooldown();
+        player.MarkDirtySettings();
+        RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
+        player.SetKillCooldown();
         PlayerRandomSpawn();
     }
     private void PlayerRandomSpawn()

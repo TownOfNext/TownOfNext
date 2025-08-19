@@ -153,7 +153,7 @@ class HudManagerPatch
                 __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
                 __instance.AbilityButton.SetInfiniteUses();
 
-                if (Options.CurrentGameMode == CustomGameMode.SoloKombat && player.GetCustomRole() is CustomRoles.GM)
+                if (Options.CurrentGameMode == CustomGameMode.SoloKombat)
                 {
                     if (LowerInfoText == null)
                     {
