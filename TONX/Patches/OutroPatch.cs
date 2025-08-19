@@ -30,7 +30,7 @@ class EndGamePatch
         foreach (var kvp in PlayerState.AllPlayerStates.OrderBy(x => x.Value.RealKiller.Item1.Ticks))
         {
             var date = kvp.Value.RealKiller.Item1;
-            if (date == DateTime.MinValue) continue;
+            if (date == DateTime.MinValue || !kvp.Value.IsDead) continue;
             var killerId = kvp.Value.GetRealKiller();
             var targetId = kvp.Key;
             sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({Utils.GetTrueRoleName(targetId, false)}{Utils.GetSubRolesText(targetId, summary: true)}) [{Utils.GetVitalText(kvp.Key)}]".RemoveHtmlTags());

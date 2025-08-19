@@ -58,7 +58,7 @@ public class PlayerState
                 _ => CustomRoles.Crewmate,
             };
     }
-    public void SetMainRole(CustomRoles role, bool recordRole = true)
+    public void SetMainRole(CustomRoles role)
     {
         MainRole = role;
 
@@ -69,8 +69,6 @@ public class PlayerState
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
-
-        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, bool recordRole = true)
     {
@@ -103,12 +101,12 @@ public class PlayerState
             SubRoles.Remove(CustomRoles.Madmate);
         }
 
-        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
+        if (recordRole && AmongUsClient.Instance.AmHost) Utils.RecordPlayerRoles(PlayerId);
     }
     public void RemoveSubRole(CustomRoles role, bool recordRole = true)
     {
         if (!SubRoles.Remove(role)) return;
-        if (recordRole) Utils.RecordPlayerRoles(PlayerId);
+        if (recordRole && AmongUsClient.Instance.AmHost) Utils.RecordPlayerRoles(PlayerId);
     }
 
     public void SetDead()

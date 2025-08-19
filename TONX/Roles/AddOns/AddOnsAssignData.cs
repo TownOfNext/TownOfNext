@@ -185,6 +185,6 @@ public class AddOnsAssignData
     {
         var state = PlayerState.GetByPlayerId(player.PlayerId);
         var remove = state.SubRoles.Where(r => !CheckRoleConflict(player, r)).ToList();
-        remove.ForEach(r => state.RemoveSubRole(r, false));
+        remove.ForEach(r => player.RpcRemoveCustomSubRole(r, false));
     }
 }

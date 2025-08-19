@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using UnityEngine;
 using TONX.Roles.Core.Interfaces;
+using Hazel;
 
 namespace TONX.Roles.Neutral;
 
@@ -35,7 +36,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         HasImpostorVision = OptionHasImpostorVision.GetBool();
         ResetKillCooldown = OptionResetKillCooldownWhenSbGetKilled.GetBool();
 
-        LeftRecruitCount = OptionJackalRecruitLimit.GetInt();
+        RecruitLimit = OptionJackalRecruitLimit.GetInt();
         KillCount = 0;
 
         CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
@@ -72,7 +73,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool WinBySabotage;
     private static bool HasImpostorVision;
     private static bool ResetKillCooldown;
-    public int LeftRecruitCount;
+    public int RecruitLimit;
     public int KillCount;
 
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
@@ -109,7 +110,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         var killer = info.AttemptKiller;
         var target = info.AttemptTarget;
         if (target.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Sidekick) return false;
-        if (!OptionCanRecruitSidekick.GetBool() || LeftRecruitCount <= 0) return true;
+        if (!OptionCanRecruitSidekick.GetBool() || RecruitLimit <= 0) return true;
         if (KillCount < OptionNeededKillCountToRecruit.GetInt())
         {
             KillCount++;
@@ -117,7 +118,8 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         }
         target.RpcChangeRole(CustomRoles.Sidekick);
         Logger.Info($"豺狼{killer?.Data?.PlayerName}招募了{target?.Data?.PlayerName}", "Jackal");
-        LeftRecruitCount--;
+        RecruitLimit--;
+        SendRPC();
         Utils.NotifyRoles();
         return false;
     }
@@ -147,9 +149,9 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("JackalButtonText");
-        return LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
+        return RecruitLimit > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(LeftRecruitCount > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({LeftRecruitCount})");
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(RecruitLimit > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({RecruitLimit})");
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         seen ??= seer;
@@ -157,6 +159,16 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         var LeftKills = OptionNeededKillCountToRecruit.GetInt() - KillCount;
         if (LeftKills == 0) return "";
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("JackalNeededKillsToRecruit"), LeftKills));
-        
+    }
+    private void SendRPC()
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write(RecruitLimit);
+        sender.Writer.Write(KillCount);
+    }
+    public override void ReceiveRPC(MessageReader reader)
+    {
+        RecruitLimit = reader.ReadInt32();
+        KillCount = reader.ReadInt32();
     }
 }

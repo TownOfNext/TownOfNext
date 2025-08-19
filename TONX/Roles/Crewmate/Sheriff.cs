@@ -142,8 +142,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     }
     public override void ReceiveRPC(MessageReader reader)
     {
-        
-
         ShotLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => CanUseKillButton() ? CurrentKillCooldown : 255f;

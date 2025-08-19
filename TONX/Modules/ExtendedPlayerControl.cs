@@ -48,6 +48,19 @@ static class ExtendedPlayerControl
         writer.WritePacked((int)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+    public static void RpcRemoveCustomSubRole(this PlayerControl player, CustomRoles role, bool recordRole = true)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player == null) return;
+        var state = PlayerState.GetByPlayerId(player.PlayerId);
+        if (!state.SubRoles.Contains(role)) return;
+        state.RemoveSubRole(role, recordRole);
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable, -1);
+        writer.Write(player.PlayerId);
+        writer.WritePacked((int)role);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void RpcChangeRole(this PlayerControl player, CustomRoles newRole)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -56,10 +69,13 @@ static class ExtendedPlayerControl
         player.RpcChangeBaseRole(newRole);
         Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
 
-        AddOnsAssignData.RemoveImcompatibleAddons(player);
         player.RpcSetCustomRole(newRole);
+        AddOnsAssignData.RemoveImcompatibleAddons(player);
         player.ResetKillCooldown();
+        player.SetKillCooldown();
+        Utils.SyncAllSettings();
         player.GetPlayerTaskState().hasTasks = Utils.HasTasks(player.Data, false);
+        Utils.RecordPlayerRoles(player.PlayerId);
     }
     public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole)
     {
@@ -76,7 +92,6 @@ static class ExtendedPlayerControl
                 RoleTypes.Scientist : NewRoleType, seer.GetClientId());
         }
     }
-
     public static void RpcExile(this PlayerControl player)
     {
         RPC.ExileAsync(player);
@@ -90,6 +105,7 @@ static class ExtendedPlayerControl
 
         PlayerState.GetByPlayerId(player.PlayerId).IsDead = false;
         PlayerState.GetByPlayerId(player.PlayerId).DeathReason = CustomDeathReason.etc;
+        RPC.SendDeathReason(player.PlayerId, CustomDeathReason.etc);
 
         player.RpcChangeBaseRole(player.GetCustomRole());
         player.ResetKillCooldown();

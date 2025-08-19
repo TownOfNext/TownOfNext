@@ -1208,6 +1208,7 @@ public static class Utils
         if (!CanRecord) return;
         if (!RolesRecord.TryAdd(id, "")) RolesRecord[id] += " → ";
         RolesRecord[id] = RolesRecord[id] + GetTrueRoleName(id, false) + GetSubRolesText(id);
+        RPC.SyncRolesRecord();
     }
     public static List<string> ChatSummary = Enumerable.Repeat(string.Empty, 15).ToList();
     public static string SummaryTexts(byte id, bool isForChat)
@@ -1221,7 +1222,7 @@ public static class Utils
         builder.Append(Main.AllPlayerNames[id]);
         builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
         if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));
-        builder.Append(' ').Append(RolesRecord[id].RemoveColorTags());
+        builder.Append(' ').Append(RolesRecord[id]?.RemoveColorTags() ?? "");
         ChatSummary[id] = builder.ToString();
         builder = new StringBuilder();
         // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
@@ -1240,7 +1241,7 @@ public static class Utils
         // "断开连接 " = 4.5em
         pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
         builder.AppendFormat("<pos={0}em>", pos);
-        builder.Append(RolesRecord[id]);
+        builder.Append(RolesRecord[id] ?? "");
         builder.Append("</pos>");
         return builder.ToString();
     }
