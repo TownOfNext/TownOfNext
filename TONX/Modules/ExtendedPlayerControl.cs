@@ -72,9 +72,8 @@ static class ExtendedPlayerControl
         player.RpcSetCustomRole(newRole);
         AddOnsAssignData.RemoveImcompatibleAddons(player);
         player.ResetKillCooldown();
+        player.SyncSettings();
         player.SetKillCooldown();
-        Utils.SyncAllSettings();
-        player.GetPlayerTaskState().hasTasks = Utils.HasTasks(player.Data, false);
         Utils.RecordPlayerRoles(player.PlayerId);
     }
     public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole)
