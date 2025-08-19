@@ -69,6 +69,14 @@ public class PlayerState
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
+
+        if (GameStates.InTask) // ChangeRole后重新初始化任务状态
+        {
+            taskState.AllTasksCount = -1;
+            taskState.CompletedTasksCount = 0;
+            taskState.hasTasks = false;
+            InitTask(Utils.GetPlayerById(PlayerId));
+        }
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, bool recordRole = true)
     {
