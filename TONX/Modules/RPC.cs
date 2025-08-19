@@ -33,6 +33,7 @@ public enum CustomRPC
     NotificationPop,
     SetKickReason,
     SyncRolesRecord,
+    SyncTaskState,
 
     //Roles
     Judge,
@@ -313,6 +314,13 @@ internal class RPCHandlerPatch
                 CustomRoles role2 = (CustomRoles)reader.ReadPackedInt32();
                 PlayerState.GetByPlayerId(CustomRoleTargetId2).RemoveSubRole(role2, false);
                 break;
+            case CustomRPC.SyncTaskState:
+                byte id = reader.ReadByte();
+                TaskState state = Utils.GetPlayerById(id).GetPlayerTaskState();
+                state.AllTasksCount = reader.ReadInt32();
+                state.CompletedTasksCount = reader.ReadInt32();
+                state.hasTasks = reader.ReadBoolean();
+                break;
         }
     }
 }
@@ -554,6 +562,16 @@ internal static class RPC
             writer.Write(rec.Key);
             writer.Write(rec.Value);
         }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncTaskState(byte playerId, int allTasksCount, int completedTasksCount, bool hastasks)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncTaskState, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(allTasksCount);
+        writer.Write(completedTasksCount);
+        writer.Write(hastasks);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }
