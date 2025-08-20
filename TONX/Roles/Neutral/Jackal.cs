@@ -19,8 +19,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
             "jac|豺狼",
             "#00b4eb",
             true,
-            countType: CountTypes.Jackal,
-            assignCountRule: new(1, 1, 1)
+            countType: CountTypes.Jackal
         );
     public Jackal(PlayerControl player)
     : base(
@@ -151,7 +150,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         text = GetString("JackalButtonText");
         return RecruitLimit > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt();
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(RecruitLimit > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Color.yellow : Color.gray, $"({RecruitLimit})");
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(RecruitLimit > 0 && KillCount >= OptionNeededKillCountToRecruit.GetInt() ? Utils.GetRoleColor(CustomRoles.Jackal) : Color.gray, $"({RecruitLimit})");
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         seen ??= seer;

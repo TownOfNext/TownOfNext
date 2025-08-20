@@ -63,11 +63,11 @@ public sealed class Eraser : RoleBase, IImpostor
             // 抹除自己
             ShowMsg(GetString("EraserEraseSelf") + GetString("TargetInvalidAndYouShouldChooseAnotherTarget"));
         }
-        else if (votedFor.Is(CustomRoleTypes.Neutral))
+        /*else if (votedFor.Is(CustomRoleTypes.Neutral))
         {
             // 抹除中立阵营玩家
             ShowMsg(string.Format(GetString("EraserEraseNeutralNotice"), votedFor.GetRealName()) + GetString("TargetInvalidAndYouShouldChooseAnotherTarget"));
-        }
+        }*/
         else
         {
             // 正常抹除
@@ -96,7 +96,7 @@ public sealed class Eraser : RoleBase, IImpostor
         if (PlayerToErase == byte.MaxValue) return;
         var player = Utils.GetPlayerById(PlayerToErase);
         if (player == null) return;
-        player.RpcSetCustomRole(player.GetCustomRole().GetRoleInfo().BaseRoleType.Invoke().GetCustomRoleTypes());
+        player.RpcChangeRole(player.Is(CustomRoleTypes.Impostor) ? CustomRoles.Impostor : CustomRoles.Crewmate);
         NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
         Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser.AfterMeetingTasks");
 

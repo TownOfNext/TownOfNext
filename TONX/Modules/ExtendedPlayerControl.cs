@@ -98,14 +98,14 @@ static class ExtendedPlayerControl
     }
     public static void RpcRevive(this PlayerControl player)
     {
-        if (player == null) return;
-        if (!player.Data.IsDead && player.IsAlive()) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player == null || (!player.Data.IsDead && player.IsAlive())) return;
 
         if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
 
-        PlayerState.GetByPlayerId(player.PlayerId).IsDead = false;
         PlayerState.GetByPlayerId(player.PlayerId).DeathReason = CustomDeathReason.etc;
-        RPC.SendDeathReason(player.PlayerId, CustomDeathReason.etc);
+        PlayerState.GetByPlayerId(player.PlayerId).IsDead = false;
+        RPC.Revive(player.PlayerId);
 
         player.RpcChangeBaseRole(player.GetCustomRole());
         player.ResetKillCooldown();

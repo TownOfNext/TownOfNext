@@ -34,6 +34,7 @@ public enum CustomRPC
     SetKickReason,
     SyncRolesRecord,
     SyncTaskState,
+    Revive,
 
     //Roles
     Judge,
@@ -321,6 +322,11 @@ internal class RPCHandlerPatch
                 state.CompletedTasksCount = reader.ReadInt32();
                 state.hasTasks = reader.ReadBoolean();
                 break;
+            case CustomRPC.Revive:
+                byte reviveId = reader.ReadByte();
+                PlayerState.GetByPlayerId(reviveId).DeathReason = CustomDeathReason.etc;
+                PlayerState.GetByPlayerId(reviveId).IsDead = false;
+                break;
         }
     }
 }
@@ -572,6 +578,12 @@ internal static class RPC
         writer.Write(allTasksCount);
         writer.Write(completedTasksCount);
         writer.Write(hastasks);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void Revive(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Revive, SendOption.Reliable, -1);
+        writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }

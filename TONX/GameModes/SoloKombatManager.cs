@@ -106,7 +106,6 @@ internal static class SoloKombatManager
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.SoloKombat) return;
 
-            if (!AmongUsClient.Instance.AmHost) return;
             if (LastFixedUpdate == Utils.GetTimeStamp()) return;
             LastFixedUpdate = Utils.GetTimeStamp();
             // 减少全局倒计时
