@@ -184,7 +184,7 @@ class InnerNetClientPatch
     {
         //分割するサイズ。大きすぎるとリトライ時不利、小さすぎると受信パケット取りこぼしが発生しうる。
         var limitSize = 1000;
- 
+
         if (DebugModeManager.IsDebugMode)
         {
             Logger.Info($"SendOrDisconnectPatch:Packet({msg.Length}) ,SendOption:{msg.SendOption}", "InnerNetClient");
@@ -193,7 +193,7 @@ class InnerNetClientPatch
         {
             Logger.Info($"SendOrDisconnectPatch:Large Packet({msg.Length})", "InnerNetClient");
         }
-    //メッセージピークのログ出力
+        // メッセージピークのログ出力
         if (msg.SendOption == SendOption.Reliable)
         {
             int last = (int)timer % 10;
@@ -324,20 +324,6 @@ class InnerNetClientPatch
         if (err != SendErrors.None)
         {
             Logger.Info($"SendOrDisconnectPatch: SendMessage Error={err}", "InnerNetClient");
-        }
-    }
-}
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Connect))]
-public static class InnerNetClientConnectPatch
-{
-    public static IRegionInfo CurrentFindGameListFilteredClientRegion;
-    public static int CurrentFindGameListFilteredClientGameId;
-    public static void Postfix(InnerNetClient __instance)
-    {
-        if (FindAGameManager.Instance.isActiveAndEnabled)
-        {
-            CurrentFindGameListFilteredClientRegion = ServerManager.Instance.CurrentRegion;
-            CurrentFindGameListFilteredClientGameId = __instance.GameId;
         }
     }
 }

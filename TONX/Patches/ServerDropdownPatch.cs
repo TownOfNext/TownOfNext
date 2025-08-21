@@ -16,9 +16,11 @@ public static class ServerDropdownPatch
     {
         List<ServerListButton> serverListButton = __instance.ButtonPool.GetComponentsInChildren<ServerListButton>()
             .Where(x => x.name != "PreviousPageButton" && x.name != "NextPageButton").OrderByDescending(x => x.transform.localPosition.y).ToList();
+
         // 调整背景大小和位置
         __instance.background.size = new Vector2(__instance.background.size.x, __instance.background.size.y / serverListButton.Count * (ButtonsPerPage + 2f));
         __instance.background.transform.localPosition = new Vector3(0f, (1f - ButtonsPerPage * 0.5f) / 2, 0f);
+
         // 调整服务器选项按钮位置
         MaxPage = serverListButton.Count / ButtonsPerPage + 1;
         if (CurrentPage > MaxPage) CurrentPage = MaxPage;
@@ -31,6 +33,7 @@ public static class ServerDropdownPatch
             var button = currentPageButton[i];
             button.transform.localPosition = new Vector3(0f, -1f + i * -0.5f, -1f);
         }
+
         // 创建翻页按钮
         var template = serverListButton[0];
         if (PreviousPageButton == null || PreviousPageButton.gameObject == null) PreviousPageButton = CreateServerListButton(template, "PreviousPageButton", GetString("PreviousPage"),
@@ -54,22 +57,5 @@ public static class ServerDropdownPatch
     {
         foreach (ServerListButton button in __instance.ButtonPool.GetComponentsInChildren<ServerListButton>()) button.gameObject.SetActive(false);
         __instance.FillServerOptions();
-    }
-}
-
-[HarmonyPatch(typeof(EnterCodeManager))]
-public static class EnterCodeManagerPatch
-{
-    public static IRegionInfo CurrentFindGameByCodeClientRegion;
-    public static int CurrentFindGameByCodeClientGameId;
-    [HarmonyPatch(nameof(EnterCodeManager.FindGameResult)), HarmonyPostfix]
-    public static void FindGameResult_Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
-    {
-        if (response == null) return;
-        CurrentFindGameByCodeClientRegion = response.Region == StringNames.NoTranslation ?
-            ServerManager.DefaultRegions.FirstOrDefault(x => x.TranslateName == response.Region) :
-            ServerManager.Instance.AvailableRegions.FirstOrDefault(x => x.Name == response.UntranslatedRegion);
-        if (CurrentFindGameByCodeClientRegion == null) return;
-        CurrentFindGameByCodeClientGameId = response.Game.GameId;
     }
 }

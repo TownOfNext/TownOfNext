@@ -22,11 +22,7 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
-        ServerAddManager.SetServerName(AmongUsClient.Instance.GameId == EnterCodeManagerPatch.CurrentFindGameByCodeClientGameId &&
-            EnterCodeManagerPatch.CurrentFindGameByCodeClientRegion != null ? EnterCodeManagerPatch.CurrentFindGameByCodeClientRegion :
-            (AmongUsClient.Instance.GameId == InnerNetClientConnectPatch.CurrentFindGameListFilteredClientGameId &&
-            InnerNetClientConnectPatch.CurrentFindGameListFilteredClientRegion != null ? InnerNetClientConnectPatch.CurrentFindGameListFilteredClientRegion :
-            null));
+        ServerAddManager.SetServerName(HttpMatchmakerManagerPatch.CurrentGameRegion ?? null);
 
         if (AmongUsClient.Instance.AmHost) //以下、ホストのみ実行
         {
