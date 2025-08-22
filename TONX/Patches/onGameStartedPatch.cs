@@ -223,17 +223,9 @@ internal class SelectRolesPatch
             // 个人竞技模式用
             if (Options.CurrentGameMode == CustomGameMode.SoloKombat) goto EndOfSelectRolePatch;
 
-            if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
-            else if (CustomRoles.Lovers.IsEnable() && rd.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
-            if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
-            AddOnsAssignData.AssignAddOnsFromList();
+            if (RoleDraftManager.IsRoleDraftMeeting) goto EndOfSelectRolePatch;
 
-            foreach (var pair in PlayerState.AllPlayerStates)
-            {
-                foreach (var subRole in pair.Value.SubRoles)
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
-            }
-            CustomRoleManager.CreateInstance(true);
+            AssignAddons();
 
         EndOfSelectRolePatch:
 
@@ -319,9 +311,23 @@ internal class SelectRolesPatch
         Utils.SyncAllSettings();
         SetColorPatch.IsAntiGlitchDisabled = false;
 
-        Utils.CanRecord = true;
-        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
+        Utils.CanRecord = !RoleDraftManager.IsRoleDraftMeeting;
+        if (Utils.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         yield break;
+    }
+    public static void AssignAddons()
+    {
+        if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
+        else if (CustomRoles.Lovers.IsEnable() && IRandom.Instance.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
+        if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
+        AddOnsAssignData.AssignAddOnsFromList();
+
+        foreach (var pair in PlayerState.AllPlayerStates)
+        {
+            foreach (var subRole in pair.Value.SubRoles)
+                ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+        }
+        CustomRoleManager.CreateInstance(true);
     }
     private static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
     {

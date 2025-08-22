@@ -69,6 +69,12 @@ public class RoleDraftManager
     {
         Timer = 0;
         foreach (var (id, role) in DraftRoleResult) Utils.GetPlayerById(id).RpcChangeRole(role);
+        SelectRolesPatch.AssignAddons();
+        Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
+        GameData.Instance.RecomputeTaskCounts();
+        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+        Utils.CanRecord = true;
+        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         RolesToAssign.Clear();
         FourRoles.Clear();
         DraftRoleResult.Clear();
@@ -88,8 +94,7 @@ public class RoleDraftManager
         else CurrentAssignIndex++;
         if (CurrentAssignIndex >= ArrangedPlayers.Count)
         {
-            AssignDraftRoles();
-            new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 7f, "FinishRoleDraft");
+            new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 5f, "FinishRoleDraft");
             return;
         }
         SelectFourRoles();
@@ -98,10 +103,10 @@ public class RoleDraftManager
     }
     public static void OnFixedUpdate()
     {
-        if (!AmongUsClient.Instance.AmHost || !IsRoleDraftMeeting || Timer <= 0 || CurrentAssignIndex >= ArrangedPlayers.Count || Utils.GetTimeStamp() == lastFixedUpdate) return;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.InGame || !IsRoleDraftMeeting || Timer <= 0 || CurrentAssignIndex >= ArrangedPlayers.Count || Utils.GetTimeStamp() == lastFixedUpdate) return;
         lastFixedUpdate = Utils.GetTimeStamp();
         Timer--;
         if (Timer <= 0) RandomlyChooseRole(ArrangedPlayers[CurrentAssignIndex]);
-        else Utils.SendMessage(string.Format(GetString("TimeNotice"), Timer), ArrangedPlayers[CurrentAssignIndex]);
+        else if (Timer == 7) Utils.SendMessage(string.Format(GetString("TimeNotice"), 5f), ArrangedPlayers[CurrentAssignIndex]);
     }
 }

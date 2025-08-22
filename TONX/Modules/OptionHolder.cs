@@ -1078,7 +1078,7 @@ public static class Options
         // 职业轮抽
         EnableRoleDraftMode = BooleanOptionItem.Create(2_004_008, "EnableRoleDraftModes", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(147, 118, 224, byte.MaxValue));
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 幽灵相关设定
         TextOptionItem.Create(3_100_008, "MenuTitle.Ghost", TabGroup.GameSettings)

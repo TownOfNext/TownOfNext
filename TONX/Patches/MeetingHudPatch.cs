@@ -261,6 +261,7 @@ public static class MeetingHudPatch
             }
             // MeetingVoteManagerを通さずに会議が終了した場合の後処理
             MeetingVoteManager.Instance?.Destroy();
+            if (Options.EnableRoleDraftMode.GetBool() && RoleDraftManager.IsRoleDraftMeeting) RoleDraftManager.AssignDraftRoles();
         }
     }
 
