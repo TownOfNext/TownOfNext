@@ -505,6 +505,9 @@ class FixedUpdatePatch
             if (GameStates.IsInGame && player.AmOwner)
                 DisableDevice.FixedUpdate();
 
+            if (RoleDraftManager.IsRoleDraftMeeting && AmongUsClient.Instance.AmHost)
+                RoleDraftManager.OnFixedUpdate();
+
             NameTagManager.ApplyFor(player);
         }
         //LocalPlayer専用

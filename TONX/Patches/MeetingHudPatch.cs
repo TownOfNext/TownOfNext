@@ -33,6 +33,13 @@ public static class MeetingHudPatch
 
             if (voter != null)
             {
+                if (RoleDraftManager.IsRoleDraftMeeting)
+                {
+                    __instance.RpcClearVote(voter.GetClientId());
+                    Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
+                    return false;
+                }
+
                 //主动叛变模式
                 if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
                 {
@@ -245,7 +252,7 @@ public static class MeetingHudPatch
     {
         public static void Postfix()
         {
-            MeetingStates.FirstMeeting = false;
+            if (!RoleDraftManager.IsRoleDraftMeeting) MeetingStates.FirstMeeting = false;
             Logger.Info("------------会议结束------------", "Phase");
             if (AmongUsClient.Instance.AmHost)
             {

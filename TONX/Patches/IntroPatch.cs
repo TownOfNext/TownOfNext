@@ -325,5 +325,7 @@ class IntroCutscenePatch
 
         GameStates.InTask = true;
         Logger.Info("タスクフェイズ開始", "Phase");
+
+        if (Options.EnableRoleDraftMode.GetBool() && AmongUsClient.Instance.AmHost) PlayerControl.LocalPlayer.ReportDeadBody(null);
     }
 }

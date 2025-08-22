@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TONX.Modules;
 
 namespace TONX;
 
@@ -7,6 +8,12 @@ public static class MeetingStartNotify
     public static void OnMeetingStart()
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (RoleDraftManager.IsRoleDraftMeeting)
+        {
+            new LateTask(RoleDraftManager.StartRoleDraft, 8f, "RoleDraftNotify");
+            return;
+        }
 
         List<(string, byte, string)> msgToSend = new();
 

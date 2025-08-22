@@ -105,7 +105,7 @@ internal static class CustomRoleSelector
                 if (!role.IsHidden(out var hiddenRoleInfo) || hiddenRoleInfo.TargetRole == null) continue;
                 if (rd.Next(0, 100) < hiddenRoleInfo.Probability && rolesToAssign.Remove(hiddenRoleInfo.TargetRole.Value)) 
                     rolesToAssign.Add(role);
-            } 
+            }
         }
 
         // Dev Roles List Edit
@@ -135,6 +135,13 @@ internal static class CustomRoleSelector
                     break;
                 }
             }
+        }
+
+        if (Options.EnableRoleDraftMode.GetBool())
+        {
+            RoleDraftManager.RolesToAssign = rolesToAssign;
+            Logger.Info("职业轮抽待选职业列表", "Role Draft");
+            return;
         }
 
         var AllPlayer = Main.AllAlivePlayerControls.ToList();
@@ -184,8 +191,6 @@ internal static class CustomRoleSelector
     public static int addShapeshifterNum = 0;
     public static void CalculateVanillaRoleCount()
     {
-        if (Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
-
         // 计算原版特殊职业数量
         addEngineerNum = 0;
         addScientistNum = 0;

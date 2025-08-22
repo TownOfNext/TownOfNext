@@ -44,6 +44,7 @@ internal class ChangeRoleSettings
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
 
             Main.isFirstTurn = false;
+            RoleDraftManager.IsRoleDraftMeeting = Options.EnableRoleDraftMode.GetBool();
 
             Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
             Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
