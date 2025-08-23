@@ -18,7 +18,7 @@ class EndGamePatch
         //GameStatesのリセット
         GameStates.InGame = false;
         GameStates.InTask = false;
-        RoleDraftManager.IsRoleDraftMeeting = false;
+        RoleDraftManager.IsRoleDrafting = false;
 
         Logger.Info("-----------游戏结束-----------", "Phase");
         if (!GameStates.IsModHost) return;

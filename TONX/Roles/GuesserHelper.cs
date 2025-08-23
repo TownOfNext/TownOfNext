@@ -448,7 +448,7 @@ public static class GuesserHelper
                 if (!EvilGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && role.IsVanilla()) continue;
                 if (!NiceGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
                 if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel) continue;
-                if (role.GetCustomRoleTypes() is CustomRoleTypes.GameMode) continue;
+                if (role.IsGameModeRole()) continue;
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)

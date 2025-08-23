@@ -649,7 +649,7 @@ KickPlayerFriendCodeNotExist: "踢出没有登录的玩家"
 ApplyBanList: "踢出被封禁的玩家"
 EndWhenPlayerBug: "当有玩家因Bug无法游戏时终止游戏"
 KillFlashDuration: "击杀闪烁持续时间"
-EnableRoleDraftModes: "启用职业轮抽（试验性）"
+EnableRoleDraftModes: "启用轮抽选角（试验性）"
 ConfirmEjectionsMode: "驱逐确认模式"
 ConfirmEjections.None: "不确认"
 ConfirmEjections.Team: "确认阵营"
@@ -1623,7 +1623,7 @@ Deadbody: "死亡"
 PenguinTimerText: "拖拽倒计时"
 Infected: "感染"
 
-# 职业轮抽 / Role Draft
+# 轮抽选角 / Role Draft
 RoleDraft.DraftAssignWait: "还没有轮到您进行抽选，请稍后"
 RoleDraft.FailedChosen: "选择失败，请检查您的输入并重新选择，或等待自动选择"
 RoleDraft.SuccessfullyChosen: "成功选择职业：{0}，请等待游戏开始"

@@ -22,7 +22,7 @@ class GameEndChecker
         if (predicate == null) return false;
 
         //ゲーム終了しないモードで廃村以外の場合は中断
-        if ((Options.NoGameEnd.GetBool() || RoleDraftManager.IsRoleDraftMeeting) && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
+        if ((Options.NoGameEnd.GetBool() || RoleDraftManager.IsRoleDrafting) && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         //廃村用に初期値を設定
         GameOverReason reason;

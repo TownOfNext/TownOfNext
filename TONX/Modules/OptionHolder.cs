@@ -1075,7 +1075,7 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
         
-        // 职业轮抽
+        // 轮抽选角
         EnableRoleDraftMode = BooleanOptionItem.Create(2_004_008, "EnableRoleDraftModes", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));

@@ -4,12 +4,14 @@ public class RoleDraftManager
 {
     public static int Timer;
     private static long lastFixedUpdate;
-    public static bool IsRoleDraftMeeting;
+    public static bool IsRoleDrafting;
     public static List<CustomRoles> RolesToAssign;
     public static List<CustomRoles> ThreeRoles;
     public static Dictionary<byte, CustomRoles> DraftRoleResult;
     public static List<byte> ArrangedPlayers;
     public static int CurrentAssignIndex;
+    public static bool IsValidRoleDraftState() => GameStates.InGame && IsRoleDrafting;
+    public static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
     public static void OnPlayerChooseRole(byte playerId, string id)
     {
         if (!IsValidRoleDraftState()) return;
@@ -42,27 +44,24 @@ public class RoleDraftManager
             return;
         }
         if (RolesToAssign.Count <= 0) Logger.Info("职业分配错误：存在未被分配职业的玩家", "RoleDraftManager");
-        var role = roleId == -1 ? RolesToAssign.Count > 0 ? RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)] : CustomRoles.Crewmate : ThreeRoles[roleId];
+        bool isRandom = roleId == -1;
+        CustomRoles role = isRandom ? RolesToAssign.Count > 0 ? RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)] : CustomRoles.Crewmate : ThreeRoles[roleId];
         DraftRoleResult.Add(playerId, role);
         RolesToAssign.Remove(role);
-        Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), Utils.GetRoleName(role)), playerId);
+        Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), GetColoredRoleName(role)), playerId);
         Utils.SendMessage(string.Format(
             GetString("RoleDraft.OtherSuccessfullyChosen"),
             CurrentAssignIndex + 1,
-            roleId == -1 ? GetString("RoleDraft.Random") : Utils.GetRoleName(role)
-        ));
+            isRandom ? GetString("RoleDraft.Random") : GetColoredRoleName(role)
+        )); // 向所有玩家发送选择消息
         MoveToNextPlayer();
     }
     private static void ArrangePlayers()
     {
-        ArrangedPlayers = new();
-        var players = Main.AllAlivePlayerControls.ToList();
-        while (players.Count > 0)
-        {
-            var rd = IRandom.Instance.Next(0, players.Count);
-            ArrangedPlayers.Add(players[rd].PlayerId);
-            players.Remove(players[rd]);
-        }
+        ArrangedPlayers = Main.AllAlivePlayerControls
+            .OrderBy(_ => IRandom.Instance.Next(Main.AllAlivePlayerControls.Count()))
+            .Select(p => p.PlayerId)
+            .ToList();
     }
     private static void SelectThreeRoles()
     {
@@ -72,26 +71,11 @@ public class RoleDraftManager
             for (var i = 0; i < 3; i++) ThreeRoles[i] = RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)];
         Utils.SendMessage(string.Format(
             GetString("RoleDraft.FourChoices"),
-                Utils.GetRoleName(ThreeRoles[0]),
-                Utils.GetRoleName(ThreeRoles[1]),
-                Utils.GetRoleName(ThreeRoles[2]),
-                GetString("RoleDraft.Random")
-            ), ArrangedPlayers[CurrentAssignIndex]);
-    }
-    public static void AssignDraftRoles()
-    {
-        Timer = 0;
-        foreach (var (id, role) in DraftRoleResult.Where(kvp => kvp.Value != CustomRoles.Crewmate)) Utils.GetPlayerById(id).RpcChangeRole(role);
-        SelectRolesPatch.AssignAddons();
-        Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
-        GameData.Instance.RecomputeTaskCounts();
-        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-        Utils.CanRecord = true;
-        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
-        RolesToAssign.Clear();
-        ThreeRoles.Clear();
-        DraftRoleResult.Clear();
-        ArrangedPlayers.Clear();
+            GetColoredRoleName(ThreeRoles[0]),
+            GetColoredRoleName(ThreeRoles[1]),
+            GetColoredRoleName(ThreeRoles[2]),
+            GetString("RoleDraft.Random")
+        ), ArrangedPlayers[CurrentAssignIndex]);
     }
     public static void StartRoleDraft()
     {
@@ -107,11 +91,27 @@ public class RoleDraftManager
         else CurrentAssignIndex++;
         if (CurrentAssignIndex >= ArrangedPlayers.Count)
         {
+            Timer = 0;
             new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 5f, "FinishRoleDraft");
             return;
         }
         SelectThreeRoles();
         Timer = 15;
+    }
+    public static void AssignDraftRoles()
+    {
+        foreach (var (id, role) in DraftRoleResult.Where(kvp => kvp.Value != CustomRoles.Crewmate)) Utils.GetPlayerById(id).RpcChangeRole(role);
+        SelectRolesPatch.AssignAddons();
+        Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
+        GameData.Instance.RecomputeTaskCounts();
+        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+        Utils.CanRecord = true;
+        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
+
+        RolesToAssign.Clear();
+        ThreeRoles.Clear();
+        DraftRoleResult.Clear();
+        ArrangedPlayers.Clear();
     }
     public static void OnFixedUpdate()
     {
@@ -122,5 +122,4 @@ public class RoleDraftManager
         if (Timer <= 0) RandomlyChooseRole(ArrangedPlayers[CurrentAssignIndex]);
         else if (Timer == 7) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), 5f), ArrangedPlayers[CurrentAssignIndex]);
     }
-    public static bool IsValidRoleDraftState() => GameStates.InGame && IsRoleDraftMeeting;
 }

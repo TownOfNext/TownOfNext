@@ -140,7 +140,7 @@ internal static class CustomRoleSelector
         if (Options.EnableRoleDraftMode.GetBool())
         {
             RoleDraftManager.RolesToAssign = rolesToAssign;
-            Logger.Info("职业轮抽待选职业列表", "Role Draft");
+            Logger.Info("轮抽选角待选职业列表", "Role Draft");
             return;
         }
 

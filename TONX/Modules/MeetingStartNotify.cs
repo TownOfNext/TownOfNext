@@ -9,7 +9,7 @@ public static class MeetingStartNotify
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (RoleDraftManager.IsRoleDraftMeeting)
+        if (RoleDraftManager.IsRoleDrafting)
         {
             new LateTask(RoleDraftManager.StartRoleDraft, 8f, "RoleDraftNotify");
             return;
