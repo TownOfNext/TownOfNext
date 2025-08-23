@@ -245,16 +245,16 @@ public static class MeetingHudPatch
     {
         public static void Postfix()
         {
-            if (!RoleDraftManager.IsRoleDrafting) MeetingStates.FirstMeeting = false;
+            if (RoleDraftManager.RoleDraftState == RoleDraftState.None) MeetingStates.FirstMeeting = false;
             Logger.Info("------------会议结束------------", "Phase");
             if (AmongUsClient.Instance.AmHost)
             {
+                if (Options.EnableRoleDraftMode.GetBool() && RoleDraftManager.RoleDraftState == RoleDraftState.Drafting) RoleDraftManager.AssignDraftRoles();
                 AntiBlackout.SetIsDead();
                 EAC.MeetingTimes = 0;
             }
             // MeetingVoteManagerを通さずに会議が終了した場合の後処理
             MeetingVoteManager.Instance?.Destroy();
-            if (Options.EnableRoleDraftMode.GetBool() && RoleDraftManager.IsRoleDrafting) RoleDraftManager.AssignDraftRoles();
         }
     }
 

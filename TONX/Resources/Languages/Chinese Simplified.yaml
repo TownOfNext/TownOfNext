@@ -1627,9 +1627,9 @@ Infected: "感染"
 RoleDraft.DraftAssignWait: "还没有轮到您进行抽选，请稍后"
 RoleDraft.FailedChosen: "选择失败，请检查您的输入并重新选择，或等待自动选择"
 RoleDraft.SuccessfullyChosen: "成功选择职业：{0}，请等待游戏开始"
-RoleDraft.FourChoices: "请从以下职业中选择一个\n输入 /ch [编号] 进行选取\n 1 => {0}\n 2 => {1}\n 3 => {2}\n 4 => {3}\n请注意您只有15秒的选择时间，超时将会为您自动选择"
+RoleDraft.FourChoices: "请从以下职业中选择一个\n输入 <b>/ch [编号]</b> 进行选取\n 1 => {0}\n 2 => {1}\n 3 => {2}\n 4 => {3}\n请注意您只有 <b>15秒</b> 的选择时间，超时将会为您自动选择"
 RoleDraft.TimeNotice: "您还有约{0}秒选择时间，请尽快"
-RoleDraft.OtherSuccessfullyChosen: "玩家{0}选择了：{1}"
+RoleDraft.OtherSuccessfullyChosen: "<b>玩家{0}</b> 选择了：{1}"
 RoleDraft.Random: "随机"
 
 # 模式介绍 / Mode descriptions

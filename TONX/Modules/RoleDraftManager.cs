@@ -4,14 +4,19 @@ public class RoleDraftManager
 {
     public static int Timer;
     private static long lastFixedUpdate;
-    public static bool IsRoleDrafting;
+    public static RoleDraftState RoleDraftState;
     public static List<CustomRoles> RolesToAssign;
     public static List<CustomRoles> ThreeRoles;
     public static Dictionary<byte, CustomRoles> DraftRoleResult;
     public static List<byte> ArrangedPlayers;
     public static int CurrentAssignIndex;
-    public static bool IsValidRoleDraftState() => GameStates.InGame && IsRoleDrafting;
-    public static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
+    public static bool IsValidRoleDraftState() => RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
+    private static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
+    private static bool IsInvalidPlayer(byte playerId)
+    {
+        var data = Utils.GetPlayerById(playerId)?.Data ?? null;
+        return data == null || data.IsDead || data.Disconnected;
+    }
     public static void OnPlayerChooseRole(byte playerId, string id)
     {
         if (!IsValidRoleDraftState()) return;
@@ -80,8 +85,10 @@ public class RoleDraftManager
     public static void StartRoleDraft()
     {
         ArrangePlayers();
+        Timer = 0;
         CurrentAssignIndex = -1;
         DraftRoleResult = new();
+        RoleDraftState = RoleDraftState.Drafting;
         MoveToNextPlayer();
     }
     private static void MoveToNextPlayer()
@@ -100,7 +107,12 @@ public class RoleDraftManager
     }
     public static void AssignDraftRoles()
     {
-        foreach (var (id, role) in DraftRoleResult.Where(kvp => kvp.Value != CustomRoles.Crewmate)) Utils.GetPlayerById(id).RpcChangeRole(role);
+        foreach (var (id, role) in DraftRoleResult.Where(kvp => !IsInvalidPlayer(kvp.Key) && kvp.Value != CustomRoles.Crewmate))
+        {
+            var pc = Utils.GetPlayerById(id);
+            Logger.Info($"{pc.Data.IsDead}", "Test");
+            Utils.GetPlayerById(id).RpcChangeRole(role);
+        }
         SelectRolesPatch.AssignAddons();
         Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
         GameData.Instance.RecomputeTaskCounts();
@@ -116,10 +128,22 @@ public class RoleDraftManager
     public static void OnFixedUpdate()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!IsValidRoleDraftState() || Timer <= 0 || CurrentAssignIndex >= ArrangedPlayers.Count || Utils.GetTimeStamp() == lastFixedUpdate) return;
+        if (!IsValidRoleDraftState() || Timer <= 0 || CurrentAssignIndex < 0 || CurrentAssignIndex >= ArrangedPlayers.Count) return;
+        if (IsInvalidPlayer(ArrangedPlayers[CurrentAssignIndex]))
+        {
+            MoveToNextPlayer();
+            return;
+        }
+        if (Utils.GetTimeStamp() == lastFixedUpdate) return;
         lastFixedUpdate = Utils.GetTimeStamp();
         Timer--;
         if (Timer <= 0) RandomlyChooseRole(ArrangedPlayers[CurrentAssignIndex]);
         else if (Timer == 7) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), 5f), ArrangedPlayers[CurrentAssignIndex]);
     }
+}
+public enum RoleDraftState
+{
+    None,
+    ReadyToDraft,
+    Drafting
 }

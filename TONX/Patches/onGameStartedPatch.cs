@@ -44,7 +44,7 @@ internal class ChangeRoleSettings
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
 
             Main.isFirstTurn = false;
-            RoleDraftManager.IsRoleDrafting = Options.EnableRoleDraftMode.GetBool();
+            RoleDraftManager.RoleDraftState = Options.EnableRoleDraftMode.GetBool() ? RoleDraftState.ReadyToDraft : RoleDraftState.None;
 
             Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
             Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
@@ -223,7 +223,7 @@ internal class SelectRolesPatch
             // 个人竞技模式用
             if (Options.CurrentGameMode == CustomGameMode.SoloKombat) goto EndOfSelectRolePatch;
 
-            if (RoleDraftManager.IsRoleDrafting) goto EndOfSelectRolePatch;
+            if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft) goto EndOfSelectRolePatch;
 
             AssignAddons();
 
@@ -311,7 +311,7 @@ internal class SelectRolesPatch
         Utils.SyncAllSettings();
         SetColorPatch.IsAntiGlitchDisabled = false;
 
-        Utils.CanRecord = !RoleDraftManager.IsRoleDrafting;
+        Utils.CanRecord = RoleDraftManager.RoleDraftState == RoleDraftState.None;
         if (Utils.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         yield break;
     }
