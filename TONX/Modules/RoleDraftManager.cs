@@ -1,23 +1,21 @@
-using UnityEngine;
-
 namespace TONX.Modules;
 
 public class RoleDraftManager
 {
     public static int Timer;
-    public static long lastFixedUpdate;
+    private static long lastFixedUpdate;
     public static bool IsRoleDraftMeeting;
     public static List<CustomRoles> RolesToAssign;
-    public static List<CustomRoles> FourRoles;
+    public static List<CustomRoles> ThreeRoles;
     public static Dictionary<byte, CustomRoles> DraftRoleResult;
     public static List<byte> ArrangedPlayers;
     public static int CurrentAssignIndex;
     public static void OnPlayerChooseRole(byte playerId, string id)
     {
-        if (!GameStates.InGame) return;
+        if (!IsValidRoleDraftState()) return;
         if (playerId != ArrangedPlayers[CurrentAssignIndex])
         {
-            Utils.SendMessage(GetString("DraftAssignWait"), playerId);
+            Utils.SendMessage(GetString("RoleDraft.DraftAssignWait"), playerId);
             return;
         }
         int roleId = id switch
@@ -25,30 +23,37 @@ public class RoleDraftManager
             "1" => 0,
             "2" => 1,
             "3" => 2,
-            "4" => 3,
-            _ => -1
+            "4" => -1, // 随机选择
+            _ => -2 // 无效选择
         };
         AfterChooseRole(playerId, roleId);
     }
     public static void RandomlyChooseRole(byte playerId)
     {
-        if (!GameStates.InGame) return;
-        AfterChooseRole(playerId, IRandom.Instance.Next(0, 4));
+        if (!IsValidRoleDraftState()) return;
+        AfterChooseRole(playerId, -1);
     }
-    public static void AfterChooseRole(byte playerId, int roleId)
+    private static void AfterChooseRole(byte playerId, int roleId)
     {
-        if (!GameStates.InGame) return;
-        if (roleId < 0)
+        if (!IsValidRoleDraftState()) return;
+        if (roleId == -2)
         {
-            Utils.SendMessage(GetString("FailedChosen"), playerId);
+            Utils.SendMessage(GetString("RoleDraft.FailedChosen"), playerId);
             return;
         }
-        DraftRoleResult.Add(playerId, FourRoles[roleId]);
-        RolesToAssign.Remove(FourRoles[roleId]);
-        Utils.SendMessage(string.Format(GetString("SuccessfullyChosen"), Utils.GetRoleName(FourRoles[roleId])), playerId);
-        NextPlayer();
+        if (RolesToAssign.Count <= 0) Logger.Info("职业分配错误：存在未被分配职业的玩家", "RoleDraftManager");
+        var role = roleId == -1 ? RolesToAssign.Count > 0 ? RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)] : CustomRoles.Crewmate : ThreeRoles[roleId];
+        DraftRoleResult.Add(playerId, role);
+        RolesToAssign.Remove(role);
+        Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), Utils.GetRoleName(role)), playerId);
+        Utils.SendMessage(string.Format(
+            GetString("RoleDraft.OtherSuccessfullyChosen"),
+            CurrentAssignIndex + 1,
+            roleId == -1 ? GetString("RoleDraft.Random") : Utils.GetRoleName(role)
+        ));
+        MoveToNextPlayer();
     }
-    public static void ArrangePlayers()
+    private static void ArrangePlayers()
     {
         ArrangedPlayers = new();
         var players = Main.AllAlivePlayerControls.ToList();
@@ -59,16 +64,24 @@ public class RoleDraftManager
             players.Remove(players[rd]);
         }
     }
-    public static void SelectFourRoles()
+    private static void SelectThreeRoles()
     {
-        FourRoles = Enumerable.Repeat(CustomRoles.Crewmate, 4).ToList();
-        if (RolesToAssign.Count <= 0) return;
-        for (var i = 0; i < 4; i++) FourRoles[i] = RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)];
+        if (!IsValidRoleDraftState()) return;
+        ThreeRoles = Enumerable.Repeat(CustomRoles.Crewmate, 3).ToList();
+        if (RolesToAssign.Count > 0)
+            for (var i = 0; i < 3; i++) ThreeRoles[i] = RolesToAssign[IRandom.Instance.Next(0, RolesToAssign.Count)];
+        Utils.SendMessage(string.Format(
+            GetString("RoleDraft.FourChoices"),
+                Utils.GetRoleName(ThreeRoles[0]),
+                Utils.GetRoleName(ThreeRoles[1]),
+                Utils.GetRoleName(ThreeRoles[2]),
+                GetString("RoleDraft.Random")
+            ), ArrangedPlayers[CurrentAssignIndex]);
     }
     public static void AssignDraftRoles()
     {
         Timer = 0;
-        foreach (var (id, role) in DraftRoleResult) Utils.GetPlayerById(id).RpcChangeRole(role);
+        foreach (var (id, role) in DraftRoleResult.Where(kvp => kvp.Value != CustomRoles.Crewmate)) Utils.GetPlayerById(id).RpcChangeRole(role);
         SelectRolesPatch.AssignAddons();
         Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
         GameData.Instance.RecomputeTaskCounts();
@@ -76,7 +89,7 @@ public class RoleDraftManager
         Utils.CanRecord = true;
         foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         RolesToAssign.Clear();
-        FourRoles.Clear();
+        ThreeRoles.Clear();
         DraftRoleResult.Clear();
         ArrangedPlayers.Clear();
     }
@@ -85,11 +98,11 @@ public class RoleDraftManager
         ArrangePlayers();
         CurrentAssignIndex = -1;
         DraftRoleResult = new();
-        NextPlayer();
+        MoveToNextPlayer();
     }
-    public static void NextPlayer()
+    private static void MoveToNextPlayer()
     {
-        if (!GameStates.InGame) return;
+        if (!IsValidRoleDraftState()) return;
         if (CurrentAssignIndex < 0) CurrentAssignIndex = 0;
         else CurrentAssignIndex++;
         if (CurrentAssignIndex >= ArrangedPlayers.Count)
@@ -97,16 +110,17 @@ public class RoleDraftManager
             new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 5f, "FinishRoleDraft");
             return;
         }
-        SelectFourRoles();
-        Utils.SendMessage(string.Format(GetString("FourChoices"), Utils.GetRoleName(FourRoles[0]), Utils.GetRoleName(FourRoles[1]), Utils.GetRoleName(FourRoles[2]), Utils.GetRoleName(FourRoles[3])), ArrangedPlayers[CurrentAssignIndex]);
+        SelectThreeRoles();
         Timer = 15;
     }
     public static void OnFixedUpdate()
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.InGame || !IsRoleDraftMeeting || Timer <= 0 || CurrentAssignIndex >= ArrangedPlayers.Count || Utils.GetTimeStamp() == lastFixedUpdate) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!IsValidRoleDraftState() || Timer <= 0 || CurrentAssignIndex >= ArrangedPlayers.Count || Utils.GetTimeStamp() == lastFixedUpdate) return;
         lastFixedUpdate = Utils.GetTimeStamp();
         Timer--;
         if (Timer <= 0) RandomlyChooseRole(ArrangedPlayers[CurrentAssignIndex]);
-        else if (Timer == 7) Utils.SendMessage(string.Format(GetString("TimeNotice"), 5f), ArrangedPlayers[CurrentAssignIndex]);
+        else if (Timer == 7) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), 5f), ArrangedPlayers[CurrentAssignIndex]);
     }
+    public static bool IsValidRoleDraftState() => GameStates.InGame && IsRoleDraftMeeting;
 }

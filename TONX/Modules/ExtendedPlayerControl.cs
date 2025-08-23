@@ -75,7 +75,9 @@ static class ExtendedPlayerControl
         player.SyncSettings();
         player.SetKillCooldown();
         Utils.RecordPlayerRoles(player.PlayerId);
-        player.GetPlayerTaskState().Init(player);
+        PlayerState.GetByPlayerId(player.PlayerId).InitTask(player);
+        GameData.Instance.RecomputeTaskCounts();
+        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
     }
     public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole)
     {
