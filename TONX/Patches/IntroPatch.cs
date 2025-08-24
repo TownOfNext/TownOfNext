@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
 using UnityEngine;
 
 namespace TONX;
@@ -169,14 +170,23 @@ class IntroCutscenePatch
             PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
         }
 
-        if (Input.GetKey(KeyCode.RightShift))
+        if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft)
         {
-            __instance.TeamTitle.text = "明天就跑路啦";
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "嘿嘿嘿嘿嘿嘿";
-            __instance.TeamTitle.color = Color.cyan;
-            StartFadeIntro(__instance, Color.cyan, Color.yellow);
+            __instance.TeamTitle.text = GetString("RoleDraft");
+            __instance.TeamTitle.color = Color.gray;
+            __instance.ImpostorText.gameObject.SetActive(false);
+            __instance.BackgroundBar.material.color = Color.gray;
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
         }
+
+        if (Input.GetKey(KeyCode.RightShift))
+            {
+                __instance.TeamTitle.text = "明天就跑路啦";
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = "嘿嘿嘿嘿嘿嘿";
+                __instance.TeamTitle.color = Color.cyan;
+                StartFadeIntro(__instance, Color.cyan, Color.yellow);
+            }
         if (Input.GetKey(KeyCode.RightControl))
         {
             __instance.TeamTitle.text = "警告";

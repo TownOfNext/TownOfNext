@@ -71,6 +71,25 @@ internal static class CustomRoleSelector
             else for (int i = 0; i < role.GetAssignCount(); i++) roleRateList.Add(role);
         }
 
+        if (Options.EnableRoleDraftMode.GetBool())
+        {
+            var rolesLists = new List<List<CustomRoles>> { roleRateList, roleOnList, ImpRateList, ImpOnList, NeutralRateList, NeutralOnList };
+            if (!Options.DisableHiddenRoles.GetBool())
+            {
+                foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+                {
+                    if (!role.IsHidden(out var hiddenRoleInfo) || hiddenRoleInfo.TargetRole == null) continue;
+                    if (rd.Next(0, 100) < hiddenRoleInfo.Probability)
+                    {
+                        foreach (var list in rolesLists) if (list.Remove(hiddenRoleInfo.TargetRole.Value)) list.Add(role);
+                    }
+                }
+            }
+            RoleDraftManager.Init(rolesLists, optImpNum, optNeutralNum);
+            Logger.Info("已启用轮抽选角", "Role Draft");
+            return;
+        }
+
         void SelectRoles(string team, List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
         {
             readyCurrentTeamRoleNum = 0;
@@ -135,13 +154,6 @@ internal static class CustomRoleSelector
                     break;
                 }
             }
-        }
-
-        if (Options.EnableRoleDraftMode.GetBool())
-        {
-            RoleDraftManager.RolesToAssign = rolesToAssign;
-            Logger.Info("轮抽选角待选职业列表", "Role Draft");
-            return;
         }
 
         var AllPlayer = Main.AllAlivePlayerControls.ToList();

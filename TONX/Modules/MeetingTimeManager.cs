@@ -35,7 +35,7 @@ public class MeetingTimeManager
     {
         if (RoleDraftManager.RoleDraftState != RoleDraftState.None)
         {
-            DiscussionTime = Main.AllAlivePlayerControls.Count() * 15 + 10;
+            DiscussionTime = Main.AllAlivePlayerControls.Count() * 20 + 10;
             VotingTime = 0;
             Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
             return;

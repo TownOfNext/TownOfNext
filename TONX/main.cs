@@ -226,7 +226,7 @@ public class Main : BasePlugin
                 {CustomRoles.GM, "#ff5b70"},
 
                 //Vanilla
-                {CustomRoles.Crewmate, "#ffffff"},
+                {CustomRoles.Crewmate, "#8cffff"},
                 {CustomRoles.Engineer, "#8cffff"},
                 {CustomRoles.Scientist, "#8cffff"},
                 {CustomRoles.Noisemaker, "#8cffff"},

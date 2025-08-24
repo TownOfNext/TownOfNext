@@ -1624,6 +1624,8 @@ PenguinTimerText: "拖拽倒计时"
 Infected: "感染"
 
 # 轮抽选角 / Role Draft
+RoleDraft: "轮抽选角"
+RoleDraft.StartDraft: "开始轮抽选角，您是 <b>玩家{0}</b>"
 RoleDraft.DraftAssignWait: "还没有轮到您进行抽选，请稍后"
 RoleDraft.FailedChosen: "选择失败，请检查您的输入并重新选择，或等待自动选择"
 RoleDraft.SuccessfullyChosen: "成功选择职业：{0}，请等待游戏开始"
