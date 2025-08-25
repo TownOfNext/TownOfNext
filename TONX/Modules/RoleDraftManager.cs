@@ -2,14 +2,19 @@ namespace TONX.Modules;
 
 public class RoleDraftManager
 {
-    // 职业
-    // [0]船员(启用)/[1]船员(优先)
-    // [2]内鬼(启用)/[3]内鬼(优先)
-    // [4]中立(启用)/[5]中立(优先)
-    private static List<List<CustomRoles>> RolesToAssign; 
-    // 职业数量 ([0]内鬼/[1]中立)
+    /// <summary>
+    /// 职业 ([0]船员(启用)/[1]船员(优先)/[2]内鬼(启用)/[3]内鬼(优先)/[4]中立(启用)/[5]中立(优先))
+    /// </summary>
+    private static List<List<CustomRoles>> RolesToAssign;
+    /// <summary>
+    /// 导演模式选择的职业
+    /// </summary>
+    private static Dictionary<byte, CustomRoles> DevRoles;
+    /// <summary>
+    /// 职业数量 ([0]内鬼/[1]中立)
+    /// </summary>
     private static List<int> OptRoleNum;
-    private static List<CustomRoles> ThreeRoles;
+    private static List<CustomRoles> RandomRoles;
     public static Dictionary<byte, CustomRoles> DraftRoleResult;
     private static List<byte> ArrangedPlayers;
     private static int CurrentAssignIndex;
@@ -26,6 +31,9 @@ public class RoleDraftManager
     public static void Init(List<List<CustomRoles>> rolesLists, int ic, int nc)
     {
         RolesToAssign = rolesLists;
+        DevRoles = new();
+        foreach (var (id, dr) in Main.DevRole) foreach (var list in RolesToAssign) if (list.Remove(dr)) DevRoles.Add(id, dr);
+        Main.DevRole.Clear();
         OptRoleNum = new List<int> { ic, nc };
     }
     public static void OnPlayerChooseRole(byte playerId, string id)
@@ -38,9 +46,9 @@ public class RoleDraftManager
         }
         int roleId = id switch
         {
-            "1" => 0,
-            "2" => 1,
-            "3" => 2,
+            "1" when RandomRoles.Count > 0 => 0,
+            "2" when RandomRoles.Count > 1 => 1,
+            "3" when RandomRoles.Count > 2 => 2,
             "4" => -1, // 随机选择
             _ => -2 // 无效选择
         };
@@ -60,7 +68,7 @@ public class RoleDraftManager
             return;
         }
         bool isRandom = roleId == -1;
-        CustomRoles role = isRandom ? RandomDraftRole() : ThreeRoles[roleId];
+        CustomRoles role = isRandom ? TryGetDraftDevRole(playerId, out CustomRoles dr) ? dr : GetRandomDraftRole() : RandomRoles[roleId];
             DraftRoleResult.Add(playerId, role);
             RolesToAssign.ForEach(list => list.Remove(role));
             Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), GetColoredRoleName(role)), playerId);
@@ -74,16 +82,23 @@ public class RoleDraftManager
     private static int TryGetListIdOfRole(CustomRoles role)
     {
         int TwoTimesRoleType = (int)role.GetCustomRoleTypes() * 2;
-        if (TwoTimesRoleType > RolesToAssign.Count) return -1;
+        if (TwoTimesRoleType + 1 >= RolesToAssign.Count) return -1;
         if (RolesToAssign[TwoTimesRoleType].Contains(role)) return TwoTimesRoleType;
         if (RolesToAssign[TwoTimesRoleType + 1].Contains(role)) return TwoTimesRoleType + 1;
         return -1;
     }
-    private static CustomRoles RandomDraftRole()
+    private static bool TryGetDraftDevRole(byte playerId, out CustomRoles devRole)
+    {
+        devRole = CustomRoles.Crewmate;
+        if (!DevRoles.TryGetValue(playerId, out var dr)) return false;
+        devRole = dr;
+        return true;
+    }
+    private static CustomRoles GetRandomDraftRole()
     {
         int neededimps = OptRoleNum[0] - DraftRoleResult.Values.Where(v => v.IsImpostor()).Count();
         int neededneuts = OptRoleNum[1] - DraftRoleResult.Values.Where(v => v.IsNeutral()).Count();
-        int leftplayers = ArrangedPlayers.Count - CurrentAssignIndex - 1;
+        int leftplayers = ArrangedPlayers.Count - CurrentAssignIndex - Main.DevRole.Values.Where(v => v.IsCrewmate()).Count() - 1;
 
         if (neededimps + neededneuts >= leftplayers) // 若玩家人数即将不够分配内鬼和中立职业，优先分配内鬼或中立职业
         {
@@ -96,6 +111,11 @@ public class RoleDraftManager
             {
                 if (RolesToAssign[5].Count > 0) return RolesToAssign[5][IRandom.Instance.Next(0, RolesToAssign[5].Count)];
                 if (RolesToAssign[4].Count > 0) return RolesToAssign[4][IRandom.Instance.Next(0, RolesToAssign[4].Count)];
+            }
+            if (RandomRoles.Where(r => !r.IsCrewmate()).Any())
+            {
+                Logger.Info("职业分配错误：职业数量不足以轮抽选角", "RoleDraftManager");
+                return CustomRoles.Crewmate;
             }
         }
 
@@ -121,29 +141,32 @@ public class RoleDraftManager
             .Select(p => p.PlayerId)
             .ToList();
     }
-    private static void SelectThreeRoles()
+    private static void SelectRandomRoles()
     {
         if (!IsValidRoleDraftState()) return;
 
-        ThreeRoles = Enumerable.Repeat(CustomRoles.Crewmate, 3).ToList();
-        Dictionary<CustomRoles, (int, int)> CachedRoleData = new();
+        RandomRoles = new();
+        Dictionary<int, List<CustomRoles>> CachedListData = new();
         for (int i = 0; i < 3; i++)
         {
-            CustomRoles chosenRole = RandomDraftRole();
-            ThreeRoles[i] = chosenRole;
+            if (TryGetDraftDevRole(ArrangedPlayers[CurrentAssignIndex], out CustomRoles dr))
+            {
+                RandomRoles.Add(dr);
+                break;
+            }
+            CustomRoles chosenRole = GetRandomDraftRole();
+            if (chosenRole == CustomRoles.Crewmate && RandomRoles.Count > 0) break;
+            RandomRoles.Add(chosenRole);
+            if (chosenRole == CustomRoles.Crewmate) break;
             int listId = TryGetListIdOfRole(chosenRole);
-            if (listId != -1) CachedRoleData.TryAdd(chosenRole, (listId, RolesToAssign[listId].IndexOf(chosenRole)));
+            if (listId != -1) CachedListData.TryAdd(listId, RolesToAssign[listId].ToList());
             RolesToAssign.ForEach(list => list.Remove(chosenRole));
         }
-        foreach (var (role, (list, index)) in CachedRoleData) if (index != -1) RolesToAssign[list].Insert(index, role);
+        foreach (var (id, list) in CachedListData) RolesToAssign[id] = list.ToList();
 
-        Utils.SendMessage(string.Format(
-            GetString("RoleDraft.FourChoices"),
-            GetColoredRoleName(ThreeRoles[0]),
-            GetColoredRoleName(ThreeRoles[1]),
-            GetColoredRoleName(ThreeRoles[2]),
-            GetString("RoleDraft.Random")
-        ), ArrangedPlayers[CurrentAssignIndex]);
+        string text = string.Join("\n", RandomRoles.Select((role, index) => $" {index + 1} => {GetColoredRoleName(role)}").ToList());
+        text += $"\n 4 => {GetString("RoleDraft.Random")}";
+        Utils.SendMessage(string.Format(GetString("RoleDraft.Choices"), text), ArrangedPlayers[CurrentAssignIndex]);
     }
     public static void StartRoleDraft()
     {
@@ -167,7 +190,7 @@ public class RoleDraftManager
             new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 5f, "FinishRoleDraft");
             return;
         }
-        SelectThreeRoles();
+        SelectRandomRoles();
         Timer = 20;
         var id = ArrangedPlayers[CurrentAssignIndex];
         if (!IsInvalidPlayer(id)) Utils.KillFlash(Utils.GetPlayerById(id));
@@ -182,10 +205,9 @@ public class RoleDraftManager
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
         Utils.CanRecord = true;
         foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
-
         RolesToAssign.Clear();
         OptRoleNum.Clear();
-        ThreeRoles.Clear();
+        RandomRoles.Clear();
         DraftRoleResult.Clear();
         ArrangedPlayers.Clear();
     }
