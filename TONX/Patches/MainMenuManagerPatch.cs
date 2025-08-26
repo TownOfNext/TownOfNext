@@ -44,15 +44,10 @@ public class MainMenuManagerPatch
     [HarmonyPatch(typeof(SignInStatusComponent), nameof(SignInStatusComponent.SetOnline)), HarmonyPostfix]
     public static void SetOnline_Postfix() { _ = new LateTask(() => { isOnline = true; NameTagManager.Init(); }, 0.1f, "Set Online Status"); }
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
-    public static void MainMenuManager_LateUpdate(MainMenuManager __instance)
+    public static void MainMenuManager_LateUpdate()
     {
-        static void AdjustCustomButtonSize(PassiveButton template, PassiveButton button)
-        {
-            button.inactiveSprites.GetComponent<SpriteRenderer>().size =
-            button.activeSprites.GetComponent<SpriteRenderer>().size =
-            template.activeSprites.GetComponent<SpriteRenderer>().size;
-        }
-        AdjustCustomButtonSize(__instance.creditsButton, InviteButton.GetComponent<PassiveButton>());
+        var asa1 = InviteButton?.GetComponent<PassiveButton>()?.GetComponent<AspectScaledAsset>() ?? null;
+        asa1?.ScaleObject(Utils.GetResolutionOffset(Screen.width, Screen.height));
 
         CustomPopup.Update();
 
