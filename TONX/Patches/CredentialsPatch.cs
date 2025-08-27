@@ -69,8 +69,11 @@ internal class PingTrackerUpdatePatch
 [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
 internal class VersionShowerStartPatch
 {
+    public static VersionShower VersionShower;
     private static void Postfix(VersionShower __instance)
     {
+        VersionShower = __instance;
+
         TMPTemplate.SetBase(__instance.text);
         Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
 #if DEBUG
@@ -94,11 +97,12 @@ internal class VersionShowerStartPatch
             : GetString("ConnectToTONXServerFailed"))}";
 
         if (GameObject.Find("MainUI") == null) return;
+        __instance.transform.SetParent(null);
         __instance.text.alignment = TextAlignmentOptions.Left;
         __instance.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
         var ap1 = __instance.GetComponent<AspectPosition>();
         ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
-        ap1.DistanceFromEdge = new(1.0f, -0.4f);
+        ap1.DistanceFromEdge = new(2.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f);
     }
 }
 
@@ -283,5 +287,6 @@ internal class ResolutionManagerPatch
         var mainButtons = GameObject.Find("Main Buttons");
         mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y, mainButtons.transform.position.z);
         MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
+        VersionShowerStartPatch.VersionShower.GetComponent<AspectPosition>().DistanceFromEdge = new(2.0f * offset, 0.1f);
     }
 }
