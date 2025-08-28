@@ -970,6 +970,7 @@ PlagueDoctorCanInfectVent: "可感染通风管道内的玩家"
 CanBeforeSchrodingerCatWinTheCrewmate: "无阵营时可以跟随<color=#8cffff>船员</color>阵营胜利"
 SchrodingerCatExiledTeamChanges: "被票出时变为随机阵营"
 SchrodingerCatCanSeeKillableTeammate: "可以看见具有击杀能力的队友"
+ChangeToSpecficImpostorRole: "被<color=#ff1919>内鬼</color>击杀时变为凶手职业"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"
