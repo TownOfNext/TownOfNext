@@ -180,13 +180,13 @@ class IntroCutscenePatch
         }
 
         if (Input.GetKey(KeyCode.RightShift))
-            {
-                __instance.TeamTitle.text = "明天就跑路啦";
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = "嘿嘿嘿嘿嘿嘿";
-                __instance.TeamTitle.color = Color.cyan;
-                StartFadeIntro(__instance, Color.cyan, Color.yellow);
-            }
+        {
+            __instance.TeamTitle.text = "明天就跑路啦";
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = "嘿嘿嘿嘿嘿嘿";
+            __instance.TeamTitle.color = Color.cyan;
+            StartFadeIntro(__instance, Color.cyan, Color.yellow);
+        }
         if (Input.GetKey(KeyCode.RightControl))
         {
             __instance.TeamTitle.text = "警告";
