@@ -48,8 +48,6 @@ namespace TONX.Roles.Neutral
 
         public bool IsWinKill = false;
 
-        public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Stalker;
-
         public bool CanUseSabotageButton() => false;
         private static void SetupOptionItem()
         {

@@ -3,7 +3,7 @@ using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
 
-public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCatOwner
+public sealed class Hater : RoleBase, IKiller, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -30,8 +30,6 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(true);
-
-    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Hater;
 
     public bool OverrideKillButtonText(out string text)
     {

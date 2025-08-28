@@ -4,7 +4,7 @@ using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Neutral;
-public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class Demon : RoleBase, IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -49,8 +49,6 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool CanVent;
     private static Dictionary<byte, int> PlayerHP;
     private int DemonHP;
-
-    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Demon;
 
     private static void SetupOptionItem()
     {

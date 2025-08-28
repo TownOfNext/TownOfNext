@@ -74,6 +74,7 @@ static class ExtendedPlayerControl
         player.ResetKillCooldown();
         player.SyncSettings();
         player.SetKillCooldown();
+        HudManager.Instance.SetHudActive(true);
         Utils.RecordPlayerRoles(player.PlayerId);
         PlayerState.GetByPlayerId(player.PlayerId).InitTask(player);
         GameData.Instance.RecomputeTaskCounts();
@@ -103,8 +104,6 @@ static class ExtendedPlayerControl
         if (!AmongUsClient.Instance.AmHost) return;
         if (player == null || (!player.Data.IsDead && player.IsAlive())) return;
 
-        if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
-
         PlayerState.GetByPlayerId(player.PlayerId).DeathReason = CustomDeathReason.etc;
         PlayerState.GetByPlayerId(player.PlayerId).IsDead = false;
         RPC.Revive(player.PlayerId);
@@ -114,6 +113,7 @@ static class ExtendedPlayerControl
         player.SyncSettings();
         player.SetKillCooldown();
         player.RpcResetAbilityCooldown();
+        if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
 
         Utils.NotifyRoles(SpecifySeer: player);
     }

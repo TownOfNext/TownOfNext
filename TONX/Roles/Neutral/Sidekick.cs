@@ -3,7 +3,7 @@ using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
 
-public sealed class Sidekick : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class Sidekick : RoleBase, IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -38,8 +38,6 @@ public sealed class Sidekick : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool CanVent;
     public static bool CanUseSabotage;
     private static bool HasImpostorVision;
-
-    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
 
     public bool CanUseKillButton() => CanKill;
     public float CalculateKillCooldown() => CanUseKillButton() ? KillCooldown : 255f;

@@ -251,8 +251,9 @@ internal class SelectRolesPatch
                     break;
             }
 
-            // 给玩家自己注册职业
-            AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp());
+            Utils.CanRecord = RoleDraftManager.RoleDraftState == RoleDraftState.None;
+            if (Utils.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
+            AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp()); // 准备进入IntroCutscene
         }
         catch (Exception ex)
         {
@@ -264,10 +265,10 @@ internal class SelectRolesPatch
     {
         yield return new WaitForSeconds(1.0f);
 
-        Dictionary<byte, bool> realDisconnectInfo = new();
+        Dictionary<byte, bool> isDisconnectedCache = new();
         foreach (var pc in Main.AllPlayerControls)
         {
-            realDisconnectInfo[pc.PlayerId] = pc.Data.Disconnected;
+            isDisconnectedCache[pc.PlayerId] = pc.Data.Disconnected;
             pc.Data.Disconnected = true;
             pc.Data.MarkDirty();
             AmongUsClient.Instance.SendAllStreamedObjects();
@@ -290,7 +291,7 @@ internal class SelectRolesPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            bool disconnected = realDisconnectInfo[pc.PlayerId];
+            bool disconnected = isDisconnectedCache[pc.PlayerId];
             pc.Data.Disconnected = disconnected;
             if (!disconnected)
             {
@@ -298,7 +299,7 @@ internal class SelectRolesPatch
                 AmongUsClient.Instance.SendAllStreamedObjects();
             }
         }
-        Logger.Info("Recover Disconnect Data", "CoAssignForSelf");
+        Logger.Info("Restore Disconnect Data", "CoAssignForSelf");
         yield return new WaitForSeconds(1.0f);
 
         GameOptionsSender.AllSenders.Clear();
@@ -310,9 +311,6 @@ internal class SelectRolesPatch
         Utils.CountAlivePlayers(true);
         Utils.SyncAllSettings();
         SetColorPatch.IsAntiGlitchDisabled = false;
-
-        Utils.CanRecord = RoleDraftManager.RoleDraftState == RoleDraftState.None;
-        if (Utils.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
         yield break;
     }
     public static void AssignAddons()

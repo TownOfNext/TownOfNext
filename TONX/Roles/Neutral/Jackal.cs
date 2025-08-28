@@ -5,7 +5,7 @@ using Hazel;
 
 namespace TONX.Roles.Neutral;
 
-public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class Jackal : RoleBase, IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -74,8 +74,6 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     private static bool ResetKillCooldown;
     public int RecruitLimit;
     public int KillCount;
-
-    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
 
     private static void SetupOptionItem()
     {

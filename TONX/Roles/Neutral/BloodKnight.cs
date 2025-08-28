@@ -3,7 +3,7 @@ using Hazel;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class BloodKnight : RoleBase, IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -40,8 +40,6 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
     public static bool CanVent;
 
     private long ProtectStartTime;
-
-    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.BloodKnight;
 
     private static void SetupOptionItem()
     {
