@@ -647,6 +647,7 @@ public enum CustomRoles
     Succubus,
     PlagueDoctor,
     SchrodingerCat,
+    Swapper,
 
     //SoloKombat
     KB_Normal = 400,

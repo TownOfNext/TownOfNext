@@ -87,12 +87,23 @@ static class ExtendedPlayerControl
 
         RoleTypes NewRoleType = newRole.GetRoleTypes();
         bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? false;
-        foreach (var seer in Main.AllPlayerControls)
+
+        player.RpcSetRoleDesync(NewRoleType, player.GetClientId()); // 我看自己
+
+        foreach (var seer in Main.AllPlayerControls) // 其他玩家看我
         {
+            if (seer.PlayerId == player.PlayerId) continue;
             if (seer.PlayerId == 0) player.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
-            else if (seer.PlayerId == player.PlayerId) player.RpcSetRoleDesync(NewRoleType, player.GetClientId());
             else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
                 RoleTypes.Scientist : NewRoleType, seer.GetClientId());
+        }
+
+        foreach (var seen in Main.AllPlayerControls) // 我看其他玩家
+        {
+            if (seen.PlayerId == player.PlayerId) continue;
+            if (player.PlayerId == 0) seen.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
+            else seen.RpcSetRoleDesync(NewIsDesync || (seen.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
+                RoleTypes.Scientist : NewRoleType, player.GetClientId());
         }
     }
     public static void RpcExile(this PlayerControl player)
