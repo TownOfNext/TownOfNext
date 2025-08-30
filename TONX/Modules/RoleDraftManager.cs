@@ -15,7 +15,7 @@ public class RoleDraftManager
     /// </summary>
     private static List<int> OptRoleNum;
     private static List<CustomRoles> RandomRoles;
-    public static Dictionary<byte, CustomRoles> DraftRoleResult;
+    public static Dictionary<PlayerControl, CustomRoles> DraftRoleResult;
     private static List<byte> ArrangedPlayers;
     private static int CurrentAssignIndex;
     private static int Timer;
@@ -69,9 +69,9 @@ public class RoleDraftManager
         }
         bool isRandom = roleId == -1;
         CustomRoles role = isRandom ? TryGetDraftDevRole(playerId, out CustomRoles dr) ? dr : GetRandomDraftRole() : RandomRoles[roleId];
-            DraftRoleResult.Add(playerId, role);
-            RolesToAssign.ForEach(list => list.Remove(role));
-            Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), GetColoredRoleName(role)), playerId);
+        DraftRoleResult.Add(Utils.GetPlayerById(playerId), role);
+        RolesToAssign.ForEach(list => list.Remove(role));
+        Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), GetColoredRoleName(role)), playerId);
         Utils.SendMessage(string.Format(
             GetString("RoleDraft.OtherSuccessfullyChosen"),
             CurrentAssignIndex + 1,
@@ -197,8 +197,10 @@ public class RoleDraftManager
     }
     public static void AssignDraftRoles()
     {
-        foreach (var (id, role) in DraftRoleResult.Where(kvp => !IsInvalidPlayer(kvp.Key) && kvp.Value != CustomRoles.Crewmate))
-            Utils.GetPlayerById(id).RpcChangeRole(role);
+        foreach (var (player, role) in DraftRoleResult.Where(kvp => !IsInvalidPlayer(kvp.Key.PlayerId) && (kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
+            player.RpcChangeRole(role, refreshSeen: false, refreshTasks: false);
+        foreach (var (player, role) in DraftRoleResult.Where(kvp => !IsInvalidPlayer(kvp.Key.PlayerId) && !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
+            player.RpcChangeRole(role, refreshSeen: false, refreshTasks: false);
         SelectRolesPatch.AssignAddons();
         Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
         GameData.Instance.RecomputeTaskCounts();

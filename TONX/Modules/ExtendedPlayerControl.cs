@@ -61,12 +61,12 @@ static class ExtendedPlayerControl
         writer.WritePacked((int)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void RpcChangeRole(this PlayerControl player, CustomRoles newRole)
+    public static void RpcChangeRole(this PlayerControl player, CustomRoles newRole, bool refreshSeer = true, bool refreshSeen = true, bool refreshTasks = true)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player == null || player.Is(newRole) || newRole >= CustomRoles.NotAssigned) return;
 
-        player.RpcChangeBaseRole(newRole);
+        player.RpcChangeBaseRole(newRole, refreshSeer, refreshSeen);
         Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {newRole}", "ChangeRole");
 
         player.RpcSetCustomRole(newRole);
@@ -76,11 +76,12 @@ static class ExtendedPlayerControl
         player.SetKillCooldown();
         HudManager.Instance.SetHudActive(true);
         Utils.RecordPlayerRoles(player.PlayerId);
+        if (!refreshTasks) return;
         PlayerState.GetByPlayerId(player.PlayerId).InitTask(player);
         GameData.Instance.RecomputeTaskCounts();
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
     }
-    public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole)
+    public static void RpcChangeBaseRole(this PlayerControl player, CustomRoles newRole, bool refreshSeer = true, bool refreshSeen = true)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player == null) return;
@@ -89,21 +90,25 @@ static class ExtendedPlayerControl
         bool NewIsDesync = newRole.GetRoleInfo()?.IsDesyncImpostor ?? false;
 
         player.RpcSetRoleDesync(NewRoleType, player.GetClientId()); // 我看自己
-
-        foreach (var seer in Main.AllPlayerControls) // 其他玩家看我
+        if (refreshSeer)
         {
-            if (seer.PlayerId == player.PlayerId) continue;
-            if (seer.PlayerId == 0) player.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
-            else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
-                RoleTypes.Scientist : NewRoleType, seer.GetClientId());
+            foreach (var seer in Main.AllPlayerControls) // 其他玩家看我
+            {
+                if (seer.PlayerId == player.PlayerId) continue;
+                if (seer.PlayerId == 0) player.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
+                else player.RpcSetRoleDesync(NewIsDesync || (seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
+                    RoleTypes.Scientist : NewRoleType, seer.GetClientId());
+            }
         }
-
-        foreach (var seen in Main.AllPlayerControls) // 我看其他玩家
+        if (refreshSeen)
         {
-            if (seen.PlayerId == player.PlayerId) continue;
-            if (player.PlayerId == 0) seen.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
-            else seen.RpcSetRoleDesync(NewIsDesync || (seen.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
-                RoleTypes.Scientist : NewRoleType, player.GetClientId());
+            foreach (var seen in Main.AllPlayerControls) // 我看其他玩家
+            {
+                if (seen.PlayerId == player.PlayerId) continue;
+                if (player.PlayerId == 0) seen.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
+                else seen.RpcSetRoleDesync(NewIsDesync || (seen.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
+                    RoleTypes.Scientist : NewRoleType, player.GetClientId());
+            }
         }
     }
     public static void RpcExile(this PlayerControl player)
