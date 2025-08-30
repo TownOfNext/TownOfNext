@@ -17,7 +17,7 @@ public static class MeetingStartNotify
 
         List<(string, byte, string)> msgToSend = new();
 
-        void AddMsg(string text, byte sendTo = 255, string title = "")
+        void AddMsg(string text, byte sendTo = 255, string title = "<Default>")
             => msgToSend.Add((text, sendTo, title));
 
         //首次会议技能提示
@@ -25,22 +25,14 @@ public static class MeetingStartNotify
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()))
             {
                 var role = pc.GetCustomRole();
-                var sb = new StringBuilder();
-                sb.Append(GetString(role.ToString()) + Utils.GetRoleDisplaySpawnMode(role) + pc.GetRoleInfo(true));
-                if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                    Utils.ShowChildrenSettings(opt, ref sb, forChat: true);
-                var txt = sb.ToString();
-                sb.Clear().Append(txt.RemoveHtmlTags());
-                foreach (var subRole in PlayerState.AllPlayerStates[pc.PlayerId].SubRoles)
-                    sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleDisplaySpawnMode(subRole) + GetString($"{subRole}InfoLong"));
-                if (CustomRoles.Neptune.IsExist() && (role is not CustomRoles.GM and not CustomRoles.Neptune))
-                    sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleDisplaySpawnMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
-                AddMsg(sb.ToString(), pc.PlayerId);
+                var text = role.GetRoleInfo()?.Description?.GetFullFormatHelpWithAddonsByPlayer(pc) ??
+                    GetString(role.ToString()) + pc.GetRoleInfo(true);
+                AddMsg(text, pc.PlayerId);
             }
         if (msgToSend.Count >= 1)
         {
             var msgTemp = msgToSend.ToList();
-            new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "")); }, 3f, "NotifyOnMeetingStart");
+            new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3 ?? "<Default>")); }, 3f, "NotifyOnMeetingStart");
         }
 
         msgToSend = new();
