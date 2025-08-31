@@ -98,7 +98,7 @@ public class RoleDraftManager
     {
         int neededimps = OptRoleNum[0] - DraftRoleResult.Values.Where(v => v.IsImpostor()).Count();
         int neededneuts = OptRoleNum[1] - DraftRoleResult.Values.Where(v => v.IsNeutral()).Count();
-        int leftplayers = ArrangedPlayers.Count - CurrentAssignIndex - Main.DevRole.Values.Where(v => v.IsCrewmate()).Count() - 1;
+        int leftplayers = ArrangedPlayers.Count - CurrentAssignIndex - DevRoles.Values.Where(v => v.IsCrewmate()).Count() - 1;
 
         if (neededimps + neededneuts >= leftplayers) // 若玩家人数即将不够分配内鬼和中立职业，优先分配内鬼或中立职业
         {
