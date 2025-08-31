@@ -148,6 +148,7 @@ internal class ControllerManagerUpdatePatch
             PlayerControl.LocalPlayer.RpcExileV2();
             state.SetDead();
             Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
+            Utils.NotifyRoles();
         }
         //切换日志是否也在游戏中输出
         if (GetKeysDown(KeyCode.F2, KeyCode.LeftControl))

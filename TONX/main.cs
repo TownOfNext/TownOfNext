@@ -112,7 +112,7 @@ public class Main : BasePlugin
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
-    public const float RoleTextSize = 2f;
+    public const float RoleTextSize = 1.5f;
 
     public static Dictionary<byte, CustomRoles> DevRole = new();
 
