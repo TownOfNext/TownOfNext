@@ -448,6 +448,14 @@ public static class Utils
         }
         return deathReason;
     }
+    public static string GetKillerText(byte playerId, bool RealKillerColor = false)
+    {
+        var state = PlayerState.GetByPlayerId(playerId);
+        var KillerId = state.GetRealKiller();
+        if (KillerId == byte.MaxValue) return "";
+        Color color = RealKillerColor ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Impostor);
+        return ColorString(color, $"<size=80%>by {Main.AllPlayerNames[KillerId]}</size>");
+    }
 
     public static string GetRoleDisplaySpawnMode(CustomRoles role, bool parentheses = true, bool removeHTMLTags = true)
     {
@@ -1236,10 +1244,19 @@ public static class Utils
         builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
         // "(00/00) " = 4em
         pos += 4f;
-        if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
-        // "Lover's Suicide " = 8em
-        // "断开连接 " = 4.5em
-        pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
+        if (Options.CurrentGameMode != CustomGameMode.SoloKombat)
+        {
+            builder.AppendFormat("<pos={0}em>", pos).Append(GetKillCountText(id)).Append("</pos>");
+            // "Kills: {0} " = 5.5em
+            // "击杀：{0} " = 5em
+            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 5.5f : 5f;
+            builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
+            // "Lover's Suicide " = 8em
+            // "断开连接 " = 4.5em
+            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 6f : 2.5f;
+            builder.AppendFormat("<pos={0}em>", pos).Append(GetKillerText(id)).Append("</pos>");
+            pos += Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);            
+        }
         builder.AppendFormat("<pos={0}em>", pos);
         builder.Append(RolesRecord.ContainsKey(id) ? RolesRecord[id] : "");
         builder.Append("</pos>");

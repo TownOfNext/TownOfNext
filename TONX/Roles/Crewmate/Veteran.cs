@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using Hazel;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Veteran : RoleBase
@@ -52,7 +53,7 @@ public sealed class Veteran : RoleBase
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
-            ProtectStartTime != 0 ? OptionSkillDuration.GetFloat() + 1:
+            ProtectStartTime != 0 ? OptionSkillDuration.GetFloat() + 1 :
             (SkillLimit <= 0 ? 255f : OptionSkillCooldown.GetFloat());
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
@@ -72,6 +73,7 @@ public sealed class Veteran : RoleBase
         if (SkillLimit >= 1)
         {
             SkillLimit--;
+            SendRpc();
             ProtectStartTime = Utils.GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.RPCPlayCustomSound("Gunload");
@@ -110,4 +112,13 @@ public sealed class Veteran : RoleBase
         return true;
     }
     public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
+    private void SendRpc()
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write(SkillLimit);
+    }
+    public override void ReceiveRPC(MessageReader reader)
+    {
+        SkillLimit = reader.ReadInt32();
+    }
 }

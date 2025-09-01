@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Mayor : RoleBase
@@ -65,10 +66,14 @@ public sealed class Mayor : RoleBase
         {
             var user = physics.myPlayer;
             //ホスト視点、vent処理中に会議を呼ぶとベントの矢印が残るので遅延させる
-            _ = new LateTask(() => 
+            _ = new LateTask(() =>
             {
                 user?.ReportDeadBody(null);
-                if (GameStates.IsMeeting) LeftButtonCount--;
+                if (GameStates.IsMeeting)
+                {
+                    LeftButtonCount--;
+                    SendRpc();
+                }
             }, 0.1f, "MayorPortableButton");
 
             //ポータブルボタン時はベントから追い出す必要はない
@@ -87,4 +92,13 @@ public sealed class Mayor : RoleBase
         return (votedForId, numVotes, doVote);
     }
     public override int OverrideAbilityButtonUsesRemaining() => LeftButtonCount;
+    private void SendRpc()
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write(LeftButtonCount);
+    }
+    public override void ReceiveRPC(MessageReader reader)
+    {
+        LeftButtonCount = reader.ReadInt32();
+    }
 }

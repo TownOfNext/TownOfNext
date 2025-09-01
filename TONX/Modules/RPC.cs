@@ -317,15 +317,17 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncTaskState:
                 byte id = reader.ReadByte();
-                TaskState state = Utils.GetPlayerById(id).GetPlayerTaskState();
-                state.AllTasksCount = reader.ReadInt32();
-                state.CompletedTasksCount = reader.ReadInt32();
-                state.hasTasks = reader.ReadBoolean();
+                TaskState taskState = Utils.GetPlayerById(id).GetPlayerTaskState();
+                taskState.AllTasksCount = reader.ReadInt32();
+                taskState.CompletedTasksCount = reader.ReadInt32();
+                taskState.hasTasks = reader.ReadBoolean();
                 break;
             case CustomRPC.Revive:
                 byte reviveId = reader.ReadByte();
-                PlayerState.GetByPlayerId(reviveId).DeathReason = CustomDeathReason.etc;
-                PlayerState.GetByPlayerId(reviveId).IsDead = false;
+                PlayerState playerState = PlayerState.GetByPlayerId(reviveId);
+                playerState.DeathReason = CustomDeathReason.etc;
+                playerState.IsDead = false;
+                playerState.RealKiller = (DateTime.MinValue, byte.MaxValue);
                 break;
         }
     }
