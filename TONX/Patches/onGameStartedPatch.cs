@@ -287,7 +287,7 @@ internal class SelectRolesPatch
             else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
         Logger.Info("Assign Self", "CoAssignForSelf");
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
 
         foreach (var pc in Main.AllPlayerControls)
         {
