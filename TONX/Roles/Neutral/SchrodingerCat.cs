@@ -41,7 +41,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         CanBeforeSchrodingerCatWinTheCrewmate,
         SchrodingerCatExiledTeamChanges,
         // SchrodingerCatCanSeeKillableTeammate,
-        ChangeToSpecficImpostorRole,
+        SchrodingerCatChangeToSpecficImpostorRole,
     }
     static bool CanWinTheCrewmateBeforeChange;
     static bool ChangeTeamWhenExile;
@@ -53,7 +53,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanBeforeSchrodingerCatWinTheCrewmate, true, false);
         OptionChangeTeamWhenExile = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SchrodingerCatExiledTeamChanges, false, false);
         // OptionCanSeeKillableTeammate = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
-        OptionChangeToSpecficImpostorRole = BooleanOptionItem.Create(RoleInfo, 13, OptionName.ChangeToSpecficImpostorRole, true, false);
+        OptionChangeToSpecficImpostorRole = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SchrodingerCatChangeToSpecficImpostorRole, true, false);
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {

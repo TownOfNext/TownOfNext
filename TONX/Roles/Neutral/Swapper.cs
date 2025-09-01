@@ -18,7 +18,8 @@ public sealed class Swapper : RoleBase, IKiller, IDeathReasonSeeable
             "swa|连环交换|连环交换师",
             "#696969",
             true,
-            introSound: () => GetIntroSound(RoleTypes.Impostor)
+            introSound: () => GetIntroSound(RoleTypes.Shapeshifter),
+            experimental: true
         );
     public Swapper(PlayerControl player)
     : base(
