@@ -1229,7 +1229,11 @@ public static class Utils
         }
         builder.Append(Main.AllPlayerNames[id]);
         builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-        if (Options.CurrentGameMode != CustomGameMode.SoloKombat) builder.Append(' ').Append(GetVitalText(id));
+        if (Options.CurrentGameMode != CustomGameMode.SoloKombat)
+        {
+            builder.Append(' ').Append(GetKillCountText(id).RemoveColorTags());
+            builder.Append(' ').Append(GetVitalText(id));
+        }
         builder.Append(' ').Append(RolesRecord.ContainsKey(id) ? RolesRecord[id].RemoveColorTags() : "");
         ChatSummary[id] = builder.ToString();
         builder = new StringBuilder();
@@ -1255,8 +1259,9 @@ public static class Utils
             // "断开连接 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 6f : 2.5f;
             builder.AppendFormat("<pos={0}em>", pos).Append(GetKillerText(id)).Append("</pos>");
-            pos += Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);            
+            pos += Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
         }
+        else pos += 6.5f;
         builder.AppendFormat("<pos={0}em>", pos);
         builder.Append(RolesRecord.ContainsKey(id) ? RolesRecord[id] : "");
         builder.Append("</pos>");

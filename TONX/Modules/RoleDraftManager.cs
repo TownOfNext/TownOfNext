@@ -21,7 +21,7 @@ public class RoleDraftManager
     private static int Timer;
     private static long lastFixedUpdate;
     public static RoleDraftState RoleDraftState;
-    public static bool IsValidRoleDraftState() => RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
+    public static bool IsValidRoleDraftState() => Options.EnableRoleDraftMode.GetBool() && RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
     private static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
     private static bool IsInvalidPlayer(byte playerId)
     {

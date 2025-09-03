@@ -186,7 +186,7 @@ namespace TONX
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
             + AddonDescription;
         }
-        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
+        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool()) && (GameMode == CustomGameMode.All || GameMode == Options.CurrentGameMode);
         public virtual int GetInt() => CurrentValue;
         public virtual float GetFloat() => CurrentValue;
         public virtual string GetString()

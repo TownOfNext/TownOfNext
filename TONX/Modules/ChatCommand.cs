@@ -248,7 +248,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["ch"], CommandAccess.All, mc =>
             {
-                if (Options.EnableRoleDraftMode.GetBool() && RoleDraftManager.IsValidRoleDraftState()) RoleDraftManager.OnPlayerChooseRole(mc.Player.PlayerId, mc.Args);
+                if (RoleDraftManager.IsValidRoleDraftState()) RoleDraftManager.OnPlayerChooseRole(mc.Player.PlayerId, mc.Args);
                 return (RoleDraftManager.IsValidRoleDraftState() ? MsgRecallMode.Spam : MsgRecallMode.None, null);
             })
         };

@@ -336,6 +336,6 @@ class IntroCutscenePatch
         GameStates.InTask = true;
         Logger.Info("タスクフェイズ開始", "Phase");
 
-        if (Options.EnableRoleDraftMode.GetBool() && AmongUsClient.Instance.AmHost) PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+        if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft && AmongUsClient.Instance.AmHost) PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
     }
 }
