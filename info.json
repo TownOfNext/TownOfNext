@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.1.1",
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
@@ -16,5 +16,4 @@
     "gitee": "https://gitee.com/leeverz/TownOfNext/releases/download/{{version}}/TONX.dll",
     "cos": "null"
   }
-
 }
