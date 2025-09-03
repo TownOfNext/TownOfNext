@@ -54,7 +54,7 @@ public class MeetingTimeManager
         int MeetingTimeMin = 0;
         int MeetingTimeMax = 300;
 
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
         {
             if (role is IMeetingTimeAlterable meetingTimeAlterable)
             {

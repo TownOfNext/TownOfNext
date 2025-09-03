@@ -1113,7 +1113,7 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
-        foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
             roleClass.AfterMeetingTasks();
         if (Options.AirShipVariableElectrical.GetBool())
             AirShipElectricalDoors.Initialize();

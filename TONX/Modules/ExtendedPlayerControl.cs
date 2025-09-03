@@ -107,7 +107,7 @@ static class ExtendedPlayerControl
                 if (seen.PlayerId == player.PlayerId) continue;
                 if (player.PlayerId == 0) seen.SetRole(NewIsDesync ? RoleTypes.Crewmate : NewRoleType, true); // 确定房主视角职业显示
                 else seen.RpcSetRoleDesync(NewIsDesync || (seen.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor ?? false) ?
-                    RoleTypes.Scientist : NewRoleType, player.GetClientId());
+                    RoleTypes.Scientist : seen.GetCustomRole().GetRoleTypes(), player.GetClientId());
             }
         }
     }
@@ -597,7 +597,7 @@ static class ExtendedPlayerControl
         if (Options.DisableMeeting.GetBool()) return;
         Logger.Info($"{reporter.GetNameWithRole()} => {target?.Object?.GetNameWithRole() ?? "null"}", "NoCheckStartMeeting");
 
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
         {
             role.OnReportDeadBody(reporter, target);
         }

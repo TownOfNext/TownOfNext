@@ -154,7 +154,7 @@ public static class MeetingHudPatch
 
             if (AmongUsClient.Instance.AmHost)
             {
-                CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnStartMeeting());
+                CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role.OnStartMeeting());
                 MeetingStartNotify.OnMeetingStart();
                 Tiebreaker.OnMeetingStart();
             }

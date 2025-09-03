@@ -363,7 +363,7 @@ class ReportDeadBodyPatch
 
         if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
 
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
         {
             if (role.OnCheckReportDeadBody(__instance, target) == false)
             {
@@ -388,7 +388,7 @@ class ReportDeadBodyPatch
         GameStates.InTask = false;
 
         Main.isFirstTurn = false;
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
         {
             role.OnReportDeadBody(__instance, target);
         }

@@ -70,7 +70,7 @@ public class MeetingVoteManager
         }
 
         bool doVote = true;
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
         {
             var (roleVoteFor, roleNumVotes, roleDoVote) = role.ModifyVote(voter, voteFor, isIntentional);
             if (roleVoteFor.HasValue)
@@ -152,7 +152,7 @@ public class MeetingVoteManager
 
             bool DecidedWinner = false;
             List<string> WinDescriptionText = new();
-            foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values)
+            foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
             {
                 var action = roleClass.CheckExile(result.Exiled, ref DecidedWinner, ref WinDescriptionText);
                 if (action != null) ExileControllerWrapUpPatch.ActionsOnWrapUp.Add(action);
