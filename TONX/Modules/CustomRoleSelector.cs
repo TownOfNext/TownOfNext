@@ -59,16 +59,16 @@ internal static class CustomRoleSelector
         // 职业设置为：优先
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2).Concat(roleList.Where(x => x.IsVanilla())))
         {
-            if (role.IsImpostor()) for (int i = 0; i < role.GetAssignCount(); i++) ImpOnList.Add(role);
-            else if (role.IsNeutral()) for (int i = 0; i < role.GetAssignCount(); i++) NeutralOnList.Add(role);
-            else for (int i = 0; i < role.GetAssignCount(); i++) roleOnList.Add(role);
+            if (role.IsImpostor()) ImpOnList.Add(role);
+            else if (role.IsNeutral()) NeutralOnList.Add(role);
+            else roleOnList.Add(role);
         }
         // 职业设置为：启用
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 1))
         {
-            if (role.IsImpostor()) for (int i = 0; i < role.GetAssignCount(); i++) ImpRateList.Add(role);
-            else if (role.IsNeutral()) for (int i = 0; i < role.GetAssignCount(); i++) NeutralRateList.Add(role);
-            else for (int i = 0; i < role.GetAssignCount(); i++) roleRateList.Add(role);
+            if (role.IsImpostor()) ImpRateList.Add(role);
+            else if (role.IsNeutral()) NeutralRateList.Add(role);
+            else roleRateList.Add(role);
         }
 
         if (Options.EnableRoleDraftMode.GetBool())

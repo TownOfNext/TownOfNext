@@ -146,7 +146,7 @@ public class RoleDraftManager
         if (!IsValidRoleDraftState()) return;
 
         RandomRoles = new();
-        Dictionary<int, List<CustomRoles>> CachedListData = new();
+        Dictionary<int, CustomRoles> CachedRoleData = new();
         for (int i = 0; i < 3; i++)
         {
             if (TryGetDraftDevRole(ArrangedPlayers[CurrentAssignIndex], out CustomRoles dr))
@@ -159,10 +159,10 @@ public class RoleDraftManager
             RandomRoles.Add(chosenRole);
             if (chosenRole == CustomRoles.Crewmate) break;
             int listId = TryGetListIdOfRole(chosenRole);
-            if (listId != -1) CachedListData.TryAdd(listId, RolesToAssign[listId].ToList());
+            if (listId != -1) CachedRoleData.TryAdd(listId, chosenRole);
             RolesToAssign.ForEach(list => list.Remove(chosenRole));
         }
-        foreach (var (id, list) in CachedListData) RolesToAssign[id] = list.ToList();
+        foreach (var (id, role) in CachedRoleData) RolesToAssign[id].Add(role);
 
         string text = string.Join("\n", RandomRoles.Select((role, index) => $" {index + 1} => {GetColoredRoleName(role)}").ToList());
         text += $"\n 4 => {GetString("RoleDraft.Random")}";
