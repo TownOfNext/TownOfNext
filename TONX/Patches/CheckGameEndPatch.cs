@@ -56,7 +56,7 @@ class GameEndChecker
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Sidekick);
             }
-            
+
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 //抢夺胜利
@@ -98,10 +98,10 @@ class GameEndChecker
                 }
 
                 // 恋人胜利
-                if (Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.Is(CustomRoles.Lovers)))
+                if (Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.Is(CustomRoles.Lovers)) && CustomWinnerHolder.WinnerTeam is not CustomWinner.Lovers)
                 {
                     CustomWinnerHolder.AdditionalWinnerRoles.Add(CustomRoles.Lovers);
-                    Main.AllPlayerControls.Where(p => p.Is(CustomRoles.Lovers))
+                    Main.AllPlayerControls.Where(p => p.Is(CustomRoles.Lovers) && !CustomWinnerHolder.WinnerIds.Contains(p.PlayerId))
                         .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
                 }
             }
@@ -226,6 +226,8 @@ class GameEndChecker
             {
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
+                Main.AllPlayerControls.Where(p => p.Is(CustomRoles.Lovers) && !CustomWinnerHolder.WinnerIds.Contains(p.PlayerId))
+                        .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
                 return true;
             }
             var crewCount = counts.First(kvp => kvp.Key is CountTypes.Crew).Value;

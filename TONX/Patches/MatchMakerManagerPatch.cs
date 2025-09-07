@@ -4,13 +4,8 @@ namespace TONX;
 class HttpMatchmakerManagerPatch
 {
     public static IRegionInfo CurrentGameRegion;
-    [HarmonyPatch(nameof(HttpMatchmakerManager.CoSendRequest), new Type[] { typeof(AmongUs.HTTP.RetryableWebRequest), typeof(string) }), HarmonyPrefix]
-    public static void CoSendRequestHost_Prefix()
-    {
-        CurrentGameRegion = ServerManager.Instance.CurrentRegion;
-    }
     [HarmonyPatch(nameof(HttpMatchmakerManager.CoSendRequest), new Type[] { typeof(AmongUs.HTTP.RetryableWebRequest), typeof(string), typeof(int), typeof(Il2CppSystem.Action<HttpMatchmakerManager.MatchmakerFailure>) }), HarmonyPrefix]
-    public static void CoSendRequestClient_Prefix()
+    public static void CoSendRequest_Prefix()
     {
         CurrentGameRegion = ServerManager.Instance.CurrentRegion;
     }

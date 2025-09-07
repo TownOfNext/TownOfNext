@@ -700,8 +700,8 @@ public static class Utils
             if (!role.IsEnable() || (role.IsVanilla() && Options.DisableVanillaRoles.GetBool())) continue;
             sbs[customRoleTypes.IndexOf(role.GetCustomRoleTypes())].Append(
                 $"\n{ColorString(GetRoleColor(role).ToReadableColor(), GetRoleName(role))}:" +
-                $"{GetRoleDisplaySpawnMode(role, false, false)}" +
-                $"x{ColorString(GetCustomRoleTypeColor(role.GetCustomRoleTypes()),role.GetCount().ToString())}");
+                $"{GetRoleDisplaySpawnMode(role, false)}" +
+                $"x{role.GetCount().ToString()}");
         }
 
         SendMessage(titlesb, PlayerId);
