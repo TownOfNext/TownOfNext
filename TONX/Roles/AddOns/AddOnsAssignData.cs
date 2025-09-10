@@ -30,7 +30,7 @@ public class AddOnsAssignData
         if (role is CustomRoles.Bewilder && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Lighter))) return false;
         if (role is CustomRoles.Neptune && (pc.Is(CustomRoles.Lovers) || pc.Is(CustomRoles.Hater))) return false;
         if (role is CustomRoles.Madmate && !Utils.CanBeMadmate(pc)) return false;
-        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.Detective) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
+        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.ModDetective) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
         if (role is CustomRoles.Fool && pc.Is(CustomRoles.Repairman)) return false;
         if (role is CustomRoles.Tiebreaker && pc.Is(CustomRoles.Dictator)) return false;
         if (role is CustomRoles.YouTuber && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Sheriff))) return false;

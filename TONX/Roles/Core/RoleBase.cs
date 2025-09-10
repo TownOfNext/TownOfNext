@@ -494,7 +494,7 @@ public abstract class RoleBase : IDisposable
     { }
 
     protected static AudioClip GetIntroSound(RoleTypes roleType) =>
-        RoleManager.Instance.AllRoles.FirstOrDefault(role => role.Role == roleType).IntroSound;
+        RoleManager.Instance.AllRoles.ToArray().FirstOrDefault(role => role.Role == roleType).IntroSound;
 
     protected enum GeneralOption
     {

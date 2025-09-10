@@ -94,10 +94,10 @@ class HudManagerPatch
                 var roleClass = player.GetRoleClass();
                 if (roleClass != null)
                 {
-                    var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : GetString(StringNames.KillLabel);
-                    __instance.KillButton.OverrideText(killLabel);
-                    var reportLabel = roleClass?.GetReportButtonText() ?? GetString(StringNames.ReportLabel);
-                    __instance.ReportButton.OverrideText(reportLabel);
+                    var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : "";
+                    if (killLabel != "") __instance.KillButton.OverrideText(killLabel);
+                    var reportLabel = roleClass?.GetReportButtonText() ?? "";
+                    if (reportLabel != "") __instance.ReportButton.OverrideText(reportLabel);
                     if (roleClass.HasAbility)
                     {
                         if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(abilityLabel);

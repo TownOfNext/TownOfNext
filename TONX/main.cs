@@ -32,7 +32,7 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2025.4.15"; // 16.0.5
+    public const string LowestSupportedVersion = "2025.9.9"; // 17.0.0
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "3.1.1";
     public const int PluginCreation = 1;
@@ -54,7 +54,7 @@ public class Main : BasePlugin
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
-    public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static NormalGameOptionsV10 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -231,10 +231,12 @@ public class Main : BasePlugin
                 {CustomRoles.Scientist, "#8cffff"},
                 {CustomRoles.Noisemaker, "#8cffff"},
                 {CustomRoles.Tracker, "#8cffff"},
-                {CustomRoles.Phantom, "#ff1919"},
+                {CustomRoles.Detective, "#8cffff"},
                 {CustomRoles.GuardianAngel, "#ffffff"},
                 {CustomRoles.Impostor, "#ff1919"},
                 {CustomRoles.Shapeshifter, "#ff1919"},
+                {CustomRoles.Phantom, "#ff1919"},
+                {CustomRoles.Viper, "#ff1919"},
 
                 //Add-Ons
                 {CustomRoles.NotAssigned, "#ffffff"},

@@ -1,13 +1,13 @@
 ﻿using AmongUs.GameOptions;
 
 namespace TONX.Roles.Crewmate;
-public sealed class Detective : RoleBase
+public sealed class ModDetective : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Detective),
-            player => new Detective(player),
-            CustomRoles.Detective,
+            typeof(ModDetective),
+            player => new ModDetective(player),
+            CustomRoles.ModDetective,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
             21300,
@@ -15,7 +15,7 @@ public sealed class Detective : RoleBase
             "de|偵探",
             "#7160e8"
         );
-    public Detective(PlayerControl player)
+    public ModDetective(PlayerControl player)
     : base(
         RoleInfo,
         player

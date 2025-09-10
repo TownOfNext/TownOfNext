@@ -53,8 +53,13 @@ public class PlayerState
                 RoleTypes.Engineer => CustomRoles.Engineer,
                 RoleTypes.Scientist => CustomRoles.Scientist,
                 RoleTypes.GuardianAngel => CustomRoles.GuardianAngel,
+                RoleTypes.Tracker => CustomRoles.Tracker,
+                RoleTypes.Noisemaker => CustomRoles.Noisemaker,
+                RoleTypes.Detective => CustomRoles.Detective,
                 RoleTypes.Impostor => CustomRoles.Impostor,
                 RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,
+                RoleTypes.Phantom => CustomRoles.Phantom,
+                RoleTypes.Viper => CustomRoles.Viper,
                 _ => CustomRoles.Crewmate,
             };
     }

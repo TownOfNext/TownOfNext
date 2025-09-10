@@ -74,10 +74,12 @@ static class CustomRolesHelper
                 CustomRoles.Scientist or
                 CustomRoles.Tracker or
                 CustomRoles.Noisemaker or
+                CustomRoles.Detective or
                 CustomRoles.GuardianAngel or
                 CustomRoles.Impostor or
                 CustomRoles.Shapeshifter or
-                CustomRoles.Phantom;
+                CustomRoles.Phantom or
+                CustomRoles.Viper;
     }
 
     public static CustomRoleTypes GetCustomRoleTypes(this CustomRoles role)
@@ -109,8 +111,10 @@ static class CustomRolesHelper
                 CustomRoles.Scientist => roleOpt.GetNumPerGame(RoleTypes.Scientist),
                 CustomRoles.Tracker => roleOpt.GetNumPerGame(RoleTypes.Tracker),
                 CustomRoles.Noisemaker => roleOpt.GetNumPerGame(RoleTypes.Noisemaker),
+                CustomRoles.Detective => roleOpt.GetNumPerGame(RoleTypes.Detective),
                 CustomRoles.Shapeshifter => roleOpt.GetNumPerGame(RoleTypes.Shapeshifter),
                 CustomRoles.Phantom => roleOpt.GetNumPerGame(RoleTypes.Phantom),
+                CustomRoles.Viper => roleOpt.GetNumPerGame(RoleTypes.Viper),
                 _ => 0
             };
         }
@@ -129,8 +133,10 @@ static class CustomRolesHelper
                 CustomRoles.Scientist => roleOpt.GetChancePerGame(RoleTypes.Scientist),
                 CustomRoles.Tracker => roleOpt.GetChancePerGame(RoleTypes.Tracker),
                 CustomRoles.Noisemaker => roleOpt.GetChancePerGame(RoleTypes.Noisemaker),
+                CustomRoles.Detective => roleOpt.GetChancePerGame(RoleTypes.Detective),
                 CustomRoles.Shapeshifter => roleOpt.GetChancePerGame(RoleTypes.Shapeshifter),
                 CustomRoles.Phantom => roleOpt.GetChancePerGame(RoleTypes.Phantom),
+                CustomRoles.Viper => roleOpt.GetChancePerGame(RoleTypes.Viper),
                 _ => 0
             };
         }
@@ -146,10 +152,12 @@ static class CustomRolesHelper
             RoleTypes.Scientist => CustomRoles.Scientist,
             RoleTypes.Noisemaker => CustomRoles.Noisemaker,
             RoleTypes.Tracker => CustomRoles.Tracker,
+            RoleTypes.Detective => CustomRoles.Detective,
             RoleTypes.GuardianAngel => CustomRoles.GuardianAngel,
             RoleTypes.Impostor => CustomRoles.Impostor,
             RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,
             RoleTypes.Phantom => CustomRoles.Phantom,
+            RoleTypes.Viper => CustomRoles.Viper,
             _ => CustomRoles.NotAssigned
         };
     }
