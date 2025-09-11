@@ -172,12 +172,16 @@ public class SimpleRoleInfo
 
         switch (baseRoleType)
         {
-            case RoleTypes.Engineer:
-                roleName = CustomRoles.Engineer;
-                customRoleType = CustomRoleTypes.Crewmate;
-                break;
             case RoleTypes.Scientist:
                 roleName = CustomRoles.Scientist;
+                customRoleType = CustomRoleTypes.Crewmate;
+                break;
+            case RoleTypes.GuardianAngel:
+                roleName = CustomRoles.GuardianAngel;
+                customRoleType = CustomRoleTypes.Crewmate;
+                break;
+            case RoleTypes.Engineer:
+                roleName = CustomRoles.Engineer;
                 customRoleType = CustomRoleTypes.Crewmate;
                 break;
             case RoleTypes.Noisemaker:
@@ -190,10 +194,6 @@ public class SimpleRoleInfo
                 break;
             case RoleTypes.Detective:
                 roleName = CustomRoles.Detective;
-                customRoleType = CustomRoleTypes.Crewmate;
-                break;
-            case RoleTypes.GuardianAngel:
-                roleName = CustomRoles.GuardianAngel;
                 customRoleType = CustomRoleTypes.Crewmate;
                 break;
             case RoleTypes.Impostor:

@@ -227,12 +227,12 @@ public class Main : BasePlugin
 
                 //Vanilla
                 {CustomRoles.Crewmate, "#8cffff"},
-                {CustomRoles.Engineer, "#8cffff"},
                 {CustomRoles.Scientist, "#8cffff"},
+                {CustomRoles.GuardianAngel, "#ffffff"},
+                {CustomRoles.Engineer, "#8cffff"},
                 {CustomRoles.Noisemaker, "#8cffff"},
                 {CustomRoles.Tracker, "#8cffff"},
                 {CustomRoles.Detective, "#8cffff"},
-                {CustomRoles.GuardianAngel, "#ffffff"},
                 {CustomRoles.Impostor, "#ff1919"},
                 {CustomRoles.Shapeshifter, "#ff1919"},
                 {CustomRoles.Phantom, "#ff1919"},

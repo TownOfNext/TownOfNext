@@ -586,11 +586,11 @@ public enum CustomRoles
     Messenger,
     Insider,
     //Crewmate(Vanilla)
-    Engineer,
-    GuardianAngel,
     Scientist,
-    Tracker,
+    GuardianAngel,
+    Engineer,
     Noisemaker,
+    Tracker,
     Detective,
     //Crewmate
     Luckey,

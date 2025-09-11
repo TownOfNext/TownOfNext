@@ -26,16 +26,6 @@ namespace TONX
             get => Opt.GetFloat(FloatOptionNames.ScientistBatteryCharge);
             set => Opt.SetFloat(FloatOptionNames.ScientistBatteryCharge, value);
         }
-        public static float EngineerCooldown
-        {
-            get => Opt.GetFloat(FloatOptionNames.EngineerCooldown);
-            set => Opt.SetFloat(FloatOptionNames.EngineerCooldown, value);
-        }
-        public static float EngineerInVentMaxTime
-        {
-            get => Opt.GetFloat(FloatOptionNames.EngineerInVentMaxTime);
-            set => Opt.SetFloat(FloatOptionNames.EngineerInVentMaxTime, value);
-        }
         public static float GuardianAngelCooldown
         {
             get => Opt.GetFloat(FloatOptionNames.GuardianAngelCooldown);
@@ -51,6 +41,51 @@ namespace TONX
             get => Opt.GetBool(BoolOptionNames.ImpostorsCanSeeProtect);
             set => Opt.SetBool(BoolOptionNames.ImpostorsCanSeeProtect, value);
         }
+        public static float EngineerCooldown
+        {
+            get => Opt.GetFloat(FloatOptionNames.EngineerCooldown);
+            set => Opt.SetFloat(FloatOptionNames.EngineerCooldown, value);
+        }
+        public static float EngineerInVentMaxTime
+        {
+            get => Opt.GetFloat(FloatOptionNames.EngineerInVentMaxTime);
+            set => Opt.SetFloat(FloatOptionNames.EngineerInVentMaxTime, value);
+        }
+        public static bool NoisemakerImpostorAlert
+        {
+            get => Opt.GetBool(BoolOptionNames.NoisemakerImpostorAlert);
+            set => Opt.SetBool(BoolOptionNames.NoisemakerImpostorAlert, value);
+        }
+        public static float NoisemakerAlertDuration
+        {
+            get => Opt.GetFloat(FloatOptionNames.NoisemakerAlertDuration);
+            set => Opt.SetFloat(FloatOptionNames.NoisemakerAlertDuration, value);
+        }
+        public static float TrackerCooldown
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerCooldown);
+            set => Opt.SetFloat(FloatOptionNames.TrackerCooldown, value);
+        }
+        public static float TrackerDelay
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerDelay);
+            set => Opt.SetFloat(FloatOptionNames.TrackerDelay, value);
+        }
+        public static float TrackerDuration
+        {
+            get => Opt.GetFloat(FloatOptionNames.TrackerDuration);
+            set => Opt.SetFloat(FloatOptionNames.TrackerDuration, value);
+        }
+        public static float DetectiveSuspectLimit
+        {
+            get => Opt.GetFloat(FloatOptionNames.DetectiveSuspectLimit);
+            set => Opt.SetFloat(FloatOptionNames.DetectiveSuspectLimit, value);
+        }
+        public static bool ShapeshifterLeaveSkin
+        {
+            get => Opt.GetBool(BoolOptionNames.ShapeshifterLeaveSkin);
+            set => Opt.SetBool(BoolOptionNames.ShapeshifterLeaveSkin, value);
+        }
         public static float ShapeshifterDuration
         {
             get => Opt.GetFloat(FloatOptionNames.ShapeshifterDuration);
@@ -61,15 +96,20 @@ namespace TONX
             get => Opt.GetFloat(FloatOptionNames.ShapeshifterCooldown);
             set => Opt.SetFloat(FloatOptionNames.ShapeshifterCooldown, value);
         }
-        public static bool ShapeshifterLeaveSkin
+        public static float PhantomDuration
         {
-            get => Opt.GetBool(BoolOptionNames.ShapeshifterLeaveSkin);
-            set => Opt.SetBool(BoolOptionNames.ShapeshifterLeaveSkin, value);
+            get => Opt.GetFloat(FloatOptionNames.PhantomDuration);
+            set => Opt.SetFloat(FloatOptionNames.PhantomDuration, value);
         }
-        public static bool NoisemakerImpostorAlert
+        public static float PhantomCooldown
         {
-            get => Opt.GetBool(BoolOptionNames.NoisemakerImpostorAlert);
-            set => Opt.SetBool(BoolOptionNames.NoisemakerImpostorAlert, value);
+            get => Opt.GetFloat(FloatOptionNames.PhantomCooldown);
+            set => Opt.SetFloat(FloatOptionNames.PhantomCooldown, value);
+        }
+        public static float ViperDissolveTime
+        {
+            get => Opt.GetFloat(FloatOptionNames.ViperDissolveTime);
+            set => Opt.SetFloat(FloatOptionNames.ViperDissolveTime, value);
         }
     }
 }

@@ -141,7 +141,7 @@ internal class SelectRolesPatch
             CalculateVanillaRoleCount();
 
             // 指定原版特殊职业数量
-            RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Shapeshifter, RoleTypes.Phantom]; foreach (var roleTypes in RoleTypesList)
+            RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Detective, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Viper]; foreach (var roleTypes in RoleTypesList)
             {
                 var roleOpt = Main.NormalOptions.roleOptions;
                 int numRoleTypes = GetRoleTypesCount(roleTypes);
@@ -235,7 +235,7 @@ internal class SelectRolesPatch
                 pc.ResetKillCooldown();
             }
 
-            RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Shapeshifter, RoleTypes.Phantom]; foreach (var roleTypes in RoleTypesList)
+            RoleTypes[] RoleTypesList = [RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Noisemaker, RoleTypes.Tracker, RoleTypes.Detective, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Viper]; foreach (var roleTypes in RoleTypesList)
             {
                 var roleOpt = Main.NormalOptions.roleOptions;
                 roleOpt.SetRoleRate(roleTypes, 0, 0);

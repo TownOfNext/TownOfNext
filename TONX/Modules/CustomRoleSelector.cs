@@ -197,30 +197,36 @@ internal static class CustomRoleSelector
 
     public static int addScientistNum = 0;
     public static int addEngineerNum = 0;
-    public static int addTrackerNum = 0;
     public static int addNoisemakerNum = 0; 
-    public static int addPhantomNum = 0;
+    public static int addTrackerNum = 0;
+    public static int addDetectiveNum = 0; 
     public static int addShapeshifterNum = 0;
+    public static int addPhantomNum = 0;
+    public static int addViperNum = 0;
     public static void CalculateVanillaRoleCount()
     {
         // 计算原版特殊职业数量
-        addEngineerNum = 0;
         addScientistNum = 0;
-        addShapeshifterNum = 0;
+        addEngineerNum = 0;
         addNoisemakerNum = 0;
-        addPhantomNum = 0;
-
         addTrackerNum = 0;
+        addDetectiveNum = 0;
+        addShapeshifterNum = 0;
+        addPhantomNum = 0;
+        addViperNum = 0;
+
         foreach (var role in AllRoles)
         {
             switch (role.GetRoleInfo()?.BaseRoleType.Invoke())
             {
-                case RoleTypes.Engineer: addEngineerNum++; break;
                 case RoleTypes.Scientist: addScientistNum++; break;
-                case RoleTypes.Tracker: addTrackerNum++; break;
+                case RoleTypes.Engineer: addEngineerNum++; break;
                 case RoleTypes.Noisemaker: addNoisemakerNum++; break;
+                case RoleTypes.Tracker: addTrackerNum++; break;
+                case RoleTypes.Detective: addDetectiveNum++; break;
                 case RoleTypes.Shapeshifter: addShapeshifterNum++; break;
                 case RoleTypes.Phantom: addPhantomNum++; break;
+                case RoleTypes.Viper: addViperNum++; break;
             }
         }
     }
@@ -228,12 +234,14 @@ internal static class CustomRoleSelector
     {
         return type switch
         {
-            RoleTypes.Engineer => addEngineerNum,
             RoleTypes.Scientist => addScientistNum,
-            RoleTypes.Tracker => addTrackerNum,
+            RoleTypes.Engineer => addEngineerNum,
             RoleTypes.Noisemaker => addNoisemakerNum,
+            RoleTypes.Tracker => addTrackerNum,
+            RoleTypes.Detective => addDetectiveNum,
             RoleTypes.Shapeshifter => addShapeshifterNum,
             RoleTypes.Phantom => addPhantomNum,
+            RoleTypes.Viper => addViperNum,
             _ => 0
         };
     }

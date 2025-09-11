@@ -49,13 +49,14 @@ public abstract class RoleBase : IDisposable
         this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate ? () => HasTask.True : () => HasTask.False);
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
+            RoleTypes.Scientist or
+            RoleTypes.GuardianAngel or
+            RoleTypes.Engineer or
+            RoleTypes.Tracker or
+            RoleTypes.Detective or
+            RoleTypes.CrewmateGhost or
             RoleTypes.Shapeshifter or
             RoleTypes.Phantom or
-            RoleTypes.Engineer or
-            RoleTypes.Scientist or
-            RoleTypes.Tracker or
-            RoleTypes.GuardianAngel or
-            RoleTypes.CrewmateGhost or
             RoleTypes.ImpostorGhost;
 
         MyState = PlayerState.GetByPlayerId(player.PlayerId);

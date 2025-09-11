@@ -50,11 +50,11 @@ public class PlayerState
             : RoleInfo.Role.Role switch
             {
                 RoleTypes.Crewmate => CustomRoles.Crewmate,
-                RoleTypes.Engineer => CustomRoles.Engineer,
                 RoleTypes.Scientist => CustomRoles.Scientist,
                 RoleTypes.GuardianAngel => CustomRoles.GuardianAngel,
-                RoleTypes.Tracker => CustomRoles.Tracker,
+                RoleTypes.Engineer => CustomRoles.Engineer,
                 RoleTypes.Noisemaker => CustomRoles.Noisemaker,
+                RoleTypes.Tracker => CustomRoles.Tracker,
                 RoleTypes.Detective => CustomRoles.Detective,
                 RoleTypes.Impostor => CustomRoles.Impostor,
                 RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,

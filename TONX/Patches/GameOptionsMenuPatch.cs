@@ -364,10 +364,19 @@ public static class RolesSettingsMenuPatch
         {
             switch (ob.Title)
             {
+                case StringNames.ScientistCooldown:
+                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
+                    break;
                 case StringNames.EngineerCooldown:
                     ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
                     break;
+                case StringNames.TrackerCooldown:
+                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
+                    break;
                 case StringNames.ShapeshifterCooldown:
+                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
+                    break;
+                case StringNames.PhantomCooldown:
                     ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
                     break;
                 default:
