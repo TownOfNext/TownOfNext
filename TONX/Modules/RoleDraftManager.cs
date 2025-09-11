@@ -94,7 +94,7 @@ public class RoleDraftManager
         devRole = dr;
         return true;
     }
-    private static CustomRoles GetRandomDraftRole()
+    private static CustomRoles GetRandomDraftRole(List<CustomRoles> existedRoles = null)
     {
         int neededimps = OptRoleNum[0] - DraftRoleResult.Values.Where(v => v.IsImpostor()).Count();
         int neededneuts = OptRoleNum[1] - DraftRoleResult.Values.Where(v => v.IsNeutral()).Count();
@@ -112,7 +112,7 @@ public class RoleDraftManager
                 if (RolesToAssign[5].Count > 0) return RolesToAssign[5][IRandom.Instance.Next(0, RolesToAssign[5].Count)];
                 if (RolesToAssign[4].Count > 0) return RolesToAssign[4][IRandom.Instance.Next(0, RolesToAssign[4].Count)];
             }
-            if (RandomRoles.Where(r => !r.IsCrewmate()).Any())
+            if (existedRoles?.Where(r => !r.IsCrewmate())?.Any() ?? false)
             {
                 Logger.Info("职业分配错误：职业数量不足以轮抽选角", "RoleDraftManager");
                 return CustomRoles.Crewmate;
@@ -154,7 +154,7 @@ public class RoleDraftManager
                 RandomRoles.Add(dr);
                 break;
             }
-            CustomRoles chosenRole = GetRandomDraftRole();
+            CustomRoles chosenRole = GetRandomDraftRole(RandomRoles);
             if (chosenRole == CustomRoles.Crewmate && RandomRoles.Count > 0) break;
             RandomRoles.Add(chosenRole);
             if (chosenRole == CustomRoles.Crewmate) break;
