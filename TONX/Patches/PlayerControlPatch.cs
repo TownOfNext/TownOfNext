@@ -505,9 +505,6 @@ class FixedUpdatePatch
             if (GameStates.IsInGame && player.AmOwner)
                 DisableDevice.FixedUpdate();
 
-            if (AmongUsClient.Instance.AmHost && RoleDraftManager.IsValidRoleDraftState())
-                RoleDraftManager.OnFixedUpdate();
-
             NameTagManager.ApplyFor(player);
         }
         //LocalPlayer専用
@@ -740,7 +737,7 @@ class CoEnterVentPatch
         {
             _ = new LateTask(() =>
             {
-                if (!GameStates.IsMeeting)
+                if (!GameStates.IsMeeting && user.inVent)
                 {
                     playerPhysics.RpcBootFromVent(id);
                     if (user.AmOwner) user.walkingToVent = false;

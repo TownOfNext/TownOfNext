@@ -1,3 +1,7 @@
+using System.Collections;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
+
 namespace TONX.Modules;
 
 public class RoleDraftManager
@@ -18,8 +22,8 @@ public class RoleDraftManager
     public static Dictionary<PlayerControl, CustomRoles> DraftRoleResult;
     private static List<byte> ArrangedPlayers;
     private static int CurrentAssignIndex;
-    private static int Timer;
-    private static long lastFixedUpdate;
+    private const int DraftTimeLimit = 20;
+    private const int NoticeTime = 10;
     public static RoleDraftState RoleDraftState;
     public static bool IsValidRoleDraftState() => Options.EnableRoleDraftMode.GetBool() && RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
     private static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
@@ -77,7 +81,9 @@ public class RoleDraftManager
             CurrentAssignIndex + 1,
             isRandom ? GetString("RoleDraft.Random") : GetColoredRoleName(role)
         )); // 向所有玩家发送选择消息
-        MoveToNextPlayer();
+
+        AmongUsClient.Instance.StopCoroutine(CoDraftPlayer(ArrangedPlayers[CurrentAssignIndex]).WrapToIl2Cpp());
+        AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
     }
     private static int TryGetListIdOfRole(CustomRoles role)
     {
@@ -171,29 +177,42 @@ public class RoleDraftManager
     public static void StartRoleDraft()
     {
         ArrangePlayers();
-        Timer = 0;
         CurrentAssignIndex = -1;
         DraftRoleResult = new();
         RoleDraftState = RoleDraftState.Drafting;
         for (int i = 0; i < ArrangedPlayers.Count; i++)
             Utils.SendMessage(string.Format(GetString("RoleDraft.StartDraft"), i + 1), ArrangedPlayers[i]);
-        MoveToNextPlayer();
+        AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
     }
-    private static void MoveToNextPlayer()
+    private static IEnumerator CoMoveToNextPlayer()
     {
-        if (!IsValidRoleDraftState()) return;
+        if (!IsValidRoleDraftState()) yield break;
         if (CurrentAssignIndex < 0) CurrentAssignIndex = 0;
         else CurrentAssignIndex++;
         if (CurrentAssignIndex >= ArrangedPlayers.Count)
         {
-            Timer = 0;
-            new LateTask(() => { if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose(); }, 5f, "FinishRoleDraft");
-            return;
+            yield return new WaitForSeconds(5.0f);
+            if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
+            yield break;
         }
         SelectRandomRoles();
-        Timer = 20;
         var id = ArrangedPlayers[CurrentAssignIndex];
-        if (!IsInvalidPlayer(id)) Utils.KillFlash(Utils.GetPlayerById(id));
+        Utils.KillFlash(Utils.GetPlayerById(id));
+        yield return CoDraftPlayer(id);
+    }
+    private static IEnumerator CoDraftPlayer(byte playerId)
+    {
+        int i = 0;
+        while (i < DraftTimeLimit * 10)
+        {
+            if (!IsValidRoleDraftState()) yield break;
+            if (IsInvalidPlayer(playerId)) yield return CoMoveToNextPlayer();
+            i++;
+            if (i == NoticeTime * 10) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
+            yield return new WaitForSeconds(0.1f);
+        }
+        RandomlyChooseRole(playerId);
+        yield break;
     }
     public static void AssignDraftRoles()
     {
@@ -212,21 +231,6 @@ public class RoleDraftManager
         RandomRoles.Clear();
         DraftRoleResult.Clear();
         ArrangedPlayers.Clear();
-    }
-    public static void OnFixedUpdate()
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!IsValidRoleDraftState() || Timer <= 0 || CurrentAssignIndex < 0 || CurrentAssignIndex >= ArrangedPlayers.Count) return;
-        if (IsInvalidPlayer(ArrangedPlayers[CurrentAssignIndex]))
-        {
-            MoveToNextPlayer();
-            return;
-        }
-        if (Utils.GetTimeStamp() == lastFixedUpdate) return;
-        lastFixedUpdate = Utils.GetTimeStamp();
-        Timer--;
-        if (Timer <= 0) RandomlyChooseRole(ArrangedPlayers[CurrentAssignIndex]);
-        else if (Timer == 10) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), Timer), ArrangedPlayers[CurrentAssignIndex]);
     }
 }
 public enum RoleDraftState
