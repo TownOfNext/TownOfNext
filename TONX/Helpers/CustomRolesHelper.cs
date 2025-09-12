@@ -34,10 +34,11 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Crewmate;
         return
             role is CustomRoles.Crewmate or
+            CustomRoles.Scientist or
             CustomRoles.Engineer or
             CustomRoles.Noisemaker or
             CustomRoles.Tracker or
-            CustomRoles.Scientist;
+            CustomRoles.Detective;
     }
     public static bool IsGameModeRole(this CustomRoles role)
     {
