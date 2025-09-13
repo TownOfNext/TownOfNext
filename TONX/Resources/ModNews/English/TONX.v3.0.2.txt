@@ -1,0 +1,79 @@
+﻿#Number:100046
+#Title:TownOfNext v3.0.2
+#SubTitle:★★★★TO The Next★★★★
+#ShortTitle:★TONX v3.0.2
+#Date:2025-07-28T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v16.0.5
+- Base on TOH v5.1.13
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+- Currently, this change is NOT permanent.
+
+## Fix
+- Fixed a bug where /r does not work for addons
+- Fixed a bug where /role does not work
+- Fixed a bug where /level does not work
+- Fixed a bug where /lastresult does not work
+- Fixed a bug where /id does not work
+- Fixed a bug where the Madmate's first kill betrayal does not take effect
+- Fixed a bug where the first kill protection does not work
+- Fixed a bug where the Fool's skill does not work
+- Fixed a bug where the setting that Impostors can not sabotage after death does not work 
+- Fixed a bug where forbidding /color does not work
+- Fixed a bug where hidden message can be seen
+- Fixed a bug where there can be more than one neutral killers
+- Fixed a bug where hidden roles can be set
+- Fixed the abnormal display of hearts at non-modded client side 
+- Fixed a bug where the game summary generates needing all the players from the previous game
+- Fixed a bug of Schrodinger's Cat (FFF) having no name color
+- Fixed a bug of Schrodinger's Cat (FFF) unable to win
+- Fixed a bug where the game summary can not be send (Merged from TOH v5.1.4)
+- Fixed a bug where Warlock can not kill after meetings (Merged from TOH v5.1.5)
+- Fixed ???'s assignment error
+- Fixed Madmate and Lovers' assignment error
+- Fixed a bug where Sheriff and Insider's settings are shown duplicated
+- Fixed a bug where whether an option is enabled or disabled displays incorrectly in the setting interface
+- Fixed a bug in the setting interface when pressing shortcut keys
+- Fixed a bug where the preset mode is shown incorrectly in the lobby
+- Fixed a bug where the host name displays incorrectly at modded client side
+- Fixed a bug where pasting in the chat box causes repeated pasting
+- Fixed a bug where the players' cosmetics are shown incorrectly when shapeshifting into a dead player during camouflaging
+- Fixed a bug where Mayor and Paranoid spawn on the vent after a meeting called by entering vents
+- Fixed a bug where Veteran and Grenadier's skill timer works incorrectly
+- Fixed a bug where CrewPostor can not do tasks at modded client side
+- Fixed a bug where Psychic can not see red names during meetings at non-modded client side
+- Fixed a bug where Psychic can see red names during non-meeting times
+- Fixed a bug where Psychic's red names still refresh each meeting while disabling refreshing red names
+- Fixed a bug in the Guessers' interface that Crewmate roles still display while disabling guessers to guess Crewmate roles
+- Fixed a bug where some roles does not reset ability cooldown after meetings
+- Fixed a bug where the UI is deranged if the ratio of the resolution is not 16:9
+- Fixed a bug where the ban manager can not add banned players into the local ban list
+- Fixed a bug where Horse Mode can not be used
+- Fixed a bug where vanilla roles can not be assigned while enabling vanilla roles
+- Fixed a bug where the mod tag does not display
+
+## Changing
+- Modded clients can now view settings through the "View" button
+- Color the /r list
+- Split the default /n list
+- Modded clients can now view their own roles' introduction and settings through a button 
+- Calling a meeting when communication is camouflaging will temporarily disable the camouflage 
+- SoloPVP Mode back (The vent bug caused by high ping has not been fixed)
+- Combine Horse Mode button and Long Mode button
+
+## New Feature
+- Setting Option: Long Mode
+- Option: Disable fix weather node tasks
+- Map Decoration: Birthday decoration for The Skeld (Change by using the button in security)
+
+## Role Changing
+- ??? & ??? have been fixed and added to the hidden role list
+- Innocent, Collector, Provocateur, Revolutionist, Stalker have been fixed and added role option lists
+- Failed Madmate's self vote betrayal will not affect actual self vote
+- Calling a meeting when Camouflager is camouflaging will immediately stop the camouflage 
+- Veteran & Grenadier's ability cooldown will start after the skill expires

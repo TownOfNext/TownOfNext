@@ -1,0 +1,23 @@
+﻿#Number:100048
+#Title:TownOfNext v3.1.1
+#SubTitle:★★★★TO The Next★★★★
+#ShortTitle:★TONX v3.1.1
+#Date:2025-09-13T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v17.0.0
+- Base on TOH v5.1.13
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+
+## Fix
+- Fix a bug where /lastresult does not contain kill count information
+- Fix a conflict between Role Draft Mode and Solo PVP Mode
+- Fix a bug where player names are displayed incorrectly after changing a role
+- Fix a bug where the game will report an error while changing a role
+- Fix a bug where the count of roles assgined is squared
+- Fix a bug where roles cannot be assgined multiply in Role Draft Mode
+- Fix a bug where Lovers victories are displayed incorrectly in some cases

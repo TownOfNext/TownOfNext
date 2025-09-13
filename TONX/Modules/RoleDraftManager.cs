@@ -22,8 +22,8 @@ public class RoleDraftManager
     public static Dictionary<PlayerControl, CustomRoles> DraftRoleResult;
     private static List<byte> ArrangedPlayers;
     private static int CurrentAssignIndex;
-    private const int DraftTimeLimit = 20;
-    private const int NoticeTime = 10;
+    private const float DraftTimeLimit = 20f;
+    private const float NoticeTime = 10f;
     public static RoleDraftState RoleDraftState;
     public static bool IsValidRoleDraftState() => Options.EnableRoleDraftMode.GetBool() && RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
     private static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
@@ -56,14 +56,14 @@ public class RoleDraftManager
             "4" => -1, // 随机选择
             _ => -2 // 无效选择
         };
-        AfterChooseRole(playerId, roleId);
+        AfterChosenRole(playerId, roleId);
     }
     public static void RandomlyChooseRole(byte playerId)
     {
         if (!IsValidRoleDraftState()) return;
-        AfterChooseRole(playerId, -1);
+        AfterChosenRole(playerId, -1);
     }
-    private static void AfterChooseRole(byte playerId, int roleId)
+    private static void AfterChosenRole(byte playerId, int roleId)
     {
         if (!IsValidRoleDraftState()) return;
         if (roleId == -2)
@@ -81,9 +81,6 @@ public class RoleDraftManager
             CurrentAssignIndex + 1,
             isRandom ? GetString("RoleDraft.Random") : GetColoredRoleName(role)
         )); // 向所有玩家发送选择消息
-
-        AmongUsClient.Instance.StopCoroutine(CoDraftPlayer(ArrangedPlayers[CurrentAssignIndex]).WrapToIl2Cpp());
-        AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
     }
     private static int TryGetListIdOfRole(CustomRoles role)
     {
@@ -120,7 +117,7 @@ public class RoleDraftManager
             }
             if (existedRoles?.Where(r => !r.IsCrewmate())?.Any() ?? false)
             {
-                Logger.Info("职业分配错误：职业数量不足以轮抽选角", "RoleDraftManager");
+                Logger.Info("职业分配错误：内鬼或中立职业数量不足以轮抽选角", "RoleDraftManager");
                 return CustomRoles.Crewmate;
             }
         }
@@ -137,68 +134,65 @@ public class RoleDraftManager
         if (neededneuts > 0) rolesToAssign.AddRange(RolesToAssign[4]);
         if (rolesToAssign.Count > 0) return rolesToAssign[IRandom.Instance.Next(0, rolesToAssign.Count)];
 
-        Logger.Info("职业分配错误：职业数量不足以轮抽选角", "RoleDraftManager");
+        Logger.Info("职业分配错误：总职业数量不足以轮抽选角", "RoleDraftManager");
         return CustomRoles.Crewmate;
     }
-    private static void ArrangePlayers()
+    private static void SelectRandomRoles(byte playerId)
+    {
+        if (!IsValidRoleDraftState()) return;
+
+        RandomRoles = new();
+        List<(int, CustomRoles)> CachedRoleData = new();
+        if (TryGetDraftDevRole(playerId, out CustomRoles dr))
+        {
+            RandomRoles.Add(dr);
+        }
+        else
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                CustomRoles chosenRole = GetRandomDraftRole(RandomRoles);
+                if (chosenRole == CustomRoles.Crewmate && RandomRoles.Count > 0) break;
+                RandomRoles.Add(chosenRole);
+                if (chosenRole == CustomRoles.Crewmate) break;
+                int listId = TryGetListIdOfRole(chosenRole);
+                if (listId != -1) CachedRoleData.Add((listId, chosenRole));
+                RolesToAssign.ForEach(list => list.Remove(chosenRole));
+            }
+            foreach (var (id, role) in CachedRoleData) RolesToAssign[id].Add(role);
+        }
+
+        string text = string.Join("\n", RandomRoles.Select((role, index) => $" {index + 1} => {GetColoredRoleName(role)}").ToList());
+        text += $"\n 4 => {GetString("RoleDraft.Random")}";
+        Utils.SendMessage(string.Format(GetString("RoleDraft.Choices"), text, DraftTimeLimit), playerId);
+    }
+    public static void StartRoleDraft()
+    {
+        DraftRoleResult = new();
+        RoleDraftState = RoleDraftState.Drafting;
+        AmongUsClient.Instance.StartCoroutine(CoDraftRoles().WrapToIl2Cpp());
+    }
+    private static IEnumerator CoDraftRoles()
     {
         ArrangedPlayers = Main.AllAlivePlayerControls
             .OrderBy(_ => IRandom.Instance.Next(Main.AllAlivePlayerControls.Count()))
             .Select(p => p.PlayerId)
             .ToList();
-    }
-    private static void SelectRandomRoles()
-    {
-        if (!IsValidRoleDraftState()) return;
-
-        RandomRoles = new();
-        Dictionary<int, CustomRoles> CachedRoleData = new();
-        for (int i = 0; i < 3; i++)
-        {
-            if (TryGetDraftDevRole(ArrangedPlayers[CurrentAssignIndex], out CustomRoles dr))
-            {
-                RandomRoles.Add(dr);
-                break;
-            }
-            CustomRoles chosenRole = GetRandomDraftRole(RandomRoles);
-            if (chosenRole == CustomRoles.Crewmate && RandomRoles.Count > 0) break;
-            RandomRoles.Add(chosenRole);
-            if (chosenRole == CustomRoles.Crewmate) break;
-            int listId = TryGetListIdOfRole(chosenRole);
-            if (listId != -1) CachedRoleData.TryAdd(listId, chosenRole);
-            RolesToAssign.ForEach(list => list.Remove(chosenRole));
-        }
-        foreach (var (id, role) in CachedRoleData) RolesToAssign[id].Add(role);
-
-        string text = string.Join("\n", RandomRoles.Select((role, index) => $" {index + 1} => {GetColoredRoleName(role)}").ToList());
-        text += $"\n 4 => {GetString("RoleDraft.Random")}";
-        Utils.SendMessage(string.Format(GetString("RoleDraft.Choices"), text), ArrangedPlayers[CurrentAssignIndex]);
-    }
-    public static void StartRoleDraft()
-    {
-        ArrangePlayers();
         CurrentAssignIndex = -1;
-        DraftRoleResult = new();
-        RoleDraftState = RoleDraftState.Drafting;
         for (int i = 0; i < ArrangedPlayers.Count; i++)
             Utils.SendMessage(string.Format(GetString("RoleDraft.StartDraft"), i + 1), ArrangedPlayers[i]);
-        AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
-    }
-    private static IEnumerator CoMoveToNextPlayer()
-    {
-        if (!IsValidRoleDraftState()) yield break;
-        if (CurrentAssignIndex < 0) CurrentAssignIndex = 0;
-        else CurrentAssignIndex++;
-        if (CurrentAssignIndex >= ArrangedPlayers.Count)
+
+        foreach (var playerId in ArrangedPlayers)
         {
-            yield return new WaitForSeconds(5.0f);
-            if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
-            yield break;
+            if (!IsValidRoleDraftState()) yield break;
+            CurrentAssignIndex++;
+            SelectRandomRoles(playerId);
+            Utils.KillFlash(Utils.GetPlayerById(playerId));
+            yield return CoDraftPlayer(playerId);
         }
-        SelectRandomRoles();
-        var id = ArrangedPlayers[CurrentAssignIndex];
-        Utils.KillFlash(Utils.GetPlayerById(id));
-        AmongUsClient.Instance.StartCoroutine(CoDraftPlayer(id).WrapToIl2Cpp());
+
+        yield return new WaitForSeconds(5.0f);
+        if (GameStates.IsMeeting) MeetingHud.Instance?.RpcClose();
     }
     private static IEnumerator CoDraftPlayer(byte playerId)
     {
@@ -206,14 +200,13 @@ public class RoleDraftManager
         bool noticed = false;
         while (timer < DraftTimeLimit)
         {
-            if (!IsValidRoleDraftState()) yield break;
-            if (IsInvalidPlayer(playerId))
-            {
-                AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
-                yield break;
-            }
+            if (!IsValidRoleDraftState() || IsInvalidPlayer(playerId) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(playerId))) yield break;
             timer += Time.deltaTime;
-            if (timer >= NoticeTime && !noticed) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
+            if (timer >= NoticeTime && !noticed)
+            {
+                Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
+                noticed = true;
+            }
             yield return null;
         }
         RandomlyChooseRole(playerId);
