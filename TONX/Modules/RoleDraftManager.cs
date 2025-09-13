@@ -198,21 +198,25 @@ public class RoleDraftManager
         SelectRandomRoles();
         var id = ArrangedPlayers[CurrentAssignIndex];
         Utils.KillFlash(Utils.GetPlayerById(id));
-        yield return CoDraftPlayer(id);
+        AmongUsClient.Instance.StartCoroutine(CoDraftPlayer(id).WrapToIl2Cpp());
     }
     private static IEnumerator CoDraftPlayer(byte playerId)
     {
-        int i = 0;
-        while (i < DraftTimeLimit * 10)
+        float timer = 0f;
+        bool noticed = false;
+        while (timer < DraftTimeLimit)
         {
             if (!IsValidRoleDraftState()) yield break;
-            if (IsInvalidPlayer(playerId)) yield return CoMoveToNextPlayer();
-            i++;
-            if (i == NoticeTime * 10) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
-            yield return new WaitForSeconds(0.1f);
+            if (IsInvalidPlayer(playerId))
+            {
+                AmongUsClient.Instance.StartCoroutine(CoMoveToNextPlayer().WrapToIl2Cpp());
+                yield break;
+            }
+            timer += Time.deltaTime;
+            if (timer >= NoticeTime && !noticed) Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
+            yield return null;
         }
         RandomlyChooseRole(playerId);
-        yield break;
     }
     public static void AssignDraftRoles()
     {

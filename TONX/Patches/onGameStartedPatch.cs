@@ -311,7 +311,6 @@ internal class SelectRolesPatch
         Utils.CountAlivePlayers(true);
         Utils.SyncAllSettings();
         SetColorPatch.IsAntiGlitchDisabled = false;
-        yield break;
     }
     public static void AssignAddons()
     {
