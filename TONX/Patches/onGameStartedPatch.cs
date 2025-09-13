@@ -274,7 +274,7 @@ internal class SelectRolesPatch
             AmongUsClient.Instance.SendAllStreamedObjects();
         }
         Logger.Info("Set Disconnected", "CoAssignForSelf");
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
 
         foreach (var (player, role) in RoleResult) // 给玩家自己注册职业
         {
