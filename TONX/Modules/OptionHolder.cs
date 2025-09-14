@@ -1082,7 +1082,6 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", false, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // 幽灵相关设定
         TextOptionItem.Create(3_100_008, "MenuTitle.Ghost", TabGroup.GameSettings)
