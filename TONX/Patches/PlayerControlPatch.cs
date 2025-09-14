@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using System.Text;
 using System.Text.RegularExpressions;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.Core.Interfaces;
@@ -323,10 +324,44 @@ class ShapeshiftPatch
                 if (GameStates.IsInTask)
                 {
                     Camouflage.RpcSetSkin(__instance, ForceChange: true);
-                } 
+                }
             },
             1.2f, "ShapeShiftRpcSetSkin");
         }
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckVanish))]
+public static class PlayerControlCmdCheckVanishPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] float maxDuration)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            __instance.CheckVanish();
+            return false;
+        }
+        __instance.SetRoleInvisibility(isActive: true);
+        MessageWriter val = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 62, (SendOption)1, AmongUsClient.Instance.HostId);
+        val.Write(maxDuration);
+        AmongUsClient.Instance.FinishRpcImmediately(val);
+        return false;
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
+public static class PlayerControlCmdCheckAppearPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] bool shouldAnimate)
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            __instance.CheckAppear(shouldAnimate);
+            return false;
+        }
+        __instance.SetRoleInvisibility(isActive: true);
+        MessageWriter val = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 64, (SendOption)1, AmongUsClient.Instance.HostId);
+        val.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(val);
+        return false;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
