@@ -76,6 +76,7 @@ public class RoleDraftManager
         DraftRoleResult.Add(Utils.GetPlayerById(playerId), role);
         RolesToAssign.ForEach(list => list.Remove(role));
         Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), GetColoredRoleName(role)), playerId);
+        if (!Options.ShowSelectedRoles.GetBool()) return;
         Utils.SendMessage(string.Format(
             GetString("RoleDraft.OtherSuccessfullyChosen"),
             CurrentAssignIndex + 1,

@@ -132,6 +132,7 @@ static class ExtendedPlayerControl
         if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
 
         Utils.NotifyRoles(SpecifySeer: player);
+        Logger.Info($"复活玩家：{player?.Data?.name}", "RpcRevive");
     }
     public static ClientData GetClient(this PlayerControl player)
     {

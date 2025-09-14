@@ -58,7 +58,7 @@ public class SwitchShipStyleButtonPatch
             }
             if (ShipStyle != ShipStyles.Normal)
                 ShipStatus.Instance.gameObject.transform.FindChild(ShipStyle.ToString())?.gameObject.SetActive(true);
-            RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, ShipStyle != ShipStyles.Normal ? Sounds.ImpTransform : Sounds.TaskUpdateSound);
+            RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, ShipStyle != ShipStyles.Normal ? Sounds.ImpTransform : Sounds.TaskUpdateSound);
 
             return false; 
         }

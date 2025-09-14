@@ -333,6 +333,8 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem KillFlashDuration;
+    public static OptionItem EnableRoleDraftMode;
+    public static OptionItem ShowSelectedRoles;
 
     // 幽灵相关设定
     public static OptionItem GhostIgnoreTasks;
@@ -388,7 +390,6 @@ public static class Options
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem CheatResponses;
     public static OptionItem RoleAssigningAlgorithm;
-    public static OptionItem EnableRoleDraftMode;
 
     #endregion
 
@@ -1076,7 +1077,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         
         // 轮抽选角
-        EnableRoleDraftMode = BooleanOptionItem.Create(2_004_008, "EnableRoleDraftModes", false, TabGroup.GameSettings, false)
+        EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", false, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 

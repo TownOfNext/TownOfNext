@@ -349,7 +349,8 @@ class TaskPanelBehaviourPatch
                     AllText += "\r\n";
 
                     Dictionary<byte, string> SummaryText = new();
-                    foreach (var id in PlayerState.AllPlayerStates.Keys)
+                    List<byte> AllPlayerIds = PlayerState.AllPlayerStates.Keys.Where(k => (Utils.GetPlayerById(k)?.Data ?? null) != null).ToList();
+                    foreach (var id in AllPlayerIds)
                     {
                         if (Utils.GetPlayerById(id).GetCustomRole() is CustomRoles.GM) continue;
                         string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
@@ -359,7 +360,7 @@ class TaskPanelBehaviourPatch
                     }
 
                     List<(int, byte)> list = new();
-                    foreach (var id in PlayerState.AllPlayerStates.Keys) list.Add((SoloKombatManager.GetRankOfScore(id), id));
+                    foreach (var id in AllPlayerIds) list.Add((SoloKombatManager.GetRankOfScore(id), id));
                     list.Sort();
                     foreach (var id in list.Where(x => SummaryText.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText[id.Item2];
 
