@@ -325,6 +325,10 @@ public static class CustomRoleManager
         {
             Main.CheckShapeshift.TryAdd(player.PlayerId, false);
         }
+        if (player.Data.Role.Role == RoleTypes.Phantom)
+        {
+            Main.CheckVanish.TryAdd(player.PlayerId, false);
+        }
     }
     public static void OtherRolesAdd(PlayerControl pc)
     {

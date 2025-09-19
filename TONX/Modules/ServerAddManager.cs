@@ -31,8 +31,6 @@ public static class ServerAddManager
         var defaultRegion = serverManager.CurrentRegion;
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);
         serverManager.SetRegion(defaultRegion);
-
-        SetServerName(defaultRegion);
     }
     public static void SetServerName(IRegionInfo server = null)
     {
@@ -73,8 +71,7 @@ public static class ServerAddManager
             _ => new(255, 255, 255, 255),
         };
 
-        if (server.TranslateName != StringNames.NoTranslation)
-            name = GetString(ServerManager.DefaultRegions.FirstOrDefault(x => x.Name == name).TranslateName);
+        if (server.TranslateName != StringNames.NoTranslation) name = GetString(server.TranslateName);
         PingTrackerUpdatePatch.ServerName = Utils.ColorString(color, $"{name} <size=60%>Server</size>");
     }
 

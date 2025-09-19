@@ -105,6 +105,7 @@ public class Main : BasePlugin
     public static int AliveImpostorCount;
     public static Dictionary<byte, bool> CheckShapeshift = new();
     public static Dictionary<byte, byte> ShapeshiftTarget = new();
+    public static Dictionary<byte, bool> CheckVanish = new();
     public static bool VisibleTasksCount = false;
     public static string HostNickName = "";
     public static bool isFirstTurn = false;

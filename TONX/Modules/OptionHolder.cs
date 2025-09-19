@@ -1080,7 +1080,7 @@ public static class Options
         EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-        ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", false, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
+        ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", true, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
             .SetGameMode(CustomGameMode.Standard);
 
         // 幽灵相关设定

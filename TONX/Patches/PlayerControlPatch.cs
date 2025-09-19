@@ -149,6 +149,10 @@ class RpcMurderPlayerPatch
                 //シェイプシフト強制解除
                 target.RpcShapeshift(target, false);
             }
+            if (Main.CheckVanish.TryGetValue(target.PlayerId, out var vanishing) && vanishing)
+            {
+                target.RpcAppear(false);
+            }
             Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
         }
         logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}(didSucceed:{didSucceed})");
@@ -362,6 +366,25 @@ public static class PlayerControlCmdCheckAppearPatch
         val.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(val);
         return false;
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetInvisibility))]
+class SetInvisibilityPatch
+{
+    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] bool isActive)
+    {
+        Logger.Info($"{__instance?.GetNameWithRole()}", "SetInvisibility");
+
+        var phantom = __instance;
+        var vanishing = isActive;
+
+        if (Main.CheckVanish.TryGetValue(phantom.PlayerId, out var last) && last == vanishing)
+        {
+            Logger.Info($"{__instance?.GetNameWithRole()}:Cancel SetInvisibility.Prefix", "SetInvisibility");
+            return;
+        }
+
+        Main.CheckVanish[phantom.PlayerId] = vanishing;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]

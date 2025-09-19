@@ -231,7 +231,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["hy", "mt", "meeting"], CommandAccess.Host, mc =>
             {
-                if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
+                if (GameStates.IsMeeting) MeetingHud.Instance.RpcForceEndMeeting();
                 else mc.Player.NoCheckStartMeeting(null, true);
                 return (MsgRecallMode.Block, null);
             }),

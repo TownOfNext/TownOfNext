@@ -193,7 +193,7 @@ public class RoleDraftManager
         }
 
         yield return new WaitForSeconds(5.0f);
-        if (GameStates.IsMeeting) MeetingHud.Instance?.RpcClose();
+        if (GameStates.IsMeeting) MeetingHud.Instance?.RpcForceEndMeeting();
     }
     private static IEnumerator CoDraftPlayer(byte playerId)
     {

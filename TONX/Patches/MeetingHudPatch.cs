@@ -221,6 +221,7 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
     class UpdatePatch
     {
+        public static bool Prefix() { return GameManager.Instance is not null; }
         public static void Postfix(MeetingHud __instance)
         {
             if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || __instance == null || __instance.IsDestroyedOrNull()) return;

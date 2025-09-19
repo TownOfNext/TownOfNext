@@ -58,7 +58,7 @@ public static class CustomPopup
                     InfoScreen.SetActive(false);
                     Fill.SetActive(false);
                 }));
-                button.OnClick.AddListener(action);
+                if (action != null) button.OnClick.AddListener(action);
                 button.transform.SetLocalX(0);
                 button.gameObject.SetActive(true);
                 ActionButtons.Add(button);

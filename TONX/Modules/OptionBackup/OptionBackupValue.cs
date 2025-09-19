@@ -32,6 +32,7 @@ public class BoolOptionBackupValue : OptionBackupValueBase<BoolOptionNames, bool
     public BoolOptionBackupValue(BoolOptionNames name, bool value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
+        if (OptionName is BoolOptionNames.GhostsDoTasks or BoolOptionNames.Roles) return; // 解决原版游戏报错问题
         option.SetBool(OptionName, Value);
     }
 }

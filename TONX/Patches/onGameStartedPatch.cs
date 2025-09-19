@@ -32,6 +32,7 @@ internal class ChangeRoleSettings
 
             Main.CheckShapeshift = new();
             Main.ShapeshiftTarget = new();
+            Main.CheckVanish = new();
 
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : byte.MaxValue;
             Main.FirstDied = byte.MaxValue;
@@ -287,7 +288,7 @@ internal class SelectRolesPatch
             else player.RpcSetRoleDesync(RoleTypes.Crewmate, player.GetClientId());
         }
         Logger.Info("Assign Self", "CoAssignForSelf");
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         foreach (var pc in Main.AllPlayerControls)
         {
