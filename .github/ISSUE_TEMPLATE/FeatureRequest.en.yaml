@@ -1,0 +1,30 @@
+name: Feature Request
+about: Suggest an idea for our project
+title: "[Feat] "
+labels: ["New Feature"]
+assignees: ["Sand-and-Beans"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: TONX Version
+      description: "What is your TONX version? You can find this on the upper right side of the TONX main menu."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Feature Description
+      description: "What feature would you like? Please provide a brief description."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Implementation Proposal
+      description: "How should we implement this idea? Please provide a brief description."
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: "Add any other relevant files or screenshots about the feature request here."

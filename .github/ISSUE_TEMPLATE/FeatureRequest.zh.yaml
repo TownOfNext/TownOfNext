@@ -1,0 +1,30 @@
+name: 功能请求
+about: 为我们的项目提一个点子
+title: "[Feat] "
+labels: ["New Feature"]
+assignees: ["Sand-and-Beans"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: TONX 版本
+      description: "你的 TONX 版本是多少？这可以在 TONX 主菜单上方偏右侧找到。"
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: 功能描述
+      description: "你想要什么功能？请简要描述。"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 实现方案
+      description: "我们该怎么实现这个想法？请简要描述。"
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他信息
+      description: "在此处添加有关功能请求的任何其他相关文件或屏幕截图。"

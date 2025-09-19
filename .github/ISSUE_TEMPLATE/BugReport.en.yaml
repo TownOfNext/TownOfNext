@@ -1,0 +1,38 @@
+name: Bug Report
+about: Report an issue to us
+title: "[Bug] "
+labels: ["Bug"]
+assignees: ["Sand-and-Beans"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: TONX Version
+      description: "What is your TONX version? You can find this on the upper right side of the TONX main menu."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Issue Description
+      description: "What happened? Please describe the issue you encountered in detail here.<br>If possible, please also upload screenshots to help us understand."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction Steps
+      description: "How can we reproduce this issue? Please describe in detail."
+      placeholder: |
+        1. Go to....
+        2. Click on....
+        3. Scroll to....
+        4. Error appears
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Error Log
+      description: "If possible, please copy and paste the log here to help us resolve this issue.<br>This will be automatically formatted, so no need for Markdown backticks."
+      render: log

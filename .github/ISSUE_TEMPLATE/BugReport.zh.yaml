@@ -1,0 +1,38 @@
+name: 问题反馈
+about: 向我们反馈一个问题
+title: "[Bug] "
+labels: ["Bug"]
+assignees: ["Sand-and-Beans"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: TONX 版本
+      description: "你的 TONX 版本是多少？这可以在 TONX 主菜单上方偏右侧找到。"
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: 问题描述
+      description: "发生了什么？请在此详细描述你遇到的问题。<br>如果可以，还请上传屏幕截图以帮助我们理解。"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: "该如何复现这个问题？请详细描述。"
+      placeholder: |
+        1. 前往....
+        2. 点击....
+        3. 滑动至....
+        4. 出现错误
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: 错误日志
+      description: "如果可以，请复制粘贴日志到此处以帮助我们解决这个问题。<br>这将自动格式化，因此无需 Markdown 反引号。"
+      render: log
