@@ -1,4 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 向我们提问 / Ask Questions
+  - name: 提问 / Questions
     url: https://github.com/orgs/TownOfNext/discussions/new?category=q-a
+    about: 在 Discussions 向开发者提出疑问 / Ask questions to the developers in Discussions
