@@ -1,5 +1,5 @@
 name: 问题反馈
-about: 向我们反馈一个问题
+description: 向我们反馈一个问题
 title: "[Bug] "
 labels: ["Bug"]
 assignees: ["Sand-and-Beans"]

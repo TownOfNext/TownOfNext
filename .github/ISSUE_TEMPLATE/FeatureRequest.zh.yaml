@@ -1,5 +1,5 @@
 name: 功能请求
-about: 为我们的项目提一个点子
+description: 为我们的项目提一个点子
 title: "[Feat] "
 labels: ["New Feature"]
 assignees: ["Sand-and-Beans"]
