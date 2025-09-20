@@ -16,6 +16,7 @@ public static class ChatBubblePatch
     [HarmonyPatch(nameof(ChatBubble.SetText)), HarmonyPrefix]
     public static void SetText_Prefix(ChatBubble __instance, ref string chatText)
     {
+        if (__instance == null || __instance.playerInfo == null) return;
         bool modded = IsModdedMsg(__instance.playerInfo.PlayerName);
         var sr = __instance.transform.FindChild("Background").GetComponent<SpriteRenderer>();
         if (modded)
