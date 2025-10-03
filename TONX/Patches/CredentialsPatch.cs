@@ -130,8 +130,15 @@ internal class TitleLogoPatch
         if (!(ModStamp = GameObject.Find("ModStamp"))) return;
         ModStamp.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
 
-        TONX_Background = new GameObject("TONX Background");
-        TONX_Background.transform.position = new Vector3(0, 0, 520f);
+        var offset = Screen.width / Screen.height / (16f / 9f);
+        TONX_Background = new GameObject("TONX Background")
+        {
+            transform =
+            {
+                position = new Vector3(0, 0, 520f),
+                localScale = new Vector3(Mathf.Max(offset, 1),Mathf.Max(offset, 1),1)
+            }
+        };
         var bgRenderer = TONX_Background.AddComponent<SpriteRenderer>();
         bgRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.TONX-BG.jpg", 179f);
 
@@ -281,6 +288,8 @@ internal class ResolutionManagerPatch
     {
         if (GameObject.Find("MainUI") == null) return;
         var offset = Utils.GetResolutionOffset(width, height);
+        TitleLogoPatch.TONX_Background.transform.localScale =
+            new Vector3(Mathf.Max(offset, 1), Mathf.Max(offset, 1), 1);
         TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * offset, 1.3f, 1.0f);
         TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
         TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * offset, 1.4f, -1.0f);
