@@ -69,10 +69,12 @@ public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
     }
     public static void SetUpdateButtonStatus()
     {
+#if Windows
         MainMenuManagerPatch.UpdateButton.SetActive(isChecked && hasUpdate && (firstStart || forceUpdate));
         MainMenuManagerPatch.PlayButton.SetActive(!MainMenuManagerPatch.UpdateButton.activeSelf);
         var buttonText = MainMenuManagerPatch.UpdateButton.transform.FindChild("FontPlacer").GetChild(0).GetComponent<TextMeshPro>();
         buttonText.text = $"{GetString("updateButton")}\nv{latestVersion?.ToString() ?? "???"}";
+#endif
     }
     public static void Retry()
     {
