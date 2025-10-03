@@ -208,7 +208,7 @@ class SetEverythingUpPatch
             Scale = new(1.5f, 0.5f),
             FontSize = 2f,
         };
-
+        showHideButton.Button.gameObject.SetActive(true);
         StringBuilder sb = new($"{GetString("RoleSummaryText")}");
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
