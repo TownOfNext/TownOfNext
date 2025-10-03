@@ -102,7 +102,7 @@ internal class VersionShowerStartPatch
         __instance.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
         var ap1 = __instance.GetComponent<AspectPosition>();
         ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
-        ap1.DistanceFromEdge = new(3.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f);
+        ap1.DistanceFromEdge = new(2.2f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f);
     }
 }
 
@@ -130,7 +130,7 @@ internal class TitleLogoPatch
         if (!(ModStamp = GameObject.Find("ModStamp"))) return;
         ModStamp.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
 
-        var offset = Screen.width / Screen.height / (16f / 9f);
+        var offset = (float)Screen.width / Screen.height / (16f / 9f);
         TONX_Background = new GameObject("TONX Background")
         {
             transform =
@@ -296,6 +296,11 @@ internal class ResolutionManagerPatch
         var mainButtons = GameObject.Find("Main Buttons");
         mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y, mainButtons.transform.position.z);
         MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
-        VersionShowerStartPatch.VersionShower.GetComponent<AspectPosition>().DistanceFromEdge = new(2.0f * offset, 0.1f);
+        VersionShowerStartPatch.VersionShower.GetComponent<AspectPosition>().DistanceFromEdge = 
+#if Android
+            new(2.2f * offset, 0.1f);
+#elif Windows
+            new(2.0f * offset, 0.1f);
+#endif
     }
 }

@@ -5,9 +5,9 @@ namespace TONX.Modules;
 
 public static class OptionSaver
 {
-#if Windoes
+#if Windows
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TONX_DATA/SaveData/");
-    #elif Android
+#elif Android
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new($"{Application.persistentDataPath}/TONX_DATA/SaveData/");
 #endif
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");

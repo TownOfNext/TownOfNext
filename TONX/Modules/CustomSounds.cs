@@ -31,7 +31,7 @@ public static class CustomSoundsManager
 
 #if Windows
     private static readonly string SOUNDS_PATH = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}/BepInEx/resources/";
-    #elif Android
+#elif Android
     private static readonly string SOUNDS_PATH = @$"{Application.persistentDataPath}/TONX_DATA/resources/";
 #endif
     

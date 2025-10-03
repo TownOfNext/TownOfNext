@@ -13,7 +13,7 @@ public static class Translator
     public static Dictionary<int, Dictionary<string, string>> translateMaps = new();
 #if Android
     public static string LANGUAGE_FOLDER_NAME = $"{Application.persistentDataPath}/Language";
-    #elif Windows
+#elif Windows
      public static string LANGUAGE_FOLDER_NAME = "Language";
 #endif
     

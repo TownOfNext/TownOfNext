@@ -494,9 +494,7 @@ class FixedUpdatePatch
     private static Dictionary<byte, int> BufferTime = new();
     public static void Postfix(PlayerControl __instance)
     {
-        var player = __instance;
-
-        if (player.AmOwner && player.IsEACPlayer() && (GameStates.IsLobby || GameStates.IsInGame) && GameStates.IsOnlineGame)
+        if (__instance.AmOwner && __instance.IsEACPlayer() && (GameStates.IsLobby || GameStates.IsInGame) && GameStates.IsOnlineGame)
             AmongUsClient.Instance.ExitGame(DisconnectReasons.Error);
 
         if (!GameStates.IsModHost) return;
@@ -504,27 +502,24 @@ class FixedUpdatePatch
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
         {
-            BufferTime.TryAdd(player.PlayerId, 10);
-            BufferTime[player.PlayerId]--;
-            if (BufferTime[player.PlayerId] > 0) lowLoad = true;
-            else BufferTime[player.PlayerId] = 10;
+            BufferTime.TryAdd(__instance.PlayerId, 10);
+            BufferTime[__instance.PlayerId]--;
+            if (BufferTime[__instance.PlayerId] > 0) lowLoad = true;
+            else BufferTime[__instance.PlayerId] = 10;
         }
 
         Zoom.OnFixedUpdate();
         if (!lowLoad)
         {
-            NameNotifyManager.OnFixedUpdate(player);
-            TargetArrow.OnFixedUpdate(player);
-            LocateArrow.OnFixedUpdate(player);
+            NameNotifyManager.OnFixedUpdate(__instance);
+            TargetArrow.OnFixedUpdate(__instance);
+            LocateArrow.OnFixedUpdate(__instance);
         }
-
-        CustomRoleManager.OnFixedUpdate(player);
-
+        CustomRoleManager.OnFixedUpdate(__instance);
         if (AmongUsClient.Instance.AmHost)
         {//実行クライアントがホストの場合のみ実行
             if (GameStates.IsLobby && ((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion) && AmongUsClient.Instance.IsGamePublic)
                 AmongUsClient.Instance.ChangeGamePublic(false);
-
             if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
             {
                 var info = ReportDeadBodyPatch.WaitReport[__instance.PlayerId][0];
@@ -532,38 +527,34 @@ class FixedUpdatePatch
                 Logger.Info($"{__instance.GetNameWithRole()}:通報可能になったため通報処理を行います", "ReportDeadbody");
                 __instance.ReportDeadBody(info);
             }
-
             //踢出低等级的人
-            if (!lowLoad && GameStates.IsLobby && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
-                (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
-                player.Data.FriendCode == ""
+            if (!lowLoad && GameStates.IsLobby && !__instance.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
+                (__instance.Data.PlayerLevel != 0 && __instance.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
+                __instance.Data.FriendCode == ""
                 ))
             {
                 LevelKickBufferTime--;
                 if (LevelKickBufferTime <= 0)
                 {
                     LevelKickBufferTime = 100;
-                    Utils.KickPlayer(player.GetClientId(), false, "LowLevel");
-                    string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                    Utils.KickPlayer(__instance.GetClientId(), false, "LowLevel");
+                    string msg = string.Format(GetString("KickBecauseLowLevel"), __instance.GetRealName().RemoveHtmlTags());
                     RPC.NotificationPop(msg);
                     Logger.Info(msg, "LowLevel Kick");
                 }
             }
-
-            DoubleTrigger.OnFixedUpdate(player);
-
+            DoubleTrigger.OnFixedUpdate(__instance);
             //ターゲットのリセット
-            if (GameStates.IsInTask && player.IsAlive() && Options.LadderDeath.GetBool())
+            if (GameStates.IsInTask && __instance.IsAlive() && Options.LadderDeath.GetBool())
             {
-                FallFromLadder.FixedUpdate(player);
+                FallFromLadder.FixedUpdate(__instance);
             }
-
             if (GameStates.IsInGame) LoversSuicide();
 
-            if (GameStates.IsInGame && player.AmOwner)
+            if (GameStates.IsInGame && __instance.AmOwner)
                 DisableDevice.FixedUpdate();
-
-            NameTagManager.ApplyFor(player);
+            
+            NameTagManager.ApplyFor(__instance);
         }
         //LocalPlayer専用
         if (__instance.AmOwner)
