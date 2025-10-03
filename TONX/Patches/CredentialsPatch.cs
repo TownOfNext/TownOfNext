@@ -190,7 +190,7 @@ internal class TitleLogoPatch
         if (!(RightPanel = GameObject.Find("RightPanel"))) return;
         var rpap = RightPanel.GetComponent<AspectPosition>();
         if (rpap) Object.Destroy(rpap);
-        RightPanel.transform.localPosition = RightPanelOp + new Vector3(10f, 0f, 0f);
+        RightPanel.transform.localPosition = RightPanelOp + new Vector3(20f, 0f, 0f);
         RightPanel.GetComponent<SpriteRenderer>().color = new(1f, 0.78f, 0.9f, 1f);
 
         CloseRightButton = new GameObject("CloseRightPanelButton");

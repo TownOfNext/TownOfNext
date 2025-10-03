@@ -57,10 +57,10 @@ public class MainMenuManagerPatch
         {
             var pos1 = TitleLogoPatch.RightPanel.transform.localPosition;
             var pos3 = new Vector3(TitleLogoPatch.RightPanelOp.x * Utils.GetResolutionOffset(Screen.width, Screen.height), TitleLogoPatch.RightPanelOp.y, TitleLogoPatch.RightPanelOp.z);
-            Vector3 lerp1 = Vector3.Lerp(pos1, ShowingPanel ? pos3 : TitleLogoPatch.RightPanelOp + new Vector3(10f, 0f, 0f), Time.deltaTime * (ShowingPanel ? 3f : 2f));
+            Vector3 lerp1 = Vector3.Lerp(pos1, ShowingPanel ? pos3 : TitleLogoPatch.RightPanelOp + new Vector3(20f, 0f, 0f), Time.deltaTime * (ShowingPanel ? 3f : 2f));
             if (ShowingPanel
                 ? TitleLogoPatch.RightPanel.transform.localPosition.x > pos3.x + 0.03f
-                : TitleLogoPatch.RightPanel.transform.localPosition.x < TitleLogoPatch.RightPanelOp.x + 9f
+                : TitleLogoPatch.RightPanel.transform.localPosition.x < TitleLogoPatch.RightPanelOp.x + 19f
                 ) TitleLogoPatch.RightPanel.transform.localPosition = lerp1;
         }
 
