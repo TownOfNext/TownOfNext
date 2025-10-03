@@ -10,19 +10,26 @@
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		
-		<Configurations>Debug;Release</Configurations>
+		<Configurations>Release;Debug</Configurations>
 		<BaseOutputPath>..\Export</BaseOutputPath>
 		<NoWarn>MSB3246, CA2211, IDE0044, IDE0028, IDE0300</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<Platforms>Windows;Android</Platforms>
 	</PropertyGroup>
-
+    <PropertyGroup Condition="'$(Platform)' == 'Windows'">
+    <DefineConstants>Windows</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platform)' == 'Android'">
+    <DefineConstants>Android</DefineConstants>
+    </PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include=".\Resources\**" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!-- nuget.bepinex.dev -->
-		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.9.9" PrivateAssets="all" />
+        <PackageReference Include="AmongUs.GameLibs.Android" Version="2025.9.9" Condition="'$(Platform)' == 'Android'"/>
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.9.9" PrivateAssets="all" Condition="'$(Platform)' == 'Windows'"/>
 		<PackageReference Include="NextBepLoader.BepInEx.IL2CPP.MSBuild" Version="2.1.0-dev-6" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.738" Private="false" ExcludeAssets="runtime;native" />
 		<!-- nuget.org -->

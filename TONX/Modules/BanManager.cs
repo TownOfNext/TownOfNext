@@ -4,13 +4,20 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Attributes;
+using UnityEngine;
 
 namespace TONX;
 
 public static class BanManager
 {
+#if Windows
     private static readonly string DENY_NAME_LIST_PATH = @"./TONX_Data/DenyName.txt";
     private static readonly string BAN_LIST_PATH = @"./TONX_Data/BanList.txt";
+#elif Android
+    private static readonly string DENY_NAME_LIST_PATH = $"{Application.persistentDataPath}/TONX_Data/DenyName.txt";
+    private static readonly string BAN_LIST_PATH = $"{Application.persistentDataPath}/TONX_Data/BanList.txt";
+#endif
+ 
     private static List<string> EACList = new();
 
     [PluginModuleInitializer]
@@ -18,7 +25,12 @@ public static class BanManager
     {
         try
         {
-            Directory.CreateDirectory("TONX_Data");
+#if Windows
+if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
+               
+#elif Android
+            if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
+#endif
 
             if (!File.Exists(BAN_LIST_PATH))
             {
@@ -83,7 +95,12 @@ public static class BanManager
         if (!AmongUsClient.Instance.AmHost || !Options.ApplyDenyNameList.GetBool()) return;
         try
         {
-            Directory.CreateDirectory("TONX_Data");
+#if Windows
+if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
+               
+#elif Android
+            if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
+#endif
             if (!File.Exists(DENY_NAME_LIST_PATH)) File.Create(DENY_NAME_LIST_PATH).Close();
             using StreamReader sr = new(DENY_NAME_LIST_PATH);
             string line;
@@ -130,7 +147,12 @@ public static class BanManager
     {
         try
         {
-            Directory.CreateDirectory("TONX_Data");
+#if Windows
+if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
+               
+#elif Android
+            if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
+#endif
             if (!File.Exists(BAN_LIST_PATH)) File.Create(BAN_LIST_PATH).Close();
             using StreamReader sr = new(BAN_LIST_PATH);
             string line;

@@ -10,6 +10,8 @@ public static class ServerAddManager
     [PluginModuleInitializer]
     public static void Init()
     {
+#if Windows
+
         // serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = new();
 
@@ -31,6 +33,8 @@ public static class ServerAddManager
         var defaultRegion = serverManager.CurrentRegion;
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);
         serverManager.SetRegion(defaultRegion);
+        
+#endif
     }
     public static void SetServerName(IRegionInfo server = null)
     {

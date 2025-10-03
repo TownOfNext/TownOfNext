@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using TONX.Attributes;
+using UnityEngine;
 using YamlDotNet.RepresentationModel;
 
 namespace TONX;
@@ -10,7 +11,13 @@ namespace TONX;
 public static class Translator
 {
     public static Dictionary<int, Dictionary<string, string>> translateMaps = new();
-    public const string LANGUAGE_FOLDER_NAME = "Language";
+#if Android
+    public static string LANGUAGE_FOLDER_NAME = $"{Application.persistentDataPath}/Language";
+    #elif Windows
+     public static string LANGUAGE_FOLDER_NAME = "Language";
+#endif
+    
+   
 
     [PluginModuleInitializer(InitializePriority.High)]
     public static void Init()
@@ -63,7 +70,11 @@ public static class Translator
         CreateTemplateFile();
         foreach (var lang in EnumHelper.GetAllValues<SupportedLangs>())
         {
-            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
+#if Windows
+if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
+#elif Android
+            if (File.Exists(@$"{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
+#endif
                 LoadCustomTranslation($"{lang}.dat", lang);
         }
     }
@@ -148,7 +159,12 @@ public static class Translator
     public static bool IsChineseLanguageUser => GetUserLangByRegion() is SupportedLangs.SChinese or SupportedLangs.TChinese;
     public static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+#if Windows
+string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+#elif Android
+        string path = @$"/{LANGUAGE_FOLDER_NAME}/{filename}";
+#endif
+        
         if (File.Exists(path))
         {
             Logger.Info($"加载自定义翻译文件：{filename}", "LoadCustomTranslation");
@@ -181,7 +197,12 @@ public static class Translator
     {
         var sb = new StringBuilder();
         foreach (var title in translateMaps) sb.Append($"{title.Key}:\n");
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
+#if Windows
+File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
+#elif Android
+        File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
+#endif
+        
     }
     public static void ExportCustomTranslation()
     {
@@ -194,6 +215,11 @@ public static class Translator
             if (!translateMaps.ContainsKey((int)lang)) text = "";
             sb.Append($"{kvp.Key}:{text}\n");
         }
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
+#if Windows
+File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
+#elif Android
+        File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
+#endif
+        
     }
 }

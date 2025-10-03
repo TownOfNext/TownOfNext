@@ -5,11 +5,16 @@ using UnityEngine;
 namespace TONX;
 
 [HarmonyPatch(typeof(IntroCutscene))]
-class IntroCutscenePatch
+public class IntroCutscenePatch
 {
     // 通过Patch原函数MoveNext的方法解决状态机无法打补丁的问题
+#if Windows
     [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext)), HarmonyPostfix]
     public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__41 __instance)
+#elif Android
+    [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__40), nameof(IntroCutscene._ShowRole_d__40.MoveNext)), HarmonyPostfix]
+    public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__40 __instance)
+#endif
     {
         if (!GameStates.IsModHost) return;
         var introCutscene = __instance.__4__this;
@@ -94,7 +99,9 @@ class IntroCutscenePatch
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) teamToDisplay.Add(pc);
             __instance.BeginImpostor(teamToDisplay);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+#if  Windows
+           __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return false;
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral))
@@ -107,7 +114,9 @@ class IntroCutscenePatch
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             __instance.BeginImpostor(teamToDisplay);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+#if  Windows
+           __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return false;
         }
         return true;
@@ -227,14 +236,18 @@ class IntroCutscenePatch
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) yourTeam.Add(pc);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+#if  Windows
+           __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return true;
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+#if  Windows
+           __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return true;
         }
         if (role.IsCrewmate() && role.GetRoleInfo().IsDesyncImpostor)
@@ -243,7 +256,10 @@ class IntroCutscenePatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
-            __instance.overlayHandle.color = Palette.CrewmateBlue;
+#if  Windows
+           __instance.overlayHandle.color = Palette.CrewmateBlue;
+#endif
+            
             return false;
         }
         BeginCrewmate_Prefix(__instance, ref yourTeam);
@@ -254,8 +270,10 @@ class IntroCutscenePatch
     {
         BeginCrewmate_Postfix(__instance, ref yourTeam);
     }
-    [HarmonyPatch(nameof(IntroCutscene.OnDestroy)), HarmonyPostfix]
-    public static void OnDestroy_Postfix(IntroCutscene __instance)
+#if Windows
+        [HarmonyPatch(nameof(IntroCutscene.OnDestroy)), HarmonyPostfix]
+#endif
+    public static void OnDestroy_Postfix()
     {
         if (!GameStates.IsInGame) return;
         Main.isFirstTurn = true;

@@ -1,10 +1,15 @@
 ﻿using System.Text.Json;
+using UnityEngine;
 
 namespace TONX.Modules;
 
 public static class OptionSaver
 {
+#if Windoes
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TONX_DATA/SaveData/");
+    #elif Android
+    private static readonly DirectoryInfo SaveDataDirectoryInfo = new($"{Application.persistentDataPath}/TONX_DATA/SaveData/");
+#endif
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
     private static readonly LogHandler logger = Logger.Handler(nameof(OptionSaver));
 
