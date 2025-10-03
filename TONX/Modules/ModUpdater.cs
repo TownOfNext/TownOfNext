@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using TMPro;
+using TONX.Helpers;
 using TONX.Modules;
 using UnityEngine;
 
@@ -151,25 +152,10 @@ public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
         Logger.Msg(url, "CheckRelease");
         try
         {
-            string result;
-            if (url.StartsWith("file:///"))
-            {
-                result = File.ReadAllText(url[8..]);
-            }
-            else
-            {
-                using HttpClient client = new();
-                client.DefaultRequestHeaders.Add("User-Agent", "TONX Updater");
-                client.DefaultRequestHeaders.Add("Referer", "tonx.cc");
-                using var response = await client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead);
-                if (!response.IsSuccessStatusCode || response.Content == null)
-                {
-                    Logger.Error($"Failed: {response.StatusCode}", "CheckRelease");
-                    return false;
-                }
-                result = await response.Content.ReadAsStringAsync();
-                result = result.Replace("\r", string.Empty).Replace("\n", string.Empty).Trim();
-            }
+            var task = RemoteHelper.GetRemoteStringAsync(url);
+            await task;
+            var (result, succeed) = task.Result;
+            if (!succeed) return false;
 
             JObject data = JObject.Parse(result);
 
