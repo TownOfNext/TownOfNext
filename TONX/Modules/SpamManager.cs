@@ -32,7 +32,7 @@ if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
                 if (File.Exists(@"./BanWords.txt")) File.Move(@"./BanWords.txt", BANEDWORDS_FILE_PATH);
 #elif Android
                 if (!Directory.Exists($"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
-                if (File.Exists(@$"{Application.persistentDataPath}//BanWords.txt")) File.Move(@$"{Application.persistentDataPath}//BanWords.txt", BANEDWORDS_FILE_PATH);
+                if (File.Exists(@$"{Application.persistentDataPath}/BanWords.txt")) File.Move(@$"{Application.persistentDataPath}/BanWords.txt", BANEDWORDS_FILE_PATH);
 #endif
                 
                 else

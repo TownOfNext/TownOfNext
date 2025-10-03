@@ -1184,13 +1184,17 @@ public static class Utils
         return folder;
     }
     public static void DumpLog(bool popup = false)
-
     {
         string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TONX-logs/";
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TONX-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
+#if Windows
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
+#elif Android
+        FileInfo file = new(@$"/data/data/dev.allofus.starlight/files/BepInEx/LogOutput.log");
+#endif
+        
         file.CopyTo(@filename);
         if (PlayerControl.LocalPlayer != null)
         {

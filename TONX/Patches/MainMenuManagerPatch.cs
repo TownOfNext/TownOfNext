@@ -114,7 +114,7 @@ public class MainMenuManagerPatch
         // if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
         // WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
         // WebsiteButton.name = "TONX Website Button";
-
+#if Windows
         if (UpdateButton == null)
         {
             PlayButton = __instance.playButton.gameObject;
@@ -134,6 +134,8 @@ public class MainMenuManagerPatch
             }));
             UpdateButton.transform.transform.FindChild("FontPlacer").GetChild(0).gameObject.DestroyTranslator();
         }
+        
+#endif
 
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
     }

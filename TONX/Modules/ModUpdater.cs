@@ -11,10 +11,13 @@ namespace TONX;
 [HarmonyPatch]
 public class ModUpdater
 {
-    public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
+#if Windows
+public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
+#endif
+   
     private static IReadOnlyList<string> URLs => new List<string>
     {
-#if DEBUG
+#if DEBUG && Windows
         "file:///D:/Desktop/TONX/info.json",
         "file:///D:/Desktop/info.json",
 #else
@@ -194,6 +197,26 @@ public class ModUpdater
             return false;
         }
     }
+    public static void DeleteOldFiles()
+    {
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.*"))
+            {
+                if (path.EndsWith(Path.GetFileName(Assembly.GetExecutingAssembly().Location))) continue;
+                if (path.EndsWith("TONX.dll") || path.EndsWith("Downloader.dll")) continue;
+                Logger.Info($"{Path.GetFileName(path)} Deleted", "DeleteOldFiles");
+                File.Delete(path);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"清除更新残留失败\n{e}", "DeleteOldFiles");
+        }
+        return;
+    }
+#if Windows
+
     public static void StartUpdate(string url = "waitToSelect")
     {
         if (url == "waitToSelect")
@@ -226,24 +249,6 @@ public class ModUpdater
             CustomPopup.ShowLater(title, desc, new() { (GetString(done ? StringNames.ExitGame : StringNames.Okay), done ? Application.Quit : null) });
             SetUpdateButtonStatus();
         });
-    }
-    public static void DeleteOldFiles()
-    {
-        try
-        {
-            foreach (var path in Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.*"))
-            {
-                if (path.EndsWith(Path.GetFileName(Assembly.GetExecutingAssembly().Location))) continue;
-                if (path.EndsWith("TONX.dll") || path.EndsWith("Downloader.dll")) continue;
-                Logger.Info($"{Path.GetFileName(path)} Deleted", "DeleteOldFiles");
-                File.Delete(path);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.Error($"清除更新残留失败\n{e}", "DeleteOldFiles");
-        }
-        return;
     }
     public static async Task<(bool, string)> DownloadDLL(string url)
     {
@@ -298,4 +303,6 @@ public class ModUpdater
             return "";
         }
     }
+    
+#endif
 }
