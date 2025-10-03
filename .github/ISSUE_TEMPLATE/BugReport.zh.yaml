@@ -15,7 +15,9 @@ body:
     id: details
     attributes:
       label: 问题描述
-      description: "发生了什么？请在此详细描述你遇到的问题。<br>如果可以，还请上传屏幕截图以帮助我们理解。"
+      description: |
+        发生了什么？请在此详细描述你遇到的问题。
+        如果可以，还请上传屏幕截图以帮助我们理解。
     validations:
       required: true
   - type: textarea
@@ -34,5 +36,7 @@ body:
     id: log
     attributes:
       label: 错误日志
-      description: "如果可以，请复制粘贴日志到此处以帮助我们解决这个问题。<br>这将自动格式化，因此无需 Markdown 反引号。"
+      description: |
+        如果可以，请复制粘贴日志到此处以帮助我们解决这个问题。
+        这将自动格式化，因此无需 Markdown 反引号。
       render: log

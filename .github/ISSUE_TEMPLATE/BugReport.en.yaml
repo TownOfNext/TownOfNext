@@ -15,7 +15,9 @@ body:
     id: details
     attributes:
       label: Issue Description
-      description: "What happened? Please describe the issue you encountered in detail here.<br>If possible, please also upload screenshots to help us understand."
+      description: |
+        What happened? Please describe the issue you encountered in detail here.
+        If possible, please also upload screenshots to help us understand.
     validations:
       required: true
   - type: textarea
@@ -34,5 +36,7 @@ body:
     id: log
     attributes:
       label: Error Log
-      description: "If possible, please copy and paste the log here to help us resolve this issue.<br>This will be automatically formatted, so no need for Markdown backticks."
+      description: |
+        If possible, please copy and paste the log here to help us resolve this issue.
+        This will be automatically formatted, so no need for Markdown backticks.
       render: log
