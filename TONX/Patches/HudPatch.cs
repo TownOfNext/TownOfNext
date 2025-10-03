@@ -52,6 +52,9 @@ class HudManagerPatch
     {
         if (!GameStates.IsModHost) return;
 
+        Logger.Test(__instance.KillButton.transform.localPosition);
+        Logger.Test(__instance.ReportButton.transform.localPosition);
+        Logger.Test("-----");
         if (HudManagerInitializePatch.RoleInfoButton != null)
         {
             var template = HudManager.Instance.MapButton;
