@@ -1,8 +1,9 @@
 using System.Net;
 using System.Text.Json;
-// from Final Suspect
+
 namespace TONX.Helpers;
 
+// 来源：https://github.com/Slok7565/FinalSuspect/blob/FinalSus/FinalSuspect/Helpers/RemoteHelper.cs
 public static class RemoteHelper
 {
     public static async Task<(string, bool)> GetRemoteStringAsync(string url, bool json = true,
@@ -19,9 +20,9 @@ public static class RemoteHelper
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
 #if Windows
-                                                   | SecurityProtocolType.Tls13
+                | SecurityProtocolType.Tls13
 #endif
-                ;
+            ;
 
             var handler = CreateOptimizedHttpClientHandler();
 

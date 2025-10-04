@@ -50,16 +50,15 @@ public static class RegistryManager
         List<string> FoldersNFileToDel =
             [
 #if Windows
-                                @"./TOH_DATA",
+                @"./TOH_DATA",
                 @"./TOHE_DATA",
 #endif
-
             ];
 
         Logger.Warn("上次启动的TONX版本：" + LastVersion, "Registry Manager");
 
 #if Windows
-                if (LastVersion < new Version(3, 0, 0))
+        if (LastVersion < new Version(3, 0, 0))
         {
             Logger.Warn("v3.0.0 New Version Operation Needed", "Registry Manager");
             FoldersNFileToDel.Add(@"./BepInEx/config");
@@ -71,7 +70,6 @@ public static class RegistryManager
             FoldersNFileToDel.Add(@"./TONX/Data/template.txt");
         }
 #endif
-
 
         FoldersNFileToDel.DoIf(Directory.Exists, p =>
         {

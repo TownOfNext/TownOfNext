@@ -14,10 +14,8 @@ public static class Translator
 #if Android
     public static string LANGUAGE_FOLDER_NAME = $"{Application.persistentDataPath}/Language";
 #elif Windows
-     public static string LANGUAGE_FOLDER_NAME = "Language";
+    public static string LANGUAGE_FOLDER_NAME = "Language";
 #endif
-    
-   
 
     [PluginModuleInitializer(InitializePriority.High)]
     public static void Init()
@@ -71,7 +69,7 @@ public static class Translator
         foreach (var lang in EnumHelper.GetAllValues<SupportedLangs>())
         {
 #if Windows
-if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
+            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
 #elif Android
             if (File.Exists(@$"{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
 #endif
@@ -160,11 +158,11 @@ if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
     public static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
 #if Windows
-string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
 #elif Android
         string path = @$"/{LANGUAGE_FOLDER_NAME}/{filename}";
 #endif
-        
+
         if (File.Exists(path))
         {
             Logger.Info($"加载自定义翻译文件：{filename}", "LoadCustomTranslation");
@@ -198,11 +196,10 @@ string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
         var sb = new StringBuilder();
         foreach (var title in translateMaps) sb.Append($"{title.Key}:\n");
 #if Windows
-File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
 #elif Android
         File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
 #endif
-        
     }
     public static void ExportCustomTranslation()
     {
@@ -216,10 +213,9 @@ File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
             sb.Append($"{kvp.Key}:{text}\n");
         }
 #if Windows
-File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
 #elif Android
         File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
 #endif
-        
     }
 }

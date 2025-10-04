@@ -8,7 +8,7 @@ namespace TONX;
 public static class SpamManager
 {
 #if Windows
-private static readonly string BANEDWORDS_FILE_PATH = "./TONX_Data/BanWords.txt";
+    private static readonly string BANEDWORDS_FILE_PATH = "./TONX_Data/BanWords.txt";
 #elif Android
     private static readonly string BANEDWORDS_FILE_PATH = $"{Application.persistentDataPath}/TONX_Data/BanWords.txt";
 #endif
@@ -28,13 +28,12 @@ private static readonly string BANEDWORDS_FILE_PATH = "./TONX_Data/BanWords.txt"
             try
             {
 #if Windows
-if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
+                if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
                 if (File.Exists(@"./BanWords.txt")) File.Move(@"./BanWords.txt", BANEDWORDS_FILE_PATH);
 #elif Android
                 if (!Directory.Exists($"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
                 if (File.Exists(@$"{Application.persistentDataPath}/BanWords.txt")) File.Move(@$"{Application.persistentDataPath}/BanWords.txt", BANEDWORDS_FILE_PATH);
 #endif
-                
                 else
                 {
                     string fileName = GetUserLangByRegion().ToString();

@@ -102,7 +102,13 @@ internal class VersionShowerStartPatch
         __instance.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
         var ap1 = __instance.GetComponent<AspectPosition>();
         ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
-        ap1.DistanceFromEdge = new(2.2f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f);
+        ap1.DistanceFromEdge = new(
+#if Android
+            2.2f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f
+#elif Windows
+            2.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f
+#endif
+        );
     }
 }
 

@@ -99,8 +99,8 @@ public class IntroCutscenePatch
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) teamToDisplay.Add(pc);
             __instance.BeginImpostor(teamToDisplay);
-#if  Windows
-           __instance.overlayHandle.color = Palette.ImpostorRed;
+#if Windows
+            __instance.overlayHandle.color = Palette.ImpostorRed;
 #endif
             return false;
         }
@@ -114,8 +114,8 @@ public class IntroCutscenePatch
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             __instance.BeginImpostor(teamToDisplay);
-#if  Windows
-           __instance.overlayHandle.color = Palette.ImpostorRed;
+#if Windows
+            __instance.overlayHandle.color = Palette.ImpostorRed;
 #endif
             return false;
         }
@@ -236,8 +236,8 @@ public class IntroCutscenePatch
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor())) yourTeam.Add(pc);
-#if  Windows
-           __instance.overlayHandle.color = Palette.ImpostorRed;
+#if Windows
+            __instance.overlayHandle.color = Palette.ImpostorRed;
 #endif
             return true;
         }
@@ -245,8 +245,8 @@ public class IntroCutscenePatch
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-#if  Windows
-           __instance.overlayHandle.color = Palette.ImpostorRed;
+#if Windows
+            __instance.overlayHandle.color = Palette.ImpostorRed;
 #endif
             return true;
         }
@@ -256,10 +256,9 @@ public class IntroCutscenePatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
-#if  Windows
-           __instance.overlayHandle.color = Palette.CrewmateBlue;
+#if Windows
+            __instance.overlayHandle.color = Palette.CrewmateBlue;
 #endif
-            
             return false;
         }
         BeginCrewmate_Prefix(__instance, ref yourTeam);
@@ -271,10 +270,10 @@ public class IntroCutscenePatch
         BeginCrewmate_Postfix(__instance, ref yourTeam);
     }
 #if Windows
-        [HarmonyPatch(nameof(IntroCutscene.OnDestroy)), HarmonyPostfix]
+    [HarmonyPatch(nameof(IntroCutscene.OnDestroy)), HarmonyPostfix]
 #elif Android
-        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX)), HarmonyPostfix]
-        [HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
+    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX)), HarmonyPostfix]
+    [HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
 #endif
     public static void OnDestroy_Postfix()
     {

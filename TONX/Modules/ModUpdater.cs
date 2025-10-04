@@ -13,9 +13,8 @@ namespace TONX;
 public class ModUpdater
 {
 #if Windows
-public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
+    public static string DownloadFileTempPath = "BepInEx/plugins/TONX.dll.temp";
 #endif
-   
     private static IReadOnlyList<string> URLs => new List<string>
     {
 #if DEBUG && Windows

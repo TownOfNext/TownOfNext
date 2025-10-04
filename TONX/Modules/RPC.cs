@@ -335,7 +335,7 @@ internal class RPCHandlerPatch
 
 internal static class RPC
 {
-    //来源：https://github.com/music-discussion/TownOfHost-TheOtherRoles/blob/main/Modules/RPC.cs
+    // 来源：https://github.com/music-discussion/TownOfHost-TheOtherRoles/blob/main/Modules/RPC.cs
     public static void SyncCustomSettingsRPC(int targetId = -1)
     {
         if (targetId != -1)

@@ -553,7 +553,7 @@ class FixedUpdatePatch
 
             if (GameStates.IsInGame && __instance.AmOwner)
                 DisableDevice.FixedUpdate();
-            
+
             NameTagManager.ApplyFor(__instance);
         }
         //LocalPlayer専用

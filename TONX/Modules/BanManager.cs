@@ -26,8 +26,7 @@ public static class BanManager
         try
         {
 #if Windows
-if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
-               
+            if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
 #elif Android
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif
@@ -96,8 +95,7 @@ if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
         try
         {
 #if Windows
-if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
-               
+            if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
 #elif Android
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif
@@ -148,8 +146,7 @@ if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
         try
         {
 #if Windows
-if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
-               
+            if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");               
 #elif Android
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif

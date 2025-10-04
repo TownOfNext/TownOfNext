@@ -1,6 +1,6 @@
 namespace TONX;
 
-//参考：https://github.com/yukieiji/ExtremeRoles/blob/master/ExtremeRoles/Patches/AirShipStatusPatch.cs
+// 参考：https://github.com/yukieiji/ExtremeRoles/blob/master/ExtremeRoles/Patches/AirShipStatusPatch.cs
 [HarmonyPatch(typeof(AirshipStatus), nameof(AirshipStatus.PrespawnStep))]
 public static class AirshipStatusPrespawnStepPatch
 {

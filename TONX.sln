@@ -13,12 +13,12 @@ Global
 		Debug|Windows = Debug|Windows
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Windows.ActiveCfg = Debug|Windows
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Windows.Build.0 = Debug|Windows
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Windows.ActiveCfg = Release|Windows
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Windows.Build.0 = Release|Windows
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Android.ActiveCfg = Debug|Android
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Android.Build.0 = Debug|Android
-		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Windows.ActiveCfg = Debug|Windows
-		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Windows.Build.0 = Debug|Windows
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Android.ActiveCfg = Release|Android
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Android.Build.0 = Release|Android
 	EndGlobalSection

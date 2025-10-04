@@ -64,9 +64,9 @@ public static class CustomSoundsManager
     public static extern bool PlaySound(string Filename, int Mod, int Flags);
     public static void StartPlay(string path)
 #if Windows
-        => PlaySound(@$"{path}", 0, 1); //第3个形参，把1换为9，连续播放
+        => PlaySound(@$"{path}", 0, 1); // 第3个形参，把1换为9，连续播放
 #elif Android
-        {}//安卓暂不处理
+        {} // 安卓暂不处理
 #endif
 
 }
