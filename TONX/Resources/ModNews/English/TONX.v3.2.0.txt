@@ -1,0 +1,25 @@
+﻿#Number:100049
+#Title:TownOfNext v3.2.0
+#SubTitle:★★★★TO The Next★★★★
+#ShortTitle:★TONX v3.2.0
+#Date:2025-10-07T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v17.0.0
+- Base on TOH v5.1.13
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+
+## What You Need to Know
+- This update is mainly for adapting Android system
+
+## Fix
+- Fix plenty of errors
+- Fix a bug where the skills of Shapeshifter and Phantom are not reverted after forcing closing meetings 
+- Fix a bug where the Shapeshifter does not revert after being recruited
+
+## New Feature
+- Option: Show Players Selections (in Role Draft Mode)
