@@ -83,7 +83,7 @@ public static class OptionsMenuBehaviourStartPatch
     {
         if (UnloadMod == null || UnloadMod.ToggleButton == null)
             UnloadMod = ClientActionItem.Create("UnloadMod", ModUnloaderScreen.Show, instance);
-        
+
         if (DumpLog == null || DumpLog.ToggleButton == null)
             DumpLog = ClientActionItem.Create("DumpLog", () => Utils.DumpLog(), instance);
     }

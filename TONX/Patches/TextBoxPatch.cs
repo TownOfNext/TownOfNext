@@ -21,7 +21,7 @@ public class TextBoxPatch
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
     public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
     {
-        __instance.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
+        if (__instance.transform.parent.name == "FreeChatInputField") __instance.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
         if (input.Length < 1) return true;
         string before = input[^1..];
         if (replaceDic.TryGetValue(before, out var after))
