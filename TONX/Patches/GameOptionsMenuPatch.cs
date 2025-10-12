@@ -131,7 +131,7 @@ public static class GameSettingMenuPatch
         var image = Utils.LoadSprite(resourcePath, 100f);
         var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
         tabImage.SetImage(image, GameOptionsMenu.MASK_LAYER);
-        tabImage.transform.localPosition = new(7.1f, -0.6f, -10f);
+        tabImage.transform.localPosition = new(7.3f, -0.6f, -10f);
         Object.Destroy(tabImage.Button.GetComponentInChildren<BoxCollider2D>());
         tabImage.Button.activeSprites.transform.GetChild(0).gameObject.SetActive(false);
         tabImage.Button.activeSprites.GetComponent<SpriteRenderer>().sprite = tabImage.Button.inactiveSprites.GetComponent<SpriteRenderer>().sprite = null;
@@ -318,12 +318,16 @@ public class StringOptionInitializePatch
         __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
+        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
+        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
         if (option is RoleSpawnChanceOptionItem item && !GameObject.Find(option.Name + "CustomRoleInfo"))
         {
             var infoButton = Object.Instantiate(__instance.PlusBtn, __instance.PlusBtn.transform.parent);
             infoButton.name = option.Name + "CustomRoleInfo";
             infoButton.transform.localPosition += new Vector3(0.7f, 0f, 0f);
             infoButton.GetComponentInChildren<TextMeshPro>().text = "?";
+            infoButton.interactableHoveredColor = Main.ModColor32;
+            infoButton.interactableClickColor = new Color32(161, 121, 128, 255);
             infoButton.OnClick = new();
             infoButton.OnClick.AddListener((Action)(() =>
             {

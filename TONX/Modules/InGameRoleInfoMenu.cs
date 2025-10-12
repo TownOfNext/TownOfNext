@@ -39,6 +39,8 @@ public static class InGameRoleInfoMenu
         CloseButton.gameObject.name = "CloseButton";
         CloseButton.transform.localScale = new(0.66f, 0.66f, 0.66f);
         CloseButton.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 3f);
+        CloseButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().DestroyTranslator();
+        CloseButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = GetString(StringNames.Close);
         CloseButton.OnClick = new();
         CloseButton.OnClick.AddListener((Action)Hide);
 
