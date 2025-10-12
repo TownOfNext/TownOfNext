@@ -22,6 +22,19 @@ public abstract class RoleDescription
         get
         {
             var builder = new StringBuilder(256);
+            builder.Append(RoleInfoHelp);
+            // 职业设定
+            if (Options.CustomRoleSpawnChances.TryGetValue(RoleInfo.RoleName, out var opt))
+                Utils.ShowChildrenSettings(opt, ref builder, forChat: true);
+
+            return builder.ToString();
+        }
+    }
+    public string RoleInfoHelp
+    {
+        get
+        {
+            var builder = new StringBuilder(256);
             builder.AppendFormat("<size={0}>\n", BlankLineSize);
             // 职业名
             builder.AppendFormat("<size={0}>{1}", FirstHeaderSize, GetRoleString(RoleInfo.RoleName.ToString()).Color(RoleInfo.RoleColor.ToReadableColor()));
@@ -29,9 +42,6 @@ public abstract class RoleDescription
             var roleTeam = RoleInfo.CustomRoleType;
             builder.AppendFormat("<size={0}> ({1}, {2})\n", BodySize, GetString($"Team{roleTeam}"), GetString("BaseOn") + GetString(RoleInfo.BaseRoleType.Invoke().ToString()));
             builder.AppendFormat("<size={0}>{1}\n", BodySize, Description);
-            // 职业设定
-            if (Options.CustomRoleSpawnChances.TryGetValue(RoleInfo.RoleName, out var opt))
-                Utils.ShowChildrenSettings(opt, ref builder, forChat: true);
 
             return builder.ToString();
         }

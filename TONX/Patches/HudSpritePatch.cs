@@ -1,6 +1,8 @@
 ﻿using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
+#pragma warning disable CS8602 // 解引用可能出现空引用。
+
 namespace TONX;
 
 public static class CustomButton

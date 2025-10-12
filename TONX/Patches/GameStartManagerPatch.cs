@@ -23,6 +23,7 @@ public class GameStartManagerPatch
     public static TextMeshPro HideName;
     private static TextMeshPro timerText;
     private static PassiveButton cancelButton;
+    private static PassiveButton immediatelyStartButton;
 
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
@@ -56,28 +57,10 @@ public class GameStartManagerPatch
             timerText.transform.localPosition += new Vector3(0.3f, -3.4f, 0f);
             timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && AmongUsClient.Instance.AmHost);
 
-            cancelButton = Object.Instantiate(__instance.StartButton, __instance.transform);
-            cancelButton.name = "CancelButton";
-            var cancelLabel = cancelButton.buttonText;
-            cancelLabel.DestroyTranslator();
-            cancelLabel.text = GetString("Cancel");
-            cancelButton.transform.localScale = new(0.5f, 0.5f, 1f);
-            var cancelButtonInactiveRenderer = cancelButton.inactiveSprites.GetComponent<SpriteRenderer>();
-            cancelButtonInactiveRenderer.color = new(0.8f, 0f, 0f, 1f);
-            var cancelButtonActiveRenderer = cancelButton.activeSprites.GetComponent<SpriteRenderer>();
-            cancelButtonActiveRenderer.color = Color.red;
-            var cancelButtonInactiveShine = cancelButton.inactiveSprites.transform.Find("Shine");
-            if (cancelButtonInactiveShine)
-            {
-                cancelButtonInactiveShine.gameObject.SetActive(false);
-            }
-            cancelButton.activeTextColor = cancelButton.inactiveTextColor = Color.white;
-            cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
-            cancelButton.OnClick = new();
-            cancelButton.OnClick.AddListener((Action)(() => __instance.ResetStartState()));
+            cancelButton = CreateButton(__instance, "CancelButton", "Cancel", new(0.8f, 0f, 0f, 1f), Color.red, new(2f, 0.13f, 0f), __instance.ResetStartState);
+            immediatelyStartButton = CreateButton(__instance, "ImmediatelyStartButton", "StartImmediately", new(0f, 0f, 0.8f, 1f), Color.blue, new(-2f, 0.13f, 0f), () => __instance.countDownTimer = 0);
 
             if (!AmongUsClient.Instance.AmHost) return;
-
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -85,6 +68,30 @@ public class GameStartManagerPatch
             AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
             if (AURoleOptions.ShapeshifterCooldown == 0f)
                 AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+        }
+
+        private static PassiveButton CreateButton(GameStartManager __instance, string name, string stringName, Color inactiveColor, Color activeColor, Vector3 pos, Action clickAction)
+        {
+            var button = Object.Instantiate(__instance.StartButton, __instance.transform);
+            button.name = name;
+            var label = button.buttonText;
+            label.DestroyTranslator();
+            label.text = GetString(stringName);
+            button.transform.localScale = new(0.5f, 0.5f, 1f);
+            var buttonInactiveRenderer = button.inactiveSprites.GetComponent<SpriteRenderer>();
+            buttonInactiveRenderer.color = inactiveColor;
+            var buttonActiveRenderer = button.activeSprites.GetComponent<SpriteRenderer>();
+            buttonActiveRenderer.color = activeColor;
+            var buttonInactiveShine = button.inactiveSprites.transform.Find("Shine");
+            if (buttonInactiveShine)
+            {
+                buttonInactiveShine.gameObject.SetActive(false);
+            }
+            button.activeTextColor = button.inactiveTextColor = Color.white;
+            button.transform.localPosition = pos;
+            button.OnClick = new();
+            button.OnClick.AddListener(clickAction);
+            return button;
         }
     }
 
@@ -148,7 +155,8 @@ public class GameStartManagerPatch
                     warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
                 }
                 cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
-                __instance.StartButton.gameObject.SetActive(!cancelButton.gameObject.active);
+                immediatelyStartButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
+                __instance.StartButton.gameObject.SetActive(!cancelButton.gameObject.active && !immediatelyStartButton.gameObject.active);
             }
             else
             {

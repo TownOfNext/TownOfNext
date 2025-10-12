@@ -45,7 +45,7 @@ internal class ControllerManagerUpdatePatch
                 HudManagerInitializePatch.RoleInfoButton?.SelectButton(InGameRoleInfoMenu.Showing);
             }
         }
-        else if (InGameRoleInfoMenu.Showing)
+        else if (InGameRoleInfoMenu.Showing && !GameSettingMenu.Instance)
         {
             InGameRoleInfoMenu.Hide();
             HudManagerInitializePatch.RoleInfoButton?.SelectButton(false);

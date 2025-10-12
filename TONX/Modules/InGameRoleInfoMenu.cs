@@ -13,6 +13,7 @@ public static class InGameRoleInfoMenu
     public static SpriteRenderer FillSP => Fill.GetComponent<SpriteRenderer>();
 
     public static GameObject Menu;
+    public static PassiveButton CloseButton;
 
     public static GameObject MainInfo;
     public static GameObject AddonsInfo;
@@ -34,22 +35,28 @@ public static class InGameRoleInfoMenu
         Menu.name = "TONX Role Info Menu Page";
         Menu.transform.SetLocalZ(-990f);
 
+        CloseButton = Menu.transform.FindChild("BackButton").GetComponent<PassiveButton>();
+        CloseButton.gameObject.name = "CloseButton";
+        CloseButton.transform.localScale = new(0.66f, 0.66f, 0.66f);
+        CloseButton.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 3f);
+        CloseButton.OnClick = new();
+        CloseButton.OnClick.AddListener((Action)Hide);
+
         Object.Destroy(Menu.transform.FindChild("Title Text").gameObject);
-        Object.Destroy(Menu.transform.FindChild("BackButton").gameObject);
         Object.Destroy(Menu.transform.FindChild("EvenMoreInfo").gameObject);
 
         MainInfo = Menu.transform.FindChild("InfoText_TMP").gameObject;
         MainInfo.name = "Main Role Info";
         MainInfo.DestroyTranslator();
-        MainInfo.transform.localPosition = new(-2.3f, 0.8f, 4f);
-        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f, 10f);
+        MainInfo.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 4f);
+        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 10f);
         MainInfoTMP.alignment = TextAlignmentOptions.Left;
         MainInfoTMP.fontSize = 2f;
 
         AddonsInfo = Object.Instantiate(MainInfo, MainInfo.transform.parent);
         AddonsInfo.name = "Addons Info";
         AddonsInfo.DestroyTranslator();
-        AddonsInfo.transform.SetLocalX(2.3f);
+        AddonsInfo.transform.SetLocalX(2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height));
         AddonsInfo.transform.localScale = new(0.7f, 0.7f, 0.7f);
     }
 
@@ -61,6 +68,15 @@ public static class InGameRoleInfoMenu
         MainInfoTMP.text = player?.GetCustomRole().GetRoleInfo()?.Description?.FullFormatHelp ?? "None";
         AddonsInfoTMP.text = AddonDescription.FullFormatHelpByPlayer(player);
     }
+    public static void SetRoleInfoRefByRole(CustomRoles role)
+    {
+        if (!Fill || !Menu) Init();
+
+        AddonsInfoTMP.text = role.IsAddon()
+            ? AddonDescription.FullFormatHelpBySubRole(role, false)
+            : role.GetRoleInfo()?.Description?.RoleInfoHelp ?? "None";
+        MainInfoTMP.text = string.Empty;
+    }
 
     public static void Show()
     {
@@ -69,6 +85,7 @@ public static class InGameRoleInfoMenu
         {
             Fill?.SetActive(true);
             Menu?.SetActive(true);
+            CloseButton?.gameObject?.SetActive(!GameStates.IsInGame);
         }
         //HudManager.Instance?.gameObject.SetActive(false);
     }
@@ -80,5 +97,21 @@ public static class InGameRoleInfoMenu
             Menu?.SetActive(false);
         }
         //HudManager.Instance?.gameObject?.SetActive(true);
+    }
+
+    [HarmonyPatch(typeof(ResolutionManager))]
+    internal class ResolutionManagerPatch
+    {
+        [HarmonyPatch(nameof(ResolutionManager.SetResolution))]
+        public static void Postfix(int width, int height)
+        {
+            if (!Fill || !Menu) return;
+            var offset = Utils.GetResolutionOffset(width, height);
+            CloseButton.transform.SetLocalX(-2.3f * offset);
+            MainInfo.transform.SetLocalX(-2.3f * offset);
+            AddonsInfo.transform.SetLocalX(2.3f * offset);
+            MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 10f);
+            AddonsInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 10f);
+        }
     }
 }
