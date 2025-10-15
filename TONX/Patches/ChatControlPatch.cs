@@ -19,6 +19,9 @@ public static class SendTargetPatch
     public static void Awake_Postfix(ChatController __instance)
     {
         __instance.freeChatField.textArea.SetText("");
+        __instance.freeChatField.textArea.AllowPaste = true;
+        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
+        __instance.freeChatField.UpdateCharCount();
         if (SendTargetShower != null) return;
         SendTargetShower = UnityEngine.Object.Instantiate(__instance.freeChatField.charCountText.gameObject, __instance.freeChatField.charCountText.transform.parent);
         SendTargetShower.name = "TONX Send Target Shower";

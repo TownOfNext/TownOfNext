@@ -88,7 +88,6 @@ internal class ChatUpdatePatch
     public static void Postfix(ChatController __instance)
     {
         Active = __instance.IsOpenOrOpening;
-        __instance.freeChatField.textArea.AllowPaste = true;
         __instance.chatBubblePool.Prefab.Cast<ChatBubble>().TextArea.overrideColorTags = false;
 
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count < 1 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
@@ -131,7 +130,7 @@ internal class UpdateCharCountPatch
     {
         int length = __instance.textArea.text.Length;
         __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
-        if (length < (AmongUsClient.Instance.AmHost ? 888 : 250))
+        if (length < (AmongUsClient.Instance.AmHost ? 750 : 225))
             __instance.charCountText.color = Color.black;
         else if (length < (AmongUsClient.Instance.AmHost ? 999 : 300))
             __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);

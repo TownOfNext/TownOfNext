@@ -29,7 +29,7 @@ public sealed class CrewPostor : RoleBase, IImpostor
 
     public bool CanKill { get; private set; } = false;
     public bool CanUseSabotageButton() => false;
-    public override bool CanUseAbilityButton() => !Player.IsModClient(); // 仅对有内鬼跳管按钮的模组端玩家生效
+    public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown = 0f;
