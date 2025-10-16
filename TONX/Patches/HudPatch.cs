@@ -271,6 +271,28 @@ class VentButtonDoClickPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.Refresh))]
+class SabotageButtonRefreshPatch
+{
+    public static bool Prefix(SabotageButton __instance)
+    {
+        if (GameManager.Instance == null || PlayerControl.LocalPlayer == null)
+        {
+            __instance.ToggleVisible(visible: false);
+            __instance.SetDisabled();
+        }
+        else if (PlayerControl.LocalPlayer.inVent || !GameManager.Instance.SabotagesEnabled() || PlayerControl.LocalPlayer.petting)
+        {
+            __instance.ToggleVisible(PlayerControl.LocalPlayer.GetCustomRole().GetRoleTypes() is AmongUs.GameOptions.RoleTypes.Impostor && GameManager.Instance.SabotagesEnabled());
+            __instance.SetDisabled();
+        }
+        else
+        {
+            __instance.SetEnabled();
+        }
+        return false;
+    }
+}
 [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Show))]
 class MapBehaviourShowPatch
 {
