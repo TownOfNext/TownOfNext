@@ -97,13 +97,13 @@ class OnPlayerJoinedPatch
         }
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
-        RPC.RpcVersionCheck();
+        _ = new LateTask(RPC.RpcVersionCheck, 0.5f, "RpcVersionCheck");
 
         if (AmongUsClient.Instance.AmHost)
         {
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
-           // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+            // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
         }
     }
 }

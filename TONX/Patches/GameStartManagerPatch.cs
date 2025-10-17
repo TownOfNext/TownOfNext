@@ -283,6 +283,14 @@ class ResetStartStatePatch
         }
     }
 }
+[HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.SetStartCounter))]
+class SetStartCounterPatch
+{
+    public static void Postfix(GameStartManager __instance, [HarmonyArgument(0)] sbyte sec)
+    {
+        if (sec == -1) SoundManager.Instance.StopSound(__instance.gameStartSound);
+    }
+}
 [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
 public static class HiddenTextPatch
 {

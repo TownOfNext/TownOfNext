@@ -5,6 +5,7 @@ using UnityEngine;
 using TONX.Modules;
 using TONX.GameModes;
 using TONX.Roles.GameMode;
+using AmongUs.GameOptions;
 
 namespace TONX;
 
@@ -93,8 +94,8 @@ class HudManagerPatch
                 var roleClass = player.GetRoleClass();
                 if (roleClass != null)
                 {
-                    var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : "";
-                    if (killLabel != "") __instance.KillButton.OverrideText(killLabel);
+                    __instance.KillButton.OverrideText((roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text 
+                        : (player.GetCustomRole().GetRoleTypes() is RoleTypes.Viper ? GetString(StringNames.ViperAbility) : GetString(StringNames.KillLabel)));
                     var reportLabel = roleClass?.GetReportButtonText() ?? "";
                     if (reportLabel != "") __instance.ReportButton.OverrideText(reportLabel);
                     if (roleClass.HasAbility)
@@ -283,7 +284,7 @@ class SabotageButtonRefreshPatch
         }
         else if (PlayerControl.LocalPlayer.inVent || !GameManager.Instance.SabotagesEnabled() || PlayerControl.LocalPlayer.petting)
         {
-            __instance.ToggleVisible(PlayerControl.LocalPlayer.GetCustomRole().GetRoleTypes() is AmongUs.GameOptions.RoleTypes.Impostor && GameManager.Instance.SabotagesEnabled());
+            __instance.ToggleVisible(PlayerControl.LocalPlayer.CanUseSabotageButton() && GameManager.Instance.SabotagesEnabled());
             __instance.SetDisabled();
         }
         else

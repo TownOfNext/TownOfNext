@@ -74,7 +74,6 @@ static class ExtendedPlayerControl
         player.ResetKillCooldown();
         player.SyncSettings();
         player.SetKillCooldown();
-        HudManager.Instance.SetHudActive(true);
         Utils.RecordPlayerRoles(player.PlayerId);
         if (!refreshTasks) return;
         PlayerState.GetByPlayerId(player.PlayerId).InitTask(player);
