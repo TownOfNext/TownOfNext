@@ -89,6 +89,5 @@ namespace TONX.Roles.Neutral
         public float CalculateKillCooldown() => KillCooldown;
         public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision);
         public bool CanUseImpostorVentButton() => false;
-        public void ApplySchrodingerCatOptions(IGameOptions option) => ApplyGameOptions(option);
     }
 }

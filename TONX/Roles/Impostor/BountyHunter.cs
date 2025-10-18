@@ -113,7 +113,9 @@ public sealed class BountyHunter : RoleBase, IImpostor
         {
             if (Player.IsAlive())
             {
-                var targetId = GetTarget().PlayerId;
+                var target = GetTarget();
+                if (target == null) return;
+                var targetId = target.PlayerId;
                 if (ChangeTimer >= TargetChangeTime)//時間経過でターゲットをリセットする処理
                 {
                     ResetTarget();//ターゲットの選びなおし
@@ -208,12 +210,5 @@ public sealed class BountyHunter : RoleBase, IImpostor
         //seerがtarget自身でBountyHunterのとき、
         //矢印オプションがありミーティング以外で矢印表示
         return TargetArrow.GetArrows(Player, target.PlayerId);
-    }
-    public void OnSchrodingerCatKill(SchrodingerCat schrodingerCat)
-    {
-        if (GetTarget() == schrodingerCat.Player)
-        {
-            ResetTarget(); // ターゲットの選びなおし
-        }
     }
 }

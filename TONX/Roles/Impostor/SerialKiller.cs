@@ -106,8 +106,4 @@ public sealed class SerialKiller : RoleBase, IImpostor
                 SuicideTimer = 0f;
         }
     }
-    public void OnSchrodingerCatKill(SchrodingerCat schrodingerCat)
-    {
-        SuicideTimer = null;
-    }
 }
