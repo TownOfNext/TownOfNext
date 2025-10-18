@@ -41,8 +41,6 @@ public static class GetBodyTypePatch
 
 #endregion
 
-// 来源：Town Of Host : Enhanced
-
 #region LongBoi Patches
 
 [HarmonyPatch(typeof(LongBoiPlayerBody))]
@@ -51,7 +49,6 @@ public static class LongBoiPatch
     [HarmonyPatch(nameof(LongBoiPlayerBody.Awake)), HarmonyPrefix]
     public static bool Awake_Prefix(LongBoiPlayerBody __instance)
     {
-        //Fixes base-game layer issues
         __instance.cosmeticLayer.OnSetBodyAsGhost += (Action)__instance.SetPoolableGhost;
         __instance.cosmeticLayer.OnColorChange += (Action<int>)__instance.SetHeightFromColor;
         __instance.cosmeticLayer.OnCosmeticSet += (Action<string, int, CosmeticsLayer.CosmeticKind>)__instance.OnCosmeticSet;
@@ -62,7 +59,6 @@ public static class LongBoiPatch
     [HarmonyPatch(nameof(LongBoiPlayerBody.Start)), HarmonyPrefix]
     public static bool Start_Prefix(LongBoiPlayerBody __instance)
     {
-        //Fixes more runtime issues
         __instance.ShouldLongAround = true;
         if (__instance.hideCosmeticsQC) __instance.cosmeticLayer.SetHatVisorVisible(false);
 
@@ -79,8 +75,7 @@ public static class LongBoiPatch
         return false;
     }
 
-    // Fix System.IndexOutOfRangeException: Index was outside the bounds of the array
-    // When colorIndex is 255 them heightsPerColor[255] gets exception
+    // 修复索引为255时超出范围的问题
     [HarmonyPatch(nameof(LongBoiPlayerBody.SetHeightFromColor)), HarmonyPrefix]
     public static bool SetHeightFromColor_Prefix(int colorIndex)
     {
