@@ -294,8 +294,7 @@ internal class ResolutionManagerPatch
     {
         if (GameObject.Find("MainUI") == null) return;
         var offset = Utils.GetResolutionOffset(width, height);
-        TitleLogoPatch.TONX_Background.transform.localScale =
-            new Vector3(Mathf.Max(offset, 1), Mathf.Max(offset, 1), 1);
+        TitleLogoPatch.TONX_Background.transform.localScale = new Vector3(Mathf.Max(offset, 1), Mathf.Max(offset, 1), 1);
         TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * offset, 1.3f, 1.0f);
         TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
         TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * offset, 1.4f, -1.0f);
