@@ -7,31 +7,41 @@ public static class AprilFoolsModePatch
     public static bool LongMode => AprilFoolsMode.ShouldLongAround();
 }
 
-// 来源：Town Of Host : Enhanced
-
 #region GameManager Patches
 
+[HarmonyPatch(typeof(NormalGameManager), nameof(NormalGameManager.GetBodyType))]
 public static class GetBodyTypePatch
 {
-    [HarmonyPatch(typeof(NormalGameManager), nameof(NormalGameManager.GetBodyType)), HarmonyPostfix]
-    public static void GetBodyType_Postfix(ref PlayerBodyTypes __result)
+    public static PlayerBodyTypes LastPlayerBodyType;
+    public static void Postfix(ref PlayerBodyTypes __result)
     {
         switch (Main.SwitchOutfitType.Value)
         {
             case OutfitType.HorseMode:
                 __result = PlayerBodyTypes.Horse;
-                return;
+                break;
             case OutfitType.LongMode:
                 __result = PlayerBodyTypes.Long;
-                return;
+                break;
             default:
                 __result = PlayerBodyTypes.Normal;
                 break;
+        }
+        if (__result != LastPlayerBodyType)
+        {
+            if (LastPlayerBodyType == PlayerBodyTypes.Long)
+            {
+                var pc = PlayerControl.LocalPlayer;
+                pc.cosmetics.SetNamePosition(new(0f, string.IsNullOrEmpty(pc.Data.DefaultOutfit.HatId) ? 0.8f : 1f, -0.5f));
+            }
+            LastPlayerBodyType = __result;
         }
     }
 }
 
 #endregion
+
+// 来源：Town Of Host : Enhanced
 
 #region LongBoi Patches
 
