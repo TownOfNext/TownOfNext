@@ -318,8 +318,6 @@ public class StringOptionInitializePatch
         __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
-        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
-        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
         if (option is RoleSpawnChanceOptionItem item && !GameObject.Find(option.Name + "CustomRoleInfo"))
         {
             var infoButton = Object.Instantiate(__instance.PlusBtn, __instance.PlusBtn.transform.parent);
@@ -338,6 +336,20 @@ public class StringOptionInitializePatch
         }
 
         return false;
+    }
+    public static void Postfix(StringOption __instance)
+    {
+        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
+        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
+    }
+}
+[HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Initialize))]
+public class NumberOptionInitializePatch
+{
+    public static void Postfix(NumberOption __instance)
+    {
+        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
+        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
     }
 }
 

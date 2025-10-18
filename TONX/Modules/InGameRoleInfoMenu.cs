@@ -51,7 +51,7 @@ public static class InGameRoleInfoMenu
         MainInfo.name = "Main Role Info";
         MainInfo.DestroyTranslator();
         MainInfo.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 4f);
-        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 10f);
+        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 6f);
         MainInfoTMP.alignment = TextAlignmentOptions.Left;
         MainInfoTMP.fontSize = 2f;
 
@@ -112,8 +112,8 @@ public static class InGameRoleInfoMenu
             CloseButton.transform.SetLocalX(-2.3f * offset);
             MainInfo.transform.SetLocalX(-2.3f * offset);
             AddonsInfo.transform.SetLocalX(2.3f * offset);
-            MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 10f);
-            AddonsInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 10f);
+            MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 6f);
+            AddonsInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 6f);
         }
     }
 }
