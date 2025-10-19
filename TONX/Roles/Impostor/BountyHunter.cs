@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core.Interfaces;
-using TONX.Roles.Neutral;
 using UnityEngine;
 
 namespace TONX.Roles.Impostor;

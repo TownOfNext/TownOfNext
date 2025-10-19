@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core.Interfaces;
-using TONX.Roles.Neutral;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -64,7 +63,7 @@ public sealed class Sheriff : RoleBase, IKiller
     public float CurrentKillCooldown = 30;
     public static readonly string[] KillOption =
     {
-            "SheriffCanKillAll", "SheriffCanKillSeparately"
+        "SheriffCanKillAll", "SheriffCanKillSeparately"
     };
 
     private static void SetupOptionItem()
