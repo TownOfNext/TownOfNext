@@ -8,11 +8,6 @@ class ChanceChangePatch
 {
     public static void Postfix(RoleOptionSetting __instance)
     {
-        __instance.CountPlusBtn.interactableHoveredColor = __instance.CountMinusBtn.interactableHoveredColor =
-        __instance.ChancePlusBtn.interactableHoveredColor = __instance.ChanceMinusBtn.interactableHoveredColor = Main.ModColor32;
-        __instance.CountPlusBtn.interactableClickColor = __instance.CountMinusBtn.interactableClickColor =
-        __instance.ChancePlusBtn.interactableClickColor = __instance.ChanceMinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
-
         // The Phantom does not work together with desynchronized impostor roles e.g. Sheriff so we need to disable it.
         // This may be removed in the future when we have implemented changing vanilla role or some other stuff.
         if (__instance.Role.Role is RoleTypes.GuardianAngel /*|| (__instance.Role.Role is RoleTypes.Phantom && !DebugModeManager.IsDebugMode)*/)

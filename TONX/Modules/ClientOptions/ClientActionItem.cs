@@ -70,8 +70,7 @@ public class ClientActionItem
                 ModOptionsButton.transform.localPosition = pos != null ? pos.Value + new Vector3(1.24f, 0f, 0f) : new(1.24f, -2.4f, 1f);
                 ModOptionsButton.name = "TONX Options";
                 ModOptionsButton.Text.text = GetString("TONXOptions");
-                if (ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor))
-                    ModOptionsButton.Background.color = modColor;
+                ModOptionsButton.Background.color = Main.ModColor32;
                 var modOptionsPassiveButton = ModOptionsButton.GetComponent<PassiveButton>();
                 modOptionsPassiveButton.OnClick = new();
                 modOptionsPassiveButton.OnClick.AddListener(new Action(() =>

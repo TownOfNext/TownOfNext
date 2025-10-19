@@ -318,6 +318,8 @@ public class StringOptionInitializePatch
         __instance.TitleText.text = option.GetName(option is RoleSpawnChanceOptionItem);
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
+        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
+        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
         if (option is RoleSpawnChanceOptionItem item && !GameObject.Find(option.Name + "CustomRoleInfo"))
         {
             var infoButton = Object.Instantiate(__instance.PlusBtn, __instance.PlusBtn.transform.parent);
@@ -336,20 +338,6 @@ public class StringOptionInitializePatch
         }
 
         return false;
-    }
-    public static void Postfix(StringOption __instance)
-    {
-        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
-        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
-    }
-}
-[HarmonyPatch(typeof(NumberOption), nameof(NumberOption.Initialize))]
-public class NumberOptionInitializePatch
-{
-    public static void Postfix(NumberOption __instance)
-    {
-        __instance.PlusBtn.interactableHoveredColor = __instance.MinusBtn.interactableHoveredColor = Main.ModColor32;
-        __instance.PlusBtn.interactableClickColor = __instance.MinusBtn.interactableClickColor = new Color32(161, 121, 128, 255);
     }
 }
 
@@ -415,5 +403,28 @@ public static class RolesSettingsMenuPatch
                     break;
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(GameOptionButton), nameof(GameOptionButton.SetInteractable))]
+public static class GameOptionButtonPatch
+{
+    public static void Postfix(GameOptionButton __instance)
+    {
+        __instance.interactableHoveredColor = __instance.interactableHoveredColor = Main.ModColor32;
+        __instance.interactableClickColor = __instance.interactableClickColor = new Color32(161, 121, 128, 255);
+    }
+}
+
+[HarmonyPatch(typeof(ToggleOption), nameof(ToggleOption.Initialize))]
+public class ToggleOptionInitializePatch
+{
+    public static void Postfix(ToggleOption __instance)
+    {
+        PassiveButton CheckBox = __instance.GetComponentInChildren<PassiveButton>();
+        CheckBox.activeSprites.GetComponent<SpriteRenderer>().sprite = CheckBox.inactiveSprites.GetComponent<SpriteRenderer>().sprite;
+        CheckBox.activeSprites.GetComponent<SpriteRenderer>().color = Main.ModColor32;
+        __instance.CheckMark.sprite = Utils.LoadSprite("TONX.Resources.Images.UI.CheckMark.png", 100f);
+        __instance.CheckMark.color = Main.ModColor32;
     }
 }
