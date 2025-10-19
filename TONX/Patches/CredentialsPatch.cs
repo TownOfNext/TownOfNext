@@ -92,8 +92,8 @@ internal class VersionShowerStartPatch
         if (Main.hasArgumentException && ErrorText.Instance != null)
             ErrorText.Instance.AddError(ErrorCode.Main_DictionaryError);
 
-        __instance.text.text += "\n" + $"{(ModUpdater.visit > 0
-            ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, ModUpdater.visit)
+        __instance.text.text += "\n" + $"{(ModUpdater.visit_count > 0
+            ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, ModUpdater.visit_count)
             : GetString("ConnectToTONXServerFailed"))}";
 
         if (GameObject.Find("MainUI") == null) return;
