@@ -31,8 +31,8 @@ public static class GetBodyTypePatch
         {
             if (LastPlayerBodyType == PlayerBodyTypes.Long)
             {
-                var pc = PlayerControl.LocalPlayer;
-                pc.cosmetics.SetNamePosition(new(0f, string.IsNullOrEmpty(pc.Data.DefaultOutfit.HatId) ? 0.8f : 1f, -0.5f));
+                foreach (var pc in Main.AllPlayerControls)
+                    pc?.cosmetics?.SetNamePosition(new(0f, string.IsNullOrEmpty(pc.Data.DefaultOutfit.HatId) ? 0.8f : 1f, -0.5f));
             }
             LastPlayerBodyType = __result;
         }

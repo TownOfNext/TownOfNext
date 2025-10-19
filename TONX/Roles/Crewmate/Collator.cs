@@ -40,10 +40,9 @@ public sealed class Collator : RoleBase, IKiller
         CollatorCollateLimit,
         MadTeamType
     }
-    public static Dictionary<CustomRoles, OptionItem> KillTargetOptions = new();
     public int CollateLimit = 0;
     public float CurrentKillCooldown = 30;
-    public List<(byte, CustomRoleTypes)> CollectedPlayers = new(); 
+    public List<(byte, CustomRoleTypes)> Samples = new(); 
     public static readonly string[] madTeamType =
     {
         "TeamImpostor",
@@ -73,7 +72,7 @@ public sealed class Collator : RoleBase, IKiller
         CollateLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => CanUseKillButton() ? CurrentKillCooldown : 255f;
-    public bool CanUseKillButton() => Player.IsAlive() && CollateLimit > 0;
+    public bool CanUseKillButton() => Player.IsAlive() && CollateLimit > 0 && Samples.Count < 2;
     public bool CanUseImpostorVentButton() => false;
     public bool CanUseSabotageButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
@@ -83,8 +82,8 @@ public sealed class Collator : RoleBase, IKiller
         {
             (var killer, var target) = info.AttemptTuple;
 
-            if (CollateLimit <= 0 || CollectedPlayers.Count == 2) return false;
-            if (CollectedPlayers.Count == 1)
+            if (CollateLimit <= 0 || Samples.Count == 2) return false;
+            if (Samples.Count == 1)
             {
                 CollateLimit--;
                 SendRPC();
@@ -92,16 +91,16 @@ public sealed class Collator : RoleBase, IKiller
             var team = target.GetCustomRole().GetCustomRoleTypes();
             if (target.GetCustomSubRoles().Contains(CustomRoles.Madmate) && OptionMadTeamType.GetValue() == 0)
                 team = CustomRoleTypes.Impostor;
-            CollectedPlayers.Add((target.PlayerId, team));
+            Samples.Add((target.PlayerId, team));
             Player.ResetKillCooldown();
         }
         return false;
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
-        if (CollectedPlayers.Count < 2) return;
+        if (Samples.Count < 2) return;
         msgToSend.Add((
-            GetString("CollatorCheckMatch") + GetString(CollectedPlayers[0].Item2 == CollectedPlayers[1].Item2 ? "CollatorMatched" : "CollatorUnmatched"),
+            GetString("CollatorCheckMatch") + GetString(Samples[0].Item2 == Samples[1].Item2 ? "CollatorMatched" : "CollatorUnmatched"),
             Player.PlayerId,
             "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>"
         ));
@@ -111,14 +110,14 @@ public sealed class Collator : RoleBase, IKiller
     {
         seen ??= seer;
 
-        if (CollectedPlayers.Select(p => p.Item1).ToList().Contains(seen.PlayerId))
+        if (Samples.Select(p => p.Item1).ToList().Contains(seen.PlayerId))
             return Utils.ColorString(RoleInfo.RoleColor, "●");
 
         return "";
     }
     public override void AfterMeetingTasks()
     {
-        CollectedPlayers = new();
+        Samples = new();
     }
     public bool OverrideKillButtonText(out string text)
     {
