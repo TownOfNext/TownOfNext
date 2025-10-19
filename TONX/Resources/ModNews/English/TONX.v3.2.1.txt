@@ -1,0 +1,31 @@
+﻿#Number:100050
+#Title:TownOfNext v3.2.1
+#SubTitle:★★★★TO The Next★★★★
+#ShortTitle:★TONX v3.2.1
+#Date:2025-10-19T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v17.0.0
+- Base on TOH v5.1.14
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+
+## Fix
+- Fix a bug where the server is shown incorrectly
+- Fix a bug where the word limit of textbox is incorrect
+- Fix a bug where the role info menu is deranged
+- Fix a bug where sabotage button is shown incorrectly
+- Fix a bug where the version check fails
+- Fix a bug where the kill button text is shown incorrectly
+- Fix a bug where the text in the role info menu is beyond border
+- Fix a bug where the Long Mode makes the position of player name incorrect
+
+## New Feature
+- Modded Hosts can view role info in the settings menu
+- Add a "Start Now" button for the lobby
+
+## New Role
+- Crewmate: Collator
