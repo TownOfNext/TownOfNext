@@ -12,14 +12,14 @@ public static class ServerDropdownPatch
     [HarmonyPatch(nameof(ServerDropdown.FillServerOptions)), HarmonyPostfix]
     public static void FillServerOptions_Postfix(ServerDropdown __instance)
     {
-        List<ServerListButton> serverListButton = __instance.ButtonPool.GetComponentsInChildren<ServerListButton>().OrderByDescending(x => x.transform.localPosition.y).ToList();
-        MaxPage = Mathf.CeilToInt((float)serverListButton.Count / ButtonsPerPage);
+        List<ServerListButton> serverListButtons = __instance.ButtonPool.GetComponentsInChildren<ServerListButton>().OrderByDescending(x => x.transform.localPosition.y).ToList();
+        MaxPage = Mathf.Max(1, Mathf.CeilToInt((float)serverListButtons.Count / ButtonsPerPage));
         if (CurrentPage > MaxPage) CurrentPage = MaxPage;
 
         // 调整服务器选项按钮位置
         int num = 0;
         int count = 1;
-        foreach (ServerListButton button in serverListButton)
+        foreach (ServerListButton button in serverListButtons)
         {
             if (num < (CurrentPage - 1) * ButtonsPerPage || num >= CurrentPage * ButtonsPerPage)
             {
