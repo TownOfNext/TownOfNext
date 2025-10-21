@@ -17,8 +17,8 @@ public static class ServerDropdownPatch
         if (CurrentPage > MaxPage) CurrentPage = MaxPage;
 
         // 调整服务器选项按钮位置
-        int count = 1;
         int num = 0;
+        int count = 1;
         foreach (ServerListButton button in serverListButton)
         {
             if (num < (CurrentPage - 1) * ButtonsPerPage || num >= CurrentPage * ButtonsPerPage)
@@ -37,10 +37,16 @@ public static class ServerDropdownPatch
         __instance.background.size = new Vector2(__instance.background.size.x, 1.2f + 0.6f * (ButtonsPerPage + 1));
 
         // 创建翻页按钮
-        _ = CreateServerListButton(__instance, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, __instance.y_posButton, -1f),
-            () => { if (CurrentPage > 1) { CurrentPage--; RefreshServerOptions(__instance); } });
-        _ = CreateServerListButton(__instance, "NextPageButton", GetString("NextPage"), new Vector3(0f, __instance.y_posButton + -0.55f * (ButtonsPerPage + 1), -1f),
-            () => { if (CurrentPage < MaxPage) { CurrentPage++; RefreshServerOptions(__instance); } });
+        _ = CreateServerListButton(__instance, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, __instance.y_posButton, -1f), () =>
+            {
+                CurrentPage = CurrentPage > 1 ? CurrentPage - 1 : MaxPage;
+                RefreshServerOptions(__instance);
+            });
+        _ = CreateServerListButton(__instance, "NextPageButton", GetString("NextPage"), new Vector3(0f, __instance.y_posButton + -0.55f * (ButtonsPerPage + 1), -1f), () =>
+            {
+                CurrentPage = CurrentPage < MaxPage ? CurrentPage + 1 : 1;
+                RefreshServerOptions(__instance);
+            });
     }
     public static ServerListButton CreateServerListButton(ServerDropdown __instance, string name, string text, Vector3 position, Action onclickaction)
     {
@@ -58,6 +64,7 @@ public static class ServerDropdownPatch
     public static void RefreshServerOptions(ServerDropdown __instance)
     {
         __instance.ButtonPool.ReclaimAll();
+        __instance.controllerSelectable = new Il2CppSystem.Collections.Generic.List<UiElement>();
         __instance.FillServerOptions();
     }
 }
