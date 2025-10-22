@@ -28,8 +28,8 @@
 
 	<ItemGroup>
 		<!-- nuget.bepinex.dev -->
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.9.9" PrivateAssets="all" Condition="'$(Platform)' == 'Windows'"/>
-		<PackageReference Include="AmongUs.GameLibs.Android" Version="2025.9.9" PrivateAssets="all" Condition="'$(Platform)' == 'Android'"/>
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.10.14" PrivateAssets="all" Condition="'$(Platform)' == 'Windows'"/>
+		<PackageReference Include="AmongUs.GameLibs.Android" Version="2025.10.14" PrivateAssets="all" Condition="'$(Platform)' == 'Android'"/>
 		<PackageReference Include="NextBepLoader.BepInEx.IL2CPP.MSBuild" Version="2.1.0-dev-6" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.738" Private="false" ExcludeAssets="runtime;native" />
 		<!-- nuget.org -->

@@ -5,9 +5,9 @@ namespace TONX;
 [HarmonyPatch(typeof(ServerDropdown))]
 public static class ServerDropdownPatch
 {
-    public static int CurrentPage = 1;
-    public static int MaxPage = 1;
-    public static int ButtonsPerPage = 4;
+    private static int CurrentPage = 1;
+    private static int MaxPage = 1;
+    private const int ButtonsPerPage = 4;
 
     [HarmonyPatch(nameof(ServerDropdown.FillServerOptions)), HarmonyPostfix]
     public static void FillServerOptions_Postfix(ServerDropdown __instance)
@@ -37,18 +37,18 @@ public static class ServerDropdownPatch
         __instance.background.size = new Vector2(__instance.background.size.x, 1.2f + 0.6f * (ButtonsPerPage + 1));
 
         // 创建翻页按钮
-        _ = CreateServerListButton(__instance, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, __instance.y_posButton, -1f), () =>
+        CreateServerListButton(__instance, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, __instance.y_posButton, -1f), () =>
             {
                 CurrentPage = CurrentPage > 1 ? CurrentPage - 1 : MaxPage;
                 RefreshServerOptions(__instance);
             });
-        _ = CreateServerListButton(__instance, "NextPageButton", GetString("NextPage"), new Vector3(0f, __instance.y_posButton + -0.55f * (ButtonsPerPage + 1), -1f), () =>
+        CreateServerListButton(__instance, "NextPageButton", GetString("NextPage"), new Vector3(0f, __instance.y_posButton + -0.55f * (ButtonsPerPage + 1), -1f), () =>
             {
                 CurrentPage = CurrentPage < MaxPage ? CurrentPage + 1 : 1;
                 RefreshServerOptions(__instance);
             });
     }
-    public static ServerListButton CreateServerListButton(ServerDropdown __instance, string name, string text, Vector3 position, Action onclickaction)
+    private static void CreateServerListButton(ServerDropdown __instance, string name, string text, Vector3 position, Action onclickaction)
     {
         ServerListButton button = __instance.ButtonPool.Get<ServerListButton>();
         button.name = name;
@@ -59,9 +59,8 @@ public static class ServerDropdownPatch
         button.Button.OnClick.RemoveAllListeners();
         button.Button.OnClick.AddListener(onclickaction);
         button.gameObject.SetActive(true);
-        return button;
     }
-    public static void RefreshServerOptions(ServerDropdown __instance)
+    private static void RefreshServerOptions(ServerDropdown __instance)
     {
         __instance.ButtonPool.ReclaimAll();
         __instance.controllerSelectable = new Il2CppSystem.Collections.Generic.List<UiElement>();
