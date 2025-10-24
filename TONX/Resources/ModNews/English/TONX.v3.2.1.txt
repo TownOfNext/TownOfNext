@@ -2,7 +2,7 @@
 #Title:TownOfNext v3.2.1
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v3.2.1
-#Date:2025-10-19T00:00:00Z
+#Date:2025-10-25T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -22,6 +22,7 @@
 - Fix a bug where the kill button text is shown incorrectly
 - Fix a bug where the text in the role info menu is beyond border
 - Fix a bug where the Long Mode makes the position of player name incorrect
+- Fix game lags caused by update checks and other factors
 
 ## New Feature
 - Modded Hosts can view role info in the settings menu
