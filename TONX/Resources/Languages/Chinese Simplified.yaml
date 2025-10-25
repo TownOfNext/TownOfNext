@@ -1219,6 +1219,7 @@ EnterVentWinCountDown: "在{0}秒内跳管道胜利！"
 CollatorCheckMatch: "您校对的两位玩家身份"
 CollatorMatched: "匹配"
 CollatorUnmatched: "不匹配"
+VoteBasedSkillGiveUpNotice: "您放弃了本次发动技能的机会。"
 
 # 信息 / Messages
 Message.SetToSeconds: "信息发送冷却时间为【{0}】秒"

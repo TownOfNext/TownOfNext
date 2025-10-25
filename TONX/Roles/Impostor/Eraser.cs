@@ -33,6 +33,7 @@ public sealed class Eraser : RoleBase, IImpostor
 
     private int EraseLimit;
     private byte PlayerToErase;
+    private bool DidVote;
     private static void SetupOptionItem()
     {
         OptionEraseLimit = IntegerOptionItem.Create(RoleInfo, 10, OptionName.EraseLimit, new(1, 15, 1), 2, false)
@@ -50,13 +51,18 @@ public sealed class Eraser : RoleBase, IImpostor
     }
     public override void ReceiveRPC(MessageReader reader)
     {
-        
         EraseLimit = reader.ReadInt32();
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(EraseLimit >= 1 ? Color.red : Color.gray, $"({EraseLimit})");
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
-        if (votedFor == null || !Player.IsAlive() || EraseLimit < 1 || PlayerToErase != byte.MaxValue) return true;
+        if (!Player.IsAlive() || DidVote || EraseLimit < 1 || PlayerToErase != byte.MaxValue) return true;
+        DidVote = true;
+        if (votedFor == null)
+        {
+            ShowMsg(GetString("VoteBasedSkillGiveUpNotice") + GetString("SkillDoneAndYouCanVoteNormallyNow"));
+            return false;
+        }
 
         if (Is(votedFor))
         {
@@ -90,6 +96,7 @@ public sealed class Eraser : RoleBase, IImpostor
     public override void OnStartMeeting()
     {
         PlayerToErase = byte.MaxValue;
+        DidVote = EraseLimit < 1;
     }
     public override void AfterMeetingTasks()
     {

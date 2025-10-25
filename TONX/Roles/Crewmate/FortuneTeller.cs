@@ -45,19 +45,21 @@ public sealed class FortuneTeller : RoleBase
     public override void OnStartMeeting() => DidVote = CheckLimit < 1;
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
-        if (votedFor == null || !Player.IsAlive() || DidVote || CheckLimit < 1) return true;
-
+        if (!Player.IsAlive() || DidVote || CheckLimit < 1) return true;
         DidVote = true;
-        CheckLimit--;
-
-        if (Is(votedFor))
+        if (votedFor == null)
         {
-            string notice1 = GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow");
-            Player.ShowPopUp(notice1);
-            Utils.SendMessage(notice1, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+            ShowMsg(GetString("VoteBasedSkillGiveUpNotice") + GetString("SkillDoneAndYouCanVoteNormallyNow"));
             return false;
         }
 
+        if (Is(votedFor))
+        {
+            ShowMsg(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow"));
+            return false;
+        }
+
+        CheckLimit--;
         string msg;
 
         if (Player.AllTasksCompleted() || OptionAccurateCheck.GetBool())
@@ -79,7 +81,8 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.Observer or
                 CustomRoles.DoveOfPeace or
                 CustomRoles.Messenger or
-                CustomRoles.Insider
+                CustomRoles.Insider or
+                CustomRoles.Collator
                 => "HideMsg",
 
                 CustomRoles.Miner or
@@ -195,10 +198,14 @@ public sealed class FortuneTeller : RoleBase
             msg = string.Format(GetString("FortuneTellerCheck." + text), votedFor.GetRealName());
         }
 
-        string notice2 = GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow");
-        Player.ShowPopUp(notice2);
-        Utils.SendMessage(notice2, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        ShowMsg(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow"));
 
         return false;
+
+        void ShowMsg(string msg)
+        {
+            Player.ShowPopUp(msg);
+            Utils.SendMessage(msg, Player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        }
     }
 }
