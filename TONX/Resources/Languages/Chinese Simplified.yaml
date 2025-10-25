@@ -940,7 +940,7 @@ JackalCanRecruitSidekick: "<color=#00b4eb>豺狼</color>可以招募<color=#00b4
 JackalRecruitLimit: "<color=#00b4eb>豺狼</color>可以招募的<color=#00b4eb>跟班</color>数量"
 NeededKillsToRecruit: "<color=#00b4eb>豺狼</color>招募<color=#00b4eb>跟班</color>需要的击杀次数"
 SidekickCanKill: "<color=#00b4eb>跟班</color>可以击杀"
-SidekickCanBecomeJackal: "<color=#00b4eb>跟班</color>在<color=#00b4eb>豺狼</color>死后可以变为<color=#00b4eb>豺狼</color>"
+SidekickCanBecomeJackal: "<color=#00b4eb>跟班</color>在<color=#00b4eb>豺狼</color>死后可以晋升为<color=#00b4eb>豺狼</color>"
 MediumContactLimit: "建立联系次数上限"
 MediumOnlyReceiveMsgFromCrew: "只会收到来自<color=#8cffff>船员</color>的消息（包括<color=#ff1919>背叛</color>和<color=#ff00ff>魅惑</color>）"
 DoveOfPeaceCooldown: "歌颂冷却时间"

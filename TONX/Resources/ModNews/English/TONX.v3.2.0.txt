@@ -14,7 +14,7 @@
 - This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
 
 ## What You Need to Know
-- This update is mainly for adapting Android system
+- This update is mainly for adapting to Android system
 
 ## Fix
 - Fix plenty of errors
