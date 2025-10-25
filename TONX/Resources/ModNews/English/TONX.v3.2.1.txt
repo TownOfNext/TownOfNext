@@ -2,7 +2,7 @@
 #Title:TownOfNext v3.2.1
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v3.2.1
-#Date:2025-10-25T00:00:00Z
+#Date:2025-10-26T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -27,6 +27,10 @@
 ## New Feature
 - Modded Hosts can view role info in the settings menu
 - Add a "Start Now" button for the lobby
+- Add ship styles switching buttons for every map
+
+## Role Changing
+- Eraser and Fortune Teller can give up the chance to use their skills by skipping vote
 
 ## New Role
 - Crewmate: Collator
