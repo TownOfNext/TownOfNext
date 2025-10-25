@@ -38,15 +38,15 @@ public static class ServerDropdownPatch
 
         // 创建翻页按钮
         CreateServerListButton(__instance, "PreviousPageButton", GetString("PreviousPage"), new Vector3(0f, __instance.y_posButton, -1f), () =>
-            {
-                CurrentPage = CurrentPage > 1 ? CurrentPage - 1 : MaxPage;
-                RefreshServerOptions(__instance);
-            });
+        {
+            CurrentPage = CurrentPage > 1 ? CurrentPage - 1 : MaxPage;
+            RefreshServerOptions(__instance);
+        });
         CreateServerListButton(__instance, "NextPageButton", GetString("NextPage"), new Vector3(0f, __instance.y_posButton + -0.55f * (ButtonsPerPage + 1), -1f), () =>
-            {
-                CurrentPage = CurrentPage < MaxPage ? CurrentPage + 1 : 1;
-                RefreshServerOptions(__instance);
-            });
+        {
+            CurrentPage = CurrentPage < MaxPage ? CurrentPage + 1 : 1;
+            RefreshServerOptions(__instance);
+        });
     }
     private static void CreateServerListButton(ServerDropdown __instance, string name, string text, Vector3 position, Action onclickaction)
     {
