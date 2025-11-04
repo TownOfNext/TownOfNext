@@ -25,7 +25,7 @@ public class RoleDraftManager
     private const float DraftTimeLimit = 20f;
     private const float NoticeTime = 10f;
     public static RoleDraftState RoleDraftState;
-    public static bool IsValidRoleDraftState() => Options.EnableRoleDraftMode.GetBool() && RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
+    public static bool IsRoleDrafting() => Options.EnableRoleDraftMode.GetBool() && RoleDraftState == RoleDraftState.Drafting && GameStates.IsMeeting;
     private static string GetColoredRoleName(CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role).ToReadableColor(), Utils.GetRoleName(role));
     private static bool IsInvalidPlayer(byte playerId)
     {
@@ -40,9 +40,15 @@ public class RoleDraftManager
         Main.DevRole.Clear();
         OptRoleNum = new List<int> { ic, nc };
     }
+    public static void RoleDraftMsg(MessageControl mc, out bool spam)
+    {
+        spam = IsRoleDrafting();
+        if (!spam) return;
+        _ = new LateTask(() => { OnPlayerChooseRole(mc.Player.PlayerId, mc.Args); }, 0.2f, "RoleDraftSelectRole");
+    }
     public static void OnPlayerChooseRole(byte playerId, string id)
     {
-        if (!IsValidRoleDraftState()) return;
+        if (!IsRoleDrafting()) return;
         if (playerId != ArrangedPlayers[CurrentAssignIndex])
         {
             Utils.SendMessage(GetString("RoleDraft.DraftAssignWait"), playerId);
@@ -60,12 +66,12 @@ public class RoleDraftManager
     }
     public static void RandomlyChooseRole(byte playerId)
     {
-        if (!IsValidRoleDraftState()) return;
+        if (!IsRoleDrafting()) return;
         AfterChosenRole(playerId, -1);
     }
     private static void AfterChosenRole(byte playerId, int roleId)
     {
-        if (!IsValidRoleDraftState()) return;
+        if (!IsRoleDrafting()) return;
         if (roleId == -2)
         {
             Utils.SendMessage(GetString("RoleDraft.FailedChosen"), playerId);
@@ -140,7 +146,7 @@ public class RoleDraftManager
     }
     private static void SelectRandomRoles(byte playerId)
     {
-        if (!IsValidRoleDraftState()) return;
+        if (!IsRoleDrafting()) return;
 
         RandomRoles = new();
         List<(int, CustomRoles)> CachedRoleData = new();
@@ -185,7 +191,7 @@ public class RoleDraftManager
 
         foreach (var playerId in ArrangedPlayers)
         {
-            if (!IsValidRoleDraftState()) yield break;
+            if (!IsRoleDrafting()) yield break;
             CurrentAssignIndex++;
             SelectRandomRoles(playerId);
             Utils.KillFlash(Utils.GetPlayerById(playerId));
@@ -199,9 +205,9 @@ public class RoleDraftManager
     {
         float timer = 0f;
         bool noticed = false;
-        while (timer < DraftTimeLimit)
+        while (timer < DraftTimeLimit + 0.5f) // 0.5f为消息延迟
         {
-            if (!IsValidRoleDraftState() || IsInvalidPlayer(playerId) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(playerId))) yield break;
+            if (!IsRoleDrafting() || IsInvalidPlayer(playerId) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(playerId))) yield break;
             timer += Time.deltaTime;
             if (timer >= NoticeTime && !noticed)
             {
