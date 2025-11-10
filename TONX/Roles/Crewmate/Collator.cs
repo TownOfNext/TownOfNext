@@ -78,22 +78,27 @@ public sealed class Collator : RoleBase, IKiller
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
-        if (Is(info.AttemptKiller) && !info.IsSuicide)
-        {
-            (var killer, var target) = info.AttemptTuple;
+        if (CollateLimit < 1 || Samples.Count == 2) return false;
+        var (killer, target) = info.AttemptTuple;
 
-            if (CollateLimit <= 0 || Samples.Count == 2) return false;
-            if (Samples.Count == 1)
-            {
-                CollateLimit--;
-                SendRPC();
-            }
-            var team = target.GetCustomRole().GetCustomRoleTypes();
-            if (target.GetCustomSubRoles().Contains(CustomRoles.Madmate) && OptionMadTeamType.GetValue() == 0)
-                team = CustomRoleTypes.Impostor;
-            Samples.Add((target.PlayerId, team));
-            Player.ResetKillCooldown();
+        var secondCollate = Samples.Count == 1;
+        if (secondCollate)
+        {
+            CollateLimit--;
+            SendRPC();
         }
+
+        var team = target.GetCustomRole().GetCustomRoleTypes();
+        if (target.GetCustomSubRoles().Contains(CustomRoles.Madmate) && OptionMadTeamType.GetValue() == 0)
+            team = CustomRoleTypes.Impostor;
+
+        killer.ResetKillCooldown();
+        killer.SetKillCooldownV2();
+
+        Samples.Add((target.PlayerId, team));
+
+        Logger.Info($"{killer.GetNameWithRole()}: 提取样本 => {target.GetNameWithRole()}", "Collator.OnCheckMurderAsKiller");
+        if (secondCollate) Logger.Info($"{killer.GetNameWithRole()}: 剩余{CollateLimit}次提取机会", "Collator.OnCheckMurderAsKiller");
         return false;
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)

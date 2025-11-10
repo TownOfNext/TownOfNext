@@ -94,8 +94,8 @@ public sealed class Deceiver : RoleBase, IKiller
 
         Customers.Add(target.PlayerId, false);
 
-        Logger.Info($"{killer.GetNameWithRole()}：将赝品售卖给 => {target.GetNameWithRole()}", "Deceiver.OnCheckMurderAsKille");
-        Logger.Info($"{killer.GetNameWithRole()}：剩余{SellLimit}个赝品", "Deceiver.OnCheckMurderAsKille");
+        Logger.Info($"{killer.GetNameWithRole()}：将赝品售卖给 => {target.GetNameWithRole()}", "Deceiver.OnCheckMurderAsKiller");
+        Logger.Info($"{killer.GetNameWithRole()}：剩余{SellLimit}个赝品", "Deceiver.OnCheckMurderAsKiller");
         return false;
     }
     private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
