@@ -37,5 +37,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TONX
-          path: Export/Release/Windows/TONX.dll
+          path: Export/Windows/Release/net6.0/TONX.dll
           if-no-files-found: error
