@@ -9,9 +9,9 @@
   </br>
 
   <h1>:fire: 𝓐𝓷𝓷𝓸𝓾𝓷𝓬𝓮𝓶𝓮𝓷𝓽 :fire:</h1>
-  <p>The TOHE project ceased development on May 20, 2023, with its final release being <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>.</p>
-  <p>After discontinuing TOHE, <a href="https://github.com/KARPED1EM">KARPED1EM</a> completely rebuilt the project using a new base to facilitate future iterations and ease of use, renaming it to TONX. Therefore, versions after TONX <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> are no longer maintained by KARPED1EM.</p>
-  <p>We may provide some of the unofficial releases, and may review and accept certain compatibility-focused pull requests, but will only ensure their security aspects.</p>
+  <p>The TOHE project, developed and maintained by <a href="https://github.com/KARPED1EM">KARPED1EM</a>, ceased development on May 20, 2023, with its final release being <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>.</p>
+  <p><a href="https://github.com/SHAAARKY">SHAAARKY</a> subsequently rebuilt the project using a new base and renamed it to TONX, maintaining it until <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a>.</p>
+  <p>Currently maintained by <a href="https://github.com/Sand-and-Beans">Sand-and-Beans</a>.</p>
 
   </br></br>
 
