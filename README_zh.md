@@ -9,9 +9,9 @@
   </br>
 
   <h1>:fire: 公告 :fire:</h1>
-  <p><a href="https://github.com/KARPED1EM">KARPED1EM</a> 开发并维护的 TOHE 项目已于2023年5月20日停止开发，最终版本为 <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>。</p>
-  <p><a href="https://github.com/SHAAARKY">SHAAARKY</a> 随后以新 Base 完全重构项目并更名为 TONX，迭代至 <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> 后停止维护。</p>
-  <p>现由 <a href="https://github.com/Sand-and-Beans">Sand-and-Beans</a> 接手并持续维护中。</p>
+  <p><a href="https://github.com/KARPED1EM">KARPED1EM</a> 开发并维护的 TOHE 项目已于2023年5月20日停止开发，最终版本为 <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>，源代码保留于 <a href="https://github.com/TownOfNext/TownOfNext/tree/tohe">tohe</a> 分支。</p>
+  <p><a href="https://github.com/SHAAARKY">SHAAARKY</a> 随后基于新 Base 对项目进行完全重构并更名为 TONX，持续迭代至 <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> 后停止维护，该阶段代码保留于 <a href="https://github.com/TownOfNext/TownOfNext/tree/legacy">legacy</a> 分支。</p>
+  <p>项目现由 <a href="https://github.com/Sand-and-Beans">Sand-and-Beans</a> 接手，基于 <a href="https://github.com/TownOfNext/TownOfNext/tree/main">main</a> 分支持续开发与维护。</p>
 
   </br></br>
 

@@ -9,9 +9,9 @@
   </br>
 
   <h1>:fire: 𝓐𝓷𝓷𝓸𝓾𝓷𝓬𝓮𝓶𝓮𝓷𝓽 :fire:</h1>
-  <p>The TOHE project, developed and maintained by <a href="https://github.com/KARPED1EM">KARPED1EM</a>, ceased development on May 20, 2023, with its final release being <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>.</p>
-  <p><a href="https://github.com/SHAAARKY">SHAAARKY</a> subsequently rebuilt the project using a new base and renamed it to TONX, maintaining it until <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a>.</p>
-  <p>Currently maintained by <a href="https://github.com/Sand-and-Beans">Sand-and-Beans</a>.</p>
+  <p>The TOHE project, developed and maintained by <a href="https://github.com/KARPED1EM">KARPED1EM</a>, ceased development on May 20, 2023, with its final release being <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v2.3.6">v2.3.6</a>. The source code is preserved in the <a href="https://github.com/TownOfNext/TownOfNext/tree/tohe">tohe</a> branch.</p>
+  <p><a href="https://github.com/SHAAARKY">SHAAARKY</a> subsequently rebuilt the project from the ground up using a new base and renamed it to TONX, continuing development until <a href="https://github.com/TownOfNext/TownOfNext/releases/tag/v3.0.1">v3.0.1</a> before discontinuing maintenance. This phase's code is preserved in the <a href="https://github.com/TownOfNext/TownOfNext/tree/legacy">legacy</a> branch.</p>
+  <p>The project is now maintained by <a href="https://github.com/Sand-and-Beans">Sand-and-Beans</a>, with ongoing development based on the <a href="https://github.com/TownOfNext/TownOfNext/tree/main">main</a> branch.</p>
 
   </br></br>
 
