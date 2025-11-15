@@ -18,7 +18,8 @@
   <h1>:memo: 𝓣𝓻𝓪𝓷𝓼𝓵𝓪𝓽𝓲𝓸𝓷𝓼 :memo:</h1>
 
   <p>The development language for this project is Simplified Chinese.</p>
-  <p>The following languages have incomplete translations and are no longer maintained: English, Português (Brasil), Pусский, 繁體中文.</p>
+  <p>The following languages have incomplete translations and are no longer maintained:</p>
+  <p>English, Portuguese, Russian, Traditional Chinese.</p>
 
   </br></br>
 
@@ -52,3 +53,4 @@
   <p>This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.</p>
 
 </div>
+
