@@ -2,8 +2,6 @@
 using System.Linq;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Impostor;
-using TONX.Roles.Core.Interfaces;
-using TONX.Roles.Crewmate;
 
 namespace TONX.Modules;
 
@@ -117,7 +115,7 @@ public class MeetingVoteManager
     /// 移除被换票的玩家
     /// </summary>
     /// <param name="swapper">换票师</param>
-    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers = SwappedPlayers.Where(d => d.Item1 != swapper).ToList();
+    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers.RemoveAll(d => d.Item1 != swapper);
     /// <summary>
     /// 实行换票
     /// </summary>
