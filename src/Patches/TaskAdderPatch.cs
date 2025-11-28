@@ -9,8 +9,7 @@ class TaskAdderGamePatch
 {
     private static TaskFolder CustomRolesFolder;
     private static TaskFolder ShipStylesFolder;
-    [HarmonyPatch(nameof(TaskAdderGame.ShowFolder))]
-    [HarmonyPrefix]
+    [HarmonyPatch(nameof(TaskAdderGame.ShowFolder)), HarmonyPrefix]
     public static void ShowFolder_Prefix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
         if (__instance.Root != taskFolder) return;
@@ -32,8 +31,7 @@ class TaskAdderGamePatch
         taskFolder = folder;
         __instance.Root.SubFolders.Add(taskFolder);
     }
-    [HarmonyPatch(nameof(TaskAdderGame.ShowFolder))]
-    [HarmonyPostfix]
+    [HarmonyPatch(nameof(TaskAdderGame.ShowFolder)), HarmonyPostfix]
     public static void ShowFolder_Postfix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
         Logger.Info("Opened " + taskFolder.FolderName, "TaskFolder");
@@ -92,8 +90,7 @@ class TaskAdderGamePatch
         button.RolloverHandler.OutColor = fileColor;
         button.RolloverHandler.OverColor = overColor;
     }
-    [HarmonyPatch(nameof(TaskAdderGame.PopulateRoot))]
-    [HarmonyPrefix]
+    [HarmonyPatch(nameof(TaskAdderGame.PopulateRoot)), HarmonyPrefix]
     public static bool PopulateRoot_Prefix()
     {
         return DestroyableSingleton<TutorialManager>.InstanceExists;

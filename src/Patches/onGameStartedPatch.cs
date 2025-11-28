@@ -45,7 +45,6 @@ internal class ChangeRoleSettings
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
 
             Main.isFirstTurn = false;
-            RoleDraftManager.RoleDraftState = Options.EnableRoleDraftMode.GetBool() ? RoleDraftState.ReadyToDraft : RoleDraftState.None;
 
             Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
             Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
@@ -223,7 +222,7 @@ internal class SelectRolesPatch
 
             if (!Options.CurrentGameMode.GetModeClass()?.ShouldAssignAddons() ?? true) goto EndOfSelectRolePatch;
 
-            if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft) goto EndOfSelectRolePatch;
+            if (RoleDraftManager.Instance != null) goto EndOfSelectRolePatch;
 
             AssignAddons();
 
@@ -242,7 +241,7 @@ internal class SelectRolesPatch
             }
 
             GameEndChecker.SetPredicate();
-            Main.CanRecord = RoleDraftManager.RoleDraftState == RoleDraftState.None;
+            Main.CanRecord = RoleDraftManager.Instance == null;
             if (Main.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
             AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp()); // 准备进入IntroCutscene
         }

@@ -96,7 +96,7 @@ internal static class GameModeStandard
                     }
                 }
             }
-            RoleDraftManager.Init(rolesLists, optImpNum, optNeutralNum);
+            RoleDraftManager.Start(rolesLists, (optImpNum, optNeutralNum));
             Logger.Info("已启用轮抽选角", "Role Draft");
             return;
         }
@@ -384,7 +384,7 @@ internal static class GameModeStandard
     }
     public static void EditIntroFormat(ref IntroCutscene intro)
     {
-        if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft)
+        if (RoleDraftManager.Instance != null)
         {
             intro.TeamTitle.text = GetString("RoleDraft");
             intro.TeamTitle.color = Color.gray;

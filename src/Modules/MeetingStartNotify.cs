@@ -9,9 +9,9 @@ public static class MeetingStartNotify
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (RoleDraftManager.RoleDraftState == RoleDraftState.ReadyToDraft)
+        if (RoleDraftManager.Instance != null)
         {
-            new LateTask(RoleDraftManager.StartRoleDraft, 8f, "RoleDraftNotify");
+            new LateTask(RoleDraftManager.Instance.StartRoleDraft, 8f, "RoleDraftNotify");
             return;
         }
 

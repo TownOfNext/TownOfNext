@@ -101,7 +101,7 @@ internal class ControllerManagerUpdatePatch
             GameManager.Instance.LogicFlow.CheckEndCriteria();
         }
         //强制结束会议或召开会议
-        if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame && RoleDraftManager.RoleDraftState == RoleDraftState.None)
+        if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame && RoleDraftManager.Instance == null)
         {
             if (GameStates.IsMeeting) MeetingHud.Instance.RpcForceEndMeeting();
             else PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);

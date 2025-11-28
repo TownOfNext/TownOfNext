@@ -379,6 +379,11 @@ public static class Utils
         var (color, text) = GetTrueRoleNameData(playerId, showSubRoleMarks);
         return ColorString(color, text);
     }
+    public static string GetColoredRoleName(CustomRoles role, bool toReadableColor = false)
+    {
+        var (color, text) = GetRoleNameData(role, null, false);
+        return ColorString(toReadableColor ? color.ToReadableColor() : color, text);
+    }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
     {
         return GetRoleString(Enum.GetName(typeof(CustomRoles), role), forUser);

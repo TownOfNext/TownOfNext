@@ -272,16 +272,24 @@ public static class MeetingHudPatch
             }
         }
     }
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
+    class ClosePatch
+    {
+        public static void Postfix()
+        {
+            RoleDraftManager.Instance?.AssignDraftRoles();
+        }
+    }
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class OnDestroyPatch
     {
         public static void Postfix()
         {
-            if (RoleDraftManager.RoleDraftState == RoleDraftState.None) MeetingStates.FirstMeeting = false;
+            if (RoleDraftManager.Instance == null) MeetingStates.FirstMeeting = false;
             Logger.Info("------------会议结束------------", "Phase");
             if (AmongUsClient.Instance.AmHost)
             {
-                if (Options.EnableRoleDraftMode.GetBool() && RoleDraftManager.RoleDraftState == RoleDraftState.Drafting) RoleDraftManager.AssignDraftRoles();
+                RoleDraftManager.Instance?.Destroy();
                 AntiBlackout.SetIsDead();
                 EAC.MeetingTimes = 0;
             }

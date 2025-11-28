@@ -120,7 +120,6 @@ class ExileControllerWrapUpPatch
             }
         }
         if (Camouflage.IsCamouflage && Utils.IsActive(SystemTypes.Comms)) foreach (var pc in Main.AllPlayerControls) Camouflage.RpcSetSkin(pc); // 会议结束后恢复小黑人
-        if (RoleDraftManager.RoleDraftState != RoleDraftState.None) RoleDraftManager.RoleDraftState = RoleDraftState.None;
         Utils.NotifyRoles();
     }
 
