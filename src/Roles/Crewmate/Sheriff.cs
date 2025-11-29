@@ -97,8 +97,7 @@ public sealed class Sheriff : RoleBase, IKiller
     {
         var id = RoleInfo.ConfigId + idOffset;
         parent ??= RoleInfo.RoleOption;
-        var roleName = Utils.GetRoleName(role);
-        Dictionary<string, string> replacementDic = new() { { "%role%", Utils.ColorString(Utils.GetRoleColor(role), roleName) } };
+        Dictionary<string, Func<string>> replacementDic = new() { { "%role%", () => Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)) } };
         KillTargetOptions[role] = BooleanOptionItem.Create(id, OptionName.SheriffCanKill + "%role%", defaultValue, RoleInfo.Tab, false).SetParent(parent);
         KillTargetOptions[role].ReplacementDictionary = replacementDic;
     }

@@ -1192,7 +1192,7 @@ public static class Options
         {
             IdStart = idStart;
             Role = role;
-            Dictionary<string, string> replacementDic = new() { { "%role%", Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)) } };
+            Dictionary<string, Func<string>> replacementDic = new() { { "%role%", () => Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)) } };
             doOverride = BooleanOptionItem.Create(idStart++, "doOverride", false, tab, false).SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.None);
             doOverride.ReplacementDictionary = replacementDic;

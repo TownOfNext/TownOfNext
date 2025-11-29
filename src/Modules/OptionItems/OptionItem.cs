@@ -46,7 +46,7 @@ namespace TONX
         public bool IsFixValue { get; protected set; }
         public bool IsText { get; protected set; }
         public string AddonDescription { get; protected set; }
-        public Dictionary<string, string> ReplacementDictionary
+        public Dictionary<string, Func<string>> ReplacementDictionary
         {
             get => _replacementDictionary;
             set
@@ -55,7 +55,7 @@ namespace TONX
                 else _replacementDictionary = value;
             }
         }
-        private Dictionary<string, string> _replacementDictionary;
+        private Dictionary<string, Func<string>> _replacementDictionary;
 
         // 設定値情報 (オプションの値に関わる情報)
         public int[] AllValues { get; private set; } = new int[NumPresets];
@@ -169,7 +169,7 @@ namespace TONX
             => Do(i => UpdateValueEvent += handler);
 
         // 置き換え辞書
-        public OptionItem AddReplacement((string key, string value) kvp)
+        public OptionItem AddReplacement((string key, Func<string> value) kvp)
             => Do(i =>
             {
                 ReplacementDictionary ??= new();

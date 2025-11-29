@@ -77,7 +77,7 @@ public static class Translator
         }
     }
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false)
+    public static string GetString(string s, Dictionary<string, Func<string>> replacementDic = null, bool console = false)
     {
         var langId = TranslationController.Instance?.currentLanguage?.languageID ?? GetUserLangByRegion();
         if (Main.ForceOwnLanguage.Value) langId = GetUserLangByRegion();
@@ -85,7 +85,7 @@ public static class Translator
         string str = GetString(s, langId);
         if (replacementDic != null)
             foreach (var rd in replacementDic)
-                str = str.Replace(rd.Key, rd.Value);
+                str = str.Replace(rd.Key, rd.Value.Invoke());
         return str;
     }
 
