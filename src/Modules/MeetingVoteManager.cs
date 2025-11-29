@@ -123,7 +123,8 @@ public class MeetingVoteManager
     /// <param name="target2">被换玩家2</param>
     private void SwapVote(byte target1, byte target2)
     {
-        if ((Utils.GetPlayerById(target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(target2)?.Data?.IsDead ?? true)) return;
+        var (pc1, pc2) = (Utils.GetPlayerById(target1), Utils.GetPlayerById(target2));
+        if ((pc1?.Data?.IsDead ?? true) || (pc2?.Data?.IsDead ?? true)) return;
 
         foreach (var kvp in AllVotes)
         {
@@ -131,9 +132,9 @@ public class MeetingVoteManager
             else if (kvp.Value.VotedFor == target2) SetVote(kvp.Key, target1, kvp.Value.NumVotes);
         }
 
-        logger.Info($"Swap {Utils.GetPlayerById(target1)?.Data?.PlayerName} with {Utils.GetPlayerById(target2)?.Data?.PlayerName}");
+        logger.Info($"Swap {pc1.Data.PlayerName} with {pc2.Data.PlayerName}");
         Utils.SendMessage(
-            string.Format(GetString("SwapVote"), Utils.GetPlayerById(target1).GetRealName(), Utils.GetPlayerById(target2).GetRealName()),
+            string.Format(GetString("SwapVote"), pc1.GetRealName(), pc2.GetRealName()),
             255,
             Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapVoteTitle"))
         );

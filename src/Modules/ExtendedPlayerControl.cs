@@ -71,10 +71,12 @@ static class ExtendedPlayerControl
 
         player.RpcSetCustomRole(newRole);
         AddOnsAssignData.RemoveImcompatibleAddons(player);
+
         player.ResetKillCooldown();
         player.SyncSettings();
         player.SetKillCooldown();
         Utils.RecordPlayerRoles(player.PlayerId);
+
         if (!refreshTasks) return;
         PlayerState.GetByPlayerId(player.PlayerId).InitTask(player);
         GameData.Instance.RecomputeTaskCounts();
@@ -128,6 +130,8 @@ static class ExtendedPlayerControl
         player.SyncSettings();
         player.SetKillCooldown();
         player.RpcResetAbilityCooldown();
+
+        player.RpcSetPet(Camouflage.PlayerSkins[player.PlayerId].PetId); // 用于解决原版宠物bug
         if (Camouflage.IsCamouflage) Camouflage.RpcSetSkin(player);
 
         Utils.NotifyRoles(SpecifySeer: player);
@@ -510,7 +514,7 @@ static class ExtendedPlayerControl
     public static void RpcExileV2(this PlayerControl player)
     {
         player.Exiled();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void MurderPlayer(this PlayerControl killer, PlayerControl target)

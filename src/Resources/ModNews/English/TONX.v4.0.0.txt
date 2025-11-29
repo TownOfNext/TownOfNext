@@ -2,7 +2,7 @@
 #Title:TownOfNext v4.0.0
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v4.0.0
-#Date:2025-11-31T00:00:00Z
+#Date:2025-11-30T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -19,9 +19,15 @@
 
 ## Fix
 - Fix a bug where the Collator's skill cooldown is not reset correctly
+- Fix a bug where players' pets disappear after being revived
+- Fix a bug where some roles can not pick players by typing color names in the command
 
 ## Changing
 - Modded clients now use the laptop during games to switch ship styles
 
 ## New Feature
 - Option: Enable Vanilla Impostors Amount Limit
+
+## New Role
+- Crewmate: Swapper
+- Neutral: Doomsayer

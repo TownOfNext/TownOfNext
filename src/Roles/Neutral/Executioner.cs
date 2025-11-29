@@ -148,7 +148,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
     }
     public void ChangeRole()
     {
-        Player.RpcSetCustomRole(ChangeRolesAfterTargetKilled);
+        Player.RpcChangeRole(ChangeRolesAfterTargetKilled);
         Utils.NotifyRoles();
     }
 
