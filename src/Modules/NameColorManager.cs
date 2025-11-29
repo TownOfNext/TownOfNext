@@ -45,6 +45,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Jackal)) color = CustomRoles.Jackal.GetRoleInfo().RoleColorCode;
 
         // 魅魔阵营
+        if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
         if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Charmed];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];
