@@ -22,6 +22,7 @@ public static class InGameRoleInfoMenu
 
     public static void Init()
     {
+        var ratio = Utils.GetAspectRatio(Screen.width, Screen.height);
         var DOBScreen = AccountManager.Instance.transform.FindChild("DOBEnterScreen");
 
         Fill = new("TONX Role Info Menu Fill") { layer = 5 };
@@ -38,7 +39,7 @@ public static class InGameRoleInfoMenu
         CloseButton = Menu.transform.FindChild("BackButton").GetComponent<PassiveButton>();
         CloseButton.gameObject.name = "CloseButton";
         CloseButton.transform.localScale = new(0.66f, 0.66f, 0.66f);
-        CloseButton.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 3f);
+        CloseButton.transform.localPosition = new(-2.3f * ratio, 0.8f, 3f);
         CloseButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().DestroyTranslator();
         CloseButton.transform.FindChild("Text_TMP").GetComponent<TextMeshPro>().text = GetString(StringNames.Close);
         CloseButton.OnClick = new();
@@ -50,15 +51,15 @@ public static class InGameRoleInfoMenu
         MainInfo = Menu.transform.FindChild("InfoText_TMP").gameObject;
         MainInfo.name = "Main Role Info";
         MainInfo.DestroyTranslator();
-        MainInfo.transform.localPosition = new(-2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.8f, 4f);
-        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 6f);
+        MainInfo.transform.localPosition = new(-2.3f * ratio, 0.8f, 4f);
+        MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * ratio, 6f);
         MainInfoTMP.alignment = TextAlignmentOptions.Left;
         MainInfoTMP.fontSize = 2f;
 
         AddonsInfo = Object.Instantiate(MainInfo, MainInfo.transform.parent);
         AddonsInfo.name = "Addons Info";
         AddonsInfo.DestroyTranslator();
-        AddonsInfo.transform.SetLocalX(2.3f * Utils.GetResolutionOffset(Screen.width, Screen.height));
+        AddonsInfo.transform.SetLocalX(2.3f * ratio);
         AddonsInfo.transform.localScale = new(0.7f, 0.7f, 0.7f);
     }
 
@@ -108,12 +109,12 @@ public static class InGameRoleInfoMenu
         public static void Postfix(int width, int height)
         {
             if (!Fill || !Menu) return;
-            var offset = Utils.GetResolutionOffset(width, height);
-            CloseButton.transform.SetLocalX(-2.3f * offset);
-            MainInfo.transform.SetLocalX(-2.3f * offset);
-            AddonsInfo.transform.SetLocalX(2.3f * offset);
-            MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 6f);
-            AddonsInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * offset, 6f);
+            var ratio = Utils.GetAspectRatio(width, height);
+            CloseButton.transform.SetLocalX(-2.3f * ratio);
+            MainInfo.transform.SetLocalX(-2.3f * ratio);
+            AddonsInfo.transform.SetLocalX(2.3f * ratio);
+            MainInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * ratio, 6f);
+            AddonsInfo.GetComponent<RectTransform>().sizeDelta = new(4.5f * ratio, 6f);
         }
     }
 }

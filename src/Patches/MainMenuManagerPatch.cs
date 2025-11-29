@@ -47,7 +47,7 @@ public class MainMenuManagerPatch
     public static void MainMenuManager_LateUpdate()
     {
         var asa1 = InviteButton?.GetComponent<PassiveButton>()?.GetComponent<AspectScaledAsset>() ?? null;
-        asa1?.ScaleObject(Utils.GetResolutionOffset(Screen.width, Screen.height));
+        asa1?.ScaleObject(Utils.GetAspectRatio(Screen.width, Screen.height));
 
         CustomPopup.Update();
 
@@ -56,7 +56,7 @@ public class MainMenuManagerPatch
         if (TitleLogoPatch.RightPanel != null)
         {
             var pos1 = TitleLogoPatch.RightPanel.transform.localPosition;
-            var pos3 = new Vector3(TitleLogoPatch.RightPanelOp.x * Utils.GetResolutionOffset(Screen.width, Screen.height), TitleLogoPatch.RightPanelOp.y, TitleLogoPatch.RightPanelOp.z);
+            var pos3 = new Vector3(TitleLogoPatch.RightPanelOp.x * Utils.GetAspectRatio(Screen.width, Screen.height), TitleLogoPatch.RightPanelOp.y, TitleLogoPatch.RightPanelOp.z);
             Vector3 lerp1 = Vector3.Lerp(pos1, ShowingPanel ? pos3 : TitleLogoPatch.RightPanelOp + new Vector3(20f, 0f, 0f), Time.deltaTime * (ShowingPanel ? 3f : 2f));
             if (ShowingPanel
                 ? TitleLogoPatch.RightPanel.transform.localPosition.x > pos3.x + 0.03f

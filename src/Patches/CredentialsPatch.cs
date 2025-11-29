@@ -105,9 +105,9 @@ internal class VersionShowerStartPatch
         ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
         ap1.DistanceFromEdge = new(
 #if Android
-            2.2f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f
+            2.2f * Utils.GetAspectRatio(Screen.width, Screen.height), 0.1f
 #elif Windows
-            2.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f
+            2.0f * Utils.GetAspectRatio(Screen.width, Screen.height), 0.1f
 #endif
         );
     }
@@ -140,18 +140,19 @@ internal class TitleLogoPatch
 
     private static void Postfix(MainMenuManager __instance)
     {
+        var ratio = Utils.GetAspectRatio(Screen.width, Screen.height);
+
         GameObject.Find("BackgroundTexture")?.SetActive(!MainMenuManagerPatch.ShowedBak);
 
         if (!(ModStamp = GameObject.Find("ModStamp"))) return;
         ModStamp.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
 
-        var offset = (float)Screen.width / Screen.height / (16f / 9f);
         TONX_Background = new GameObject("TONX Background")
         {
             transform =
             {
                 position = new Vector3(0, 0, 520f),
-                localScale = new Vector3(Mathf.Max(offset, 1),Mathf.Max(offset, 1),1)
+                localScale = new Vector3(Mathf.Max(ratio, 1),Mathf.Max(ratio, 1),1)
             }
         };
         var bgRenderer = TONX_Background.AddComponent<SpriteRenderer>();
@@ -217,7 +218,7 @@ internal class TitleLogoPatch
 
         CloseRightButton = new GameObject("CloseRightPanelButton");
         CloseRightButton.transform.SetParent(RightPanel.transform);
-        CloseRightButton.transform.localPosition = new Vector3(-4.78f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.3f, 1f);
+        CloseRightButton.transform.localPosition = new Vector3(-4.78f * ratio, 1.3f, 1f);
         CloseRightButton.transform.localScale = new(1f, 1f, 1f);
         CloseRightButton.AddComponent<BoxCollider2D>().size = new(0.6f, 1.5f);
         var closeRightSpriteRenderer = CloseRightButton.AddComponent<SpriteRenderer>();
@@ -235,7 +236,7 @@ internal class TitleLogoPatch
         var ttap = Tint.GetComponent<AspectPosition>();
         if (ttap) Object.Destroy(ttap);
         Tint.transform.SetParent(RightPanel.transform);
-        Tint.transform.localPosition = new Vector3(-0.0824f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.0513f, Tint.transform.localPosition.z);
+        Tint.transform.localPosition = new Vector3(-0.0824f * ratio, 0.0513f, Tint.transform.localPosition.z);
         Tint.transform.localScale = new Vector3(1f, 1f, 1f);
 
         if (!DebugModeManager.AmDebugger)
@@ -255,7 +256,7 @@ internal class TitleLogoPatch
 
         if (!(Sizer = GameObject.Find("Sizer"))) return;
         if (!(AULogo = GameObject.Find("LOGO-AU"))) return;
-        Sizer.transform.localPosition = new Vector3(-4.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 1.4f, -1.0f);
+        Sizer.transform.localPosition = new Vector3(-4.0f * ratio, 1.4f, -1.0f);
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
@@ -265,7 +266,7 @@ internal class TitleLogoPatch
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);
 
         var mainButtonsobj = GameObject.Find("Main Buttons");
-        mainButtonsobj.transform.position = new Vector3(-3.4f * Utils.GetResolutionOffset(Screen.width, Screen.height), mainButtonsobj.transform.position.y, mainButtonsobj.transform.position.z);
+        mainButtonsobj.transform.position = new Vector3(-3.4f * ratio, mainButtonsobj.transform.position.y, mainButtonsobj.transform.position.z);
     }
 }
 [HarmonyPatch(typeof(ModManager), nameof(ModManager.LateUpdate))]
@@ -302,19 +303,19 @@ internal class ResolutionManagerPatch
     public static void Postfix(int width, int height)
     {
         if (GameObject.Find("MainUI") == null) return;
-        var offset = Utils.GetResolutionOffset(width, height);
-        TitleLogoPatch.TONX_Background.transform.localScale = new Vector3(Mathf.Max(offset, 1), Mathf.Max(offset, 1), 1);
-        TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * offset, 1.3f, 1.0f);
-        TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * offset, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
-        TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * offset, 1.4f, -1.0f);
+        var ratio = Utils.GetAspectRatio(width, height);
+        TitleLogoPatch.TONX_Background.transform.localScale = new Vector3(Mathf.Max(ratio, 1), Mathf.Max(ratio, 1), 1);
+        TitleLogoPatch.CloseRightButton.transform.localPosition = new Vector3(-4.78f * ratio, 1.3f, 1.0f);
+        TitleLogoPatch.Tint.transform.localPosition = new Vector3(-0.0824f * ratio, 0.0513f, TitleLogoPatch.Tint.transform.localPosition.z);
+        TitleLogoPatch.Sizer.transform.localPosition = new Vector3(-4.0f * ratio, 1.4f, -1.0f);
         var mainButtons = GameObject.Find("Main Buttons");
-        mainButtons.transform.position = new Vector3(-3.4f * offset, mainButtons.transform.position.y, mainButtons.transform.position.z);
+        mainButtons.transform.position = new Vector3(-3.4f * ratio, mainButtons.transform.position.y, mainButtons.transform.position.z);
         MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
         VersionShowerStartPatch.VersionShower.GetComponent<AspectPosition>().DistanceFromEdge = 
 #if Android
-            new(2.2f * offset, 0.1f);
+            new(2.2f * ratio, 0.1f);
 #elif Windows
-            new(2.0f * offset, 0.1f);
+            new(2.0f * ratio, 0.1f);
 #endif
     }
 }

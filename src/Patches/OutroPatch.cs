@@ -93,7 +93,7 @@ class SetEverythingUpPatch
 
         __instance.WinText.alignment = TextAlignmentOptions.Right;
         var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
-        WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f * Utils.GetResolutionOffset(Screen.width, Screen.height), __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
+        WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f * Utils.GetAspectRatio(Screen.width, Screen.height), __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
         WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
         var WinnerText = WinnerTextObject.GetComponent<TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
         WinnerText.fontSizeMin = 3f;
@@ -151,7 +151,7 @@ class SetEverythingUpPatch
         showHideButton = new SimpleButton(
             __instance.transform,
             "ShowHideResultsButton",
-            new(-4.5f * Utils.GetResolutionOffset(Screen.width, Screen.height), 2.6f, -14f),  // BackgroundLayer(z=-13)より手前
+            new(-4.5f * Utils.GetAspectRatio(Screen.width, Screen.height), 2.6f, -14f),  // BackgroundLayer(z=-13)より手前
             new(0, 136, 209, byte.MaxValue),
             new(0, 196, byte.MaxValue, byte.MaxValue),
             () =>
