@@ -70,9 +70,11 @@ internal class PingTrackerUpdatePatch
 internal class VersionShowerStartPatch
 {
     public static VersionShower VersionShower;
+    public static string VersionShowerText;
     private static void Postfix(VersionShower __instance)
     {
         VersionShower = __instance;
+        VersionShowerText = VersionShower.text.text;
 
         TMPTemplate.SetBase(__instance.text);
         Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
@@ -92,6 +94,7 @@ internal class VersionShowerStartPatch
         if (Main.hasArgumentException && ErrorText.Instance != null)
             ErrorText.Instance.AddError(ErrorCode.Main_DictionaryError);
 
+        UpdateVersionShowerText();
         ModUpdater.UpdateVisitCount();
 
         if (GameObject.Find("MainUI") == null) return;
@@ -107,6 +110,14 @@ internal class VersionShowerStartPatch
             2.0f * Utils.GetResolutionOffset(Screen.width, Screen.height), 0.1f
 #endif
         );
+    }
+    public static void UpdateVersionShowerText()
+    {
+        if (!VersionShower) return;
+        var count = ModUpdater.visit_count;
+        VersionShower.text.text = VersionShowerText + "\n" + $"{(count > 0
+            ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, count)
+            : GetString("ConnectToTONXServerFailed"))}";
     }
 }
 

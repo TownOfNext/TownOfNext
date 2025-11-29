@@ -330,14 +330,7 @@ public class ModUpdater
     public static async void UpdateVisitCount()
     {
         visit_count = await GetVisitCount();
-        new LateTask(() => // 利用LateTask使UI相关操作在主线程进行
-        {
-            var shower = VersionShowerStartPatch.VersionShower;
-            if (!shower) return;
-            shower.text.text += "\n" + $"{(visit_count > 0
-                ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, visit_count)
-                : GetString("ConnectToTONXServerFailed"))}";
-        }, 0f, "UpdateVisitCount");
+        new LateTask(VersionShowerStartPatch.UpdateVersionShowerText, 0f, "UpdateVisitCount"); // 利用LateTask使UI相关操作在主线程进行
     }
     private static async Task<int> GetVisitCount()
     {
