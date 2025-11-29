@@ -6,7 +6,7 @@
 #-----------------------------
 
 ## Base
-- Base on AmongUs v17.0.1
+- Base on AmongUs v17.1.0
 - Base on TOH v5.1.14
 
 ## Warning
