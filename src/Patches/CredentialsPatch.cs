@@ -2,6 +2,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using TONX.Templates;
+using TONX.Modules;
 using Object = UnityEngine.Object;
 
 namespace TONX;
@@ -93,6 +94,8 @@ internal class VersionShowerStartPatch
         ErrorText.Create(__instance.text);
         if (Main.hasArgumentException && ErrorText.Instance != null)
             ErrorText.Instance.AddError(ErrorCode.Main_DictionaryError);
+        
+        VersionChecker.Check();
 
         UpdateVersionShowerText();
         ModUpdater.UpdateVisitCount();
