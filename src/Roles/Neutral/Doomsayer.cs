@@ -183,7 +183,7 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     }
     public bool OnCheckGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, ref string reason)
     {
-        if (HasWrongGuess)
+        if (HasWrongGuess && OptionForbidGuessIfWrongThisMeeting.GetBool())
         {
             reason = GetString("DoomsayerGuessForbidden");
             return false;
