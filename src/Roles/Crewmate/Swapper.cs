@@ -57,7 +57,6 @@ public sealed class Swapper : RoleBase, IMeetingButton
     public override void OnStartMeeting()
     {
         Targets.Clear();
-        SendRpc();
     }
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
@@ -92,7 +91,7 @@ public sealed class Swapper : RoleBase, IMeetingButton
             var btn = pva?.transform?.FindChild("Custom Meeting Button")?.gameObject;
             if (!btn) continue;
             if (Targets.Contains(pva.TargetPlayerId)) btn.GetComponent<SpriteRenderer>().color = Color.green;
-            else btn.GetComponent<SpriteRenderer>().color = Targets.Count == 2 ? Color.gray : Color.white;
+            else btn.GetComponent<SpriteRenderer>().color = Targets.Count == 2 ? Color.gray : Color.red;
         }
     }
     private bool Swap(PlayerControl target, out string reason)
