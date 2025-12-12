@@ -50,7 +50,7 @@ class CloseDoorsPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)]SystemTypes room)
     {
-        return (!Options.CurrentGameMode.GetModeClass()?.OnCloseDoors(room) ?? true) && !Options.DisableSabotage.GetBool();
+        return (Options.CurrentGameMode.GetModeClass()?.OnCloseDoors(room) ?? true) && !Options.DisableSabotage.GetBool();
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
