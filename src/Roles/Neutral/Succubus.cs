@@ -75,7 +75,7 @@ public sealed class Succubus : RoleBase, IKiller
     public bool CanUseSabotageButton() => false;
     private void SendRPC()
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write(CharmLimit);
     }
     public override void ReceiveRPC(MessageReader reader)

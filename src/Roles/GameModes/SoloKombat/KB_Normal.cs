@@ -58,7 +58,7 @@ public sealed class KB_Normal : RoleBase, IKiller
 
     private void SendRPCSyncKBPlayer()
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write((byte)RoleRpcType.SyncKBPlayer);
         sender.Writer.Write(_HPMax);
         sender.Writer.Write(_HP);
@@ -69,7 +69,7 @@ public sealed class KB_Normal : RoleBase, IKiller
     }
     private void SendRPCSyncKBBackCountdown()
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write((byte)RoleRpcType.SyncKBBackCountdown);
         sender.Writer.Write(_BackCountdown);
     }
@@ -113,7 +113,7 @@ public sealed class KB_Normal : RoleBase, IKiller
         }
         if (_BackCountdown > 0)
         {
-            player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown));
+            player.Notify(string.Format(GetString("KBBackCountDown"), _BackCountdown), 1f);
         }
         Utils.NotifyRoles(player);
     }
@@ -195,7 +195,7 @@ public sealed class KB_Normal : RoleBase, IKiller
             case 1:
                 addin = HPReco * addRate * 2;
                 HPReco += addin;
-                killer.Notify( string.Format(GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
+                killer.Notify(string.Format(GetString("KB_Buff_HPReco"), addin.ToString("0.0#####")));
                 break;
             case 2:
                 addin = ATK * addRate;

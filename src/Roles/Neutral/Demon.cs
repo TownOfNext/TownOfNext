@@ -77,7 +77,7 @@ public sealed class Demon : RoleBase, IKiller
     public bool CanUseKillButton() => Player.IsAlive();
     private void SendRPC(byte id)
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write(Player.PlayerId);
         sender.Writer.Write(id);
         sender.Writer.Write(Player.PlayerId == id ? DemonHP : PlayerHP[id]);

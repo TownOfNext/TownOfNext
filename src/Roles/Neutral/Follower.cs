@@ -81,7 +81,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
     public bool CanUseSabotageButton() => false;
     private void SendRPC()
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write(BetLimit);
         sender.Writer.Write(BetTarget);
     }

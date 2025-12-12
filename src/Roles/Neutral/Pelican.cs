@@ -63,7 +63,7 @@ public sealed class Pelican : RoleBase, IKiller
     public bool CanUseKillButton() => Player.IsAlive();
     private void SendRPC()
     {
-        var sender = CreateSender();
+        using var sender = CreateSender();
         sender.Writer.Write(EatenPlayers.Count);
         EatenPlayers.Do(sender.Writer.Write);
     }
