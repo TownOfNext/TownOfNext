@@ -1,6 +1,6 @@
 namespace TONX;
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
+/*[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
 class ShipFixedUpdatePatch
 {
     public static void Postfix(ShipStatus __instance)
@@ -9,7 +9,7 @@ class ShipFixedUpdatePatch
         if (!AmongUsClient.Instance.AmHost) return;
         //ここより下、ホストのみが実行する
     }
-}
+}*/
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
 class ShipStatusUpdateSystemPatch
 {

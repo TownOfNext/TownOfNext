@@ -186,6 +186,26 @@ public static class SpawnInMinigameSpawnAtPatch
         }
         PlayerState.GetByPlayerId(player.PlayerId).HasSpawned = true;
     }
+    public static void Spawn(byte mapId, PlayerControl SpecifyPlayer = null, bool includeAirship = true)
+    {
+        var playerList = Main.AllPlayerControls.ToList();
+        if (SpecifyPlayer != null)
+        {
+            playerList = new();
+            playerList.Add(SpecifyPlayer);
+        }
+        SpawnMap map;
+        map = mapId switch
+        {
+            0 => new SkeldSpawnMap(),
+            1 => new MiraHQSpawnMap(),
+            2 => new PolusSpawnMap(),
+            4 when includeAirship => new AirshipSpawnMap(),
+            5 => new FungleSpawnMap(),
+            _ => null
+        };
+        if (map != null) playerList.Do(map.RandomTeleport);
+    }
     public static bool IsRandomSpawn()
     {
         if (Options.CurrentGameMode.GetModeClass()?.ShouldRandomSpawn() ?? false) return true;

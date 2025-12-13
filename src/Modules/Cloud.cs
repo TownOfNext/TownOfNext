@@ -115,7 +115,7 @@ internal class Cloud
         }
         EacClientSocket.Send(Encoding.Default.GetBytes(msg));
     }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+    /*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class EACConnectTimeOut
     {
         public static void Postfix()
@@ -127,5 +127,5 @@ internal class Cloud
                 Logger.Warn("超时自动断开与TONX服务器的连接", "EAC Cloud");
             }
         }
-    }
+    }*/
 }

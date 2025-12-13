@@ -214,33 +214,6 @@ public sealed class KB_Normal : RoleBase, IKiller
         player.MarkDirtySettings();
         RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
         player.SetKillCooldown();
-        PlayerRandomSpawn();
-    }
-    private void PlayerRandomSpawn()
-    {
-        RandomSpawn.SpawnMap map;
-        switch (Main.NormalOptions.MapId)
-        {
-            case 0:
-                map = new RandomSpawn.SkeldSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 1:
-                map = new RandomSpawn.MiraHQSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 2:
-                map = new RandomSpawn.PolusSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 4:
-                map = new RandomSpawn.AirshipSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-            case 5:
-                map = new RandomSpawn.FungleSpawnMap();
-                map.RandomTeleport(Player);
-                break;
-        }
+        RandomSpawn.Spawn(Main.NormalOptions.MapId, Player);
     }
 }

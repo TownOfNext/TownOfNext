@@ -64,7 +64,7 @@ public sealed class SoloKombat : GameModeBase
 
     public override string GetLobbyUpperTag() => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>";
     public override List<byte> ArrangedSummaryText(List<byte> clone) => clone.OrderBy(GetRankOfScore).ToList();
-    public override (bool, bool, bool, float) GetSummaryTextContent() => (false, false, false, 6.5f);
+    public override (bool, bool, bool, float) GetSummaryTextContent() => (false, true, false, 6.5f);
     public override bool OnSendRolesInfo(string input, byte playerId)
     {
         Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
@@ -195,7 +195,7 @@ public sealed class SoloKombat : GameModeBase
         try
         {
             int ms = KBScore[playerId];
-            int rank = 1 + KBScore.Values.Where(x => x > ms).Count();
+            int rank = 1 + KBScore.Values.Count(x => x > ms);
             rank += KBScore.Where(x => x.Value == ms).ToList().IndexOf(new(playerId, ms));
             return rank;
         }

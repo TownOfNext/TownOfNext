@@ -63,7 +63,7 @@ class DisconnectInternalPatch
         ErrorText.Instance.CheatDetected = false;
         ErrorText.Instance.SBDetected = false;
         ErrorText.Instance.Clear();
-        Cloud.StopConnect();
+        // Cloud.StopConnect();
 
         if (AmongUsClient.Instance.AmHost && GameStates.InGame)
             GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
