@@ -305,10 +305,7 @@ internal class RPCHandlerPatch
                 CustomRoleManager.DispatchRpc(reader);
                 break;
             case CustomRPC.SyncRolesRecord:
-                Main.RolesRecord = new();
-                int num2 = reader.ReadInt32();
-                for (int i = 0; i < num2; i++)
-                    Main.RolesRecord.TryAdd(reader.ReadByte(), reader.ReadString());
+                Utils.SyncRolesRecord(reader.ReadByte());
                 break;
             case CustomRPC.RemoveSubRole:
                 byte CustomRoleTargetId2 = reader.ReadByte();
@@ -560,16 +557,11 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         NotificationPopperPatch.AddItem(text);
     }
-    public static void SyncRolesRecord()
+    public static void SyncRolesRecord(byte playerId)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRolesRecord, SendOption.Reliable, -1);
-        writer.Write(Main.RolesRecord.Count);
-        foreach (var rec in Main.RolesRecord)
-        {
-            writer.Write(rec.Key);
-            writer.Write(rec.Value);
-        }
+        writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncTaskState(byte playerId, int allTasksCount, int completedTasksCount, bool hastasks)

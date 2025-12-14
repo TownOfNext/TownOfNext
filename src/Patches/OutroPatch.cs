@@ -22,6 +22,7 @@ class EndGamePatch
         Logger.Info("-----------游戏结束-----------", "Phase");
         if (!GameStates.IsModHost) return;
         SummaryText = new();
+        Utils.CalculateLongestByteCount();
         foreach (var id in PlayerState.AllPlayerStates.Keys)
             SummaryText[id] = Utils.SummaryTexts(id, false);
 
@@ -188,6 +189,8 @@ class SetEverythingUpPatch
             parent: showHideButton.Button.transform);
         roleSummary.transform.localPosition = new(1.7f, -0.4f, 0f);
         roleSummary.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+
+        CustomGameModeManager.Dispose();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

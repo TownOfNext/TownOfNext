@@ -876,25 +876,9 @@ public static class Utils
         }
         return GetPlayerById(id);
     }
-
-    public static void ShowHelpToClient(byte ID)
+    public static void ShowHelp(byte ID, bool toHost)
     {
-        SendMessage(
-            "<color=#c06fe8>" + GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + "<color=#12bee4>" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            , ID);
-    }
-    public static void ShowHelp(byte ID)
-    {
-        SendMessage(
-            "<color=#c06fe8>" + GetString("CommandList")
+        var txt = "<color=#c06fe8>" + GetString("CommandList")
             + $"\n  ○ /n {GetString("Command.now")}"
             + $"\n  ○ /r {GetString("Command.roles")}"
             + $"\n  ○ /m {GetString("Command.myrole")}"
@@ -903,8 +887,8 @@ public static class Utils
             + "\n\n" + "<color=#12bee4>" + GetString("CommandOtherList")
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + "\n\n" + "<color=#f14d57>" + GetString("CommandHostList")
+            + $"\n  ○ /qt {GetString("Command.quit")}";
+        if (toHost) txt += "\n\n" + "<color=#f14d57>" + GetString("CommandHostList")
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
             + $"\n  ○ /kill {GetString("Command.kill")}"
@@ -913,8 +897,8 @@ public static class Utils
             + $"\n  ○ /id {GetString("Command.idlist")}"
             // + $"\n  ○ /qq {GetString("Command.qq")}"
             + $"\n  ○ /dump {GetString("Command.dump")}"
-            + $"\n  ○ /up {GetString("Command.up")}"
-            , ID);
+            + $"\n  ○ /up {GetString("Command.up")}";
+        SendMessage(txt, ID);
     }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false)
     {
@@ -1260,11 +1244,28 @@ public static class Utils
     public static void RecordPlayerRoles(byte id)
     {
         if (!Main.CanRecord) return;
+        RPC.SyncRolesRecord(id);
+        SyncRolesRecord(id);
+    }
+    public static void SyncRolesRecord(byte id)
+    {
         if (!Main.RolesRecord.TryAdd(id, "")) Main.RolesRecord[id] += " → ";
         Main.RolesRecord[id] = Main.RolesRecord[id] + GetTrueRoleName(id, false) + GetSubRolesText(id);
-        RPC.SyncRolesRecord();
     }
     public static List<string> ChatSummary = Enumerable.Repeat(string.Empty, 15).ToList();
+    public static (int Name, int Progress, int Kills, int Vital, int Killer) LongestByteCount = (0, 0, 0, 0, 0);
+    public static void CalculateLongestByteCount()
+    {
+        // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
+        // 1em ≒ 2个半角字符
+        // 空格是0.5em
+        // SJIS的字母是一个字节，日语、汉语基本上是两个字节
+        LongestByteCount.Name = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        LongestByteCount.Progress = Main.AllPlayerNames.Keys.Select(id => GetProgressText(id).RemoveColorTags().GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        LongestByteCount.Kills = Main.AllPlayerNames.Keys.Select(id => GetKillCountText(id).RemoveColorTags().GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        LongestByteCount.Vital = Main.AllPlayerNames.Keys.Select(id => GetVitalText(id).RemoveColorTags().GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+        LongestByteCount.Killer = Main.AllPlayerNames.Keys.Select(id => GetKillerText(id).RemoveColorTags().GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+    }
     public static string SummaryTexts(byte id, bool isForChat)
     {
         var builder = new StringBuilder();
@@ -1273,45 +1274,40 @@ public static class Utils
         {
             return ChatSummary[id] ?? "";
         }
-        var (showKillCount, showVitalText, showKillerText, spaceBeforeRole) = Options.CurrentGameMode.GetModeClass()?.GetSummaryTextContent() ?? (true, true, true, 0f);
+        var (showKillCount, showVitalText, showKillerText) = Options.CurrentGameMode.GetModeClass()?.GetSummaryTextContent() ?? (true, true, true);
         builder.Append(Main.AllPlayerNames[id]);
         builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
         if (showKillCount) builder.Append(' ').Append(GetKillCountText(id).RemoveColorTags());
         if (showVitalText) builder.Append(' ').Append(GetVitalText(id));
         builder.Append(' ').Append(Main.RolesRecord.ContainsKey(id) ? Main.RolesRecord[id].RemoveColorTags() : "");
         ChatSummary[id] = builder.ToString();
+
         builder = new StringBuilder();
-        // 用玩家中最长的名字长度计算玩家名字后的文字的水平位置
-        // 1em ≒ 2个半角字符
-        // 空格是0.5em
-        // SJIS的字母是一个字节，日语、汉语基本上是两个字节
-        var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
-        //最大11.5emとする(★+日本語10文字分+半角空白)
-        var pos = Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
         builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
+        //最大11.5emとする(★+日本語10文字分+半角空白)
+        var pos = Math.Min(((float)LongestByteCount.Name / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
         builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
         // "(00/00) " = 4em
-        pos += 4f;
+        pos += ((float)LongestByteCount.Progress / 2) + 2.0f /* 4f */ ;
         if (showKillCount)
         {
             builder.AppendFormat("<pos={0}em>", pos).Append(GetKillCountText(id)).Append("</pos>");
             // "Kills: {0} " = 5.5em
             // "击杀：{0} " = 5em
-            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 5.5f : 5f;
+            pos += ((float)LongestByteCount.Kills / 2) + 2.0f /* 5f */ ;
         }
         if (showVitalText)
         {
             builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
             // "Lover's Suicide " = 8em
             // "断开连接 " = 4.5em
-            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 6f : 2.5f;
+            pos += ((float)LongestByteCount.Vital / 2) + 2.0f /* 2.5f */ ;
         }
         if (showKillerText)
         {
             builder.AppendFormat("<pos={0}em>", pos).Append(GetKillerText(id)).Append("</pos>");
-            pos += Math.Min(((float)longestNameByteCount / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
+            pos += ((float)LongestByteCount.Killer / 2) + 2.0f;
         }
-        pos += spaceBeforeRole;
         builder.AppendFormat("<pos={0}em>", pos);
         builder.Append(Main.RolesRecord.ContainsKey(id) ? Main.RolesRecord[id] : "");
         builder.Append("</pos>");

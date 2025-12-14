@@ -284,8 +284,6 @@ public class Main : BasePlugin
 
             foreach (var modeClassType in modeClassArray)
                 modeClassType.GetField("ModeInfo")?.GetValue(type2);
-
-            CustomGameModeManager.AllModesInfo.Values.Do(modeInfo => modeInfo.CreateInstance());
         }
         catch (ArgumentException ex)
         {

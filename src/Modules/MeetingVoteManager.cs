@@ -102,7 +102,7 @@ public class MeetingVoteManager
     /// 换票记录<br/>
     /// (换票师, 被换玩家1, 被换玩家2, 是否显示动画)<br/>
     /// </summary>
-    public List<(byte, byte, byte, bool)> SwappedPlayers = new();
+    public List<(byte Swapper, byte Target1, byte Target2, bool ShouldAnimate)> SwappedPlayers = new();
     /// <summary>
     /// 记录被换票的玩家
     /// </summary>
@@ -115,7 +115,7 @@ public class MeetingVoteManager
     /// 移除被换票的玩家
     /// </summary>
     /// <param name="swapper">换票师</param>
-    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers.RemoveAll(d => d.Item1 != swapper);
+    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers.RemoveAll(d => d.Swapper != swapper);
     /// <summary>
     /// 实行换票
     /// </summary>
@@ -155,7 +155,7 @@ public class MeetingVoteManager
     /// <param name="applyVoteMode">是否应用投票的设置</param>
     public void EndMeeting(bool applyVoteMode = true)
     {
-        SwappedPlayers.ForEach(swapped => SwapVote(swapped.Item2, swapped.Item3));
+        SwappedPlayers.ForEach(swapped => SwapVote(swapped.Target1, swapped.Target2));
         var result = CountVotes(applyVoteMode);
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
         logger.Info($"会议结束，结果：{logName}");

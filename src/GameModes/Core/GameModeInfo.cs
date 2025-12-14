@@ -11,6 +11,8 @@ public class GameModeInfo
     public string ModeColorCode;
     public int ConfigId;
     public OptionCreatorDelegate OptionCreator;
+    public Func<string> HostTag;
+    public (bool ShowModeDescription, bool ShowRoleDescription)? RolesHelp;
 
     private GameModeInfo(
         Type classType,
@@ -18,7 +20,9 @@ public class GameModeInfo
         CustomGameMode modeName,
         int configId,
         OptionCreatorDelegate optionCreator,
-        string colorCode
+        string colorCode,
+        Func<string> hostTag,
+        (bool, bool)? rolesHelp
     )
     {
         ClassType = classType;
@@ -26,11 +30,18 @@ public class GameModeInfo
         ModeName = modeName;
         ConfigId = configId;
         OptionCreator = optionCreator;
+        RolesHelp = rolesHelp;
 
         if (colorCode == "") colorCode = "#ffffff";
         ModeColorCode = colorCode;
 
         _ = ColorUtility.TryParseHtmlString(colorCode, out ModeColor);
+
+        hostTag ??= () => $"<color=#87cefa>{Main.PluginVersion}</color>";
+        HostTag = hostTag;
+
+        rolesHelp ??= (false, true);
+        RolesHelp = rolesHelp;
 
         CustomGameModeManager.AllModesInfo.Add(modeName, this);
     }
@@ -40,7 +51,9 @@ public class GameModeInfo
         CustomGameMode modeName,
         int configId,
         OptionCreatorDelegate optionCreator,
-        string colorCode = ""
+        string colorCode = "",
+        Func<string> hostTag = null,
+        (bool, bool)? roleshelp = null
     )
     {
         var modeInfo = new GameModeInfo(
@@ -49,7 +62,9 @@ public class GameModeInfo
                 modeName,
                 configId,
                 optionCreator,
-                colorCode
+                colorCode,
+                hostTag,
+                roleshelp
             );
         return modeInfo;
     }

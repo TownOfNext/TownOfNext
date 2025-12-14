@@ -14,7 +14,9 @@ public sealed class SoloKombat : GameModeBase
             CustomGameMode.SoloKombat,
             20_000_000,
             SetupCustomOption,
-            "#f55252"
+            "#f55252",
+            () => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
+            (true, false)
         );
     public SoloKombat() : base(ModeInfo)
     { }
@@ -51,7 +53,7 @@ public sealed class SoloKombat : GameModeBase
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
-    public override void Init()
+    public override void Add()
     {
         RoundTime = KB_GameTime.GetInt() + 8;
     }
@@ -62,14 +64,8 @@ public sealed class SoloKombat : GameModeBase
             RoleResult.Add(pc, pc.PlayerId == 0 && Options.EnableGM.GetBool() ? CustomRoles.GM : CustomRoles.KB_Normal);
     }
 
-    public override string GetLobbyUpperTag() => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>";
     public override List<byte> ArrangedSummaryText(List<byte> clone) => clone.OrderBy(GetRankOfScore).ToList();
-    public override (bool, bool, bool, float) GetSummaryTextContent() => (false, true, false, 6.5f);
-    public override bool OnSendRolesInfo(string input, byte playerId)
-    {
-        Utils.SendMessage(GetString("ModeDescribe.SoloKombat"), playerId);
-        return false;
-    }
+    public override (bool, bool, bool) GetSummaryTextContent() => (false, true, false);
 
     public override bool CanSeeOtherProgressText() => true;
     public override bool ShouldRandomSpawn() => true;

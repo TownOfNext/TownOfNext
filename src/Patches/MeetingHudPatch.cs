@@ -39,14 +39,14 @@ public static class MeetingHudPatch
         var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
         foreach (var data in swappedPlayers)
         {
-            if (!data.Item4) continue;
-            if ((Utils.GetPlayerById(data.Item2)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Item3)?.Data?.IsDead ?? true)) continue;
+            if (!data.ShouldAnimate) continue;
+            if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
 
             var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item2);
             var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item3);
             if (pva1 == null || pva2 == null) continue;
 
-            var time = 1.5f / swappedPlayers.Select(p => p.Item4).Count();
+            var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
             __instance.StartCoroutine(Effects.Slide3D(pva1.transform, pva1.transform.localPosition, pva2.transform.localPosition, time));
             __instance.StartCoroutine(Effects.Slide3D(pva2.transform, pva2.transform.localPosition, pva1.transform.localPosition, time));
             yield return new WaitForSeconds(time);

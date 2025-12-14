@@ -110,7 +110,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
             }),
             new(["h", "help"], () => CommandAccess.All, mc =>
             {
-                Utils.ShowHelp(mc.Player.PlayerId);
+                Utils.ShowHelp(mc.Player.PlayerId, mc.Player.PlayerId == PlayerControl.LocalPlayer.PlayerId);
                 return (MsgRecallMode.Block, null);
             }),
             new(["m", "myrole"], () => CommandAccess.All, mc =>
@@ -289,15 +289,27 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         RoleCommands.Add(CustomRoles.Mimic, new() { "mi", "寶箱怪", "宝箱" });
         RoleCommands.Add(CustomRoles.TicketsStealer, new() { "ts", "竊票者", "偷票", "偷票者", "窃票师", "窃票" });
     }
-    public static void SendRolesInfo(string input, byte playerId)
+    public static bool GeneralInfo(string input, byte playerId)
     {
-        if (!Options.CurrentGameMode.GetModeClass()?.OnSendRolesInfo(input, playerId)?? false)
+        if (Options.CurrentGameMode.GetModeInfo()?.RolesHelp?.ShowModeDescription ?? false)
         {
-            return;
+            Utils.SendMessage(GetString($"ModeDescribe.{Options.CurrentGameMode}"), playerId);
+        }
+        if (!Options.CurrentGameMode.GetModeInfo()?.RolesHelp?.ShowRoleDescription ?? false)
+        {
+            return false;
         }
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);
+            return false;
+        }
+        return true;
+    }
+    public static void SendRolesInfo(string input, byte playerId)
+    {
+        if (!GeneralInfo(input, playerId))
+        {
             return;
         }
         if (!GetRoleByInputName(input, out var role))
@@ -309,13 +321,8 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
     }
     public static void SpecifyRole(string input, byte playerId)
     {
-        if (!Options.CurrentGameMode.GetModeClass()?.OnSendRolesInfo(input, playerId) ?? false)
+        if (!GeneralInfo(input, playerId))
         {
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            Utils.ShowActiveRoles(playerId);
             return;
         }
         if (!GetRoleByInputName(input, out var role))

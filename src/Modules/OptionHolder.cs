@@ -40,11 +40,6 @@ public static class Options
             _ => CustomGameMode.Standard
         };
 
-    public static readonly string[] gameModes =
-    {
-        "Standard", "SoloKombat"
-    };
-
     // 地图启用
     public static bool IsActiveSkeld => AddedTheSkeld.GetBool() || Main.NormalOptions.MapId == 0;
     public static bool IsActiveMiraHQ => AddedMiraHQ.GetBool() || Main.NormalOptions.MapId == 1;
@@ -474,7 +469,7 @@ public static class Options
             .SetGameMode(CustomGameMode.All);
 
         // 游戏模式
-        GameMode = StringOptionItem.Create(1, "GameMode", gameModes, 0, TabGroup.GameSettings, false)
+        GameMode = StringOptionItem.Create(1, "GameMode", CustomGameModesHelper.AllModes.Select(m => m.ToString()).ToArray(), 0, TabGroup.GameSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.All);
 

@@ -69,6 +69,7 @@ class DisconnectInternalPatch
             GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
 
         CustomRoleManager.Dispose();
+        CustomGameModeManager.Dispose();
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]

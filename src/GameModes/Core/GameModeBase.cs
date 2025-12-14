@@ -3,19 +3,28 @@ using System.Text;
 
 namespace TONX.GameModes.Core;
 
-public abstract class GameModeBase
+public abstract class GameModeBase : IDisposable
 {
     public GameModeBase(GameModeInfo modeInfo)
     {
         CustomGameModeManager.AllModesClass.Add(modeInfo.ModeName, this);
     }
+    public void Dispose()
+    {
+        OnDestroy();
+        CustomGameModeManager.AllModesClass.Remove(Options.CurrentGameMode);
+    }
 
-    // == 初始化相关 ==
+    // == 实例相关 ==
     /// <summary>
-    /// 游戏开始初始化时调用<br/>
-    /// 所有动态变量都应使用该函数在游戏开始时重置<br/>
+    /// 创建实例后立刻调用的函数
     /// </summary>
-    public virtual void Init()
+    public virtual void Add()
+    { }
+    /// <summary>
+    /// 实例被销毁时调用的函数
+    /// </summary>
+    public virtual void OnDestroy()
     { }
 
     // == 职业分配相关 ==
@@ -91,17 +100,6 @@ public abstract class GameModeBase
 
     // == 字符串相关 ==
     /// <summary>
-    /// 获取大厅房主标签
-    /// </summary>
-    public virtual string GetLobbyUpperTag() => $"<color=#87cefa>{Main.PluginVersion}</color>";
-    /// <summary>
-    /// 查看职业设置时显示的内容
-    /// </summary>
-    /// <param name="input">输入内容</param>
-    /// <param name="playerId">玩家id</param>
-    /// <returns>返回false则不进行后续代码</returns>
-    public virtual bool OnSendRolesInfo(string input, byte playerId) => true;
-    /// <summary>
     /// 对复盘信息进行排序
     /// </summary>
     /// <param name="clone">当前复盘信息包含的所有玩家id</param>
@@ -109,9 +107,9 @@ public abstract class GameModeBase
     public virtual List<byte> ArrangedSummaryText(List<byte> clone) => clone;
     /// <summary>
     /// 复盘信息显示的内容<br/>
-    /// (是否显示击杀数量, 是否显示生命状态, 是否显示击杀者, 职业名前的附加空格)<br/>
+    /// (是否显示击杀数量, 是否显示生命状态, 是否显示击杀者)<br/>
     /// </summary>
-    public virtual (bool, bool, bool, float) GetSummaryTextContent() => (true, true, true, 0f);
+    public virtual (bool, bool, bool) GetSummaryTextContent() => (true, true, true);
 
     // == 编辑UI相关 ==
     /// <summary>
