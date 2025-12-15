@@ -14,12 +14,12 @@ class HudManagerInitializePatch
     [GameModuleInitializer]
     public static void CreateRoleInfoButton()
     {
-        if (!GameStates.IsModHost || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!GameStates.IsModHost || (!Options.CurrentGameMode.GetModeInfo()?.RolesHelp?.ShowRoleDescription ?? true)) return;
         var template = HudManager.Instance.MapButton;
         RoleInfoButton = UnityEngine.Object.Instantiate(template, template.transform.parent);
         RoleInfoButton.OnClick.AddListener((Action)(() =>
         {
-            if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && CustomGameMode.Standard.IsEnable())
+            if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && (Options.CurrentGameMode.GetModeInfo()?.RolesHelp?.ShowRoleDescription ?? false))
             {
                 if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
                 else

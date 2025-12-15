@@ -282,7 +282,7 @@ public class IntroCutscenePatch
                     pc.SyncSettings();
                     pc.RpcResetAbilityCooldown();
                 });
-                if (Options.FixFirstKillCooldown.GetBool() && CustomGameMode.Standard.IsEnable())
+                if (Options.FixFirstKillCooldown.GetBool())
                     _ = new LateTask(() =>
                     {
                         if (GameStates.IsInTask)
