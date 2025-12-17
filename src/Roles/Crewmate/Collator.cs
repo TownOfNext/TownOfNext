@@ -42,12 +42,17 @@ public sealed class Collator : RoleBase, IKiller
     }
     public int CollateLimit = 0;
     public float CurrentKillCooldown = 30;
-    public List<(byte, CustomRoleTypes)> Samples = new(); 
+    public List<(byte PlayerId, CustomRoleTypes CustomRoleType)> Samples = new(); 
     public static readonly string[] madTeamType =
     {
         "TeamImpostor",
         "TeamCrewmate"
     };
+    private enum RoleRpcType
+    {
+        SetCollatorCollateLimit,
+        SetCollatorCollated,
+    }
 
     private static void SetupOptionItem()
     {
@@ -62,14 +67,38 @@ public sealed class Collator : RoleBase, IKiller
         CurrentKillCooldown = OptionSampleCooldown.GetFloat();
         CollateLimit = OptionCollateLimit.GetInt();
     }
-    private void SendRPC()
+    private void SendRPC_SetCollateLimit()
     {
         using var sender = CreateSender();
+        sender.Writer.Write((byte)RoleRpcType.SetCollatorCollateLimit);
         sender.Writer.Write(CollateLimit);
+    }
+    private void SendRPC_SetCollated()
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write((byte)RoleRpcType.SetCollatorCollated);
+        sender.Writer.Write(Samples.Count);
+        for (int i = 0; i < Samples.Count; i++)
+        {
+            sender.Writer.Write(Samples[i].PlayerId);
+            sender.Writer.WritePacked((int)Samples[i].CustomRoleType);
+        }
     }
     public override void ReceiveRPC(MessageReader reader)
     {
-        CollateLimit = reader.ReadInt32();
+        var rpcType = (RoleRpcType)reader.ReadByte();
+        switch (rpcType)
+        {
+            case RoleRpcType.SetCollatorCollateLimit:
+                CollateLimit = reader.ReadInt32();
+                break;
+            case RoleRpcType.SetCollatorCollated:
+                int count = reader.ReadInt32();
+                Samples = new();
+                for (int i = 0; i < count; i++)
+                    Samples.Add((reader.ReadByte(), (CustomRoleTypes)reader.ReadPackedInt32()));
+                break;
+        }
     }
     public float CalculateKillCooldown() => CanUseKillButton() ? CurrentKillCooldown : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && CollateLimit > 0 && Samples.Count < 2;
@@ -80,12 +109,13 @@ public sealed class Collator : RoleBase, IKiller
     {
         if (CollateLimit < 1 || Samples.Count == 2) return false;
         var (killer, target) = info.AttemptTuple;
+        if (Samples.Select(s => s.PlayerId).Contains(target.PlayerId)) return false;
 
         var secondCollate = Samples.Count == 1;
         if (secondCollate)
         {
             CollateLimit--;
-            SendRPC();
+            SendRPC_SetCollateLimit();
         }
 
         var team = target.GetCustomRole().GetCustomRoleTypes();
@@ -96,6 +126,7 @@ public sealed class Collator : RoleBase, IKiller
         killer.SetKillCooldownV2();
 
         Samples.Add((target.PlayerId, team));
+        SendRPC_SetCollated();
 
         Logger.Info($"{killer.GetNameWithRole()}: 提取样本 => {target.GetNameWithRole()}", "Collator.OnCheckMurderAsKiller");
         if (secondCollate) Logger.Info($"{killer.GetNameWithRole()}: 剩余{CollateLimit}次提取机会", "Collator.OnCheckMurderAsKiller");
@@ -105,7 +136,7 @@ public sealed class Collator : RoleBase, IKiller
     {
         if (Samples.Count < 2) return;
         msgToSend.Add((
-            GetString("CollatorCheckMatch") + GetString(Samples[0].Item2 == Samples[1].Item2 ? "CollatorMatched" : "CollatorUnmatched"),
+            GetString("CollatorCheckMatch") + GetString(Samples[0].CustomRoleType == Samples[1].CustomRoleType ? "CollatorMatched" : "CollatorUnmatched"),
             Player.PlayerId,
             "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>"
         ));
@@ -115,7 +146,7 @@ public sealed class Collator : RoleBase, IKiller
     {
         seen ??= seer;
 
-        if (Samples.Select(p => p.Item1).ToList().Contains(seen.PlayerId))
+        if (Samples.Select(p => p.PlayerId).ToList().Contains(seen.PlayerId))
             return Utils.ColorString(RoleInfo.RoleColor, "●");
 
         return "";
@@ -123,6 +154,7 @@ public sealed class Collator : RoleBase, IKiller
     public override void AfterMeetingTasks()
     {
         Samples = new();
+        SendRPC_SetCollated();
     }
     public bool OverrideKillButtonText(out string text)
     {

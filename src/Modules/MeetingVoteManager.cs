@@ -115,7 +115,7 @@ public class MeetingVoteManager
     /// 移除被换票的玩家
     /// </summary>
     /// <param name="swapper">换票师</param>
-    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers.RemoveAll(d => d.Swapper != swapper);
+    public void RemoveSwappedPlayers(byte swapper) => SwappedPlayers.RemoveAll(d => d.Swapper == swapper);
     /// <summary>
     /// 实行换票
     /// </summary>

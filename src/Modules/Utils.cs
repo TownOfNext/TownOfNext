@@ -1285,7 +1285,7 @@ public static class Utils
         builder = new StringBuilder();
         builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
         //最大11.5emとする(★+日本語10文字分+半角空白)
-        var pos = Math.Min(((float)LongestByteCount.Name / 2) + 2.0f /* ★+末尾的全角空白 */ , 12.0f);
+        var pos = ((float)LongestByteCount.Name / 2) + 2.0f /* ★+末尾的全角空白 */ /* 12.0f */ ;
         builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
         // "(00/00) " = 4em
         pos += ((float)LongestByteCount.Progress / 2) + 2.0f /* 4f */ ;
