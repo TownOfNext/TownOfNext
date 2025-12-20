@@ -55,11 +55,11 @@ public static class Options
         "Rate0",  "Rate5",  "Rate10", "Rate20", "Rate30", "Rate40",
         "Rate50", "Rate60", "Rate70", "Rate80", "Rate90", "Rate100",
     };
-    public static readonly string[] RoleSpwanModes =
+    public static readonly string[] RoleSpawnModes =
     {
         "RoleOff", "RoleRate", "RoleOn"
     };
-    public static readonly string[] RoleSpwanToggle =
+    public static readonly string[] RoleSpawnToggle =
     {
         "RoleOff", "AddonEnabled"
     };
@@ -480,6 +480,7 @@ public static class Options
         CustomRoleSpawnChances = new();
 
         var sortedRoleInfo = CustomRoleManager.AllRolesInfo.Values.Where(role => role.Hidden == null).OrderBy(role => role.ConfigId);
+        var sortedAddonInfo = CustomRoleManager.AllAddonsInfo.Values.Where(role => role.Hidden == null).OrderBy(role => role.ConfigId);
 
         // 各职业的总体设定
         ImpRolesLimitEnabled = BooleanOptionItem.Create(1_000_001, "ImpRolesLimitEnabled", false, TabGroup.ImpostorRoles, false)
@@ -588,6 +589,12 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
         }
 
+        sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow).Do(info =>
+        {
+            SetupAddonOptions(info);
+            info.OptionCreator?.Invoke();
+        });
+
         // Experimental Roles
         if (!setupExpNow)
         {
@@ -610,29 +617,29 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         #endregion
 
-        Neptune.SetupCustomOption();
-        Watcher.SetupCustomOption();
-        Lighter.SetupCustomOption();
-        Seer.SetupCustomOption();
-        Flashman.SetupCustomOption();
-        Tiebreaker.SetupCustomOption();
-        Oblivious.SetupCustomOption();
-        Bewilder.SetupCustomOption();
-        Fool.SetupCustomOption();
-        Avenger.SetupCustomOption();
-        Egoist.SetupCustomOption();
-        Schizophrenic.SetupCustomOption();
-        Reach.SetupCustomOption();
-        Bait.SetupCustomOption();
-        Beartrap.SetupCustomOption();
+        // Neptune.SetupCustomOption();
+        // Watcher.SetupCustomOption();
+        // Lighter.SetupCustomOption();
+        // Seer.SetupCustomOption();
+        // Flashman.SetupCustomOption();
+        // Tiebreaker.SetupCustomOption();
+        // Oblivious.SetupCustomOption();
+        // Bewilder.SetupCustomOption();
+        // Fool.SetupCustomOption();
+        // Avenger.SetupCustomOption();
+        // Egoist.SetupCustomOption();
+        // Schizophrenic.SetupCustomOption();
+        // Reach.SetupCustomOption();
+        // Bait.SetupCustomOption();
+        // Beartrap.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
 
-        YouTuber.SetupCustomOption();
-        Workhorse.SetupCustomOption();
+        // YouTuber.SetupCustomOption();
+        // Workhorse.SetupCustomOption();
         SetupMadmateRoleOptionsToggle(80200);
 
         // 内鬼专属附加
@@ -640,9 +647,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Impostor));
 
-        LastImpostor.SetupCustomOption();
-        TicketsStealer.SetupCustomOption();
-        Mimic.SetupCustomOption();
+        // LastImpostor.SetupCustomOption();
+        // TicketsStealer.SetupCustomOption();
+        // Mimic.SetupCustomOption();
 
         #endregion
 
@@ -1125,16 +1132,25 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
+    public static void SetupAddonOptions(SimpleRoleInfo info)
+        => SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.RoleColor, assignMode: info.AssignMode);
     public static void SetupRoleOptions(SimpleRoleInfo info)
-        => SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.RoleColor);
-    public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, Color roleColor, IntegerValueRule assignCountRule = null, CustomGameMode customGameMode = CustomGameMode.Standard)
+        => SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.RoleColor, assignMode: info.AssignMode);
+    public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, Color roleColor, RoleAssignMode assignMode, IntegerValueRule assignCountRule = null, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         if (role.IsVanilla()) return;
         assignCountRule ??= role.GetRoleInfo().AssignCountRule ?? new(1, 15, 1);
+        string[] selections = assignMode switch
+        {
+            RoleAssignMode.Toggle => RoleSpawnToggle,
+            RoleAssignMode.Rate => Rates,
+            _ => RoleSpawnModes
+        };
 
         bool broken = role.GetRoleInfo()?.Broken ?? false;
+        bool canSetNum = assignCountRule.MinValue != assignCountRule.MaxValue;
 
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, RoleSpwanModes, role, roleColor)
+        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, roleColor)
             .SetColor(broken ? Palette.DisabledGrey : Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetAddDesc(broken ? Utils.ColorString(Palette.DisabledGrey, GetString("RoleBroken")) : "")
@@ -1143,6 +1159,7 @@ public static class Options
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false)
             .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
+            .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);
 
         CustomRoleSpawnChances.Add(role, spawnOption);
@@ -1151,7 +1168,7 @@ public static class Options
     private static void SetupMadmateRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var role = CustomRoles.Madmate;
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, RoleSpwanToggle, role, Utils.GetRoleColor(role))
+        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, RoleSpawnToggle, role, Utils.GetRoleColor(role))
             .SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;

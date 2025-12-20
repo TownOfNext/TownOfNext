@@ -72,7 +72,7 @@ class ExileControllerWrapUpPatch
             ActionsOnWrapUp.Do(f => f.Invoke());
             ActionsOnWrapUp = new();
 
-            foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
+            foreach (var roleClass in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
             {
                 roleClass.OnExileWrapUp(exiled, ref DecidedWinner);
             }

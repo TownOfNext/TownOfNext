@@ -508,8 +508,8 @@ static class ExtendedPlayerControl
     public static void ResetKillCooldown(this PlayerControl player)
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
-        if (player.PlayerId == LastImpostor.currentId)
-            LastImpostor.SetKillCooldown();
+        if (player.Is(CustomRoles.LastImpostor))
+            LastImpostor.SetKillCooldown(player);
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -613,7 +613,7 @@ static class ExtendedPlayerControl
         if (Options.DisableMeeting.GetBool()) return;
         Logger.Info($"{reporter.GetNameWithRole()} => {target?.Object?.GetNameWithRole() ?? "null"}", "NoCheckStartMeeting");
 
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+        foreach (var role in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
         {
             role.OnReportDeadBody(reporter, target);
         }

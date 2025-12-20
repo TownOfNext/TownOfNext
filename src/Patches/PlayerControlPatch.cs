@@ -414,7 +414,7 @@ class ReportDeadBodyPatch
 
         if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
 
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+        foreach (var role in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
         {
             if (role.OnCheckReportDeadBody(__instance, target) == false)
             {
@@ -439,7 +439,7 @@ class ReportDeadBodyPatch
         GameStates.InTask = false;
 
         Main.isFirstTurn = false;
-        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+        foreach (var role in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
         {
             role.OnReportDeadBody(__instance, target);
         }
@@ -901,7 +901,7 @@ public static class PlayerControlDiePatch
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            if (ShipStatus.Instance.enabled) CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role.OnPlayerDeath(__instance, PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
+            if (ShipStatus.Instance.enabled) CustomRoleManager.AllActiveRolesAndAddonsList.ToList().Do(role => role.OnPlayerDeath(__instance, PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
             // 死者の最終位置にペットが残るバグ対応
             __instance.RpcSetPet("");
         }

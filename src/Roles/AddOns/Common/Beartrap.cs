@@ -1,38 +1,42 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Beartrap
+public sealed class Beartrap : AddonBase
 {
-    private static readonly int Id = 81800;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Beartrap);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Beartrap),
+            player => new Beartrap(player),
+            CustomRoles.Beartrap,
+            81800,
+            SetupCustomOption,
+            "tra|陷阱師|陷阱|小奖",
+            "#5a8fd0"
+        );
+    public Beartrap(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    {
+        CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
+    }
 
     public static OptionItem OptionBlockMoveTime;
 
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Beartrap);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Beartrap, true, true, true);
-        OptionBlockMoveTime = FloatOptionItem.Create(Id + 20, "BeartrapBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Beartrap])
+        BeartrapBlockMoveTime
+    }
+
+    private static void SetupCustomOption()
+    {
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Beartrap, true, true, true);
+        OptionBlockMoveTime = FloatOptionItem.Create(RoleInfo, 20, OptionName.BeartrapBlockMoveTime, new(1f, 180f, 1f), 5f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    public static void OnMurderPlayerOthers(MurderInfo info)
+    private static void OnMurderPlayerOthers(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!playerIdList.Contains(target.PlayerId) || info.IsSuicide) return;
+        if (!target.Is(CustomRoles.Beartrap) || info.IsSuicide) return;
 
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
         Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeed����ۤɂ�������ΤǴ��뤷�Ƥ��ޤ���

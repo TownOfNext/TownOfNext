@@ -1,33 +1,35 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Flashman
+public sealed class Flashman : AddonBase
 {
-    private static readonly int Id = 80500;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Flashman);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Flashman),
+            player => new Flashman(player),
+            CustomRoles.Flashman,
+            80500,
+            SetupCustomOption,
+            "fl|閃電俠|闪电",
+            "#ff8400",
+            experimental: true
+        );
+    public Flashman(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
     public static OptionItem OptionSpeed;
 
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.OtherRoles, CustomRoles.Flashman);
-        AddOnsAssignData.Create(Id + 10, TabGroup.OtherRoles, CustomRoles.Flashman, true, true, true);
-        OptionSpeed = FloatOptionItem.Create(Id + 20, "FlashmanSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Flashman])
+        FlashmanSpeed
+    }
+
+    private static void SetupCustomOption()
+    {
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Flashman, true, true, true);
+        OptionSpeed = FloatOptionItem.Create(RoleInfo, 20, OptionName.FlashmanSpeed, new(0.25f, 5f, 0.25f), 2.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-
 }

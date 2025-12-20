@@ -1,51 +1,61 @@
-using TONX.Attributes;
-using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Crewmate;
-public static class Workhorse
+public sealed class Workhorse : AddonBase
 {
-    private static readonly int Id = 80400;
-    public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
-    public static List<byte> playerIdList = new();
-    private static OptionItem OptionAssignOnlyToCrewmate;
-    private static OptionItem OptionSnitchCanBeWorkhorse;
-    private static OptionItem OptionNumLongTasks;
-    private static OptionItem OptionNumShortTasks;
-    public static bool AssignOnlyToCrewmate;
-    public static bool SnitchCanBeWorkhorse;
-    public static int NumLongTasks;
-    public static int NumShortTasks;
-    public static void SetupCustomOption()
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Workhorse),
+            player => new Workhorse(player),
+            CustomRoles.Workhorse,
+            80400,
+            SetupCustomOption,
+            "wh|加班",
+            "#00ffff",
+            assignMode: RoleAssignMode.Toggle
+        );
+    public Workhorse(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Workhorse, RoleSpwanToggle, false);
-        OptionAssignOnlyToCrewmate = BooleanOptionItem.Create(Id + 10, "AssignOnlyToCrewmate", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
-        OptionSnitchCanBeWorkhorse = BooleanOptionItem.Create(Id + 13, "SnitchCanBeWorkhorse", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
-        OptionNumLongTasks = IntegerOptionItem.Create(Id + 11, "WorkhorseNumLongTasks", new(0, 5, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
-            .SetValueFormat(OptionFormat.Pieces);
-        OptionNumShortTasks = IntegerOptionItem.Create(Id + 12, "WorkhorseNumShortTasks", new(0, 5, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse])
-            .SetValueFormat(OptionFormat.Pieces);
-    }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-
         AssignOnlyToCrewmate = OptionAssignOnlyToCrewmate.GetBool();
         SnitchCanBeWorkhorse = OptionSnitchCanBeWorkhorse.GetBool();
         NumLongTasks = OptionNumLongTasks.GetInt();
         NumShortTasks = OptionNumShortTasks.GetInt();
     }
-    public static void Add(byte playerId)
+
+    private static OptionItem OptionAssignOnlyToCrewmate;
+    private static OptionItem OptionSnitchCanBeWorkhorse;
+    private static OptionItem OptionNumLongTasks;
+    private static OptionItem OptionNumShortTasks;
+    enum OptionName
     {
-        playerIdList.Add(playerId);
+        AssignOnlyToCrewmate,
+        SnitchCanBeWorkhorse,
+        WorkhorseNumLongTasks,
+        WorkhorseNumShortTasks
     }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
+    public static bool AssignOnlyToCrewmate;
+    public static bool SnitchCanBeWorkhorse;
+    public static int NumLongTasks;
+    public static int NumShortTasks;
+
+    private static void SetupCustomOption()
+    {
+        OptionAssignOnlyToCrewmate = BooleanOptionItem.Create(RoleInfo, 10, OptionName.AssignOnlyToCrewmate, true, false);
+        OptionSnitchCanBeWorkhorse = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SnitchCanBeWorkhorse, false, false);
+        OptionNumLongTasks = IntegerOptionItem.Create(RoleInfo, 11, OptionName.WorkhorseNumLongTasks, new(0, 5, 1), 1, false)
+            .SetValueFormat(OptionFormat.Pieces);
+        OptionNumShortTasks = IntegerOptionItem.Create(RoleInfo, 12, OptionName.WorkhorseNumShortTasks, new(0, 5, 1), 1, false)
+            .SetValueFormat(OptionFormat.Pieces);
+    }
+
     public static (bool, int, int) TaskData => (false, NumLongTasks, NumShortTasks);
     private static bool IsAssignTarget(PlayerControl pc)
     {
-        if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
+        if (!pc.IsAlive() || pc.Is(CustomRoles.Workhorse)) return false;
         var taskState = pc.GetPlayerTaskState();
         if (taskState.CompletedTasksCount < taskState.AllTasksCount) return false;
         if (!Utils.HasTasks(pc.Data)) return false;
@@ -56,7 +66,7 @@ public static class Workhorse
     }
     public static bool OnCompleteTask(PlayerControl pc)
     {
-        if (playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return true;
+        if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Workhorse)) >= CustomRoles.Workhorse.GetCount()) return true;
         if (!IsAssignTarget(pc)) return true;
 
         pc.RpcSetCustomRole(CustomRoles.Workhorse);
@@ -65,7 +75,6 @@ public static class Workhorse
 
         if (AmongUsClient.Instance.AmHost)
         {
-            Add(pc.PlayerId);
             pc.Data.RpcSetTasks(Array.Empty<byte>()); //タスクを再配布
             pc.SyncSettings();
             Utils.NotifyRoles();

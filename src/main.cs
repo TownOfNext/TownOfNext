@@ -243,47 +243,36 @@ public class Main : BasePlugin
 
                 //Add-Ons
                 {CustomRoles.NotAssigned, "#ffffff"},
-                {CustomRoles.LastImpostor, "#ff1919"},
                 {CustomRoles.Lovers, "#ff9ace"},
-                {CustomRoles.Neptune, "#00a4ff"},
                 {CustomRoles.Madmate, "#ff1919"},
-                {CustomRoles.Watcher, "#800080"},
-                {CustomRoles.Flashman, "#ff8400"},
-                {CustomRoles.Lighter, "#eee5be"},
-                {CustomRoles.Seer, "#61b26c"},
-                {CustomRoles.Tiebreaker, "#1447af"},
-                {CustomRoles.Oblivious, "#424242"},
-                {CustomRoles.Bewilder, "#c894f5"},
-                {CustomRoles.Workhorse, "#00ffff"},
-                {CustomRoles.Fool, "#e6e7ff"},
-                {CustomRoles.Avenger, "#ffab1b"},
-                {CustomRoles.YouTuber, "#fb749b"},
-                {CustomRoles.Egoist, "#5600ff"},
-                {CustomRoles.TicketsStealer, "#ff1919"},
-                {CustomRoles.Schizophrenic, "#3a648f"},
-                {CustomRoles.Mimic, "#ff1919"},
-                {CustomRoles.Reach, "#74ba43"},
                 {CustomRoles.Charmed, "#ff00ff"},
-                {CustomRoles.Bait, "#00f7ff"},
-                {CustomRoles.Beartrap, "#5a8fd0"},
             };
-            var type = typeof(RoleBase);
+            var roleType = typeof(RoleBase);
             var roleClassArray =
-            CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(type)
+            CustomRoleManager.AllRolesClassType = Assembly.GetAssembly(roleType)
                 .GetTypes()
-                .Where(x => x.IsSubclassOf(type)).ToArray();
+                .Where(x => x.IsSubclassOf(roleType)).ToArray();
 
             foreach (var roleClassType in roleClassArray)
-                roleClassType.GetField("RoleInfo")?.GetValue(type);
+                roleClassType.GetField("RoleInfo")?.GetValue(roleType);
 
-            var type2 = typeof(GameModeBase);
-            var modeClassArray =
-            CustomGameModeManager.AllModesClassType = Assembly.GetAssembly(type2)
+            var addonType = typeof(AddonBase);
+            var addonClassArray =
+            CustomRoleManager.AllAddonsClassType = Assembly.GetAssembly(addonType)
                 .GetTypes()
-                .Where(x => x.IsSubclassOf(type2)).ToArray();
+                .Where(x => x.IsSubclassOf(addonType)).ToArray();
+
+            foreach (var addonClassType in addonClassArray)
+                addonClassType.GetField("RoleInfo")?.GetValue(addonType);
+
+            var modeType = typeof(GameModeBase);
+            var modeClassArray =
+            CustomGameModeManager.AllModesClassType = Assembly.GetAssembly(modeType)
+                .GetTypes()
+                .Where(x => x.IsSubclassOf(modeType)).ToArray();
 
             foreach (var modeClassType in modeClassArray)
-                modeClassType.GetField("ModeInfo")?.GetValue(type2);
+                modeClassType.GetField("ModeInfo")?.GetValue(modeType);
         }
         catch (ArgumentException ex)
         {

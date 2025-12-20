@@ -1,45 +1,51 @@
-using TONX.Attributes;
 using TONX.Modules;
-using UnityEngine;
-using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Common;
-public static class Bait
+public sealed class Bait : AddonBase
 {
-    private static readonly int Id = 81700;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Bait);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Bait),
+            player => new Bait(player),
+            CustomRoles.Bait,
+            81700,
+            SetupCustomOption,
+            "ba|誘餌|大奖|头奖",
+            "#00f7ff"
+        );
+    public Bait(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    {
+        CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
+    }
 
     public static OptionItem OptionReportDelayMin;
     public static OptionItem OptionReportDelayMax;
     public static OptionItem OptionDelayNotifyForKiller;
 
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Bait);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Bait, true, true, true);
-        OptionReportDelayMin = FloatOptionItem.Create(Id + 20, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
-            .SetValueFormat(OptionFormat.Seconds);
-        OptionReportDelayMax = FloatOptionItem.Create(Id + 21, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
-            .SetValueFormat(OptionFormat.Seconds);
-        OptionDelayNotifyForKiller = BooleanOptionItem.Create(Id + 22, "BaitDelayNotify", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
+        BaitDelayMin,
+        BaitDelayMax,
+        BaitDelayNotify
+    }
 
-    }
-    [GameModuleInitializer]
-    public static void Init()
+    private static void SetupCustomOption()
     {
-        playerIdList = new();
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Bait, true, true, true);
+        OptionReportDelayMin = FloatOptionItem.Create(RoleInfo, 20, OptionName.BaitDelayMin, new(0f, 5f, 1f), 0f, false)
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionReportDelayMax = FloatOptionItem.Create(RoleInfo, 21, OptionName.BaitDelayMax, new(0f, 10f, 1f), 0f, false)
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionDelayNotifyForKiller = BooleanOptionItem.Create(RoleInfo, 22, OptionName.BaitDelayNotify, true, false);
     }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    public static void OnMurderPlayerOthers(MurderInfo info)
+    private static void OnMurderPlayerOthers(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!playerIdList.Contains(target.PlayerId) || info.IsSuicide) return;
+        if (!target.Is(CustomRoles.Bait) || info.IsSuicide) return;
         if (!info.IsSuicide)
         {
             killer.RPCPlayCustomSound("Congrats");

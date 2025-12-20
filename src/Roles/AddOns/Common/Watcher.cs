@@ -1,29 +1,25 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Watcher
+public sealed class Watcher : AddonBase
 {
-    private static readonly int Id = 80300;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Watcher);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Watcher),
+            player => new Watcher(player),
+            CustomRoles.Watcher,
+            80300,
+            SetupCustomOption,
+            "wat|窺視者|窥视",
+            "#800080"
+        );
+    public Watcher(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
-    public static void SetupCustomOption()
+    private static void SetupCustomOption()
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Watcher);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Watcher, true, true, true);
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Watcher, true, true, true);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-
 }

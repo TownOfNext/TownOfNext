@@ -1,27 +1,43 @@
-using TONX.Attributes;
 using TONX.Roles.Core.Interfaces;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Impostor;
-public static class LastImpostor
+public sealed class LastImpostor : AddonBase
 {
-    private static readonly int Id = 80000;
-    public static byte currentId = byte.MaxValue;
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(LastImpostor),
+            player => new LastImpostor(player),
+            CustomRoles.LastImpostor,
+            80000,
+            SetupCustomOption,
+            "li|绝境",
+            "#ff1919",
+            assignMode: RoleAssignMode.Toggle
+        );
+    public LastImpostor(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
+
     public static OptionItem KillCooldown;
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.LastImpostor, RoleSpwanToggle, false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 1f), 15f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.LastImpostor])
+        KillCooldown
+    }
+
+    private static void SetupCustomOption()
+    {
+        KillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.KillCooldown, new(0f, 180f, 1f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    [GameModuleInitializer]
-    public static void Init() => currentId = byte.MaxValue;
-    public static void Add(byte id) => currentId = id;
-    public static void SetKillCooldown()
+    
+    public static void SetKillCooldown(PlayerControl player)
     {
-        if (currentId == byte.MaxValue) return;
-        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out var x) || KillCooldown.GetFloat() >= x) return;
-        Main.AllPlayerKillCooldown[currentId] = KillCooldown.GetFloat();
+        if (!Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var x) || KillCooldown.GetFloat() >= x) return;
+        Main.AllPlayerKillCooldown[player.PlayerId] = KillCooldown.GetFloat();
     }
     public static bool CanBeLastImpostor(PlayerControl pc)
     {
@@ -38,7 +54,7 @@ public static class LastImpostor
     public static void SetSubRole()
     {
         //ラストインポスターがすでにいれば処理不要
-        if (currentId != byte.MaxValue) return;
+        if (CustomRoles.LastImpostor.IsExist(true)) return;
         if (CurrentGameMode != CustomGameMode.Standard
         || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1)
             return;
@@ -47,8 +63,7 @@ public static class LastImpostor
             if (CanBeLastImpostor(pc))
             {
                 pc.RpcSetCustomRole(CustomRoles.LastImpostor);
-                Add(pc.PlayerId);
-                SetKillCooldown();
+                SetKillCooldown(pc);
                 pc.SyncSettings();
                 Utils.NotifyRoles();
                 break;

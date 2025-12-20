@@ -1,32 +1,34 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Bewilder
+public sealed class Bewilder : AddonBase
 {
-    private static readonly int Id = 81200;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Bewilder);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Bewilder),
+            player => new Bewilder(player),
+            CustomRoles.Bewilder,
+            81200,
+            SetupCustomOption,
+            "bwd|迷幻|迷惑者",
+            "#c894f5"
+        );
+    public Bewilder(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
     public static OptionItem OptionVision;
 
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Bewilder);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Bewilder, true, true, true);
-        OptionVision = FloatOptionItem.Create(Id + 20, "BewilderVision", new(0f, 5f, 0.05f), 0.6f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder])
+        BewilderVision
+    }
+
+    private static void SetupCustomOption()
+    {
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Bewilder, true, true, true);
+        OptionVision = FloatOptionItem.Create(RoleInfo, 20, OptionName.BewilderVision, new(0f, 5f, 0.05f), 0.6f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 }

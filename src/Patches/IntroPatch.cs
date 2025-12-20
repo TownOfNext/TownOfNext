@@ -293,7 +293,7 @@ public class IntroCutscenePatch
                     }, 2f, "FixKillCooldownTask");
                 _ = new LateTask(() =>
                 {
-                    CustomRoleManager.AllActiveRoles.Values.ToList().Do(x => x?.OnGameStart());
+                    CustomRoleManager.AllActiveRolesAndAddonsList.ToList().Do(x => x?.OnGameStart());
                 }, 0.1f, "RoleClassOnGameStartTask");
             }
             // _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "SetImpostorForServer");

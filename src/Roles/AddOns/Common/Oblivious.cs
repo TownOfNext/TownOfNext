@@ -1,28 +1,25 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Oblivious
+public sealed class Oblivious : AddonBase
 {
-    private static readonly int Id = 81100;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Oblivious);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Oblivious),
+            player => new Oblivious(player),
+            CustomRoles.Oblivious,
+            81100,
+            SetupCustomOption,
+            "pb|膽小鬼|胆小",
+            "#424242"
+        );
+    public Oblivious(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
-    public static void SetupCustomOption()
+    private static void SetupCustomOption()
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Oblivious);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Oblivious, true, true, true);
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Oblivious, true, true, true);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 }

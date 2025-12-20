@@ -8,7 +8,7 @@ namespace TONX.Roles.Core;
 public class SimpleRoleInfo
 {
     public Type ClassType;
-    public Func<PlayerControl, RoleBase> CreateInstance;
+    public Func<PlayerControl, BaseCore> CreateInstance;
     public CustomRoles RoleName;
     public Func<RoleTypes> BaseRoleType;
     public CustomRoleTypes CustomRoleType;
@@ -30,6 +30,11 @@ public class SimpleRoleInfo
     public HiddenRoleInfo Hidden;
 
     /// <summary>
+    /// 职业出现概率
+    /// </summary>
+    public RoleAssignMode AssignMode;
+
+    /// <summary>
     /// 人数设定上的最小人数/最大人数/一单位数
     /// </summary>
     public IntegerValueRule AssignCountRule;
@@ -47,7 +52,7 @@ public class SimpleRoleInfo
 
     private SimpleRoleInfo(
         Type classType,
-        Func<PlayerControl, RoleBase> createInstance,
+        Func<PlayerControl, BaseCore> createInstance,
         CustomRoles roleName,
         Func<RoleTypes> baseRoleType,
         CustomRoleTypes customRoleType,
@@ -62,6 +67,7 @@ public class SimpleRoleInfo
         bool experimental,
         bool broken,
         HiddenRoleInfo hidden,
+        RoleAssignMode assignMode,
         IntegerValueRule assignCountRule,
         CustomRoles[] assignUnitRoles
     )
@@ -80,6 +86,7 @@ public class SimpleRoleInfo
         Experimental = experimental;
         Broken = broken;
         Hidden = hidden;
+        AssignMode = assignMode;
         AssignCountRule = assignCountRule;
         AssignUnitRoles = assignUnitRoles;
 
@@ -106,11 +113,12 @@ public class SimpleRoleInfo
             };
         Tab = tab;
 
-        CustomRoleManager.AllRolesInfo.Add(roleName, this);
+        if (CustomRoleType == CustomRoleTypes.Addon) CustomRoleManager.AllAddonsInfo.Add(roleName, this);
+        else CustomRoleManager.AllRolesInfo.Add(roleName, this);
     }
     public static SimpleRoleInfo Create(
         Type classType,
-        Func<PlayerControl, RoleBase> createInstance,
+        Func<PlayerControl, BaseCore> createInstance,
         CustomRoles roleName,
         Func<RoleTypes> baseRoleType,
         CustomRoleTypes customRoleType,
@@ -153,6 +161,49 @@ public class SimpleRoleInfo
                 experimental,
                 broken,
                 Hidden,
+                RoleAssignMode.Mode,
+                assignCountRule,
+                assignUnitRoles
+            );
+        roleInfo.Description = new SingleRoleDescription(roleInfo);
+        return roleInfo;
+    }
+    public static SimpleRoleInfo CreateForAddon(
+        Type classType,
+        Func<PlayerControl, BaseCore> createInstance,
+        CustomRoles roleName,
+        int configId,
+        OptionCreatorDelegate optionCreator,
+        string chatCommand,
+        string colorCode = "",
+        TabGroup tab = TabGroup.GameSettings,
+        bool experimental = false,
+        bool broken = false,
+        RoleAssignMode assignMode = RoleAssignMode.Rate,
+        IntegerValueRule assignCountRule = null,
+        CustomRoles[] assignUnitRoles = null
+    )
+    {
+        CountTypes countType = CountTypes.Crew;
+
+        var roleInfo = new SimpleRoleInfo(
+                classType,
+                createInstance,
+                roleName,
+                () => RoleTypes.Crewmate,
+                CustomRoleTypes.Addon,
+                countType,
+                configId,
+                optionCreator,
+                chatCommand,
+                colorCode,
+                false,
+                tab,
+                null,
+                experimental,
+                broken,
+                null,
+                assignMode,
                 assignCountRule,
                 assignUnitRoles
             );
@@ -161,7 +212,7 @@ public class SimpleRoleInfo
     }
     public static SimpleRoleInfo CreateForVanilla(
         Type classType,
-        Func<PlayerControl, RoleBase> createInstance,
+        Func<PlayerControl, BaseCore> createInstance,
         RoleTypes baseRoleType,
         string colorCode = ""
     )
@@ -233,12 +284,12 @@ public class SimpleRoleInfo
                 null,
                 colorCode,
                 false,
-                
                 TabGroup.GameSettings,
                 null,
                 false,
                 false,
                 null,
+                RoleAssignMode.Mode,
                 new(1, 15, 1),
                 new CustomRoles[1] { roleName }
             );

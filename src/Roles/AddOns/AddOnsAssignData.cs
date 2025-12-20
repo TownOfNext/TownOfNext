@@ -95,10 +95,8 @@ public class AddOnsAssignData
         if (!AllData.ContainsKey(role)) AllData.Add(role, this);
         else Logger.Warn("重複したCustomRolesを対象とするAddOnsAssignDataが作成されました", "AddOnsAssignData");
     }
-    public static AddOnsAssignData Create(int idStart, TabGroup tab, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
-        => new(idStart, tab, role, assignCrewmate, assignImpostor, assignNeutral);
-    public static AddOnsAssignData Create(int idStart, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
-        => new(idStart, TabGroup.Addons, role, assignCrewmate, assignImpostor, assignNeutral);
+    public static AddOnsAssignData Create(SimpleRoleInfo roleInfo, int idStart, CustomRoles role, bool assignCrewmate, bool assignImpostor, bool assignNeutral)
+        => new(roleInfo.ConfigId + idStart, roleInfo.Experimental ? TabGroup.OtherRoles : TabGroup.Addons, role, assignCrewmate, assignImpostor, assignNeutral);
     ///<summary>
     ///AddOnsAssignDataが存在する属性を一括で割り当て
     ///</summary>

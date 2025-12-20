@@ -1,28 +1,25 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Reach
+public sealed class Reach : AddonBase
 {
-    private static readonly int Id = 81600;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Reach);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Reach),
+            player => new Reach(player),
+            CustomRoles.Reach,
+            81600,
+            SetupCustomOption,
+            "re|持槍|手长",
+            "#74ba43"
+        );
+    public Reach(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
-    public static void SetupCustomOption()
+    private static void SetupCustomOption()
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Reach);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Reach, true, true, true);
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Reach, true, true, true);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 }

@@ -1,29 +1,26 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Neptune
+public sealed class Neptune : AddonBase
 {
-    private static readonly int Id = 80600;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Neptune);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Neptune),
+            player => new Neptune(player),
+            CustomRoles.Neptune,
+            80600,
+            SetupCustomOption,
+            "np|ntr|渣男",
+            "#00a4ff",
+            experimental: true
+        );
+    public Neptune(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
-    public static void SetupCustomOption()
+    private static void SetupCustomOption()
     {
-        SetupAddonOptions(Id, TabGroup.OtherRoles, CustomRoles.Neptune);
-        AddOnsAssignData.Create(Id + 10, TabGroup.OtherRoles, CustomRoles.Neptune, true, true, true);
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Neptune, true, true, true);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-
 }

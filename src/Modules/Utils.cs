@@ -589,8 +589,8 @@ public static class Utils
         var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(state.MainRole).ShadeColor(0.5f); //タスク完了後の色
         var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white; //カウントされない人外は白色
 
-        if (Workhorse.IsThisRole(playerId))
-            NonCompleteColor = Workhorse.RoleColor;
+        if (GetPlayerById(playerId)?.Is(CustomRoles.Workhorse) ?? false)
+            NonCompleteColor = GetRoleColor(CustomRoles.Workhorse);
 
         var NormalColor = state.taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
@@ -1141,7 +1141,7 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
-        foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
+        foreach (var roleClass in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
             roleClass.AfterMeetingTasks();
         if (Options.AirShipVariableElectrical.GetBool())
             AirShipElectricalDoors.Initialize();

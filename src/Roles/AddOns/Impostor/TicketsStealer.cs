@@ -1,37 +1,39 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Impostor;
-public static class TicketsStealer
+public sealed class TicketsStealer : AddonBase
 {
-    private static readonly int Id = 81900;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.TicketsStealer);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(TicketsStealer),
+            player => new TicketsStealer(player),
+            CustomRoles.TicketsStealer,
+            81900,
+            SetupCustomOption,
+            "ts|竊票者|偷票|偷票者|窃票师|窃票",
+            "#ff1919"
+        );
+    public TicketsStealer(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
     public static OptionItem OptionTicketsPerKill;
-
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.TicketsStealer);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.TicketsStealer, false, true, false);
-        OptionTicketsPerKill = FloatOptionItem.Create(Id + 20, "TicketsPerKill", new(0.1f, 10f, 0.1f), 0.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer])
+        TicketsPerKill
+    }
+
+    private static void SetupCustomOption()
+    {
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.TicketsStealer, false, true, false);
+        OptionTicketsPerKill = FloatOptionItem.Create(RoleInfo, 20, OptionName.TicketsPerKill, new(0.1f, 10f, 0.1f), 0.5f, false)
             .SetValueFormat(OptionFormat.Votes);
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
+
     public static void ModifyVote(ref byte voterId, ref byte voteFor, ref bool isIntentional, ref int numVotes, ref bool doVote)
     {
-        if (playerIdList.Contains(voterId))
+        if (Utils.GetPlayerById(voterId)?.Is(CustomRoles.TicketsStealer) ?? false)
         {
             numVotes += (int)((PlayerState.GetByPlayerId(voterId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
             Logger.Info($"TicketsStealer Additional Votes: {numVotes}", "TicketsStealer.OnVote");
@@ -39,8 +41,8 @@ public static class TicketsStealer
     }
     public static string GetProgressText(byte playerId, bool comms = false)
     {
-        if (!playerIdList.Contains(playerId)) return "";
+        if (!Utils.GetPlayerById(playerId)?.Is(CustomRoles.TicketsStealer) ?? true) return "";
         var votes = (int)((PlayerState.GetByPlayerId(playerId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
-        return votes > 0 ? Utils.ColorString(RoleColor.ShadeColor(0.5f), $"+{votes}") : "";
+        return votes > 0 ? Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.5f), $"+{votes}") : "";
     }
 }

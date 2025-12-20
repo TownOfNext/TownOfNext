@@ -4,8 +4,6 @@ using Il2CppSystem.Text;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
-using TONX.Roles.AddOns.Crewmate;
-using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Core;
@@ -13,12 +11,29 @@ namespace TONX.Roles.Core;
 public static class CustomRoleManager
 {
     public static Type[] AllRolesClassType;
+    public static Type[] AllAddonsClassType;
     public static Dictionary<CustomRoles, SimpleRoleInfo> AllRolesInfo = new(CustomRolesHelper.AllRoles.Length);
+    public static Dictionary<CustomRoles, SimpleRoleInfo> AllAddonsInfo = new(CustomRolesHelper.AllAddOns.Length);
     public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
+    public static Dictionary<byte, List<AddonBase>> AllActiveAddons = new(15);
+    public static List<BaseCore> AllActiveRolesAndAddonsList => AllActiveRoles.Values.Cast<BaseCore>().ToList().Concat(AllActiveAddons.Values.SelectMany(l => l.Cast<BaseCore>())).ToList();
 
-    public static SimpleRoleInfo GetRoleInfo(this CustomRoles role) => AllRolesInfo.ContainsKey(role) ? AllRolesInfo[role] : null;
+    public static SimpleRoleInfo GetRoleInfo(this CustomRoles role) => AllRolesInfo.ContainsKey(role) ? AllRolesInfo[role] : AllAddonsInfo.ContainsKey(role) ? AllAddonsInfo[role] : null;
     public static RoleBase GetRoleClass(this PlayerControl player) => GetByPlayerId(player.PlayerId);
     public static RoleBase GetByPlayerId(byte playerId) => AllActiveRoles.TryGetValue(playerId, out var roleBase) ? roleBase : null;
+    public static List<AddonBase> GetAddonClasses(this PlayerControl player) => GetAddonByPlayerId(player.PlayerId);
+    public static List<AddonBase> GetAddonByPlayerId(byte playerId) => AllActiveAddons.TryGetValue(playerId, out var addonBases) ? addonBases : null;
+    public static List<BaseCore> GetRoleAndAddonClasses(this PlayerControl player) => GetRoleAndAddonByPlayerId(player.PlayerId);
+    public static List<BaseCore> GetRoleAndAddonByPlayerId(byte playerId)
+    {
+        if (AllActiveRoles.TryGetValue(playerId, out var roleBase))
+        {
+            var result = new List<BaseCore>() { roleBase };
+            if (AllActiveAddons.TryGetValue(playerId, out var addonBases)) return result.Concat(addonBases).ToList();
+            return result;
+        }
+        return null;
+    }
     public static void Do<T>(this List<T> list, Action<T> action) => list.ToArray().Do(action);
     // == CheckMurder 相关处理 ==
     public static Dictionary<byte, MurderInfo> CheckMurderInfos = new();
@@ -172,11 +187,6 @@ public static class CustomRoleManager
         var targetRole = attemptTarget.GetRoleClass();
         targetRole?.OnMurderPlayerAsTarget(info);
 
-        //SubRoels
-        Bait.OnMurderPlayerOthers(info);
-        Beartrap.OnMurderPlayerOthers(info);
-        Avenger.OnMurderPlayerOthers(info);
-
         //その他視点の処理があれば実行
         foreach (var onMurderPlayer in OnMurderPlayerOthers.ToArray())
         {
@@ -266,7 +276,7 @@ public static class CustomRoleManager
     public static bool OnSabotage(PlayerControl player, SystemTypes systemType)
     {
         bool cancel = false;
-        foreach (var roleClass in AllActiveRoles.Values)
+        foreach (var roleClass in AllActiveRolesAndAddonsList.ToList())
         {
             if (!roleClass.OnSabotage(player, systemType))
             {
@@ -283,7 +293,9 @@ public static class CustomRoleManager
     public static void Initialize()
     {
         AllRolesInfo.Do(kvp => kvp.Value.IsEnable = kvp.Key.IsEnable());
+        AllAddonsInfo.Do(kvp => kvp.Value.IsEnable = kvp.Key.IsEnable());
         AllActiveRoles.Clear();
+        AllActiveAddons.Clear();
         MarkOthers.Clear();
         LowerOthers.Clear();
         SuffixOthers.Clear();
@@ -318,9 +330,9 @@ public static class CustomRoleManager
         {
             roleInfo.CreateInstance(player).Add();
         }
-        else
+        else if (AllAddonsInfo.TryGetValue(role, out var addonInfo))
         {
-            OtherRolesAdd(player);
+            addonInfo.CreateInstance(player).Add();
         }
         if (player.Data.Role.Role == RoleTypes.Shapeshifter)
         {
@@ -329,69 +341,6 @@ public static class CustomRoleManager
         if (player.Data.Role.Role == RoleTypes.Phantom)
         {
             Main.CheckVanish.TryAdd(player.PlayerId, false);
-        }
-    }
-    public static void OtherRolesAdd(PlayerControl pc)
-    {
-        foreach (var subRole in pc.GetCustomSubRoles())
-        {
-            switch (subRole)
-            {
-                case CustomRoles.Watcher:
-                    Watcher.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Avenger:
-                    Avenger.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Bait:
-                    Bait.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Bewilder:
-                    Bewilder.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Tiebreaker:
-                    Tiebreaker.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Schizophrenic:
-                    Schizophrenic.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Egoist:
-                    Egoist.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Flashman:
-                    Flashman.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Fool:
-                    Fool.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Lighter:
-                    Lighter.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Neptune:
-                    Neptune.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Oblivious:
-                    Oblivious.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Reach:
-                    Reach.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Seer:
-                    Seer.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Beartrap:
-                    Beartrap.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.YouTuber:
-                    YouTuber.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Mimic:
-                    Mimic.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.TicketsStealer:
-                    TicketsStealer.Add(pc.PlayerId);
-                    break;
-            }
         }
     }
     /// <summary>
@@ -489,7 +438,7 @@ public static class CustomRoleManager
         OnMurderPlayerOthers.Clear();
         OnFixedUpdateOthers.Clear();
 
-        AllActiveRoles.Values.ToArray().Do(roleClass => roleClass.Dispose());
+        AllActiveRolesAndAddonsList.ToArray().Do(roleClass => roleClass.Dispose());
     }
 }
 public class MurderInfo
@@ -704,4 +653,10 @@ public enum HasTask
     True,
     False,
     ForRecompute
+}
+public enum RoleAssignMode
+{
+    Toggle,
+    Mode,
+    Rate
 }

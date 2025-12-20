@@ -1,32 +1,33 @@
-using TONX.Attributes;
-using UnityEngine;
-using static TONX.Options;
-
 namespace TONX.Roles.AddOns.Common;
-public static class Egoist
+public sealed class Egoist : AddonBase
 {
-    private static readonly int Id = 80800;
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Egoist);
-    private static List<byte> playerIdList = new();
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.CreateForAddon(
+            typeof(Egoist),
+            player => new Egoist(player),
+            CustomRoles.Egoist,
+            80800,
+            SetupCustomOption,
+            "ego|利己主義者|利己主义|利己|野心",
+            "#5600ff"
+        );
+    public Egoist(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
     public static OptionItem OptionImpEgoVisibalToAllies;
 
-    public static void SetupCustomOption()
+    enum OptionName
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Egoist);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Egoist, true, true, false);
-        OptionImpEgoVisibalToAllies = BooleanOptionItem.Create(Id + 20, "ImpEgoistVisibalToAllies", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        ImpEgoistVisibalToAllies
     }
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        playerIdList = new();
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public static bool IsEnable => playerIdList.Count > 0;
-    public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 
+    private static void SetupCustomOption()
+    {
+        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Egoist, true, true, false);
+        OptionImpEgoVisibalToAllies = BooleanOptionItem.Create(RoleInfo, 20, OptionName.ImpEgoistVisibalToAllies, true, false);
+    }
 }
