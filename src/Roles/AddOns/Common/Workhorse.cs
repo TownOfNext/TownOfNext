@@ -13,8 +13,7 @@ public sealed class Workhorse : AddonBase
             "wh|加班",
             "#00ffff",
             assignMode: RoleAssignMode.Toggle,
-            hasAssignData: false,
-            assignTeam: (true, false, false)
+            hasAssignData: false
         );
     public Workhorse(PlayerControl player)
     : base(
