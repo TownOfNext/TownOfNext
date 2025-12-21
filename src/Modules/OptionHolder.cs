@@ -596,9 +596,7 @@ public static class Options
                 .SetGameMode(CustomGameMode.Standard)
                 .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
 
-            #region Options of Lover
             SetupLoversOptions(80100);
-            #endregion
         }
 
         foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
@@ -1147,7 +1145,7 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
-    public static void SetupLoversOptions(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
+    private static void SetupLoversOptions(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var spawnOption = new RoleSpawnChanceOptionItem(id, CustomRoles.Lovers.ToString(), 0, TabGroup.Addons, false, Rates, CustomRoles.Lovers, Utils.GetRoleColor(CustomRoles.Lovers))
             .SetColor(Utils.GetRoleColor(CustomRoles.Lovers))
