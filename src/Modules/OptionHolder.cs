@@ -1,8 +1,6 @@
 using TONX.Modules;
 using TONX.Modules.OptionItems;
-using TONX.Roles.AddOns.Common;
-using TONX.Roles.AddOns.Crewmate;
-using TONX.Roles.AddOns.Impostor;
+using TONX.Roles.AddOns;
 using UnityEngine;
 
 namespace TONX;
@@ -589,11 +587,65 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
         }
 
-        sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow).Do(info =>
+        // Add-Ons
+
+        // 通用附加
+        if (!setupExpNow)
         {
-            SetupAddonOptions(info);
+            TextOptionItem.Create(5_100_001, "MenuTitle.Addon.Common", TabGroup.Addons)
+                .SetGameMode(CustomGameMode.Standard)
+                .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
+
+            #region Options of Lover
+            SetupLoversOptions(80100);
+            #endregion
+        }
+
+        foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
+        {
+            var data = AddOnsAssignData.GetAddOnsAssignData(info.RoleName);
+            if (data != null && (data.AssignTeams.Crewmate ? 1 : 0) + (data.AssignTeams.Impostor ? 1 : 0) + (data.AssignTeams.Neutral ? 1 : 0) <= 1) continue;
+            SetupAddonOptions(info, data);
+        }
+
+        // 船员专属附加
+        if (!setupExpNow)
+        {
+            TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
+                .SetGameMode(CustomGameMode.Standard)
+                .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
+
+            SetupMadmateRoleOptionsToggle(80200);
+        }
+
+        foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
+        {
+            var data = AddOnsAssignData.GetAddOnsAssignData(info.RoleName);
+            if (data == null || !data.AssignTeams.Crewmate || (data.AssignTeams.Impostor ? 1 : 0) + (data.AssignTeams.Neutral ? 1 : 0) > 0) continue;
+            SetupAddonOptions(info, data);
+        }
+
+        // 内鬼专属附加
+        if (!setupExpNow)
+        {
+            TextOptionItem.Create(5_100_003, "MenuTitle.Addon.Imp", TabGroup.Addons)
+                .SetGameMode(CustomGameMode.Standard)
+                .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Impostor));
+        }
+
+        foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
+        {
+            var data = AddOnsAssignData.GetAddOnsAssignData(info.RoleName);
+            if (data == null || !data.AssignTeams.Impostor || (data.AssignTeams.Crewmate ? 1 : 0) + (data.AssignTeams.Neutral ? 1 : 0) > 0) continue;
+            SetupAddonOptions(info, data);
+        }
+
+        static void SetupAddonOptions(SimpleRoleInfo info, AddOnsAssignData data)
+        {
+            SetupRoleOptions(info);
+            AddOnsAssignData.CreateAddonsAssignOptions(info, data);
             info.OptionCreator?.Invoke();
-        });
+        }
 
         // Experimental Roles
         if (!setupExpNow)
@@ -601,55 +653,6 @@ public static class Options
             setupExpNow = true;
             goto StartSetupRoleOptions;
         }
-
-        // Add-Ons
-
-        // 通用附加
-        TextOptionItem.Create(5_100_001, "MenuTitle.Addon.Common", TabGroup.Addons)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
-
-        #region Options of Lover
-        SetupAddonOptions(80100, TabGroup.Addons, CustomRoles.Lovers, Rates, false);
-        LoverKnowRoles = BooleanOptionItem.Create(80100 + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
-            .SetGameMode(CustomGameMode.Standard);
-        LoverSuicide = BooleanOptionItem.Create(80100 + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lovers])
-            .SetGameMode(CustomGameMode.Standard);
-        #endregion
-
-        // Neptune.SetupCustomOption();
-        // Watcher.SetupCustomOption();
-        // Lighter.SetupCustomOption();
-        // Seer.SetupCustomOption();
-        // Flashman.SetupCustomOption();
-        // Tiebreaker.SetupCustomOption();
-        // Oblivious.SetupCustomOption();
-        // Bewilder.SetupCustomOption();
-        // Fool.SetupCustomOption();
-        // Avenger.SetupCustomOption();
-        // Egoist.SetupCustomOption();
-        // Schizophrenic.SetupCustomOption();
-        // Reach.SetupCustomOption();
-        // Bait.SetupCustomOption();
-        // Beartrap.SetupCustomOption();
-
-        // 船员专属附加
-        TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
-
-        // YouTuber.SetupCustomOption();
-        // Workhorse.SetupCustomOption();
-        SetupMadmateRoleOptionsToggle(80200);
-
-        // 内鬼专属附加
-        TextOptionItem.Create(5_100_003, "MenuTitle.Addon.Imp", TabGroup.Addons)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Impostor));
-
-        // LastImpostor.SetupCustomOption();
-        // TicketsStealer.SetupCustomOption();
-        // Mimic.SetupCustomOption();
 
         #endregion
 
@@ -1113,27 +1116,6 @@ public static class Options
         Logger.Msg("All Mod Options Loaded!", "Load Options");
     }
 
-    public static void SetupAddonOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard)
-        => SetupAddonOptions(id, tab, role, Rates, true, customGameMode);
-    public static void SetupAddonOptions(int id, TabGroup tab, CustomRoles role, string[] selections, bool canSetNum, CustomGameMode customGameMode = CustomGameMode.Standard)
-    {
-        IntegerValueRule assignCountRule = role is CustomRoles.Lovers ? new(2, 2, 2) : new(1, canSetNum ? 15 : 1, 1);
-
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, Utils.GetRoleColor(role))
-            .SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false).SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetHidden(!canSetNum)
-            .SetGameMode(customGameMode);
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-    public static void SetupAddonOptions(SimpleRoleInfo info)
-        => SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.RoleColor, assignMode: info.AssignMode);
     public static void SetupRoleOptions(SimpleRoleInfo info)
         => SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName, info.RoleColor, assignMode: info.AssignMode);
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, Color roleColor, RoleAssignMode assignMode, IntegerValueRule assignCountRule = null, CustomGameMode customGameMode = CustomGameMode.Standard)
@@ -1164,6 +1146,26 @@ public static class Options
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
+    }
+    public static void SetupLoversOptions(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
+    {
+        var spawnOption = new RoleSpawnChanceOptionItem(id, CustomRoles.Lovers.ToString(), 0, TabGroup.Addons, false, Rates, CustomRoles.Lovers, Utils.GetRoleColor(CustomRoles.Lovers))
+            .SetColor(Utils.GetRoleColor(CustomRoles.Lovers))
+            .SetHeader(true)
+            .SetGameMode(customGameMode) as StringOptionItem;
+
+        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(2, 2, 2), 2, TabGroup.Addons, false).SetParent(spawnOption)
+            .SetValueFormat(OptionFormat.Players)
+            .SetHidden(true)
+            .SetGameMode(customGameMode);
+        
+        LoverKnowRoles = BooleanOptionItem.Create(id + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(spawnOption)
+            .SetGameMode(CustomGameMode.Standard);
+        LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(spawnOption)
+            .SetGameMode(CustomGameMode.Standard);
+
+        CustomRoleSpawnChances.Add(CustomRoles.Lovers, spawnOption);
+        CustomRoleCounts.Add(CustomRoles.Lovers, countOption);
     }
     private static void SetupMadmateRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {

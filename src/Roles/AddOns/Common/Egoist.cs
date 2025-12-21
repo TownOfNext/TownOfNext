@@ -9,7 +9,9 @@ public sealed class Egoist : AddonBase
             80800,
             SetupCustomOption,
             "ego|利己主義者|利己主义|利己|野心",
-            "#5600ff"
+            "#5600ff",
+            assignTeam: (true, true, false),
+            conflicts: Conflicts
         );
     public Egoist(PlayerControl player)
     : base(
@@ -25,9 +27,9 @@ public sealed class Egoist : AddonBase
         ImpEgoistVisibalToAllies
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Madmate };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Egoist, true, true, false);
         OptionImpEgoVisibalToAllies = BooleanOptionItem.Create(RoleInfo, 20, OptionName.ImpEgoistVisibalToAllies, true, false);
     }
 }

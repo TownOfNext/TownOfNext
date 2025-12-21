@@ -35,7 +35,6 @@ public sealed class Bait : AddonBase
 
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Bait, true, true, true);
         OptionReportDelayMin = FloatOptionItem.Create(RoleInfo, 20, OptionName.BaitDelayMin, new(0f, 5f, 1f), 0f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionReportDelayMax = FloatOptionItem.Create(RoleInfo, 21, OptionName.BaitDelayMax, new(0f, 10f, 1f), 0f, false)

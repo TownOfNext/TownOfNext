@@ -7,7 +7,7 @@ public sealed class Reach : AddonBase
             player => new Reach(player),
             CustomRoles.Reach,
             81600,
-            SetupCustomOption,
+            null,
             "re|持槍|手长",
             "#74ba43"
         );
@@ -17,9 +17,4 @@ public sealed class Reach : AddonBase
         player
     )
     { }
-
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Reach, true, true, true);
-    }
 }

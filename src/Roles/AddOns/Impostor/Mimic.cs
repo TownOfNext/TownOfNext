@@ -7,9 +7,11 @@ public sealed class Mimic : AddonBase
             player => new Mimic(player),
             CustomRoles.Mimic,
             82000,
-            SetupCustomOption,
+            null,
             "mi|寶箱怪|宝箱",
-            "#ff1919"
+            "#ff1919",
+            assignTeam: (false, true, false),
+            conflicts: Conflicts
         );
     public Mimic(PlayerControl player)
     : base(
@@ -18,8 +20,5 @@ public sealed class Mimic : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Mimic, false, true, false);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Mafia };
 }

@@ -9,7 +9,8 @@ public sealed class Fool : AddonBase
             81300,
             SetupCustomOption,
             "fo|蠢蛋|笨蛋|蠢狗|傻逼",
-            "#e6e7ff"
+            "#e6e7ff",
+            conflicts: Conflicts
         );
     public Fool(PlayerControl player)
     : base(
@@ -27,9 +28,9 @@ public sealed class Fool : AddonBase
         FoolCanNotOpenDoor
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Repairman };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Fool, true, true, true);
         OptionImpFoolCanNotSabotage = BooleanOptionItem.Create(RoleInfo, 20, OptionName.ImpFoolCanNotSabotage, true, false);
         OptionImpFoolCanNotOpenDoor = BooleanOptionItem.Create(RoleInfo, 21, OptionName.FoolCanNotOpenDoor, false, false);
     }

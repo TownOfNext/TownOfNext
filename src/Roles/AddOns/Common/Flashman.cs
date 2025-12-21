@@ -10,7 +10,8 @@ public sealed class Flashman : AddonBase
             SetupCustomOption,
             "fl|閃電俠|闪电",
             "#ff8400",
-            experimental: true
+            experimental: true,
+            conflicts: Conflicts
         );
     public Flashman(PlayerControl player)
     : base(
@@ -26,9 +27,9 @@ public sealed class Flashman : AddonBase
         FlashmanSpeed
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Swooper };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Flashman, true, true, true);
         OptionSpeed = FloatOptionItem.Create(RoleInfo, 20, OptionName.FlashmanSpeed, new(0.25f, 5f, 0.25f), 2.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }

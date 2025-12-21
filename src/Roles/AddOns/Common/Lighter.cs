@@ -9,7 +9,9 @@ public sealed class Lighter : AddonBase
             82100,
             SetupCustomOption,
             "li|執燈人|执灯|灯人|小灯人",
-            "#eee5be"
+            "#eee5be",
+            assignTeam: (true, false, false),
+            conflicts: Conflicts
         );
     public Lighter(PlayerControl player)
     : base(
@@ -25,9 +27,9 @@ public sealed class Lighter : AddonBase
         LighterVision
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Bewilder };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Lighter, true, true, true);
         OptionVistion = FloatOptionItem.Create(RoleInfo, 20, OptionName.LighterVision, new(0.5f, 5f, 0.25f), 1.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }

@@ -7,10 +7,11 @@ public sealed class Neptune : AddonBase
             player => new Neptune(player),
             CustomRoles.Neptune,
             80600,
-            SetupCustomOption,
+            null,
             "np|ntr|渣男",
             "#00a4ff",
-            experimental: true
+            experimental: true,
+            conflicts: Conflicts
         );
     public Neptune(PlayerControl player)
     : base(
@@ -19,8 +20,5 @@ public sealed class Neptune : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Neptune, true, true, true);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Lovers, CustomRoles.Hater };
 }

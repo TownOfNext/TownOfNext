@@ -7,9 +7,10 @@ public sealed class Oblivious : AddonBase
             player => new Oblivious(player),
             CustomRoles.Oblivious,
             81100,
-            SetupCustomOption,
+            null,
             "pb|膽小鬼|胆小",
-            "#424242"
+            "#424242",
+            conflicts: Conflicts
         );
     public Oblivious(PlayerControl player)
     : base(
@@ -18,8 +19,5 @@ public sealed class Oblivious : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Oblivious, true, true, true);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.DetectiveTONX, CustomRoles.Cleaner, CustomRoles.Mortician, CustomRoles.Medium };
 }

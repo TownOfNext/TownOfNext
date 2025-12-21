@@ -7,7 +7,7 @@ public sealed class Watcher : AddonBase
             player => new Watcher(player),
             CustomRoles.Watcher,
             80300,
-            SetupCustomOption,
+            null,
             "wat|窺視者|窥视",
             "#800080"
         );
@@ -17,9 +17,4 @@ public sealed class Watcher : AddonBase
         player
     )
     { }
-
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Watcher, true, true, true);
-    }
 }

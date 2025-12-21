@@ -7,9 +7,11 @@ public sealed class YouTuber : AddonBase
             player => new YouTuber(player),
             CustomRoles.YouTuber,
             80700,
-            SetupCustomOption,
+            null,
             "yt|up",
-            "#fb749b"
+            "#fb749b",
+            assignTeam: (true, false, false),
+            conflicts: Conflicts
         );
     public YouTuber(PlayerControl player)
     : base(
@@ -18,8 +20,5 @@ public sealed class YouTuber : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.YouTuber, true, false, false);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Madmate, CustomRoles.Sheriff };
 }

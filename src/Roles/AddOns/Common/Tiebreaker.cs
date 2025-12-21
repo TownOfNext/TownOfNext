@@ -7,9 +7,10 @@ public sealed class Tiebreaker : AddonBase
             player => new Tiebreaker(player),
             CustomRoles.Tiebreaker,
             81000,
-            SetupCustomOption,
+            null,
             "br|破平",
-            "#1447af"
+            "#1447af",
+            conflicts: Conflicts
         );
     public Tiebreaker(PlayerControl player)
     : base(
@@ -22,10 +23,7 @@ public sealed class Tiebreaker : AddonBase
 
     private static Dictionary<byte, byte> TiebreakerVotes = new();
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Tiebreaker, true, true, true);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Dictator };
 
     public static void OnVote(byte voter, byte target)
     {

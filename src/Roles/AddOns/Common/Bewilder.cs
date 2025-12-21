@@ -9,7 +9,9 @@ public sealed class Bewilder : AddonBase
             81200,
             SetupCustomOption,
             "bwd|迷幻|迷惑者",
-            "#c894f5"
+            "#c894f5",
+            assignTeam: (true, false, true),
+            conflicts: Conflicts
         );
     public Bewilder(PlayerControl player)
     : base(
@@ -25,9 +27,9 @@ public sealed class Bewilder : AddonBase
         BewilderVision
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Lighter };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Bewilder, true, true, true);
         OptionVision = FloatOptionItem.Create(RoleInfo, 20, OptionName.BewilderVision, new(0f, 5f, 0.05f), 0.6f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }

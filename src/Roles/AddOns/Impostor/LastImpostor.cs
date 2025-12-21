@@ -13,7 +13,9 @@ public sealed class LastImpostor : AddonBase
             SetupCustomOption,
             "li|绝境",
             "#ff1919",
-            assignMode: RoleAssignMode.Toggle
+            assignMode: RoleAssignMode.Toggle,
+            hasAssignData: false,
+            assignTeam: (false, true, false)
         );
     public LastImpostor(PlayerControl player)
     : base(

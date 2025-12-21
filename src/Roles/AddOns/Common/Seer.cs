@@ -7,9 +7,10 @@ public sealed class Seer : AddonBase
             player => new Seer(player),
             CustomRoles.Seer,
             80900,
-            SetupCustomOption,
+            null,
             "se|靈媒",
-            "#61b26c"
+            "#61b26c",
+            conflicts: Conflicts
         );
     public Seer(PlayerControl player)
     : base(
@@ -18,8 +19,5 @@ public sealed class Seer : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Seer, true, true, true);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Mortician };
 }

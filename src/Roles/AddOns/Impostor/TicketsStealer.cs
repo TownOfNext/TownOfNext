@@ -9,7 +9,9 @@ public sealed class TicketsStealer : AddonBase
             81900,
             SetupCustomOption,
             "ts|竊票者|偷票|偷票者|窃票师|窃票",
-            "#ff1919"
+            "#ff1919",
+            assignTeam: (false, true, false),
+            conflicts: Conflicts
         );
     public TicketsStealer(PlayerControl player)
     : base(
@@ -24,9 +26,9 @@ public sealed class TicketsStealer : AddonBase
         TicketsPerKill
     }
 
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Bomber, CustomRoles.BoobyTrap, CustomRoles.Capitalist };
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.TicketsStealer, false, true, false);
         OptionTicketsPerKill = FloatOptionItem.Create(RoleInfo, 20, OptionName.TicketsPerKill, new(0.1f, 10f, 0.1f), 0.5f, false)
             .SetValueFormat(OptionFormat.Votes);
     }

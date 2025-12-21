@@ -7,9 +7,11 @@ public sealed class Schizophrenic : AddonBase
             player => new Schizophrenic(player),
             CustomRoles.Schizophrenic,
             81500,
-            SetupCustomOption,
+            null,
             "sp|雙重人格|双重|双人格|人格",
-            "#3a648f"
+            "#3a648f",
+            assignTeam: (true, true, false),
+            conflicts: Conflicts
         );
     public Schizophrenic(PlayerControl player)
     : base(
@@ -18,8 +20,5 @@ public sealed class Schizophrenic : AddonBase
     )
     { }
 
-    private static void SetupCustomOption()
-    {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Schizophrenic, true, true, true);
-    }
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.Madmate };
 }

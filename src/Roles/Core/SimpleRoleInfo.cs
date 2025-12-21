@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Roles.AddOns;
 using TONX.Roles.Core.Descriptions;
 using UnityEngine;
 using static TONX.Options;
@@ -181,10 +182,16 @@ public class SimpleRoleInfo
         bool broken = false,
         RoleAssignMode assignMode = RoleAssignMode.Rate,
         IntegerValueRule assignCountRule = null,
-        CustomRoles[] assignUnitRoles = null
+        CustomRoles[] assignUnitRoles = null,
+        bool hasAssignData = true,
+        (bool Crewmate, bool Impostor, bool Neutral)? assignTeam = null,
+        List<CustomRoles> conflicts = null
     )
     {
         CountTypes countType = CountTypes.Crew;
+
+        assignTeam ??= (true, true, true);
+        conflicts ??= new();
 
         var roleInfo = new SimpleRoleInfo(
                 classType,
@@ -208,6 +215,18 @@ public class SimpleRoleInfo
                 assignUnitRoles
             );
         roleInfo.Description = new SingleRoleDescription(roleInfo);
+
+        AddOnsAssignData.Create(
+            roleInfo,
+            10,
+            roleName,
+            assignTeam.Value.Crewmate,
+            assignTeam.Value.Impostor,
+            assignTeam.Value.Neutral,
+            conflicts,
+            hasAssignData
+        );
+
         return roleInfo;
     }
     public static SimpleRoleInfo CreateForVanilla(

@@ -41,7 +41,6 @@ public sealed class Avenger : AddonBase
 
     private static void SetupCustomOption()
     {
-        AddOnsAssignData.Create(RoleInfo, 10, CustomRoles.Avenger, true, true, true);
         OptionRevengeMode = StringOptionItem.Create(RoleInfo, 20, OptionName.AvengerRevengeMode, revengeModes, 1, false);
         OptionRevengeNums = IntegerOptionItem.Create(RoleInfo, 21, OptionName.AvengerRevengeNums, new(1, 3, 1), 1, false)
             .SetValueFormat(OptionFormat.Players);
