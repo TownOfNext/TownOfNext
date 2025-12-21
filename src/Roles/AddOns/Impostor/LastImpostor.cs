@@ -14,6 +14,7 @@ public sealed class LastImpostor : AddonBase
             "li|绝境",
             "#ff1919",
             assignMode: RoleAssignMode.Toggle,
+            assignCountRule: new(1, 1, 1),
             hasAssignData: false,
             assignTeam: (false, true, false)
         );

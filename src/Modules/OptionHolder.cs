@@ -1128,7 +1128,6 @@ public static class Options
         };
 
         bool broken = role.GetRoleInfo()?.Broken ?? false;
-        bool canSetNum = assignCountRule.MinValue != assignCountRule.MaxValue;
 
         var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, tab, false, selections, role, roleColor)
             .SetColor(broken ? Palette.DisabledGrey : Utils.GetRoleColor(role))
@@ -1139,7 +1138,6 @@ public static class Options
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", assignCountRule, assignCountRule.Step, tab, false)
             .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
-            .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);
 
         CustomRoleSpawnChances.Add(role, spawnOption);
@@ -1147,14 +1145,14 @@ public static class Options
     }
     private static void SetupLoversOptions(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
-        var spawnOption = new RoleSpawnChanceOptionItem(id, CustomRoles.Lovers.ToString(), 0, TabGroup.Addons, false, Rates, CustomRoles.Lovers, Utils.GetRoleColor(CustomRoles.Lovers))
-            .SetColor(Utils.GetRoleColor(CustomRoles.Lovers))
+        var role = CustomRoles.Lovers;
+        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, Rates, role, Utils.GetRoleColor(role))
+            .SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(2, 2, 2), 2, TabGroup.Addons, false).SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
-            .SetHidden(true)
             .SetGameMode(customGameMode);
         
         LoverKnowRoles = BooleanOptionItem.Create(id + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(spawnOption)
@@ -1162,8 +1160,8 @@ public static class Options
         LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(spawnOption)
             .SetGameMode(CustomGameMode.Standard);
 
-        CustomRoleSpawnChances.Add(CustomRoles.Lovers, spawnOption);
-        CustomRoleCounts.Add(CustomRoles.Lovers, countOption);
+        CustomRoleSpawnChances.Add(role, spawnOption);
+        CustomRoleCounts.Add(role, countOption);
     }
     private static void SetupMadmateRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
