@@ -572,7 +572,11 @@ public static class Utils
         }
 
         //SubRoles
-        ProgressText.Append(TicketsStealer.GetProgressText(playerId, comms));
+        var addonClasses = CustomRoleManager.GetAddonByPlayerId(playerId);
+        if (addonClasses != null)
+        {
+            addonClasses.Do(c => ProgressText.Append(c.GetProgressText(comms)));
+        }
 
         return ProgressText.ToString();
     }

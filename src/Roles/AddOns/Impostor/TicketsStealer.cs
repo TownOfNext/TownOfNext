@@ -43,10 +43,9 @@ public sealed class TicketsStealer : AddonBase
         }
         return (votedForId, numVotes, doVote);
     }
-    public static string GetProgressText(byte playerId, bool comms = false)
+    public override string GetProgressText(bool comms = false)
     {
-        if (!Utils.GetPlayerById(playerId)?.Is(CustomRoles.TicketsStealer) ?? true) return "";
-        var votes = (int)((PlayerState.GetByPlayerId(playerId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
+        var votes = (int)((PlayerState.GetByPlayerId(Player.PlayerId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
         return votes > 0 ? Utils.ColorString(RoleInfo.RoleColor.ShadeColor(0.5f), $"+{votes}") : "";
     }
 }

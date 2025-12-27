@@ -1,5 +1,7 @@
+using TONX.Roles.Core.Interfaces;
+
 namespace TONX.Roles.AddOns.Common;
-public sealed class Egoist : AddonBase
+public sealed class Egoist : AddonBase, IOverrideWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.CreateForAddon(
@@ -31,5 +33,15 @@ public sealed class Egoist : AddonBase
     private static void SetupCustomOption()
     {
         OptionImpEgoVisibalToAllies = BooleanOptionItem.Create(RoleInfo, 20, OptionName.ImpEgoistVisibalToAllies, true, false);
+    }
+
+    public void CheckWin(ref CustomWinner WinnerTeam, ref HashSet<byte> WinnerIds)
+    {
+        if ((CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && Player.GetCustomRole().IsCrewmate())
+            || (CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && Player.GetCustomRole().IsImpostor()))
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
+            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        }
     }
 }

@@ -191,14 +191,6 @@ class MurderPlayerPatch
         // 処理は全てCustomRoleManager側で行う
         CustomRoleManager.OnMurderPlayer(__instance, target);
 
-        //看看UP是不是被首刀了
-        if (Main.FirstDied == byte.MaxValue && target.Is(CustomRoles.YouTuber))
-        {
-            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.YouTuber); //UP主被首刀了，哈哈哈哈哈
-            CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-        }
-
         //记录首刀
         if (Main.FirstDied == byte.MaxValue)
             Main.FirstDied = target.PlayerId;

@@ -315,6 +315,10 @@ internal static class GameModeStandard
                     {
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
+                    foreach(var ow in pc.GetAddonClasses().Where(c => c is IOverrideWinner))
+                    {
+                        (ow as IOverrideWinner).CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
+                    }
                 }
 
                 //追加胜利

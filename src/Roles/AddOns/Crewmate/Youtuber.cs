@@ -1,3 +1,5 @@
+using TONX.Modules;
+
 namespace TONX.Roles.AddOns.Crewmate;
 public sealed class YouTuber : AddonBase
 {
@@ -21,4 +23,15 @@ public sealed class YouTuber : AddonBase
     { }
 
     private static List<CustomRoles> Conflicts = new() { CustomRoles.Madmate, CustomRoles.Sheriff };
+
+    public override void OnMurderPlayerAsTarget(MurderInfo info)
+    {
+        //看看UP是不是被首刀了
+        if (Main.FirstDied == byte.MaxValue)
+        {
+            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.YouTuber); //UP主被首刀了，哈哈哈哈哈
+            CustomWinnerHolder.WinnerIds.Add(info.AttemptTuple.target.PlayerId);
+        }
+    }
 }
