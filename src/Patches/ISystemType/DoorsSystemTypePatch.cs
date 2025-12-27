@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Patches.ISystemType;
@@ -15,12 +14,7 @@ public static class DoorsSystemTypeUpdateSystemPatch
             amount = newReader.ReadByte();
             newReader.Recycle();
         }
-        if (player.Is(CustomRoles.Fool) && Fool.OptionImpFoolCanNotOpenDoor.GetBool()) return false;
 
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateDoorsSystem(__instance, amount))
-        {
-            return false;
-        }
-        return true;
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateDoorsSystem(__instance, amount));
     }
 }

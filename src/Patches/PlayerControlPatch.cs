@@ -412,8 +412,6 @@ class ReportDeadBodyPatch
             }
         }
 
-        if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
-
         foreach (var role in CustomRoleManager.AllActiveRolesAndAddonsList.ToList())
         {
             if (role.OnCheckReportDeadBody(__instance, target) == false)

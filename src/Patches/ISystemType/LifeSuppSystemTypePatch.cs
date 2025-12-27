@@ -14,12 +14,7 @@ public static class LifeSuppSystemUpdateSystemPatch
             amount = newReader.ReadByte();
             newReader.Recycle();
         }
-        if (player.Is(CustomRoles.Fool)) return false;
 
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateLifeSuppSystem(__instance, amount))
-        {
-            return false;
-        }
-        return true;
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateLifeSuppSystem(__instance, amount));
     }
 }

@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Flashman : AddonBase
 {
@@ -32,5 +34,10 @@ public sealed class Flashman : AddonBase
     {
         OptionSpeed = FloatOptionItem.Create(RoleInfo, 20, OptionName.FlashmanSpeed, new(0.25f, 5f, 0.25f), 2.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        Main.AllPlayerSpeed[Player.PlayerId] = OptionSpeed.GetFloat();
     }
 }

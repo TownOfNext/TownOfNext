@@ -198,6 +198,13 @@ public abstract class BaseCore : IDisposable
     /// <summary>
     /// 当有人投票时触发
     /// </summary>
+    /// <param name="sourceVotedForId">被投票者的ID</param>
+    public virtual void OnVote(byte sourceVotedForId)
+    { }
+
+    /// <summary>
+    /// 当有人投票时触发
+    /// </summary>
     /// <param name="voterId">投票者的ID</param>
     /// <param name="sourceVotedForId">被投票者的ID</param>
     /// <param name="roleVoteFor">修改此值以更改投票目标</param>

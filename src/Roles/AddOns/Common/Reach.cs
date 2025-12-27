@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Reach : AddonBase
 {
@@ -17,4 +19,9 @@ public sealed class Reach : AddonBase
         player
     )
     { }
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetInt(Int32OptionNames.KillDistance, 2);
+    }
 }

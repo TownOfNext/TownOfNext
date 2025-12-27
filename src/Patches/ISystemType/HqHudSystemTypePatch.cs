@@ -16,14 +16,8 @@ public static class HqHudSystemTypeUpdateSystemPatch
         }
 
         var tags = (HqHudSystemType.Tags)(amount & HqHudSystemType.TagMask);
-        var playerRole = player.GetRoleClass();
-        if (player.Is(CustomRoles.Fool)) return false;
-
-        if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHqHudSystem(__instance, amount))
-        {
-            return false;
-        }
-        return true;
+        
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateHqHudSystem(__instance, amount));
     }
     public static void Postfix()
     {

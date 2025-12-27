@@ -1,5 +1,7 @@
+using TONX.Roles.Core.Interfaces;
+
 namespace TONX.Roles.AddOns.Common;
-public sealed class Fool : AddonBase
+public sealed class Fool : AddonBase, ISystemTypeUpdateHook
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.CreateForAddon(
@@ -34,4 +36,16 @@ public sealed class Fool : AddonBase
         OptionImpFoolCanNotSabotage = BooleanOptionItem.Create(RoleInfo, 20, OptionName.ImpFoolCanNotSabotage, true, false);
         OptionImpFoolCanNotOpenDoor = BooleanOptionItem.Create(RoleInfo, 21, OptionName.FoolCanNotOpenDoor, false, false);
     }
+
+    public override bool OnSabotage(PlayerControl player, SystemTypes systemType)
+    {
+        return !(OptionImpFoolCanNotSabotage.GetBool() && player.IsImp());
+    }
+    bool ISystemTypeUpdateHook.UpdateReactorSystem(ReactorSystemType reactorSystem, byte amount) => false;
+    bool ISystemTypeUpdateHook.UpdateHeliSabotageSystem(HeliSabotageSystem heliSabotageSystem, byte amount) => false;
+    bool ISystemTypeUpdateHook.UpdateLifeSuppSystem(LifeSuppSystemType lifeSuppSystem, byte amount) => false;
+    bool ISystemTypeUpdateHook.UpdateHqHudSystem(HqHudSystemType hqHudSystemType, byte amount) => false;
+    bool ISystemTypeUpdateHook.UpdateSwitchSystem(SwitchSystem switchSystem, byte amount) => false;
+    bool ISystemTypeUpdateHook.UpdateDoorsSystem(DoorsSystemType doorsSystem, byte amount)
+        => !OptionImpFoolCanNotOpenDoor.GetBool();
 }

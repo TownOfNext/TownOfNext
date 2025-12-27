@@ -20,4 +20,9 @@ public sealed class Oblivious : AddonBase
     { }
 
     private static List<CustomRoles> Conflicts = new() { CustomRoles.DetectiveTONX, CustomRoles.Cleaner, CustomRoles.Mortician, CustomRoles.Medium };
+
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
+    {
+        return !Is(reporter) || target == null;
+    }
 }

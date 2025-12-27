@@ -51,14 +51,8 @@ public static class SwitchSystemUpdateSystemPatch
                 return false;
             }
         }
-        if (player.Is(CustomRoles.Fool)) return false;
-
 
         // ロールの処理
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateSwitchSystem(__instance, amount))
-        {
-            return false;
-        }
-        return true;
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateSwitchSystem(__instance, amount));
     }
 }

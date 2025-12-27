@@ -18,9 +18,7 @@ public sealed class Bait : AddonBase
         RoleInfo,
         player
     )
-    {
-        CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
-    }
+    { }
 
     public static OptionItem OptionReportDelayMin;
     public static OptionItem OptionReportDelayMax;
@@ -41,7 +39,7 @@ public sealed class Bait : AddonBase
             .SetValueFormat(OptionFormat.Seconds);
         OptionDelayNotifyForKiller = BooleanOptionItem.Create(RoleInfo, 22, OptionName.BaitDelayNotify, true, false);
     }
-    private static void OnMurderPlayerOthers(MurderInfo info)
+    public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (!target.Is(CustomRoles.Bait) || info.IsSuicide) return;

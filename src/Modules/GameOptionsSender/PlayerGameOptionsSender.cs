@@ -85,33 +85,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             AURoleOptions.NoisemakerImpostorAlert = true;
         }
-        var roleClass = player.GetRoleClass();
-        roleClass?.ApplyGameOptions(opt);
-        foreach (var subRole in player.GetCustomSubRoles())
-        {
-            switch (subRole)
-            {
-                case CustomRoles.Watcher:
-                    opt.SetBool(BoolOptionNames.AnonymousVotes, false);
-                    break;
-                case CustomRoles.Flashman:
-                    Main.AllPlayerSpeed[player.PlayerId] = Flashman.OptionSpeed.GetFloat();
-                    break;
-                case CustomRoles.Lighter:
-                    opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Lighter.OptionVistion.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Lighter.OptionVistion.GetFloat());
-                    break;
-                case CustomRoles.Bewilder:
-                    opt.SetVision(false);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
-                    break;
-                case CustomRoles.Reach:
-                    opt.SetInt(Int32OptionNames.KillDistance, 2);
-                    break;
-            }
-        }
+        player.MultipleVoidFunc<BaseCore>(b => b?.ApplyGameOptions(opt));
 
         // 为迷惑者的凶手
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))

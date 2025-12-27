@@ -16,9 +16,7 @@ public sealed class Avenger : AddonBase
         RoleInfo,
         player
     )
-    {
-        CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
-    }
+    { }
 
     public static OptionItem OptionRevengeMode;
     public static OptionItem OptionRevengeNums;
@@ -47,8 +45,9 @@ public sealed class Avenger : AddonBase
         OptionRevengeOnKilled = BooleanOptionItem.Create(RoleInfo, 22, OptionName.AvengerRevengeOnKilled, true, false);
         OptionRevengeOnSuicide = BooleanOptionItem.Create(RoleInfo, 23, OptionName.AvengerRevengeOnSuicide, true, false);
     }
+
     // FIX ME : Recursive Murder
-    private static void OnMurderPlayerOthers(MurderInfo info)
+    public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (!target.Is(CustomRoles.Avenger)) return;

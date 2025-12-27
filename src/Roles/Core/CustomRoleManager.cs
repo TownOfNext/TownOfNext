@@ -34,6 +34,24 @@ public static class CustomRoleManager
         }
         return null;
     }
+    public static void MultipleVoidFunc<T>(this PlayerControl player, Action<T> action) where T : class
+    {
+        if (player == null) throw new ArgumentNullException(nameof(player));
+        if (action == null) throw new ArgumentNullException(nameof(action));
+
+        var interfaceInstances = player.GetRoleAndAddonClasses()?.Where(c => c is T).Cast<T>().ToList() ?? new List<T>();
+        interfaceInstances?.Do(action);
+    }
+    public static bool MultipleBooleanFunc<T>(this PlayerControl player, Func<T, bool> predicate, bool defaultBool = true) where T : class
+    {
+        if (player == null) throw new ArgumentNullException(nameof(player));
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        var interfaceInstances = player.GetRoleAndAddonClasses()?.Where(c => c is T).Cast<T>().ToList() ?? new List<T>();
+        var results = interfaceInstances.Select(predicate).ToList();
+        if (results.Count == 0) return defaultBool;
+        return results.All(r => r == defaultBool) ? defaultBool : !defaultBool;
+    }
     public static void Do<T>(this List<T> list, Action<T> action) => list.ToArray().Do(action);
     // == CheckMurder 相关处理 ==
     public static Dictionary<byte, MurderInfo> CheckMurderInfos = new();
@@ -186,6 +204,8 @@ public static class CustomRoleManager
         //ターゲットの処理
         var targetRole = attemptTarget.GetRoleClass();
         targetRole?.OnMurderPlayerAsTarget(info);
+        var targetAddons = attemptTarget.GetAddonClasses();
+        targetAddons?.Do(a => a.OnMurderPlayerAsTarget(info));
 
         //その他視点の処理があれば実行
         foreach (var onMurderPlayer in OnMurderPlayerOthers.ToArray())
@@ -284,7 +304,6 @@ public static class CustomRoleManager
             }
         }
         if (Options.DeadImpCantSabotage.GetBool() && player.IsImp()) cancel = true;
-        if (Fool.OptionImpFoolCanNotSabotage.GetBool() && player.Is(CustomRoles.Fool) && player.IsImp()) cancel = true;
         return !cancel;
     }
 

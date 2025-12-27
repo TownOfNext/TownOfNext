@@ -16,9 +16,7 @@ public sealed class Beartrap : AddonBase
         RoleInfo,
         player
     )
-    {
-        CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
-    }
+    { }
 
     public static OptionItem OptionBlockMoveTime;
 
@@ -32,7 +30,7 @@ public sealed class Beartrap : AddonBase
         OptionBlockMoveTime = FloatOptionItem.Create(RoleInfo, 20, OptionName.BeartrapBlockMoveTime, new(1f, 180f, 1f), 5f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    private static void OnMurderPlayerOthers(MurderInfo info)
+    public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (!target.Is(CustomRoles.Beartrap) || info.IsSuicide) return;

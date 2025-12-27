@@ -1,5 +1,7 @@
+using TONX.Roles.Core.Interfaces;
+
 namespace TONX.Roles.AddOns.Common;
-public sealed class Seer : AddonBase
+public sealed class Seer : AddonBase, IKillFlashSeeable
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.CreateForAddon(
@@ -20,4 +22,6 @@ public sealed class Seer : AddonBase
     { }
 
     private static List<CustomRoles> Conflicts = new() { CustomRoles.Mortician };
+
+    public bool CheckKillFlash(MurderInfo info) => true;
 }

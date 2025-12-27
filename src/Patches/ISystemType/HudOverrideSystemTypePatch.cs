@@ -15,14 +15,7 @@ public static class HudOverrideSystemTypeUpdateSystemPatch
             newReader.Recycle();
         }
 
-        var playerRole = player.GetRoleClass();
-        if (player.Is(CustomRoles.Fool)) return false;
-
-        if (playerRole is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateHudOverrideSystem(__instance, amount))
-        {
-            return false;
-        }
-        return true;
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateHudOverrideSystem(__instance, amount));
     }
     public static void Postfix()
     {

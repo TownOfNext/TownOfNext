@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Watcher : AddonBase
 {
@@ -17,4 +19,9 @@ public sealed class Watcher : AddonBase
         player
     )
     { }
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetBool(BoolOptionNames.AnonymousVotes, false);
+    }
 }

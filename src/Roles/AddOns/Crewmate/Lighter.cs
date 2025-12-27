@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Lighter : AddonBase
 {
@@ -32,5 +34,12 @@ public sealed class Lighter : AddonBase
     {
         OptionVistion = FloatOptionItem.Create(RoleInfo, 20, OptionName.LighterVision, new(0.5f, 5f, 0.25f), 1.5f, false)
             .SetValueFormat(OptionFormat.Multiplier);
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetVision(true);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, OptionVistion.GetFloat());
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, OptionVistion.GetFloat());
     }
 }

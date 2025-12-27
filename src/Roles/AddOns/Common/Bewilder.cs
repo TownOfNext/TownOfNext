@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Bewilder : AddonBase
 {
@@ -32,5 +34,12 @@ public sealed class Bewilder : AddonBase
     {
         OptionVision = FloatOptionItem.Create(RoleInfo, 20, OptionName.BewilderVision, new(0f, 5f, 0.05f), 0.6f, false)
             .SetValueFormat(OptionFormat.Multiplier);
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, OptionVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, OptionVision.GetFloat());
     }
 }

@@ -1,3 +1,5 @@
+using Rewired;
+
 namespace TONX.Roles.AddOns.Common;
 public sealed class Tiebreaker : AddonBase
 {
@@ -17,35 +19,35 @@ public sealed class Tiebreaker : AddonBase
         RoleInfo,
         player
     )
-    {
-        TiebreakerVotes = new();
-    }
+    { }
 
-    private static Dictionary<byte, byte> TiebreakerVotes = new();
+    private byte TiebreakerVote = byte.MaxValue;
 
     private static List<CustomRoles> Conflicts = new() { CustomRoles.Dictator };
 
-    public static void OnVote(byte voter, byte target)
+    public override void OnVote(byte target)
     {
-        if (Utils.GetPlayerById(voter).Is(CustomRoles.Tiebreaker))
-        {
-            TiebreakerVotes.TryAdd(voter, target);
-            TiebreakerVotes[voter] = target;
-        }
+        if (Utils.GetPlayerById(target) != null) TiebreakerVote = target;
     }
     public static bool ChooseExileTarget(byte[] mostVotedPlayers, out byte target)
     {
         target = byte.MaxValue;
-        if (mostVotedPlayers.Count(TiebreakerVotes.ContainsValue) == 1)
+        List<byte> votes = new();
+        foreach (var tieBreaker in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Tiebreaker)))
         {
-            target = mostVotedPlayers.FirstOrDefault(TiebreakerVotes.ContainsValue);
+            var bclass = tieBreaker.GetAddonClasses().FirstOrDefault(c => c is Tiebreaker) as Tiebreaker;
+            votes.Add(bclass.TiebreakerVote);
+        }
+        if (mostVotedPlayers.Count(votes.Contains) == 1)
+        {
+            target = mostVotedPlayers.FirstOrDefault(votes.Contains);
             Logger.Info($"Tiebreaker Override Tie => {Utils.GetPlayerById(target)?.GetNameWithRole()}", "Tiebreaker");
             return true;
         }
         return false;
     }
-    public static void OnMeetingStart()
+    public override void OnStartMeeting()
     {
-        TiebreakerVotes = new();
+        TiebreakerVote = byte.MaxValue;
     }
 }

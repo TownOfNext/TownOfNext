@@ -15,14 +15,8 @@ public static class ReactorSystemTypeUpdateSystemPatch
             newReader.Recycle();
         }
         __state = amount;
-        if (player.Is(CustomRoles.Fool)) return false;
 
-        if (player.GetRoleClass() is ISystemTypeUpdateHook systemTypeUpdateHook && !systemTypeUpdateHook.UpdateReactorSystem(__instance, amount))
-        {
-            return false;
-        }
-
-        return true;
+        return player.MultipleBooleanFunc<ISystemTypeUpdateHook>(s => s.UpdateReactorSystem(__instance, amount));
     }
 
 

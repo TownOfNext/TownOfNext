@@ -33,13 +33,15 @@ public sealed class TicketsStealer : AddonBase
             .SetValueFormat(OptionFormat.Votes);
     }
 
-    public static void ModifyVote(ref byte voterId, ref byte voteFor, ref bool isIntentional, ref int numVotes, ref bool doVote)
+    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
     {
-        if (Utils.GetPlayerById(voterId)?.Is(CustomRoles.TicketsStealer) ?? false)
+        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
+        if (voterId == Player.PlayerId)
         {
             numVotes += (int)((PlayerState.GetByPlayerId(voterId)?.GetKillCount(true) ?? 0) * OptionTicketsPerKill.GetFloat());
             Logger.Info($"TicketsStealer Additional Votes: {numVotes}", "TicketsStealer.OnVote");
         }
+        return (votedForId, numVotes, doVote);
     }
     public static string GetProgressText(byte playerId, bool comms = false)
     {

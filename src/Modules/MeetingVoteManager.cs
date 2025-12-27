@@ -90,9 +90,6 @@ public class MeetingVoteManager
             }
         }
 
-        //SubRoles
-        TicketsStealer.ModifyVote(ref voter, ref voteFor, ref isIntentional, ref numVotes, ref doVote);
-
         if (doVote)
         {
             vote.DoVote(voteFor, numVotes);
@@ -317,7 +314,7 @@ public class MeetingVoteManager
             logger.Info($"投票：{Utils.GetPlayerById(Voter).GetNameWithRole()} => {GetVoteName(voteTo)} x {numVotes}");
             VotedFor = voteTo;
             NumVotes = numVotes;
-            Tiebreaker.OnVote(Voter, voteTo);
+            Utils.GetPlayerById(Voter)?.MultipleVoidFunc<BaseCore>(b => b.OnVote(voteTo));
         }
     }
 

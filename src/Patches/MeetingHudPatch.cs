@@ -187,7 +187,6 @@ public static class MeetingHudPatch
             {
                 CustomRoleManager.AllActiveRolesAndAddonsList.ToList().Do(role => role.OnStartMeeting());
                 MeetingStartNotify.OnMeetingStart();
-                Tiebreaker.OnMeetingStart();
             }
 
             foreach (var pva in __instance.playerStates)
