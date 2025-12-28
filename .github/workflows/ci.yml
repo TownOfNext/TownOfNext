@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, ready_for_review]
+    branches:
+      - main
+
+jobs:
+  build:
+    # Skip if PR is in draft mode
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Add BepInEx NuGet source
+        run: dotnet nuget add source https://nuget.bepinex.dev/v3/index.json --name bepinex
+
+      - name: Restore dependencies
+        run: dotnet restore TONX.sln
+
+      - name: Build Release
+        run: dotnet build TONX.sln -c Release -p:Platform=Windows --no-restore
+
+      - name: Upload TONX.dll
+        uses: actions/upload-artifact@v4
+        with:
+          name: TONX
+          path: Export/Windows/Release/net6.0/TONX.dll
+          if-no-files-found: error
+

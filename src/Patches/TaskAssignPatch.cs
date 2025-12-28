@@ -1,0 +1,165 @@
+using AmongUs.GameOptions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TONX.Roles.AddOns.Common;
+using TONX.Roles.AddOns.Crewmate;
+using TONX.Roles.Impostor;
+
+namespace TONX;
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.AddTasksFromList))]
+class AddTasksFromListPatch
+{
+    public static void Prefix(ShipStatus __instance,
+        [HarmonyArgument(4)] Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unusedTasks)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        if (!Options.DisableTasks.GetBool()) return;
+        List<NormalPlayerTask> disabledTasks = new();
+        for (var i = 0; i < unusedTasks.Count; i++)
+        {
+            var task = unusedTasks[i];
+            if (task.TaskType == TaskTypes.SwipeCard && Options.DisableSwipeCard.GetBool()) disabledTasks.Add(task); // 刷卡
+            if (task.TaskType == TaskTypes.SubmitScan && Options.DisableSubmitScan.GetBool()) disabledTasks.Add(task); // 扫描
+            if (task.TaskType == TaskTypes.UnlockSafe && Options.DisableUnlockSafe.GetBool()) disabledTasks.Add(task); // 解锁保险库
+            if (task.TaskType == TaskTypes.UploadData && Options.DisableUploadData.GetBool()) disabledTasks.Add(task); // 上传数据
+            if (task.TaskType == TaskTypes.StartReactor && Options.DisableStartReactor.GetBool()) disabledTasks.Add(task); // 启动核反应堆
+            if (task.TaskType == TaskTypes.ResetBreakers && Options.DisableResetBreaker.GetBool()) disabledTasks.Add(task); // 重置断路器
+            if (task.TaskType == TaskTypes.FixWeatherNode && Options.DisableFixWeatherNode.GetBool()) disabledTasks.Add(task); // 修复气候节点
+        }
+        foreach (var task in disabledTasks)
+        {
+            Logger.Msg("削除: " + task.TaskType.ToString(), "AddTask");
+            unusedTasks.Remove(task);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.RpcSetTasks))]
+class RpcSetTasksPatch
+{
+    //タスクを割り当ててRPCを送る処理が行われる直前にタスクを上書きするPatch
+    //バニラのタスク割り当て処理自体には干渉しない
+    public static void Prefix(NetworkedPlayerInfo __instance,
+    [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
+    {
+        //null対策
+        if (Main.RealOptionsData == null)
+        {
+            Logger.Warn("警告:RealOptionsDataがnullです。", "RpcSetTasksPatch");
+            return;
+        }
+
+        var pc = Utils.GetPlayerById(__instance.PlayerId);
+        CustomRoles? RoleNullable = pc?.GetCustomRole();
+        if (RoleNullable == null) return;
+        CustomRoles role = RoleNullable.Value;
+
+        //デフォルトのタスク数
+        bool hasCommonTasks = true;
+        int NumLongTasks = Main.NormalOptions.NumLongTasks;
+        int NumShortTasks = Main.NormalOptions.NumShortTasks;
+
+        if (Options.OverrideTasksData.AllData.TryGetValue(role, out var data) && data.doOverride.GetBool())
+        {
+            hasCommonTasks = data.assignCommonTasks.GetBool(); // コモンタスク(通常タスク)を割り当てるかどうか
+                                                               // 割り当てる場合でも再割り当てはされず、他のクルーと同じコモンタスクが割り当てられる。
+            NumLongTasks = data.numLongTasks.GetInt(); // 割り当てるロングタスクの数
+            NumShortTasks = data.numShortTasks.GetInt(); // 割り当てるショートタスクの数
+                                                         // ロングとショートは常時再割り当てが行われる。
+        }
+
+        //背叛告密的任务覆盖
+        if (pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))
+        {
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = Madmate.MadSnitchTasks.GetInt();
+        }
+
+        //管理员和摆烂人没有任务
+        if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.KB_Normal))
+        {
+            hasCommonTasks = false;
+            NumShortTasks = 0;
+            NumLongTasks = 0;
+        }
+
+        //加班狂加班咯~
+        if (pc.Is(CustomRoles.Workhorse))
+            (hasCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
+
+        //资本主义要祸害人咯~
+        NumShortTasks = Capitalist.GetShortTasks(pc.PlayerId, NumShortTasks);
+
+        if (taskTypeIds.Count == 0) hasCommonTasks = false; //タスク再配布時はコモンを0に
+        if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //タスク0対策
+        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //変更点がない場合
+
+        //割り当て可能なタスクのIDが入ったリスト
+        //本来のRpcSetTasksの第二引数のクローン
+        Il2CppSystem.Collections.Generic.List<byte> TasksList = new();
+        foreach (var num in taskTypeIds)
+            TasksList.Add(num);
+
+        //参考:ShipStatus.Begin
+        //不要な割り当て済みのタスクを削除する処理
+        //コモンタスクを割り当てる設定ならコモンタスク以外を削除
+        //コモンタスクを割り当てない設定ならリストを空にする
+        int defaultCommonTasksNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
+        if (hasCommonTasks) TasksList.RemoveRange(defaultCommonTasksNum, TasksList.Count - defaultCommonTasksNum);
+        else TasksList.Clear();
+
+        //割り当て済みのタスクが入れられるHashSet
+        //同じタスクが複数割り当てられるのを防ぐ
+        Il2CppSystem.Collections.Generic.HashSet<TaskTypes> usedTaskTypes = new();
+        int start2 = 0;
+        int start3 = 0;
+
+        //割り当て可能なロングタスクのリスト
+        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
+        foreach (var task in ShipStatus.Instance.LongTasks)
+            LongTasks.Add(task);
+        Shuffle<NormalPlayerTask>(LongTasks);
+
+        //割り当て可能なショートタスクのリスト
+        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
+        foreach (var task in ShipStatus.Instance.ShortTasks)
+            ShortTasks.Add(task);
+        Shuffle<NormalPlayerTask>(ShortTasks);
+
+        //実際にAmong Us側で使われているタスクを割り当てる関数を使う。
+        ShipStatus.Instance.AddTasksFromList(
+            ref start2,
+            NumLongTasks,
+            TasksList,
+            usedTaskTypes,
+            LongTasks
+        );
+        ShipStatus.Instance.AddTasksFromList(
+            ref start3,
+            NumShortTasks,
+            TasksList,
+            usedTaskTypes,
+            ShortTasks
+        );
+
+        //タスクのリストを配列(Il2CppStructArray)に変換する
+        taskTypeIds = new Il2CppStructArray<byte>(TasksList.Count);
+        for (int i = 0; i < TasksList.Count; i++)
+        {
+            taskTypeIds[i] = TasksList[i];
+        }
+
+    }
+    public static void Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
+    {
+        for (int i = 0; i < list.Count - 1; i++)
+        {
+            T obj = list[i];
+            int rand = UnityEngine.Random.Range(i, list.Count);
+            list[i] = list[rand];
+            list[rand] = obj;
+        }
+    }
+}

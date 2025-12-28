@@ -2,13 +2,14 @@
 *.editorconfig
 
 .vs/
+.idea/
 
 Export/
-TONX/obj/
+*/obj/
+*/bin/
 
-TONX/Properties/PublishProfiles/
-TONX/FodyWeavers.xsd
+src/Properties/PublishProfiles/
+src/FodyWeavers.xsd
 
 *Sponsor.xlsx
 /Assets/~$Roles ID.xlsx
-/obj
