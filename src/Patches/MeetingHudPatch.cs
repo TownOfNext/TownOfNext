@@ -37,13 +37,13 @@ public static class MeetingHudPatch
         if (meetingVoteManager == null) yield break;
 
         var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
-        foreach (var data in swappedPlayers)
+        foreach (var (Swapper, Target1, Target2, ShouldAnimate) in swappedPlayers)
         {
-            if (!data.ShouldAnimate) continue;
-            if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
+            if (!ShouldAnimate) continue;
+            if ((Utils.GetPlayerById(Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(Target2)?.Data?.IsDead ?? true)) continue;
 
-            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item2);
-            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item3);
+            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == Target1);
+            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == Target2);
             if (pva1 == null || pva2 == null) continue;
 
             var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
