@@ -8,8 +8,7 @@ public sealed class Noisemaker : RoleBase
         SimpleRoleInfo.CreateForVanilla(
             typeof(Noisemaker), 
             player => new Noisemaker(player), 
-            RoleTypes.Noisemaker,
-            "#8cffff"
+            RoleTypes.Noisemaker
         );
     public Noisemaker(PlayerControl player)
     : base(

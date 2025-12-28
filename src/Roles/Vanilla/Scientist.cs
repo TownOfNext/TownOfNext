@@ -8,8 +8,7 @@ public sealed class Scientist : RoleBase
         SimpleRoleInfo.CreateForVanilla(
             typeof(Scientist),
             player => new Scientist(player),
-            RoleTypes.Scientist,
-            "#8cffff"
+            RoleTypes.Scientist
         );
     public Scientist(PlayerControl player)
     : base(

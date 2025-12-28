@@ -33,7 +33,7 @@ public sealed class Beartrap : AddonBase
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!target.Is(CustomRoles.Beartrap) || info.IsSuicide) return;
+        if (info.IsSuicide) return;
 
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
         Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeed����ۤɂ�������ΤǴ��뤷�Ƥ��ޤ���

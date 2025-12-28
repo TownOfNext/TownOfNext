@@ -20,7 +20,9 @@ public sealed class Bewilder : AddonBase
         RoleInfo,
         player
     )
-    { }
+    {
+        CustomRoleManager.ApplyGameOptionsOthers.Add(ApplyGameOptionsOthers);
+    }
 
     public static OptionItem OptionVision;
 
@@ -41,5 +43,16 @@ public sealed class Bewilder : AddonBase
         opt.SetVision(false);
         opt.SetFloat(FloatOptionNames.CrewLightMod, OptionVision.GetFloat());
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, OptionVision.GetFloat());
+    }
+    private static void ApplyGameOptionsOthers(PlayerControl player, IGameOptions opt)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        // 为迷惑者的凶手
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, OptionVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, OptionVision.GetFloat());
+        }
     }
 }

@@ -50,7 +50,6 @@ public sealed class Avenger : AddonBase
     public override void OnMurderPlayerAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!target.Is(CustomRoles.Avenger)) return;
         if (info.IsSuicide
             ? !OptionRevengeOnSuicide.GetBool()
             : !OptionRevengeOnKilled.GetBool()
@@ -86,12 +85,15 @@ public sealed class Avenger : AddonBase
             }
         }
 
-        foreach (var pc in targets)
+        _ = new LateTask(() =>
         {
-            pc.SetRealKiller(target);
-            pc.SetDeathReason(CustomDeathReason.Revenge);
-            target.RpcMurderPlayer(pc);
-            Logger.Info($"Avenger {target.GetNameWithRole()} revenged => {pc.GetNameWithRole()}", "Avenger.OnMurderPlayerOthers");
-        }
+            foreach (var pc in targets)
+            {
+                pc.SetRealKiller(target);
+                pc.SetDeathReason(CustomDeathReason.Revenge);
+                target.RpcMurderPlayer(pc);
+                Logger.Info($"Avenger {target.GetNameWithRole()} revenged => {pc.GetNameWithRole()}", "Avenger.OnMurderPlayerAsTarget");
+            }
+        }, 0.2f, "AvengerRevenge");
     }
 }

@@ -75,9 +75,7 @@ public static class InGameRoleInfoMenu
     {
         if (!Fill || !Menu) Init();
 
-        AddonsInfoTMP.text = role.IsAddon()
-            ? AddonDescription.FullFormatHelpBySubRole(role, false)
-            : role.GetRoleInfo()?.Description?.RoleInfoHelp ?? "None";
+        AddonsInfoTMP.text = role.GetRoleInfo()?.Description?.RoleInfoHelp ?? "None";
         MainInfoTMP.text = string.Empty;
     }
 

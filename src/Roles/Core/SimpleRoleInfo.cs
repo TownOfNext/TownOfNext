@@ -180,6 +180,7 @@ public class SimpleRoleInfo
         TabGroup tab = TabGroup.GameSettings,
         bool experimental = false,
         bool broken = false,
+        HiddenRoleInfo Hidden = null,
         RoleAssignMode assignMode = RoleAssignMode.Rate,
         IntegerValueRule assignCountRule = null,
         CustomRoles[] assignUnitRoles = null,
@@ -209,7 +210,7 @@ public class SimpleRoleInfo
                 null,
                 experimental,
                 broken,
-                null,
+                Hidden,
                 assignMode,
                 assignCountRule,
                 assignUnitRoles

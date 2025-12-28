@@ -8,8 +8,7 @@ public sealed class Tracker : RoleBase
         SimpleRoleInfo.CreateForVanilla(
             typeof(Tracker),
             player => new Tracker(player),
-            RoleTypes.Tracker,
-            "#8cffff"
+            RoleTypes.Tracker
         );
     public Tracker(PlayerControl player)
     : base(

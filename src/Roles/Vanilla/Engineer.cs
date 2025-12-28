@@ -8,8 +8,7 @@ public sealed class Engineer : RoleBase
         SimpleRoleInfo.CreateForVanilla(
             typeof(Engineer),
             player => new Engineer(player),
-            RoleTypes.Engineer,
-            "#8cffff"
+            RoleTypes.Engineer
         );
     public Engineer(PlayerControl player)
     : base(

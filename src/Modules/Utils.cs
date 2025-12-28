@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Modules;
+using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
@@ -282,7 +283,7 @@ public static class Utils
                     || (seer.AmOwner && Main.GodMode.Value)
                     || (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
 
-                    || (seer.Is(CustomRoles.Lovers) && seen.Is(CustomRoles.Lovers) && Options.LoverKnowRoles.GetBool())
+                    || (seer.Is(CustomRoles.Lovers) && seen.Is(CustomRoles.Lovers) && Lovers.LoverKnowRoles.GetBool())
 
                     || (seer.Is(CustomRoleTypes.Impostor) && seen.Is(CustomRoleTypes.Impostor) && Options.ImpKnowAlliesRole.GetBool())
                     || (seer.Is(CustomRoles.Madmate) && seen.Is(CustomRoleTypes.Impostor) && Options.MadmateKnowWhosImp.GetBool())
@@ -533,12 +534,12 @@ public static class Utils
     {
         return pc != null && (pc.GetRoleClass()?.CanBeMadmate ?? false) && !pc.Is(CustomRoles.Madmate)
         && !(
-            (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Mayor) && !Options.MayorCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.NiceGuesser) && !Options.NGuesserCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && !Options.JudgeCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Swapper) && !Options.SwapperCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Sheriff) && !Madmate.SheriffCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Mayor) && !Madmate.MayorCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.NiceGuesser) && !Madmate.NGuesserCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Snitch) && !Madmate.SnitchCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Judge) && !Madmate.JudgeCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Swapper) && !Madmate.SwapperCanBeMadmate.GetBool()) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Egoist)
             );
@@ -1009,8 +1010,6 @@ public static class Utils
                 SelfSuffix.Append(seerRole?.GetSuffix(seer, isForMeeting: isForMeeting));
                 //seerに関わらず発動するSuffix
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
-
-                //KB自身名字后缀
 
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isForMeeting);

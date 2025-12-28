@@ -96,19 +96,6 @@ public static class Options
 
     public static OptionItem AddonsNumLimit;
 
-    public static OptionItem LoverKnowRoles;
-    public static OptionItem LoverSuicide;
-
-    public static OptionItem MadmateSpawnMode;
-    public static OptionItem MadmateCountMode;
-    public static OptionItem SheriffCanBeMadmate;
-    public static OptionItem MayorCanBeMadmate;
-    public static OptionItem NGuesserCanBeMadmate;
-    public static OptionItem SnitchCanBeMadmate;
-    public static OptionItem JudgeCanBeMadmate;
-    public static OptionItem SwapperCanBeMadmate;
-    public static OptionItem MadSnitchTasks;
-
     //// 游戏设置 ////
 
     public static OptionItem EnableGM;
@@ -380,19 +367,6 @@ public static class Options
     #endregion
 
     /* 选项 */
-
-    public static readonly string[] madmateSpawnMode =
-    {
-        "MadmateSpawnMode.Assign",
-        "MadmateSpawnMode.FirstKill",
-        "MadmateSpawnMode.SelfVote",
-    };
-    public static readonly string[] madmateCountMode =
-    {
-        "MadmateCountMode.None",
-        "MadmateCountMode.Imp",
-        "MadmateCountMode.Crew",
-    };
     public static readonly string[] suffixModes =
     {
         "SuffixMode.None",
@@ -596,7 +570,7 @@ public static class Options
                 .SetGameMode(CustomGameMode.Standard)
                 .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Addon));
 
-            SetupLoversOptions(80100);
+            // SetupLoversOptions(80100);
         }
 
         foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
@@ -613,7 +587,7 @@ public static class Options
                 .SetGameMode(CustomGameMode.Standard)
                 .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
 
-            SetupMadmateRoleOptionsToggle(80200);
+            // SetupMadmateRoleOptionsToggle(80200);
         }
 
         foreach (var info in sortedAddonInfo.Where(role => role.CustomRoleType == CustomRoleTypes.Addon && role.Experimental == setupExpNow))
@@ -1139,51 +1113,6 @@ public static class Options
             .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-    private static void SetupLoversOptions(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
-    {
-        var role = CustomRoles.Lovers;
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, Rates, role, Utils.GetRoleColor(role))
-            .SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(2, 2, 2), 2, TabGroup.Addons, false).SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetGameMode(customGameMode);
-        
-        LoverKnowRoles = BooleanOptionItem.Create(id + 4, "LoverKnowRoles", true, TabGroup.Addons, false).SetParent(spawnOption)
-            .SetGameMode(CustomGameMode.Standard);
-        LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false).SetParent(spawnOption)
-            .SetGameMode(CustomGameMode.Standard);
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-    private static void SetupMadmateRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
-    {
-        var role = CustomRoles.Madmate;
-        var spawnOption = new RoleSpawnChanceOptionItem(id, role.ToString(), 0, TabGroup.Addons, false, RoleSpawnToggle, role, Utils.GetRoleColor(role))
-            .SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, TabGroup.Addons, false).SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        MadmateSpawnMode = StringOptionItem.Create(id + 10, "MadmateSpawnMode", madmateSpawnMode, 0, TabGroup.Addons, false).SetParent(spawnOption);
-        MadmateCountMode = StringOptionItem.Create(id + 11, "MadmateCountMode", madmateCountMode, 0, TabGroup.Addons, false).SetParent(spawnOption);
-        SheriffCanBeMadmate = BooleanOptionItem.Create(id + 12, "SheriffCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-        MayorCanBeMadmate = BooleanOptionItem.Create(id + 13, "MayorCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-        NGuesserCanBeMadmate = BooleanOptionItem.Create(id + 14, "NGuesserCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-        SnitchCanBeMadmate = BooleanOptionItem.Create(id + 15, "SnitchCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-        MadSnitchTasks = IntegerOptionItem.Create(id + 16, "MadSnitchTasks", new(1, 99, 1), 3, TabGroup.Addons, false).SetParent(SnitchCanBeMadmate)
-            .SetValueFormat(OptionFormat.Pieces);
-        JudgeCanBeMadmate = BooleanOptionItem.Create(id + 17, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-        SwapperCanBeMadmate = BooleanOptionItem.Create(id + 18, "SwapperCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);

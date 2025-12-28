@@ -40,7 +40,8 @@ public abstract class RoleDescription
             builder.AppendFormat("<size={0}>{1}", FirstHeaderSize, GetRoleString(RoleInfo.RoleName.ToString()).Color(RoleInfo.RoleColor.ToReadableColor()));
             // 职业阵营 / 原版职业
             var roleTeam = RoleInfo.CustomRoleType;
-            builder.AppendFormat("<size={0}> ({1}, {2})\n", BodySize, GetString($"Team{roleTeam}"), GetString("BaseOn") + GetString(RoleInfo.BaseRoleType.Invoke().ToString()));
+            if (roleTeam is CustomRoleTypes.Addon) builder.AppendFormat("<size={0}>\n", BodySize);
+            else builder.AppendFormat("<size={0}> ({1}, {2})\n", BodySize, GetString($"Team{roleTeam}"), GetString("BaseOn") + GetString(RoleInfo.BaseRoleType.Invoke().ToString()));
             builder.AppendFormat("<size={0}>{1}\n", BodySize, Description);
 
             return builder.ToString();
@@ -53,15 +54,6 @@ public abstract class RoleDescription
         builder.Append(FullFormatHelp);
         builder.AppendFormat("<size={0}>\n", BlankLineSize);
         builder.Append(AddonDescription.FullFormatHelpByPlayer(player));
-
-        return builder.ToString();
-    }
-    public string GetFullFormatHelpWithAddonsByRole(CustomRoles role)
-    {
-        var builder = new StringBuilder(1024);
-
-        builder.AppendFormat("<size={0}>\n", BlankLineSize);
-        builder.Append(AddonDescription.FullFormatHelpBySubRole(role));
 
         return builder.ToString();
     }

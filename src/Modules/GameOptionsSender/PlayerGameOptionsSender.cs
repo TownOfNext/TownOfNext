@@ -2,8 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
-using TONX.Roles.AddOns.Common;
-using TONX.Roles.Crewmate;
 using Mathf = UnityEngine.Mathf;
 
 namespace TONX.Modules;
@@ -85,23 +83,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             AURoleOptions.NoisemakerImpostorAlert = true;
         }
-        player.MultipleVoidFunc<BaseCore>(b => b?.ApplyGameOptions(opt));
 
-        // 为迷惑者的凶手
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
-        }
-
-        // 投掷傻瓜蛋啦！！！！！
-        if (Grenadier.IsBlinding(player))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Grenadier.OptionCauseVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Grenadier.OptionCauseVision.GetFloat());
-        }
+        CustomRoleManager.OnApplyGameOptions(player, opt);
 
         AURoleOptions.EngineerCooldown = Mathf.Max(0.01f, AURoleOptions.EngineerCooldown);
 

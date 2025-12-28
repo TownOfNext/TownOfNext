@@ -134,7 +134,7 @@ public static class CustomRoleManager
                 }
             }
         }
-        if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 1)
+        if (CustomRoles.Madmate.IsEnable() && Madmate.MadmateSpawnMode.GetInt() == 1)
         {
             if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && attemptTarget.CanBeMadmate())
             {
@@ -307,6 +307,22 @@ public static class CustomRoleManager
         return !cancel;
     }
 
+    /// <summary>
+    /// 其他玩家视角下的 ApplyGameOptions 事件
+    /// 在 ApplyGameOptions 函数调用后调用
+    /// 请注意：全部模组端都会调用
+    /// 初始化时使用 ApplyGameOptionsOthers+= 注册
+    /// </summary>
+    public static HashSet<Action<PlayerControl, IGameOptions>> ApplyGameOptionsOthers = new();
+    public static void OnApplyGameOptions(PlayerControl player, IGameOptions opt)
+    {
+        player.MultipleVoidFunc<BaseCore>(b => b?.ApplyGameOptions(opt));
+        foreach(var applyGameOptions in ApplyGameOptionsOthers)
+        {
+            applyGameOptions(player, opt);
+        }
+    }
+
     // ==初始化处理 ==
     [GameModuleInitializer]
     public static void Initialize()
@@ -324,6 +340,7 @@ public static class CustomRoleManager
         OnCheckMurderPlayerOthers_Before.Clear();
         OnCheckMurderPlayerOthers_After.Clear();
         OnFixedUpdateOthers.Clear();
+        ApplyGameOptionsOthers.Clear();
     }
     public static void CreateInstance(bool forSubRoles = false)
     {
@@ -456,6 +473,7 @@ public static class CustomRoleManager
         CheckMurderInfos.Clear();
         OnMurderPlayerOthers.Clear();
         OnFixedUpdateOthers.Clear();
+        ApplyGameOptionsOthers.Clear();
 
         AllActiveRolesAndAddonsList.ToArray().Do(roleClass => roleClass.Dispose());
     }

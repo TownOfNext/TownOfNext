@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.Impostor;
 
@@ -73,7 +74,7 @@ class RpcSetTasksPatch
         {
             hasCommonTasks = false;
             NumLongTasks = 0;
-            NumShortTasks = Options.MadSnitchTasks.GetInt();
+            NumShortTasks = Madmate.MadSnitchTasks.GetInt();
         }
 
         //管理员和摆烂人没有任务

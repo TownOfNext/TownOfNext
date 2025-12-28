@@ -5,6 +5,7 @@ using System.Collections;
 using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.AddOns;
+using TONX.Roles.AddOns.Common;
 using UnityEngine;
 using static TONX.Modules.CustomRoleSelector;
 
@@ -306,7 +307,7 @@ internal class SelectRolesPatch
     {
         if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
         else if (CustomRoles.Lovers.IsEnable() && IRandom.Instance.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
-        if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
+        if (CustomRoles.Madmate.IsEnable() && Madmate.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
         AddOnsAssignData.AssignAddOnsFromList();
 
         foreach (var pair in PlayerState.AllPlayerStates)

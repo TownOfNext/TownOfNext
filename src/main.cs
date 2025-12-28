@@ -227,25 +227,7 @@ public class Main : BasePlugin
             {
                 //GM
                 {CustomRoles.GM, "#ff5b70"},
-
-                //Vanilla
-                {CustomRoles.Crewmate, "#8cffff"},
-                {CustomRoles.Scientist, "#8cffff"},
-                {CustomRoles.GuardianAngel, "#ffffff"},
-                {CustomRoles.Engineer, "#8cffff"},
-                {CustomRoles.Noisemaker, "#8cffff"},
-                {CustomRoles.Tracker, "#8cffff"},
-                {CustomRoles.Detective, "#8cffff"},
-                {CustomRoles.Impostor, "#ff1919"},
-                {CustomRoles.Shapeshifter, "#ff1919"},
-                {CustomRoles.Phantom, "#ff1919"},
-                {CustomRoles.Viper, "#ff1919"},
-
-                //Add-Ons
-                {CustomRoles.NotAssigned, "#ffffff"},
-                {CustomRoles.Lovers, "#ff9ace"},
-                {CustomRoles.Madmate, "#ff1919"},
-                {CustomRoles.Charmed, "#ff00ff"},
+                {CustomRoles.NotAssigned, "#ffffff"}
             };
             var roleType = typeof(RoleBase);
             var roleClassArray =

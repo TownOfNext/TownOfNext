@@ -8,8 +8,7 @@ public sealed class Detective : RoleBase
         SimpleRoleInfo.CreateForVanilla(
             typeof(Detective),
             player => new Detective(player),
-            RoleTypes.Detective,
-            "#8cffff"
+            RoleTypes.Detective
         );
     public Detective(PlayerControl player)
     : base(

@@ -21,7 +21,9 @@ public sealed class Grenadier : RoleBase
         RoleInfo,
         player
     )
-    { }
+    {
+        CustomRoleManager.ApplyGameOptionsOthers.Add(ApplyGameOptionsOthers);
+    }
 
     static OptionItem OptionSkillCooldown;
     static OptionItem OptionSkillDuration;
@@ -94,7 +96,7 @@ public sealed class Grenadier : RoleBase
             Utils.MarkEveryoneDirtySettings();
         }
     }
-    public static bool IsBlinding(PlayerControl target)
+    private static bool IsBlinding(PlayerControl target)
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Grenadier)))
         {
@@ -114,5 +116,16 @@ public sealed class Grenadier : RoleBase
             }
         }
         return false;
+    }
+    private static void ApplyGameOptionsOthers(PlayerControl player, IGameOptions opt)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        // 投掷傻瓜蛋啦！！！！！
+        if (IsBlinding(player))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, OptionCauseVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, OptionCauseVision.GetFloat());
+        }
     }
 }

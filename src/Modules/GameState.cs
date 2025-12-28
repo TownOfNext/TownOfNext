@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Attributes;
+using TONX.Roles.AddOns.Common;
 using TONX.Roles.Neutral;
 
 namespace TONX;
@@ -85,7 +86,7 @@ public class PlayerState
 
         if (role == CustomRoles.Madmate)
         {
-            CountType = Options.MadmateCountMode.GetInt() switch
+            CountType = Madmate.MadmateCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,

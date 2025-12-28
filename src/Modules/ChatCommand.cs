@@ -267,9 +267,6 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         ConcatCommands(CustomRoleTypes.Crewmate);
         ConcatCommands(CustomRoleTypes.Neutral);
         ConcatCommands(CustomRoleTypes.Addon);
-
-        // SubRoles
-        RoleCommands.Add(CustomRoles.Lovers, new() { "lo", "情人", "愛人", "链子" });
     }
     public static bool GeneralInfo(string input, byte playerId)
     {
@@ -299,7 +296,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
             Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
             return;
         }
-        Utils.SendMessage(role.IsAddon() ? AddonDescription.FullFormatHelpBySubRole(role) : role.GetRoleInfo().Description.FullFormatHelp, playerId);
+        Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp, playerId);
     }
     public static void SpecifyRole(string input, byte playerId)
     {
