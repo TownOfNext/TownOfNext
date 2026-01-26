@@ -353,6 +353,8 @@ public enum CustomDeathReason
     Dismembered,
     LossOfHead,
     Trialed,
+    Verifyed,
+    
 
     etc = -1
 }

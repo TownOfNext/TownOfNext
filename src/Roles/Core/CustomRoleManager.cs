@@ -630,6 +630,8 @@ public enum CustomRoles
     DoveOfPeace,
     Collator,
     Swapper,
+    //TONU
+    Criminologist,
     //Neutral
     Arsonist,
     Jester,
