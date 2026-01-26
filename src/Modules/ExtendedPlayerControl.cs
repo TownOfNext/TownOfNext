@@ -658,6 +658,7 @@ static class ExtendedPlayerControl
         return rangePlayers;
     }
     public static bool IsImp(this PlayerControl player) => player.Is(CustomRoleTypes.Impostor);
+    public static bool IsImpTeam(this PlayerControl player) => player.Is(CustomRoleTypes.Impostor) || player.Is(CustomRoles.Madmate);
     public static bool IsCrew(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate);
     public static bool IsCrewKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
     public static bool IsCrewNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && !player.IsCrewKiller();

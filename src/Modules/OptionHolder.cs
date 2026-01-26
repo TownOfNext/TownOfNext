@@ -176,8 +176,11 @@ public static class Options
     public static OptionItem AdditionalEmergencyCooldown;
     public static OptionItem AdditionalEmergencyCooldownThreshold;
     public static OptionItem AdditionalEmergencyCooldownTime;
+    
+    public static OptionItem OverrideOriginMeetingDeathMessage;
 
     public static OptionItem VoteMode;
+    public static OptionItem MeetingMessage;
     public static OptionItem WhenSkipVote;
     public static OptionItem WhenSkipVoteIgnoreFirstMeeting;
     public static OptionItem WhenSkipVoteIgnoreNoDeadBody;
@@ -957,6 +960,13 @@ public static class Options
         WhenNonVote = StringOptionItem.Create(3_013_006, "WhenNonVote", voteModes, 0, TabGroup.GameSettings, false).SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
         WhenTie = StringOptionItem.Create(3_013_007, "WhenTie", tieModes, 0, TabGroup.GameSettings, false).SetParent(VoteMode)
+            .SetGameMode(CustomGameMode.Standard);
+        //会议消息类
+        MeetingMessage = BooleanOptionItem.Create(3_014_001, "MeetingMessage", false, TabGroup.GameSettings, false)
+            .SetColor(new Color32(147, 241, 240, byte.MaxValue))
+            .SetGameMode(CustomGameMode.Standard);
+        //覆盖原会议死亡信息
+        OverrideOriginMeetingDeathMessage = BooleanOptionItem.Create(3_014_002, "OverrideOriginMeetingDeathMessage", false, TabGroup.GameSettings, false).SetParent(MeetingMessage)
             .SetGameMode(CustomGameMode.Standard);
 
         // 破坏相关设定

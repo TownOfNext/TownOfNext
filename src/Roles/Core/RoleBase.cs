@@ -190,7 +190,20 @@ public abstract class RoleBase : IDisposable
     public virtual bool OnCheckShapeshift(PlayerControl target, ref bool animate) => true;
     public virtual void OnShapeshift(PlayerControl target)
     { }
-
+    /// <summary>
+    /// 隐身时调用的函数
+    /// 不需要验证您的身份，因为调用前已经验证
+    /// 请注意：全部模组端都会调用
+    /// </summary>
+    /// <returns>true：继续往下执行隐身操作</returns>
+    public virtual bool OnCheckVanish() => true;
+    /// <summary>
+    /// 解除隐身时调用的函数
+    /// 不需要验证您的身份，因为调用前已经验证
+    /// 请注意：全部模组端都会调用
+    /// </summary>
+    /// <param name="animate">是否播放动画</param>
+    public virtual bool OnAppear(bool animate) => true;
     /// <summary>
     /// 帧 Task 处理函数<br/>
     /// 不需要验证您的身份，因为调用前已经验证<br/>

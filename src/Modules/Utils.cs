@@ -900,11 +900,13 @@ public static class Utils
             + $"\n  ○ /up {GetString("Command.up")}";
         SendMessage(txt, ID);
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string deader = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "<Default>") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-        Main.MessagesToSend.Add((removeTags ? text.RemoveHtmlTags() : text, sendTo, title + '\0'));
+        var resultTitle = (Options.OverrideOriginMeetingDeathMessage.GetBool() && allowOverride) ? GetString("MeetingDeathGlobal") : title;
+        var resultText = (Options.OverrideOriginMeetingDeathMessage.GetBool() && allowOverride) ? string.Format(GetString("MeetingDeathMessage"),deader) : text;
+        Main.MessagesToSend.Add((removeTags ? resultText.RemoveHtmlTags() : resultText, sendTo, resultTitle + '\0'));
     }
     public static void AddChatMessage(string text, string title = "")
     {

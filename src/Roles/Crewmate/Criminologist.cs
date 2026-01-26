@@ -18,7 +18,7 @@ public class Criminologist : RoleBase, IMeetingButton
         CustomRoleTypes.Crewmate,
         23300,
         SetupOptionItem,
-        "crm|犯罪学|犯罪学作家",
+        "crm|犯罪学|犯罪学家",
         "#3C5BA3",
         introSound: () => GetIntroSound(RoleTypes.Crewmate)
     );
@@ -61,7 +61,13 @@ public class Criminologist : RoleBase, IMeetingButton
         DeductOnFailed = OptionDeductOnFailed.GetBool();
         CurrentUsesThisMeeting = VerifyLimitPerMeeting;
     }
-
+    public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
+    {
+        if (Player.IsAlive() && isForMeeting)
+        {
+            nameText = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), seen.PlayerId.ToString()) + " " + nameText;
+        }
+    }
     public override void OnStartMeeting()
     {
         SelectedPlayers.Clear();
@@ -112,7 +118,7 @@ public class Criminologist : RoleBase, IMeetingButton
     
     public string ButtonName { get; private set; } = "Verify";
     public bool ShouldShowButton() => Player.IsAlive() && !HasExecutedThisMeeting && CurrentUsesThisMeeting > 0;
-    public bool ShouldShowButtonFor(PlayerControl target) => true;
+    public bool ShouldShowButtonFor(PlayerControl target) => !HasExecutedThisMeeting && CurrentUsesThisMeeting > 0;
 
     public void OnClickButton(PlayerControl target)
     {
@@ -129,16 +135,17 @@ public class Criminologist : RoleBase, IMeetingButton
             
             if (Verify(deader, killer))
             {
-                Execute(killer);
+                Execute(killer,deader);
                 HasExecutedThisMeeting = true;
                 CurrentUsesThisMeeting--;
                 SendRPC();
             }
             else
             {
-                Player.ShowPopUp(GetString("VerifyFailed"));
+                Player.ShowPopUp(string.Format(GetString("VerifyFailed"),killer.GetRealName(),deader.GetRealName()));
                 if (DeductOnFailed)
                 {
+                    HasExecutedThisMeeting = false;
                     CurrentUsesThisMeeting--;
                     SendRPC();
                 }
@@ -219,7 +226,7 @@ public class Criminologist : RoleBase, IMeetingButton
     /// <summary>
     /// 执行击杀
     /// </summary>
-    private bool Execute(PlayerControl target)
+    private bool Execute(PlayerControl target,PlayerControl deader)
     {
         if (Is(target))
         {
@@ -227,6 +234,7 @@ public class Criminologist : RoleBase, IMeetingButton
         }
 
         string targetName = target.GetRealName();
+        string deaderName = deader.GetRealName();
 
         _ = new LateTask(() =>
         {
@@ -238,9 +246,10 @@ public class Criminologist : RoleBase, IMeetingButton
             _ = new LateTask(() => 
             { 
                 Utils.SendMessage(
-                    string.Format(GetString("VerifyExecuteKiller"), targetName), 
+                    string.Format(GetString("VerifyExecuteKiller"), targetName,deaderName), 
                     255, 
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle")),
+                    false,true,targetName
                 ); 
             }, 0.6f, "Criminologist Execute Msg");
 
@@ -305,15 +314,19 @@ public class Criminologist : RoleBase, IMeetingButton
 
             if (Verify(deader, killer))
             {
-                Execute(killer);
+                Execute(killer,deader);
                 CurrentUsesThisMeeting--;
                 SendRPC();
             }
             else
             {
-                Utils.SendMessage(GetString("VerifyFailed"), pc.PlayerId);
+                Utils.SendMessage(string.Format(GetString("VerifyFailed"),killer.GetRealName(),deader.GetRealName()), 
+                    255, 
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
+                    );
                 if (DeductOnFailed)
                 {
+                    HasExecutedThisMeeting = true;
                     CurrentUsesThisMeeting--;
                     SendRPC();
                 }

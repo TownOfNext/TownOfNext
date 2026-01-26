@@ -590,6 +590,7 @@ public enum CustomRoles
     Stealth,
     Messenger,
     Insider,
+    EvilGrenadier,
     //Crewmate(Vanilla)
     Scientist,
     GuardianAngel,
@@ -630,7 +631,6 @@ public enum CustomRoles
     DoveOfPeace,
     Collator,
     Swapper,
-    //TONU
     Criminologist,
     //Neutral
     Arsonist,
