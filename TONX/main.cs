@@ -300,6 +300,7 @@ public class Main : BasePlugin
         handler.Info($"{nameof(GitTag)}: {GitTag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+        ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         
