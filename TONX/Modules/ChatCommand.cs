@@ -27,8 +27,18 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             new(["v", "ver", "version"], CommandAccess.LocalMod, mc =>
             {
                 StringBuilder sb = new();
-                foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key))
-                    sb.Append($"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
+                var playerList = Main.playerVersion
+                    .Select(kvp => new {
+                        Utils.GetPlayerById(kvp.Key).PlayerId,
+                        PlayerName = Main.AllPlayerNames[Utils.GetPlayerById(kvp.Key).PlayerId],
+                        Version = kvp.Value
+                    })
+                    .OrderBy(p => p.PlayerId);
+
+                foreach (var player in playerList)
+                {
+                    sb.AppendLine($"{player.PlayerId}:{player.PlayerName}:{player.Version.forkId}/{player.Version.version}({player.Version.tag})");
+                }
                 return (MsgRecallMode.Block, sb.ToString());
             }),
             new(["win", "winner"], CommandAccess.All, mc =>
@@ -146,7 +156,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("Message.CanNotUseInLobby");
                 if (GameStates.IsInGame)
                 {
-                    if (!mc.HasValidArgs || !int.TryParse(mc.Args, out int id)) return (MsgRecallMode.Block, null);
+                    if (!mc.HasValidArgs || !byte.TryParse(mc.Args, out var id)) return (MsgRecallMode.Block, null);
                     var target = Utils.GetPlayerById(id);
                     if (target != null)
                     {
@@ -167,7 +177,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("Message.CanNotUseInLobby");
                 if (GameStates.IsInGame)
                 {
-                    if (!mc.HasValidArgs || !int.TryParse(mc.Args, out int id)) return (MsgRecallMode.Block, null);
+                    if (!mc.HasValidArgs || !byte.TryParse(mc.Args, out var id)) return (MsgRecallMode.Block, null);
                     var target = Utils.GetPlayerById(id);
                     if (target != null)
                     {

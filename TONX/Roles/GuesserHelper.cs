@@ -540,7 +540,7 @@ public static class GuesserHelper
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        int PlayerId = reader.ReadByte();
+        var PlayerId = reader.ReadByte();
         CustomRoles role = (CustomRoles)reader.ReadByte();
         if (!Guess(pc, Utils.GetPlayerById(PlayerId), role, out var reason, true))
             pc.ShowPopUp(reason);

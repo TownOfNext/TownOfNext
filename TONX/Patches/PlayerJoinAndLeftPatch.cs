@@ -11,10 +11,12 @@ class OnGameJoinedPatch
     public static void Postfix(AmongUsClient __instance)
     {
         while (!Options.IsLoaded) Task.Delay(1);
-        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
+
         Logger.Info($"{__instance.GameId} 加入房间", "OnGameJoined");
-        Main.playerVersion = new Dictionary<byte, PlayerVersion>();
-        if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
+        Main.playerVersion = new ();
+        Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
+        Main.HostClientId = AmongUsClient.Instance?.GetHost()?.Id ?? -1;
+        if (!Main.VersionCheat.Value) _ = new LateTask(RPC.RpcVersionCheck, 0.01f, "RpcVersionCheck");
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
         Main.AllPlayerNames = new();
@@ -101,8 +103,8 @@ class OnPlayerJoinedPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
-            if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
+            Main.SayStartTimes.Remove(client.Id);
+            Main.SayBanwordsTimes.Remove(client.Id);
             // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
         }
     }
@@ -165,13 +167,17 @@ class OnPlayerLeftPatch
                     AntiBlackout.OnDisconnect(data.Character.Data);
                     PlayerGameOptionsSender.RemoveSender(data.Character);
                 }
-                Main.playerVersion.Remove(data.Character.PlayerId);
+                Main.playerVersion.Remove(data.Id);
                 Logger.Info($"{data.PlayerName}(ClientID:{data.Id})が切断(理由:{reason}, ping:{AmongUsClient.Instance.Ping})", "Session");
             }
 
-            Main.playerVersion.Remove(data.Character.PlayerId);
+            Main.playerVersion.Remove(data.Id);
             Logger.Info($"{data?.PlayerName}(ClientID:{data?.Id}/FriendCode:{data?.FriendCode})断开连接(理由:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
 
+            _=new LateTask(() =>
+            {
+                Main.HostClientId = AmongUsClient.Instance?.GetHost()?.Id ?? -1;
+            },0.5f, "Update HostClientId After Player Left");
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);

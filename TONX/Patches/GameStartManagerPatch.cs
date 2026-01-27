@@ -161,7 +161,7 @@ public class GameStartManagerPatch
                     var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
                     if (dummyComponent != null && dummyComponent.enabled)
                         continue;
-                    if (!MatchVersions(client.Character.PlayerId, true))
+                    if (!MatchVersions(client.Id, true))
                     {
                         canStartGame = false;
                         mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
@@ -178,7 +178,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value)
+                if (MatchVersions(Main.HostClientId, true) || Main.VersionCheat.Value)
                     exitTimer = 0;
                 else
                 {
@@ -219,7 +219,7 @@ public class GameStartManagerPatch
             if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
-        private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
+        private static bool MatchVersions(int playerId, bool acceptVanilla = false)
         {
             if (!Main.playerVersion.TryGetValue(playerId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId

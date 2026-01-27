@@ -69,16 +69,15 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + Utils.GetTrueRoleName(npc.PlayerId, false) + ") " + npc.GetRealName();
+                text += "\n" + npc.PlayerId + " → (" + Utils.GetTrueRoleName(npc.PlayerId, false) + ") " + npc.GetRealName();
             Utils.SendMessage(text, Player.PlayerId);
             return true;
         }
 
-        int targetId;
         PlayerControl target;
         try
         {
-            targetId = int.Parse(msg.Replace("/rv", string.Empty));
+            var targetId = byte.Parse(msg.Replace("/rv", string.Empty));
             target = Utils.GetPlayerById(targetId);
         }
         catch

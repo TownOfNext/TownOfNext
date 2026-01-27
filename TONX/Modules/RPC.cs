@@ -120,7 +120,7 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
-        if (__instance.PlayerId != 0
+        if (__instance?.PlayerId != 0
             && Enum.IsDefined(typeof(CustomRPC), (int)callId)
             && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
@@ -173,32 +173,38 @@ internal class RPCHandlerPatch
             case CustomRPC.VersionCheck:
                 try
                 {
-                    Version version = Version.Parse(reader.ReadString());
-                    string tag = reader.ReadString();
-                    string forkId = reader.ReadString();
-                    Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag, forkId);
-
-                    if (Main.VersionCheat.Value && __instance.PlayerId == 0) RPC.RpcVersionCheck();
-
-                    if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
-                        Main.playerVersion[__instance.PlayerId] = Main.playerVersion[0];
-
-                    // Kick Unmached Player Start
-                    if (AmongUsClient.Instance.AmHost && tag != $"{Main.GitCommit}({Main.GitBranch})")
+                    _ = new LateTask(() =>
                     {
-                        if (forkId != Main.ForkId)
-                            _ = new LateTask(() =>
-                            {
-                                if (__instance?.Data?.Disconnected is not null and not true)
+                        Version version = Version.Parse(reader.ReadString());
+                        string tag = reader.ReadString();
+                        string forkId = reader.ReadString();
+                        var clientId = __instance.GetClientId();
+                        Main.playerVersion.Remove(clientId);
+                        Main.playerVersion[clientId] = new PlayerVersion(version, tag, forkId);
+
+                        if (Main.VersionCheat.Value && __instance.PlayerId == 0) RPC.RpcVersionCheck();
+
+                        if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
+                            Main.playerVersion[clientId] = Main.playerVersion[clientId];
+
+                        // Kick Unmached Player Start
+                        if (AmongUsClient.Instance.AmHost && tag != $"{Main.GitCommit}({Main.GitBranch})")
+                        {
+                            if (forkId != Main.ForkId)
+                                _ = new LateTask(() =>
                                 {
-                                    var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"), __instance?.Data?.PlayerName);
-                                    Logger.Warn(msg, "Version Kick");
-                                    RPC.NotificationPop(msg);
-                                    Utils.KickPlayer(__instance.GetClientId(), false, "ModVersionIncorrect");
-                                }
-                            }, 5f, "Kick");
-                    }
-                    // Kick Unmached Player End
+                                    if (__instance?.Data?.Disconnected is not null and not true)
+                                    {
+                                        var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"),
+                                            __instance?.Data?.PlayerName);
+                                        Logger.Warn(msg, "Version Kick");
+                                        RPC.NotificationPop(msg);
+                                        Utils.KickPlayer(clientId, false, "ModVersionIncorrect");
+                                    }
+                                }, 5f, "Kick");
+                        }
+                        // Kick Unmached Player End
+                    }, 0.01f, "Version Check Process Task");
                 }
                 catch
                 {
@@ -341,7 +347,7 @@ internal static class RPC
         if (targetId != -1)
         {
             var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id)) return;
         }
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)) return;
         var amount = OptionItem.AllOptions.Count;
@@ -368,7 +374,7 @@ internal static class RPC
         if (targetId != -1)
         {
             var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId))
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
                 return;
         }
 
@@ -419,16 +425,17 @@ internal static class RPC
     public static async void RpcVersionCheck()
     {
         while (PlayerControl.LocalPlayer == null) await Task.Delay(500);
-        if (Main.playerVersion.ContainsKey(0) || !Main.VersionCheat.Value)
+        
+        Main.playerVersion.TryAdd(PlayerControl.LocalPlayer.GetClientId(),new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId));
+        if (Main.playerVersion.ContainsKey(Main.HostClientId) || !Main.VersionCheat.Value)
         {
             bool cheating = Main.VersionCheat.Value;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-            writer.Write(cheating ? Main.playerVersion[0].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[0].tag : $"{Main.GitCommit}({Main.GitBranch})");
-            writer.Write(cheating ? Main.playerVersion[0].forkId : Main.ForkId);
+            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].version.ToString() : Main.PluginVersion);
+            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].tag : $"{Main.GitCommit}({Main.GitBranch})");
+            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].forkId : Main.ForkId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId);
     }
     public static void SendDeathReason(byte playerId, CustomDeathReason deathReason)
     {

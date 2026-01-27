@@ -72,7 +72,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> GodMode { get; private set; }
 
 
-    public static Dictionary<byte, PlayerVersion> playerVersion = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -108,6 +108,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckVanish = new();
     public static bool VisibleTasksCount = false;
     public static string HostNickName = "";
+    public static int HostClientId = -1;
     public static bool isFirstTurn = false;
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;

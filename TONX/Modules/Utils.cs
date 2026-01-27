@@ -889,7 +889,19 @@ public static class Utils
         player.SetName(name);
     }
     private static Dictionary<byte, PlayerControl> cachedPlayers = new(15);
-    public static PlayerControl GetPlayerById(int playerId) => GetPlayerById((byte)playerId);
+
+    public static PlayerControl GetPlayerById(int clientId)
+    {
+        try
+        {
+            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Id == clientId)?.Character;
+            return client;
+        }
+        catch
+        {
+            return null;
+        }
+    }
     public static PlayerControl GetPlayerById(byte playerId)
     {
         if (cachedPlayers.TryGetValue(playerId, out var cachedPlayer) && cachedPlayer != null)
