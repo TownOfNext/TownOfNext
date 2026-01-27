@@ -101,7 +101,7 @@ public class LogoAnimationController : MonoBehaviour
         
         allBallsArrived = false;
         ballsArrivedCount = 0;
-        
+        yield return new WaitForSeconds(2);
         yield return CreateAndPositionBalls();
         yield return StartCoroutine(BallsLightUp().WrapToIl2Cpp());
         while (!allBallsArrived)
