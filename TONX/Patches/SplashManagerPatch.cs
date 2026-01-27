@@ -50,7 +50,7 @@ public class SplashManagerPatch
         var animControllerObj = new GameObject("TONX_LogoAnimationController_Instance");
         var controller = animControllerObj.AddComponent<LogoAnimationController>();
         controller.Initialize(logoRenderer);
-        yield return new WaitForSeconds(2);
+
         yield return controller.PlayAnimationSequence();
     }
     
