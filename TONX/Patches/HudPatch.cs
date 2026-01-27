@@ -18,6 +18,7 @@ class HudManagerInitializePatch
         if (!GameStates.IsModHost || Options.CurrentGameMode == CustomGameMode.SoloKombat) return;
         var template = HudManager.Instance.MapButton;
         RoleInfoButton = UnityEngine.Object.Instantiate(template, template.transform.parent);
+        RoleInfoButton.name = "RoleInfoButton";
         RoleInfoButton.OnClick.AddListener((Action)(() =>
         {
             if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
@@ -57,7 +58,7 @@ class HudManagerPatch
             var template = HudManager.Instance.MapButton;
             var RoleInfoButton = HudManagerInitializePatch.RoleInfoButton;
             RoleInfoButton.gameObject.SetActive(template.isActiveAndEnabled);
-            RoleInfoButton.transform.localPosition = template.transform.localPosition - new Vector3(0f, 0.8f, 0f);
+            RoleInfoButton.transform.localPosition = template.transform.localPosition - new Vector3(0f, 0.8f, 950f);
         }
 
         var player = PlayerControl.LocalPlayer;
