@@ -432,23 +432,21 @@ private void CheckAllBallsArrived()
     
     private IEnumerator LogoBreatheEffect()
     {
+        if (logoRenderer == null) yield break;
+    
+        var logoTransform = logoRenderer.transform;
+        var originalScale = logoTransform.localScale;
+        var timer = 0f;
+    
         while (true)
         {
             if (logoRenderer == null) yield break;
         
-            var logoTransform = logoRenderer.transform;
-            var originalScale = logoTransform.localScale;
-            
-            while (true)
-            {
-                if (logoRenderer == null) yield break;
-                
-                var time = Time.time;
-                var breathe = Mathf.Sin(time * 1.5f) * 0.02f + 1f;
-                logoTransform.localScale = originalScale * breathe;
-            
-                yield return null;
-            }
+            timer += Time.deltaTime * 1.5f;
+            var breathe = Mathf.Sin(timer) * 0.02f + 1f;
+            logoTransform.localScale = originalScale * breathe;
+        
+            yield return null;
         }
     }
     
