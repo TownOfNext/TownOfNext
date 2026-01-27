@@ -22,7 +22,6 @@ class EndGamePatch
 
         Logger.Info("-----------游戏结束-----------", "Phase");
         if (!GameStates.IsModHost) return;
-        Logger.Test(-1);
         SummaryText = new();
         foreach (var id in PlayerState.AllPlayerStates.Keys)
             SummaryText[id] = Utils.SummaryTexts(id, false);
@@ -209,23 +208,17 @@ class SetEverythingUpPatch
             Scale = new(1.5f, 0.5f),
             FontSize = 2f,
         };
-        Logger.Test(1);
         showHideButton.Button.gameObject.SetActive(true);
         StringBuilder sb = new($"{GetString("RoleSummaryText")}");
-        Logger.Test(2);
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
-        Logger.Test(3);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            Logger.Test(4);
             sb.Append($"\n<color={CustomWinnerColor}>★</color> ").Append(EndGamePatch.SummaryText[id]);
             cloneRoles.Remove(id);
         }
-        Logger.Test(5);
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            Logger.Test(6);
-            sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+            sb.Append("\n　 ").Append(EndGamePatch.SummaryText[id]);
         }
         roleSummary = TMPTemplate.Create(
             "RoleSummaryText",
