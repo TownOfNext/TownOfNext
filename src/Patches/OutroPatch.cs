@@ -87,11 +87,11 @@ class SetEverythingUpPatch
 
     public static void Postfix(EndGameManager __instance)
     {
-        if (!Main.playerVersion.ContainsKey(0)) return;
+        if (!Main.playerVersion.ContainsKey(Main.HostClientId)) return;
         //#######################################
         //          ==勝利陣営表示==
         //#######################################
-
+        Main.HostClientId = -1;
         __instance.WinText.alignment = TextAlignmentOptions.Right;
         var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
         WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f * Utils.GetAspectRatio(Screen.width, Screen.height), __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
@@ -177,7 +177,7 @@ class SetEverythingUpPatch
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+            sb.Append("\n　 ").Append(EndGamePatch.SummaryText[id]);
         }
         roleSummary = TMPTemplate.Create(
             "RoleSummaryText",

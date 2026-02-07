@@ -61,7 +61,7 @@ public class IntroCutscenePatch
             {
                 var text = pc.AmOwner ? "[*]" : "   ";
                 text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
-                if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
+                if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
                     text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
                 else text += ":Vanilla";
                 logger.Info(text);

@@ -24,7 +24,8 @@ public class GameStartManagerPatch
     private static TextMeshPro timerText;
     private static PassiveButton cancelButton;
     private static PassiveButton immediatelyStartButton;
-
+    private static Vector3 _gameStartTextlocalPosition;
+    
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Start))]
     public class GameStartManagerStartPatch
     {
@@ -57,8 +58,9 @@ public class GameStartManagerPatch
             timerText.transform.localPosition += new Vector3(0.3f, -3.4f, 0f);
             timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && AmongUsClient.Instance.AmHost);
 
-            cancelButton = CreateButton(__instance, "CancelButton", "Cancel", new(0.8f, 0f, 0f, 1f), Color.red, new(2f, 0.13f, 0f), __instance.ResetStartState);
-            immediatelyStartButton = CreateButton(__instance, "ImmediatelyStartButton", "StartImmediately", new(0f, 0f, 0.8f, 1f), Color.blue, new(-2f, 0.13f, 0f), () => __instance.countDownTimer = 0);
+            _gameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
+            cancelButton = CreateButton(__instance, "CancelButton", "Cancel",new(229, 33, 33, 255), new(255, 54, 54, 255),  new(0.61f, 0.275f, 0f), __instance.ResetStartState);
+            immediatelyStartButton = CreateButton(__instance, "ImmediatelyStartButton", "StartImmediately",  new(33, 150, 229, 255),new(33, 205, 255, 255), new(-0.64f, 0.275f, 0f), () => __instance.countDownTimer = 0);
 
             if (!AmongUsClient.Instance.AmHost) return;
 
@@ -70,14 +72,14 @@ public class GameStartManagerPatch
                 AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
         }
 
-        private static PassiveButton CreateButton(GameStartManager __instance, string name, string stringName, Color inactiveColor, Color activeColor, Vector3 pos, Action clickAction)
+        private static PassiveButton CreateButton(GameStartManager __instance, string name, string stringName, Color32 inactiveColor, Color32 activeColor, Vector3 pos, Action clickAction)
         {
             var button = Object.Instantiate(__instance.StartButton, __instance.transform);
             button.name = name;
             var label = button.buttonText;
             label.DestroyTranslator();
             label.text = GetString(stringName);
-            button.transform.localScale = new(0.5f, 0.5f, 1f);
+            button.transform.localScale = new(0.45f, 0.7f, 1f);
             var buttonInactiveRenderer = button.inactiveSprites.GetComponent<SpriteRenderer>();
             buttonInactiveRenderer.color = inactiveColor;
             var buttonActiveRenderer = button.activeSprites.GetComponent<SpriteRenderer>();
@@ -91,6 +93,8 @@ public class GameStartManagerPatch
             button.transform.localPosition = pos;
             button.OnClick = new();
             button.OnClick.AddListener(clickAction);
+            var buttonFontPlacer = button.transform.FindChild("FontPlacer");
+            buttonFontPlacer.localScale = new Vector3(1.1f, 0.7f);
             return button;
         }
     }
@@ -132,6 +136,20 @@ public class GameStartManagerPatch
         {
             if (!AmongUsClient.Instance) return;
 
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.GameStartText.transform.localPosition = new Vector3(
+                    __instance.GameStartText.transform.localPosition.x, 2f,
+                    __instance.GameStartText.transform.localPosition.z);
+                __instance.GameStartText.transform.parent.gameObject.layer = 4;
+            }
+
+            else
+            {
+                __instance.GameStartText.transform.localPosition = _gameStartTextlocalPosition;
+                __instance.GameStartText.transform.parent.gameObject.layer = 5;
+            }
+                
             string warningMessage = "";
             if (AmongUsClient.Instance.AmHost)
             {
@@ -143,7 +161,7 @@ public class GameStartManagerPatch
                     var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
                     if (dummyComponent != null && dummyComponent.enabled)
                         continue;
-                    if (!MatchVersions(client.Character.PlayerId, true))
+                    if (!MatchVersions(client.Id, true))
                     {
                         canStartGame = false;
                         mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
@@ -160,7 +178,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value)
+                if (MatchVersions(Main.HostClientId, true) || Main.VersionCheat.Value)
                     exitTimer = 0;
                 else
                 {
@@ -201,7 +219,7 @@ public class GameStartManagerPatch
             if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
-        private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
+        private static bool MatchVersions(int playerId, bool acceptVanilla = false)
         {
             if (!Main.playerVersion.TryGetValue(playerId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId
