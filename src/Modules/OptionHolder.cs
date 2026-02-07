@@ -615,7 +615,6 @@ public static class Options
 
         Neptune.SetupCustomOption();
         Watcher.SetupCustomOption();
-        Lighter.SetupCustomOption();
         Seer.SetupCustomOption();
         Flashman.SetupCustomOption();
         Tiebreaker.SetupCustomOption();
@@ -628,6 +627,7 @@ public static class Options
         Reach.SetupCustomOption();
         Bait.SetupCustomOption();
         Beartrap.SetupCustomOption();
+        Workhorse.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
@@ -635,7 +635,7 @@ public static class Options
             .SetColor(Utils.GetCustomRoleTypeColor(CustomRoleTypes.Crewmate));
 
         YouTuber.SetupCustomOption();
-        Workhorse.SetupCustomOption();
+        Lighter.SetupCustomOption();
         SetupMadmateRoleOptionsToggle(80200);
 
         // 内鬼专属附加

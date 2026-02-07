@@ -14,7 +14,7 @@ public static class Lighter
     public static void SetupCustomOption()
     {
         SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Lighter);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Lighter, true, true, true);
+        AddOnsAssignData.Create(Id + 10, CustomRoles.Lighter, true, false, false);
         OptionVistion = FloatOptionItem.Create(Id + 20, "LighterVision", new(0.5f, 5f, 0.25f), 1.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Multiplier);
     }

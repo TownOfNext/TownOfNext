@@ -81,12 +81,15 @@ public static class Avenger
             }
         }
 
-        foreach (var pc in targets)
+        _ = new LateTask(() =>
         {
-            pc.SetRealKiller(target);
-            pc.SetDeathReason(CustomDeathReason.Revenge);
-            target.RpcMurderPlayer(pc);
-            Logger.Info($"Avenger {target.GetNameWithRole()} revenged => {pc.GetNameWithRole()}", "Avenger.OnMurderPlayerOthers");
-        }
+            foreach (var pc in targets)
+            {
+                pc.SetRealKiller(target);
+                pc.SetDeathReason(CustomDeathReason.Revenge);
+                target.RpcMurderPlayer(pc);
+                Logger.Info($"Avenger {target.GetNameWithRole()} revenged => {pc.GetNameWithRole()}", "Avenger.OnMurderPlayerAsTarget");
+            }
+        }, 0.2f, "AvengerRevenge");
     }
 }

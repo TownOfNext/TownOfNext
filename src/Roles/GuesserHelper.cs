@@ -115,7 +115,7 @@ public static class GuesserHelper
 
             _ = new LateTask(() =>
             {
-                Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")),false,true,Name);
+                Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")), false, true, Name);
                 gc.AfterGuessing(guesser);
             }, 0.6f, "Guess Msg");
 
