@@ -13,6 +13,7 @@ public class CreditsControllerPatch
                 $"SHAAARKY - {GetString("Collaborators")}",
                 $"Slok7565 - {GetString("Collaborators")}",
                 $"Mousse - {GetString("Collaborators")}",
+                $"ELinmei - {GetString("Collaborators")}",
 
                 $"IRIDESCENT - {GetString("Art")}",
                 $"Endrmen40409 - {GetString("Art")}",

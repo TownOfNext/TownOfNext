@@ -3,8 +3,6 @@ using Hazel;
 using TONX.Modules;
 using UnityEngine;
 using TONX.Roles.Core.Interfaces;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace TONX.Roles.Crewmate;
 
@@ -130,19 +128,19 @@ public class Criminologist : RoleBase, IMeetingButton
         
         if (SelectedPlayers.Count == 2)
         {
-            var deader = Utils.GetPlayerById(SelectedPlayers[0]);
+            var dead = Utils.GetPlayerById(SelectedPlayers[0]);
             var killer = Utils.GetPlayerById(SelectedPlayers[1]);
             
-            if (Verify(deader, killer))
+            if (Verify(dead, killer))
             {
-                Execute(killer,deader);
+                Execute(killer, dead);
                 HasExecutedThisMeeting = true;
                 CurrentUsesThisMeeting--;
                 SendRPC();
             }
             else
             {
-                Player.ShowPopUp(string.Format(GetString("VerifyFailed"),killer.GetRealName(),deader.GetRealName()));
+                Player.ShowPopUp(string.Format(GetString("VerifyFailed"), killer.GetRealName(), dead.GetRealName()));
                 if (DeductOnFailed)
                 {
                     HasExecutedThisMeeting = false;
@@ -202,8 +200,8 @@ public class Criminologist : RoleBase, IMeetingButton
 
         if (SelectedPlayers.Count == 1)
         {
-            var deader = Utils.GetPlayerById(SelectedPlayers[0]);
-            if (target.PlayerId == deader.PlayerId)
+            var dead = Utils.GetPlayerById(SelectedPlayers[0]);
+            if (target.PlayerId == dead.PlayerId)
             {
                 reason = GetString("VerifyCoupleSame");
                 return false;
@@ -218,15 +216,15 @@ public class Criminologist : RoleBase, IMeetingButton
     /// <summary>
     /// 验证传入的玩家组是否为凶杀组
     /// </summary>
-    private bool Verify(PlayerControl deader, PlayerControl killer)
+    private bool Verify(PlayerControl dead, PlayerControl killer)
     {
-        return deader.GetRealKiller()?.PlayerId == killer.PlayerId;
+        return dead.GetRealKiller()?.PlayerId == killer.PlayerId;
     }
 
     /// <summary>
     /// 执行击杀
     /// </summary>
-    private bool Execute(PlayerControl target,PlayerControl deader)
+    private bool Execute(PlayerControl target,PlayerControl dead)
     {
         if (Is(target))
         {
@@ -234,7 +232,7 @@ public class Criminologist : RoleBase, IMeetingButton
         }
 
         string targetName = target.GetRealName();
-        string deaderName = deader.GetRealName();
+        string deadName = dead.GetRealName();
 
         _ = new LateTask(() =>
         {
@@ -242,15 +240,15 @@ public class Criminologist : RoleBase, IMeetingButton
             state.DeathReason = CustomDeathReason.Verifyed;
             target.SetRealKiller(Player);
             target.RpcSuicideWithAnime();
-            
-            _ = new LateTask(() => 
-            { 
+
+            _ = new LateTask(() =>
+            {
                 Utils.SendMessage(
-                    string.Format(GetString("VerifyExecuteKiller"), targetName,deaderName), 
-                    255, 
+                    string.Format(GetString("VerifyExecuteKiller"), targetName, deadName),
+                    255,
                     Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle")),
-                    false,true,targetName
-                ); 
+                    false, true, targetName
+                );
             }, 0.6f, "Criminologist Execute Msg");
 
         }, 0.2f, "Criminologist Execute");
@@ -303,24 +301,24 @@ public class Criminologist : RoleBase, IMeetingButton
                 return true;
             }
 
-            if (!MsgToPlayersByID(msg, out PlayerControl deader, out PlayerControl killer, out string error))
+            if (!MsgToPlayersByID(msg, out PlayerControl dead, out PlayerControl killer, out string error))
             {
                 Utils.SendMessage(error, pc.PlayerId);
                 return true;
             }
 
-            if (!CheckAble(deader, killer))
+            if (!CheckAble(dead, killer))
                 return true;
 
-            if (Verify(deader, killer))
+            if (Verify(dead, killer))
             {
-                Execute(killer,deader);
+                Execute(killer, dead);
                 CurrentUsesThisMeeting--;
                 SendRPC();
             }
             else
             {
-                Utils.SendMessage(string.Format(GetString("VerifyFailed"),killer.GetRealName(),deader.GetRealName()), 
+                Utils.SendMessage(string.Format(GetString("VerifyFailed"), killer.GetRealName(), dead.GetRealName()), 
                     255, 
                     Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
                     );
@@ -338,9 +336,9 @@ public class Criminologist : RoleBase, IMeetingButton
     /// <summary>
     /// 通过玩家ID解析消息
     /// </summary>
-    private static bool MsgToPlayersByID(string msg, out PlayerControl deader, out PlayerControl killer, out string error)
+    private static bool MsgToPlayersByID(string msg, out PlayerControl dead, out PlayerControl killer, out string error)
     {
-        deader = null;
+        dead = null;
         killer = null;
         error = string.Empty;
         
@@ -351,7 +349,7 @@ public class Criminologist : RoleBase, IMeetingButton
             return false;
         }
         
-        if (!byte.TryParse(parts[1], out byte deaderId))
+        if (!byte.TryParse(parts[1], out byte deadId))
         {
             error = GetString("VerifyInvalidPlayerId");
             return false;
@@ -363,10 +361,10 @@ public class Criminologist : RoleBase, IMeetingButton
             return false;
         }
         
-        deader = Utils.GetPlayerById(deaderId);
+        dead = Utils.GetPlayerById(deadId);
         killer = Utils.GetPlayerById(killerId);
 
-        if (deader == null || killer == null)
+        if (dead == null || killer == null)
         {
             error = GetString("VerifyPlayerNotFound");
             return false;
@@ -375,15 +373,15 @@ public class Criminologist : RoleBase, IMeetingButton
         return true;
     }
 
-    private bool CheckAble(PlayerControl deader, PlayerControl killer)
+    private bool CheckAble(PlayerControl dead, PlayerControl killer)
     {
-        if (deader.IsAlive())
+        if (dead.IsAlive())
         {
             Utils.SendMessage(GetString("VerifyDeaderNoDeath"), Player.PlayerId);
             return false;
         }
 
-        if (deader.PlayerId == killer.PlayerId)
+        if (dead.PlayerId == killer.PlayerId)
         {
             Utils.SendMessage(GetString("VerifyCoupleSame"), Player.PlayerId);
             return false;

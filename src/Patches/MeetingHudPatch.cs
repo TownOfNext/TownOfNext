@@ -42,8 +42,8 @@ public static class MeetingHudPatch
             if (!data.ShouldAnimate) continue;
             if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
 
-            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item2);
-            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Item3);
+            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
+            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
             if (pva1 == null || pva2 == null) continue;
 
             var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();

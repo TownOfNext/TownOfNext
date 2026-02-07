@@ -112,7 +112,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
                 target.RpcMurderPlayer(target);
                 state.SetDead();
             }
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), false, true, Name); }, 0.6f, "Mafia Kill");
         }, 0.2f, "Mafia Kill");
 
         return true;
