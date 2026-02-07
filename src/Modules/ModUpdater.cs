@@ -19,6 +19,7 @@ public class ModUpdater
 #if DEBUG && Windows
         "file:///D:/Desktop/TONX/info.json",
         "file:///D:/Desktop/info.json",
+        "https://record.tonx.cc/api/version.json"
 #else
         "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
         "https://cdn.jsdelivr.net/gh/TownOfNext/TownOfNext/info.json",
@@ -318,7 +319,7 @@ public class ModUpdater
     {
         try
         {
-            var (_, succeed) = await RemoteHelper.GetRemoteStringAsync("https://tonx.leever.cn/api/stats/visit").ConfigureAwait(false);
+            var (_, succeed) = await RemoteHelper.GetRemoteStringAsync("https://record.tonx.cc/api/stats/visit").ConfigureAwait(false);
             return succeed;
         }
         catch (Exception ex)
@@ -336,7 +337,7 @@ public class ModUpdater
     {
         try
         {
-            var (count, success) = await RemoteHelper.GetRemoteStringAsync("https://tonx.leever.cn/api/stats/visitor").ConfigureAwait(false);
+            var (count, success) = await RemoteHelper.GetRemoteStringAsync("https://record.tonx.cc/api/stats/visitor").ConfigureAwait(false);
             return success ? int.Parse(count) : 0;
         }
         catch (Exception ex)

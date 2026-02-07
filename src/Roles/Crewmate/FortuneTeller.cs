@@ -132,7 +132,8 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.Demon or
                 CustomRoles.Eraser or
                 CustomRoles.PlagueDoctor or
-                CustomRoles.Doomsayer
+                CustomRoles.Doomsayer or
+                CustomRoles.EvilGrenadier
                 => "Blockbuster",
 
                 CustomRoles.Warlock or
@@ -146,7 +147,8 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.Medium or
                 CustomRoles.Judge or
                 CustomRoles.BloodKnight or
-                CustomRoles.Swapper
+                CustomRoles.Swapper or
+                CustomRoles.Criminologist
                 => "Strong",
 
                 CustomRoles.Witch or
