@@ -315,6 +315,16 @@ internal static class GameModeStandard
                     {
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
+
+                    if (pc.Is(CustomRoles.Egoist))
+                    {
+                        if ((CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && pc.GetCustomRole().IsCrewmate())
+                            || (CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && pc.GetCustomRole().IsImpostor()))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                    }
                 }
 
                 //追加胜利
