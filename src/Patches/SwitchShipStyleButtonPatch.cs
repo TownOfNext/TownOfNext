@@ -17,8 +17,8 @@ public class SwitchShipStyleButtonPatch
         }
     }
     [HarmonyPatch(typeof(SystemConsole), nameof(SystemConsole.Start)), HarmonyPrefix]
-    public static bool Start_Prefix()
+    public static bool Start_Prefix(SystemConsole __instance)
     {
-        return false; // 阻止TaskAdder被销毁
+        return __instance.name != "Laptop"; // 阻止TaskAdder被销毁
     }
 }

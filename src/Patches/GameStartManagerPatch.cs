@@ -59,8 +59,8 @@ public class GameStartManagerPatch
             timerText.gameObject.SetActive(AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame && AmongUsClient.Instance.AmHost);
 
             _gameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
-            cancelButton = CreateButton(__instance, "CancelButton", "Cancel",new(229, 33, 33, 255), new(255, 54, 54, 255),  new(0.61f, 0.275f, 0f), __instance.ResetStartState);
-            immediatelyStartButton = CreateButton(__instance, "ImmediatelyStartButton", "StartImmediately",  new(33, 150, 229, 255),new(33, 205, 255, 255), new(-0.64f, 0.275f, 0f), () => __instance.countDownTimer = 0);
+            cancelButton = CreateButton(__instance, "CancelButton", "Cancel",new(229, 33, 33, 255), new(255, 54, 54, 255),  new(-0.64f, 0.28f, 0f), __instance.ResetStartState);
+            immediatelyStartButton = CreateButton(__instance, "ImmediatelyStartButton", "StartImmediately",  new(33, 150, 229, 255),new(33, 205, 255, 255), new(0.59f, 0.28f, 0f), () => __instance.countDownTimer = 0);
 
             if (!AmongUsClient.Instance.AmHost) return;
 
@@ -74,7 +74,7 @@ public class GameStartManagerPatch
 
         private static PassiveButton CreateButton(GameStartManager __instance, string name, string stringName, Color32 inactiveColor, Color32 activeColor, Vector3 pos, Action clickAction)
         {
-            var button = Object.Instantiate(__instance.StartButton, __instance.transform);
+            var button = Object.Instantiate(__instance.StartButton, __instance.StartButton.transform.parent);
             button.name = name;
             var label = button.buttonText;
             label.DestroyTranslator();
