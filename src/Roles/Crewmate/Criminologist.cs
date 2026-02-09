@@ -110,7 +110,7 @@ public class Criminologist : RoleBase, IMeetingButton
         var dead = Utils.GetPlayerById(DeadPlayerChosen);
         if (dead == null)
         {
-            DeadPlayerChosen = target.PlayerId;
+            DeadPlayerChosen = target.IsAlive() ? byte.MaxValue : target.PlayerId;
             SendRPC();
             return;
         }
