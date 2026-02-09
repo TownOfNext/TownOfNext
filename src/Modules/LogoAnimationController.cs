@@ -160,154 +160,151 @@ public class LogoAnimationController : MonoBehaviour
         
         yield return null;
     }
-    
 
-
-private IEnumerator BallsLightUp()
-{
-    for (var i = 0; i < BallInfos.Count; i++)
+    private IEnumerator BallsLightUp()
     {
-        if (BallInfos[i] == null) continue;
-        
-        var ballInfo = BallInfos[i];
-        var ball = ballInfo.BallObject;
-        var renderer = ball.GetComponent<SpriteRenderer>();
+        for (var i = 0; i < BallInfos.Count; i++)
+        {
+            if (BallInfos[i] == null) continue;
+            
+            var ballInfo = BallInfos[i];
+            var ball = ballInfo.BallObject;
+            var renderer = ball.GetComponent<SpriteRenderer>();
 
-        var delay = flyOutStaggerDelays[i];
-        if (delay > 0)
-        {
-            yield return new WaitForSeconds(delay);
-        }
-        
-        StartCoroutine(MoveBallToCenter(ballInfo, i).WrapToIl2Cpp());
-        
-        var elapsed = 0f;
-        const float lightUpDuration = 0.5f;
-        
-        var startColor = renderer.color;
-        var targetColor = new Color(startColor.r, startColor.g, startColor.b, 1f);
-        var startScale = ball.transform.localScale;
-        var targetScale = startScale * 1.3f;
-        
-        while (elapsed < lightUpDuration)
-        {
-            elapsed += Time.deltaTime;
-            var t = elapsed / lightUpDuration;
-            
-            var easedT = EaseOutSine(t);
-            renderer.color = Color.Lerp(startColor, targetColor, easedT);
-            
-            // 缩放
-            float scaleT;
-            if (t < 0.5f)
+            var delay = flyOutStaggerDelays[i];
+            if (delay > 0)
             {
-                scaleT = t * 2f;
-                ball.transform.localScale = Vector3.Lerp(startScale, targetScale, EaseOutSine(scaleT));
+                yield return new WaitForSeconds(delay);
+            }
+            
+            StartCoroutine(MoveBallToCenter(ballInfo, i).WrapToIl2Cpp());
+            
+            var elapsed = 0f;
+            const float lightUpDuration = 0.5f;
+            
+            var startColor = renderer.color;
+            var targetColor = new Color(startColor.r, startColor.g, startColor.b, 1f);
+            var startScale = ball.transform.localScale;
+            var targetScale = startScale * 1.3f;
+            
+            while (elapsed < lightUpDuration)
+            {
+                elapsed += Time.deltaTime;
+                var t = elapsed / lightUpDuration;
+                
+                var easedT = EaseOutSine(t);
+                renderer.color = Color.Lerp(startColor, targetColor, easedT);
+                
+                // 缩放
+                float scaleT;
+                if (t < 0.5f)
+                {
+                    scaleT = t * 2f;
+                    ball.transform.localScale = Vector3.Lerp(startScale, targetScale, EaseOutSine(scaleT));
+                }
+                else
+                {
+                    scaleT = (t - 0.5f) * 2f;
+                    ball.transform.localScale = Vector3.Lerp(targetScale, startScale, EaseInSine(scaleT));
+                }
+                
+                yield return null;
+            }
+            
+            renderer.color = targetColor;
+            ball.transform.localScale = startScale;
+        }
+    }
+    private bool accelerationPhaseStarted;
+    private IEnumerator MoveBallToCenter(BallInfo ballInfo, int index)
+    {
+        var ball = ballInfo.BallObject;
+        var startPosition = ballInfo.StartPosition;
+        var controlPoint = ballInfo.ControlPoint;
+        var targetPosition = ballInfo.TargetPosition;
+        
+        const float initialSpeed = 1.3f;
+        var currentSpeed = initialSpeed;
+        var acceleration = 0f;
+
+        var totalPathLength = ballInfo.TotalDistance();
+        var currentT = 0f;
+        
+        var timer = 0f;
+        var originalScale = originalScales[index];
+        const float rotationSpeed = 180f;
+        
+        while (currentT < 1f)
+        {
+            timer += Time.deltaTime;
+            
+            if (index == 2 && timer >= 0.7f && !accelerationPhaseStarted)
+            {
+                accelerationPhaseStarted = true;
+            }
+            
+            var traveledLength = AdaptiveBezierLength(startPosition, controlPoint, targetPosition, 0f, currentT, 0.001f);
+            var remainingLength = totalPathLength - traveledLength;
+            
+            switch (accelerationPhaseStarted)
+            {
+                case false:
+                {
+                    const float remainingTimeBeforeAcceleration = 1.7f;
+                    
+                    // 根据剩余路程和剩余时间计算所需加速度
+                    // 使用加速度推导公式 a = 2*(s - v0*t)/t^2
+                    acceleration = 2f * (remainingLength - currentSpeed * remainingTimeBeforeAcceleration) / 
+                                (remainingTimeBeforeAcceleration * remainingTimeBeforeAcceleration);
+                    
+                    // 确保加速度为正（加速运动）
+                    acceleration = Mathf.Max(acceleration, 0.1f);
+                    break;
+                }
+                case true when acceleration > 0:
+                    currentSpeed += acceleration * Time.deltaTime;
+                    break;
+            }
+            
+            // 计算这一帧应该移动的曲线长度
+            var moveLength = currentSpeed * Time.deltaTime;
+            
+            if (moveLength > remainingLength)
+            {
+                currentT = 1f;
             }
             else
             {
-                scaleT = (t - 0.5f) * 2f;
-                ball.transform.localScale = Vector3.Lerp(targetScale, startScale, EaseInSine(scaleT));
+                var deltaT = CalculateDeltaTForLength(startPosition, controlPoint, targetPosition, 
+                    currentT, moveLength, totalPathLength);
+                currentT += deltaT;
+                currentT = Mathf.Clamp01(currentT);
             }
+            
+            var newPosition = CalculateQuadraticBezier(startPosition, controlPoint, targetPosition, currentT);
+            ball.transform.position = newPosition;
+            
+            var tangent = CalculateBezierTangent(startPosition, controlPoint, targetPosition, currentT);
+            if (tangent.magnitude > 0.01f)
+            {
+                var angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+                ball.transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
+            
+            ball.transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
+            var scaleMultiplier = Mathf.Lerp(1f, 0.3f, currentT);
+            ball.transform.localScale = originalScale * scaleMultiplier;
             
             yield return null;
         }
         
-        renderer.color = targetColor;
-        ball.transform.localScale = startScale;
+        if (ball == null) yield break;
+        ball.transform.position = targetPosition;
+        ball.transform.localScale = originalScale * 0.3f;
+        CheckAllBallsArrived();
     }
-}
-private bool accelerationPhaseStarted;
-private IEnumerator MoveBallToCenter(BallInfo ballInfo, int index)
-{
-    var ball = ballInfo.BallObject;
-    var startPosition = ballInfo.StartPosition;
-    var controlPoint = ballInfo.ControlPoint;
-    var targetPosition = ballInfo.TargetPosition;
-    
-    const float initialSpeed = 1.3f;
-    var currentSpeed = initialSpeed;
-    var acceleration = 0f;
 
-    var totalPathLength = ballInfo.TotalDistance();
-    var currentT = 0f;
-    
-    var timer = 0f;
-    var originalScale = originalScales[index];
-    const float rotationSpeed = 180f;
-    
-    while (currentT < 1f)
-    {
-        timer += Time.deltaTime;
-        
-        if (index == 2 && timer >= 0.7f && !accelerationPhaseStarted)
-        {
-            accelerationPhaseStarted = true;
-        }
-        
-        var traveledLength = AdaptiveBezierLength(startPosition, controlPoint, targetPosition, 0f, currentT, 0.001f);
-        var remainingLength = totalPathLength - traveledLength;
-        
-        switch (accelerationPhaseStarted)
-        {
-            case false:
-            {
-                const float remainingTimeBeforeAcceleration = 1.7f;
-                
-                // 根据剩余路程和剩余时间计算所需加速度
-                // 使用加速度推导公式 a = 2*(s - v0*t)/t^2
-                acceleration = 2f * (remainingLength - currentSpeed * remainingTimeBeforeAcceleration) / 
-                              (remainingTimeBeforeAcceleration * remainingTimeBeforeAcceleration);
-                
-                // 确保加速度为正（加速运动）
-                acceleration = Mathf.Max(acceleration, 0.1f);
-                break;
-            }
-            case true when acceleration > 0:
-                currentSpeed += acceleration * Time.deltaTime;
-                break;
-        }
-        
-        // 计算这一帧应该移动的曲线长度
-        var moveLength = currentSpeed * Time.deltaTime;
-        
-        if (moveLength > remainingLength)
-        {
-            currentT = 1f;
-        }
-        else
-        {
-            var deltaT = CalculateDeltaTForLength(startPosition, controlPoint, targetPosition, 
-                currentT, moveLength, totalPathLength);
-            currentT += deltaT;
-            currentT = Mathf.Clamp01(currentT);
-        }
-        
-        var newPosition = CalculateQuadraticBezier(startPosition, controlPoint, targetPosition, currentT);
-        ball.transform.position = newPosition;
-        
-        var tangent = CalculateBezierTangent(startPosition, controlPoint, targetPosition, currentT);
-        if (tangent.magnitude > 0.01f)
-        {
-            var angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
-            ball.transform.rotation = Quaternion.Euler(0, 0, angle);
-        }
-        
-        ball.transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
-        var scaleMultiplier = Mathf.Lerp(1f, 0.3f, currentT);
-        ball.transform.localScale = originalScale * scaleMultiplier;
-        
-        yield return null;
-    }
-    
-    if (ball == null) yield break;
-    ball.transform.position = targetPosition;
-    ball.transform.localScale = originalScale * 0.3f;
-    CheckAllBallsArrived();
-}
-
-
-private void CheckAllBallsArrived()
+    private void CheckAllBallsArrived()
     {
         ballsArrivedCount++;
         
@@ -316,7 +313,7 @@ private void CheckAllBallsArrived()
             allBallsArrived = true;
         }
     }
-    
+
     private IEnumerator CreateGlowCircle()
     {
         var glowCircle = new GameObject("GlowCircle")
@@ -338,7 +335,6 @@ private void CheckAllBallsArrived()
         circleRenderer.sprite = circleSprite;
         circleRenderer.sortingOrder = 0;
         circleRenderer.sortingLayerName = "UI";
-        
 
         var elapsed = 0f;
         const float intensifyDuration = 0.5f;

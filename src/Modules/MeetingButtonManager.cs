@@ -9,9 +9,19 @@ public class MeetingButtonManager
 {
     private static int Count = 0;
     public static bool ButtonCreated = false;
-    private static void ClearMeetingButton(MeetingHud __instance, bool forceAll = false)
-     => __instance.playerStates.ToList().ForEach(x => { if ((forceAll || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps))) && x.transform.FindChild("Custom Meeting Button") != null) UnityEngine.Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject); });
-
+    private static void ClearMeetingButton(MeetingHud __instance, IMeetingButton meetingButton, bool forceAll = false)
+    {
+        __instance.playerStates.ToList().ForEach(x => 
+            {
+                var pc = Utils.GetPlayerById(x.TargetPlayerId);
+                if ((forceAll
+                    || (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps))
+                    || (pc != null && !meetingButton.ShouldShowButtonFor(pc)))
+                    && x.transform.FindChild("Custom Meeting Button") != null)
+                    UnityEngine.Object.Destroy(x.transform.FindChild("Custom Meeting Button").gameObject);
+            }
+        );
+    }
     [HarmonyPatch(nameof(MeetingHud.Start)), HarmonyPrefix]
     public static void Start(MeetingHud __instance)
     {
@@ -33,36 +43,41 @@ public class MeetingButtonManager
         if (__instance == null || !GameStates.IsInGame || __instance.IsDestroyedOrNull()) return;
 
         Count = Count > 20 ? 0 : ++Count;
-        if (Count != 0) return;
 
-        //若某玩家死亡则修复会议该玩家状态
-        __instance.playerStates.Where(x => (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
+        if (Count == 0)
+        {
+            //若某玩家死亡则修复会议该玩家状态
+            __instance.playerStates.Where(x => (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
+        }
 
         //本地玩家并没有会议技能按钮
         if (PlayerControl.LocalPlayer.GetRoleClass() is not IMeetingButton meetingButton) return;
 
-        //投票结束时销毁全部技能按钮
-        if (GameStates.IsVotingComplete)
+        if (Count == 0)
         {
-            if (GameObject.Find("Custom Meeting Button") != null) ClearMeetingButton(__instance, true);
-            return;
-        }
+            //投票结束时销毁全部技能按钮
+            if (GameStates.IsVotingComplete)
+            {
+                if (GameObject.Find("Custom Meeting Button") != null) ClearMeetingButton(__instance, meetingButton, true);
+                return;
+            }
 
-        //检查是否应该清除全部按钮
-        if (ButtonCreated && !meetingButton.ShouldShowButton())
-        {
-            ClearMeetingButton(__instance, true);
-            ButtonCreated = false;
-        }
+            //检查是否应该清除全部按钮
+            if (ButtonCreated && !meetingButton.ShouldShowButton())
+            {
+                ClearMeetingButton(__instance, meetingButton, true);
+                ButtonCreated = false;
+            }
 
-        //检查是否应该创建按钮
-        if (!ButtonCreated && meetingButton.ShouldShowButton())
-        {
-            CreateMeetingButton(__instance, meetingButton);
-        }
+            //检查是否应该创建按钮
+            if ( /* !ButtonCreated && */ meetingButton.ShouldShowButton())
+            {
+                CreateMeetingButton(__instance, meetingButton);
+            }
 
-        //销毁死亡玩家身上的技能按钮
-        ClearMeetingButton(__instance);
+            //销毁掉线玩家身上的技能按钮
+            ClearMeetingButton(__instance, meetingButton);
+        }
 
         meetingButton.OnUpdateButton(__instance);
     }
@@ -70,6 +85,7 @@ public class MeetingButtonManager
     {
         foreach (var pva in __instance.playerStates)
         {
+            if (pva?.transform?.FindChild("Custom Meeting Button")?.gameObject != null) continue;
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !meetingButton.ShouldShowButtonFor(pc)) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;

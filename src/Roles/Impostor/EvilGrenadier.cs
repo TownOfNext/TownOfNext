@@ -1,11 +1,6 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
-using System.Linq;
-using TONX.Roles.Core;
-using System.Collections.Generic;
 using UnityEngine;
-using AmongUs.Data.Settings;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 
@@ -17,9 +12,9 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
             typeof(EvilGrenadier),
             player => new EvilGrenadier(player),
             CustomRoles.EvilGrenadier,
-         () => RoleTypes.Phantom,
+            () => RoleTypes.Phantom,
             CustomRoleTypes.Impostor,
-            23400,
+            5500,
             SetupOptionItem,
             "gr|擲雷兵|掷雷|闪光弹"
         );

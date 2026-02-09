@@ -8,24 +8,24 @@ namespace TONX.Roles.Crewmate;
 
 public class Criminologist : RoleBase, IMeetingButton
 {
-    public static readonly SimpleRoleInfo RoleInfo = SimpleRoleInfo.Create(
-        typeof(Criminologist),
-        player => new Criminologist(player),
-        CustomRoles.Criminologist,
-        () => RoleTypes.Crewmate,
-        CustomRoleTypes.Crewmate,
-        23300,
-        SetupOptionItem,
-        "crm|犯罪学|犯罪学家",
-        "#3C5BA3",
-        introSound: () => GetIntroSound(RoleTypes.Crewmate)
-    );
-    
-    public Criminologist(PlayerControl player) : base(RoleInfo, player)
-    {
-        VerifyLimitPerMeeting = OptionVerifyLimitPerMeeting.GetInt();
-        DeductOnFailed = OptionDeductOnFailed.GetBool();
-    }
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.Create(
+            typeof(Criminologist),
+            player => new Criminologist(player),
+            CustomRoles.Criminologist,
+            () => RoleTypes.Crewmate,
+            CustomRoleTypes.Crewmate,
+            23300,
+            SetupOptionItem,
+            "crm|犯罪学|犯罪学家",
+            "#3C5BA3"
+        );
+    public Criminologist(PlayerControl player)
+    : base(
+        RoleInfo,
+        player
+    )
+    { }
 
     private static OptionItem OptionVerifyLimitPerMeeting;
     private static OptionItem OptionDeductOnFailed;
@@ -37,14 +37,9 @@ public class Criminologist : RoleBase, IMeetingButton
 
     public int VerifyLimitPerMeeting = 0;
     public bool DeductOnFailed = false;
-    public List<byte> SelectedPlayers = new();
+    public byte DeadPlayerChosen = byte.MaxValue;
     private bool HasExecutedThisMeeting = false;
     private int CurrentUsesThisMeeting = 0;
-
-    private enum RoleRpcType
-    {
-        SetSelectedPlayers
-    }
 
     private static void SetupOptionItem()
     {
@@ -68,215 +63,154 @@ public class Criminologist : RoleBase, IMeetingButton
     }
     public override void OnStartMeeting()
     {
-        SelectedPlayers.Clear();
+        DeadPlayerChosen = byte.MaxValue;
         HasExecutedThisMeeting = false;
         CurrentUsesThisMeeting = VerifyLimitPerMeeting;
         SendRPC();
-        
+    }
+    public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
+    {
         if (Player.IsAlive())
         {
-            Utils.SendMessage(
-                string.Format(GetString("CriminologistUsesRemaining"), CurrentUsesThisMeeting), 
-                Player.PlayerId,
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
-            );
+            msgToSend.Add((string.Format(GetString("CriminologistUsesRemaining"), CurrentUsesThisMeeting),
+            Player.PlayerId,
+            Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))));
         }
     }
 
-    public override void AfterMeetingTasks()
-    {
-        SelectedPlayers.Clear();
-        HasExecutedThisMeeting = false;
-    }
-    
     private void SendRPC()
     {
         using var sender = CreateSender();
-        sender.Writer.Write((byte)RoleRpcType.SetSelectedPlayers);
-        sender.Writer.Write(SelectedPlayers.Count);
-        foreach (var playerId in SelectedPlayers)
-            sender.Writer.Write(playerId);
+        sender.Writer.Write(DeadPlayerChosen);
         sender.Writer.Write(CurrentUsesThisMeeting);
     }
-
     public override void ReceiveRPC(MessageReader reader)
     {
-        var rpcType = (RoleRpcType)reader.ReadByte();
-        switch (rpcType)
-        {
-            case RoleRpcType.SetSelectedPlayers:
-                SelectedPlayers.Clear();
-                var count = reader.ReadInt32();
-                for (int i = 0; i < count; i++)
-                    SelectedPlayers.Add(reader.ReadByte());
-                CurrentUsesThisMeeting = reader.ReadInt32();
-                break;
-        }
+        DeadPlayerChosen = reader.ReadByte();
+        CurrentUsesThisMeeting = reader.ReadInt32();
     }
-    
+
     public string ButtonName { get; private set; } = "Verify";
     public bool ShouldShowButton() => Player.IsAlive() && !HasExecutedThisMeeting && CurrentUsesThisMeeting > 0;
-    public bool ShouldShowButtonFor(PlayerControl target) => !HasExecutedThisMeeting && CurrentUsesThisMeeting > 0;
-
-    public void OnClickButton(PlayerControl target)
-    {
-        if (!TrySelectPlayer(target, out string reason))
-        {
-            Player.ShowPopUp(reason);
-            return;
-        }
-        
-        if (SelectedPlayers.Count == 2)
-        {
-            var dead = Utils.GetPlayerById(SelectedPlayers[0]);
-            var killer = Utils.GetPlayerById(SelectedPlayers[1]);
-            
-            if (Verify(dead, killer))
-            {
-                Execute(killer, dead);
-                HasExecutedThisMeeting = true;
-                CurrentUsesThisMeeting--;
-                SendRPC();
-            }
-            else
-            {
-                Player.ShowPopUp(string.Format(GetString("VerifyFailed"), killer.GetRealName(), dead.GetRealName()));
-                if (DeductOnFailed)
-                {
-                    HasExecutedThisMeeting = false;
-                    CurrentUsesThisMeeting--;
-                    SendRPC();
-                }
-            }
-            
-            SelectedPlayers.Clear();
-            SendRPC();
-        }
-    }
-
-    public void OnUpdateButton(MeetingHud meetingHud)
-    {
-        foreach (var pva in meetingHud.playerStates)
-        {
-            var btn = pva?.transform?.FindChild("Custom Meeting Button")?.gameObject;
-            if (!btn) continue;
-            
-            if (SelectedPlayers.Contains(pva.TargetPlayerId))
-                btn.GetComponent<SpriteRenderer>().color = Color.green;
-            else if (SelectedPlayers.Count == 2 || HasExecutedThisMeeting || CurrentUsesThisMeeting <= 0)
-                btn.GetComponent<SpriteRenderer>().color = Color.gray;
-            else
-                btn.GetComponent<SpriteRenderer>().color = Color.red;
-        }
-    }
-    
-    private bool TrySelectPlayer(PlayerControl target, out string reason)
-    {
-        reason = string.Empty;
-
-        if (HasExecutedThisMeeting)
-        {
-            reason = GetString("VerifyAlreadyExecuted");
-            return false;
-        }
-
-        if (CurrentUsesThisMeeting <= 0)
-        {
-            reason = GetString("VerifyLimitMax");
-            return false;
-        }
-
-        if (SelectedPlayers.Count >= 2)
-        {
-            reason = GetString("VerifyAlreadySelectedTwo");
-            return false;
-        }
-        
-        if (SelectedPlayers.Count == 0 && target.IsAlive())
-        {
-            reason = GetString("VerifyDeaderNoDeath");
-            return false;
-        }
-
-        if (SelectedPlayers.Count == 1)
-        {
-            var dead = Utils.GetPlayerById(SelectedPlayers[0]);
-            if (target.PlayerId == dead.PlayerId)
-            {
-                reason = GetString("VerifyCoupleSame");
-                return false;
-            }
-        }
-
-        SelectedPlayers.Add(target.PlayerId);
-        SendRPC();
-        return true;
-    }
-
-    /// <summary>
-    /// 验证传入的玩家组是否为凶杀组
-    /// </summary>
-    private bool Verify(PlayerControl dead, PlayerControl killer)
-    {
-        return dead.GetRealKiller()?.PlayerId == killer.PlayerId;
-    }
-
-    /// <summary>
-    /// 执行击杀
-    /// </summary>
-    private bool Execute(PlayerControl target,PlayerControl dead)
-    {
-        if (Is(target))
-        {
-            Utils.SendMessage(GetString("VerifySuicideMessage"), Player.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
-        }
-
-        string targetName = target.GetRealName();
-        string deadName = dead.GetRealName();
-
-        _ = new LateTask(() =>
-        {
-            var state = PlayerState.GetByPlayerId(target.PlayerId);
-            state.DeathReason = CustomDeathReason.Verifyed;
-            target.SetRealKiller(Player);
-            target.RpcSuicideWithAnime();
-
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(
-                    string.Format(GetString("VerifyExecuteKiller"), targetName, deadName),
-                    255,
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle")),
-                    false, true, targetName
-                );
-            }, 0.6f, "Criminologist Execute Msg");
-
-        }, 0.2f, "Criminologist Execute");
-
-        return true;
-    }
-    
+    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive() == (DeadPlayerChosen != byte.MaxValue) || target.PlayerId == DeadPlayerChosen;
     public override bool OnSendMessage(string msg, out MsgRecallMode recallMode)
     {
         bool isCommand = VerifyMsg(Player, msg, out bool spam);
         recallMode = spam ? MsgRecallMode.Spam : MsgRecallMode.None;
         return isCommand;
     }
+    public void OnClickButton(PlayerControl target)
+    {
+        if (target.PlayerId == DeadPlayerChosen)
+        {
+            DeadPlayerChosen = byte.MaxValue; // 取消选择
+            SendRPC();
+            return;
+        }
+        var dead = Utils.GetPlayerById(DeadPlayerChosen);
+        if (dead == null)
+        {
+            DeadPlayerChosen = target.PlayerId;
+            SendRPC();
+            return;
+        }
+        if (!Verify(dead, target, out string reason, true))
+        {
+            Player.ShowPopUp(reason);
+            return;
+        }
+    }
+    public void OnUpdateButton(MeetingHud meetingHud)
+    {
+        foreach (var pva in meetingHud.playerStates)
+        {
+            var btn = pva?.transform?.FindChild("Custom Meeting Button")?.gameObject;
+            if (!btn) continue;
 
-    private bool VerifyMsg(PlayerControl pc, string msg, out bool spam)
+            if (HasExecutedThisMeeting || CurrentUsesThisMeeting <= 0)
+                btn.GetComponent<SpriteRenderer>().color = Color.gray;
+            else if (DeadPlayerChosen == pva.TargetPlayerId)
+                btn.GetComponent<SpriteRenderer>().color = Color.green;
+            else
+                btn.GetComponent<SpriteRenderer>().color = Color.red;
+        }
+    }
+
+    private bool Verify(PlayerControl target, PlayerControl killer, out string reason, bool isUi = false)
+    {
+        reason = string.Empty;
+
+        if (CurrentUsesThisMeeting < 1)
+        {
+            reason = GetString("VerifyLimitMax");
+            return false;
+        }
+        if (HasExecutedThisMeeting)
+        {
+            reason = GetString("VerifyAlreadyExecuted");
+            return false;
+        }
+
+        if (Is(killer))
+        {
+            if (!isUi) Utils.SendMessage(GetString("VerifySuicideMessage"), Player.PlayerId, Utils.ColorString(Color.cyan, GetString("MessageFromKPD")));
+            else Player.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("VerifySuicideMessage"));
+        }
+
+        DeadPlayerChosen = byte.MaxValue;
+        var succeed = target.GetRealKiller()?.PlayerId == killer.PlayerId;
+        if (succeed || !DeductOnFailed)
+        {
+            HasExecutedThisMeeting = true;
+            CurrentUsesThisMeeting--;
+            SendRPC();
+        }
+
+        string killerName = killer.GetRealName();
+        string targetName = target.GetRealName();
+
+        if (!succeed)
+        {
+            Utils.SendMessage(
+                    string.Format(GetString("VerifyFailed"), killerName, targetName), 
+                    255, 
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
+                );
+            return true;
+        }
+
+        _ = new LateTask(() =>
+        {
+            var state = PlayerState.GetByPlayerId(killer.PlayerId);
+            state.DeathReason = CustomDeathReason.Verifyed;
+            killer.SetRealKiller(Player);
+            killer.RpcSuicideWithAnime();
+
+            _ = new LateTask(() =>
+            {
+                Utils.SendMessage(
+                    string.Format(GetString("VerifyExecuteKiller"), killerName, targetName),
+                    255,
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle")),
+                    false, true, killerName
+                );
+            }, 0.6f, "Criminologist Execute Msg");
+        }, 0.2f, "Criminologist Execute");
+
+        return true;
+    }
+
+    public bool VerifyMsg(PlayerControl pc, string msg, out bool spam)
     {
         spam = false;
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Criminologist)) return false;
 
-        int operate;
+        int operate; // 1:ID 2:检验
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) 
-            operate = 1;
-        else if (ChatCommand.MatchCommand(ref msg, "vrf|verify|推理", false))
-            operate = 2;
-        else 
-            return false;
+        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
+        else if (ChatCommand.MatchCommand(ref msg, "vrf|verify|推理", false)) operate = 2;
+        else return false;
 
         if (!pc.IsAlive())
         {
@@ -286,108 +220,62 @@ public class Criminologist : RoleBase, IMeetingButton
 
         if (operate == 1)
         {
-            Utils.SendMessage(ChatCommand.GetFormatString(false,true), pc.PlayerId);
+            Utils.SendMessage(ChatCommand.GetFormatString(containDeadPlayers: true), pc.PlayerId);
             return true;
         }
-
         if (operate == 2)
         {
             spam = true;
             if (!AmongUsClient.Instance.AmHost) return true;
 
-            if (CurrentUsesThisMeeting <= 0)
-            {
-                Utils.SendMessage(GetString("VerifyLimitMax"), pc.PlayerId);
-                return true;
-            }
-
-            if (!MsgToPlayersByID(msg, out PlayerControl dead, out PlayerControl killer, out string error))
+            if (!MsgToPlayersByID(msg, out PlayerControl target, out PlayerControl killer, out string error))
             {
                 Utils.SendMessage(error, pc.PlayerId);
                 return true;
             }
 
-            if (!CheckAble(dead, killer))
-                return true;
-
-            if (Verify(dead, killer))
-            {
-                Execute(killer, dead);
-                CurrentUsesThisMeeting--;
-                SendRPC();
-            }
-            else
-            {
-                Utils.SendMessage(string.Format(GetString("VerifyFailed"), killer.GetRealName(), dead.GetRealName()), 
-                    255, 
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
-                    );
-                if (DeductOnFailed)
-                {
-                    HasExecutedThisMeeting = true;
-                    CurrentUsesThisMeeting--;
-                    SendRPC();
-                }
-            }
+            if (!Verify(target, killer, out var reason))
+                Utils.SendMessage(reason, pc.PlayerId);
         }
         return true;
     }
-
-    /// <summary>
-    /// 通过玩家ID解析消息
-    /// </summary>
-    private static bool MsgToPlayersByID(string msg, out PlayerControl dead, out PlayerControl killer, out string error)
+    private static bool MsgToPlayersByID(string msg, out PlayerControl target, out PlayerControl killer, out string error)
     {
-        dead = null;
+        target = null;
         killer = null;
         error = string.Empty;
-        
+
         string[] parts = msg.Split(' ');
         if (parts.Length < 3)
         {
             error = GetString("VerifyCommandFormatError");
             return false;
         }
-        
-        if (!byte.TryParse(parts[1], out byte deadId))
+        if (!byte.TryParse(parts[1], out byte targetId) || !byte.TryParse(parts[2], out byte killerId))
         {
             error = GetString("VerifyInvalidPlayerId");
             return false;
         }
-        
-        if (!byte.TryParse(parts[2], out byte killerId))
-        {
-            error = GetString("VerifyInvalidPlayerId");
-            return false;
-        }
-        
-        dead = Utils.GetPlayerById(deadId);
+
+        //判断选择的玩家是否合理
+        target = Utils.GetPlayerById(targetId);
         killer = Utils.GetPlayerById(killerId);
 
-        if (dead == null || killer == null)
+        if (target == null || killer == null)
         {
             error = GetString("VerifyPlayerNotFound");
             return false;
         }
-
-        return true;
-    }
-
-    private bool CheckAble(PlayerControl dead, PlayerControl killer)
-    {
-        if (dead.IsAlive())
+        if (target.IsAlive())
         {
-            Utils.SendMessage(GetString("VerifyDeaderNoDeath"), Player.PlayerId);
+            error = GetString("VerifyDeaderNoDeath");
             return false;
         }
-
-        if (dead.PlayerId == killer.PlayerId)
+        if (target.PlayerId == killer.PlayerId)
         {
-            Utils.SendMessage(GetString("VerifyCoupleSame"), Player.PlayerId);
+            error = GetString("VerifyCoupleSame");
             return false;
         }
-
         return true;
     }
-    
 }
