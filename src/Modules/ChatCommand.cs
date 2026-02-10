@@ -428,25 +428,35 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         }
         return text;
     }
-    public static bool MatchCommand(ref string msg, string command, bool exact = true)
+    public static bool MatchCommand(ref string msg, string command, bool exact = true, bool isCmd = false)
     {
-        var comList = command.Split('|');
+        var comList = command.Split('|'); // +25 模式下，官服中发送以 /cmd 开头的消息仅会被房主端接受
+        var tag = isCmd ? "/cmd " : "/";  // 详见：https://github.com/Innersloth-LLC/AmongUsModdingInformation
         for (int i = 0; i < comList.Length; i++)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == tag + comList[i]) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith(tag + comList[i]))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace(tag + comList[i], string.Empty);
                     return true;
                 }
             }
         }
         return false;
+    }
+    public static bool OperateRoleCommand(ref string msg, string command, out int operate)
+    {
+        operate = 0; // 1:ID 2:技能
+        bool isCmd = msg.StartsWith("/cmd ");
+        msg = msg.ToLower().TrimStart().TrimEnd();
+        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id", isCmd: isCmd)) operate = 1;
+        else if (ChatCommand.MatchCommand(ref msg, command, false, isCmd)) operate = 2;
+        return operate != 0;
     }
 }
 

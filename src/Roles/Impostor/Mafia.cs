@@ -122,11 +122,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Mafia)) return false;
 
-        int operate; // 1:ID 2:复仇
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (ChatCommand.MatchCommand(ref msg, "rv|revenge|复仇", false)) operate = 2;
-        else return false;
+        if (!ChatCommand.OperateRoleCommand(ref msg, "rv|revenge|复仇", out int operate)) return false;
 
         if (operate == 1)
         {

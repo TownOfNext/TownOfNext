@@ -85,7 +85,7 @@ public sealed class Medium : RoleBase
             if (OptionOnlyReceiveMsgFromCrew.GetBool() && !player.IsCrew()) continue;
 
             msg = msg.ToLower().Trim();
-            if (!CheckCommond(ref msg, "通灵|ms|mediumship|medium", false)) return;
+            if (!ChatCommand.MatchCommand(ref msg, "通灵|ms|mediumship|medium", false, true)) return;
 
             bool ans;
             if (msg.Contains('n') || msg.Contains(GetString("No")) || msg.Contains('错') || msg.Contains("不是")) ans = false;
@@ -101,25 +101,5 @@ public sealed class Medium : RoleBase
 
             roleClass.ContactPlayer = byte.MaxValue;
         }
-    }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comList[i]) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comList[i]))
-                {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

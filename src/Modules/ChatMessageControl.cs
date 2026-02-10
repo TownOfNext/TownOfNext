@@ -50,10 +50,20 @@ public class MessageControl
                     _ => true,
                 }) continue;
 
-                string keyword = command.KeyWords.Find(k => Message.ToLower().StartsWith("/" + k.ToLower()));
+                string keyword = string.Empty;
+                string matchedTag = string.Empty;
+                foreach (var tag in new List<string> {"/", "/cmd "}) // +25 模式下，官服中发送以 /cmd 开头的消息仅会被房主端接受
+                {                                                    // 详见：https://github.com/Innersloth-LLC/AmongUsModdingInformation
+                    keyword = command.KeyWords.Find(k => Message.ToLower().StartsWith(tag + k.ToLower()));
+                    if (!string.IsNullOrEmpty(keyword))
+                    {
+                        matchedTag = tag;
+                        break;
+                    }
+                }
                 if (string.IsNullOrEmpty(keyword)) continue;
 
-                Args = Message[(keyword.Length + 1)..].Trim();
+                Args = Message[(matchedTag.Length + keyword.Length)..].Trim();
                 HasValidArgs = !string.IsNullOrWhiteSpace(Args);
 
                 Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");

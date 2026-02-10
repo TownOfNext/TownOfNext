@@ -151,11 +151,7 @@ public sealed class Swapper : RoleBase, IMeetingButton
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Swapper)) return false;
 
-        int operate; // 1:ID 2:交换
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (ChatCommand.MatchCommand(ref msg, "sw|swa|swap|换票|换", false)) operate = 2;
-        else return false;
+        if (!ChatCommand.OperateRoleCommand(ref msg, "sw|swa|swap|换票|换", out int operate)) return false;
 
         if (!pc.IsAlive())
         {

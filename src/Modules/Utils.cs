@@ -855,6 +855,7 @@ public static class Utils
         multiplePlayers = false;
         byte id = byte.MaxValue;
 
+        if (msg.StartsWith("/cmd ")) msg = msg.Replace("/cmd ", string.Empty);
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);
 
         Regex r = new("\\d+");
