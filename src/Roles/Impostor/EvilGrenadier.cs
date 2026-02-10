@@ -30,54 +30,15 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
     static OptionItem OptionSkillCooldown;
     static OptionItem OptionSkillDuration;
     static OptionItem OptionSkillRange;
-    
-    private long BlindingStartTime;
-    static List<byte> Blinds;
-    private enum RoleRpcType
-    {
-        SetEvilGraList
-    }
-    private void SendRPC()
-    {
-        using var sender = CreateSender();
-        sender.Writer.Write(Blinds.Count);
-        for (int i = 0; i < Blinds.Count; i++)
-            sender.Writer.Write(Blinds[i]);
-    }
-    public override void ReceiveRPC(MessageReader reader)
-    {
-        var rpcType = (RoleRpcType)reader.ReadByte();
-        switch (rpcType)
-        {
-            case RoleRpcType.SetEvilGraList:
-                int count = reader.ReadInt32();
-                Blinds = new();
-                for (int i = 0; i < count; i++)
-                    Blinds.Add(reader.ReadByte());
-                break;
-        }
-    }
     enum OptionName
     {
         EvilGrenadierSkillCooldown,
         EvilGrenadierSkillDuration,
         EvilGrenadierSkillRange,
     }
-    public static bool IsBlinding(PlayerControl target)
-    {
-        if (Blinds.Contains(target.PlayerId) && target.IsAlive())
-            return true;
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.EvilGrenadier)))
-        {
-            if (pc.GetRoleClass() is not EvilGrenadier roleClass) continue;
-            if (roleClass.BlindingStartTime != 0 && roleClass.BlindingStartTime + (long)OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
-            {
-                if (!target.IsImp() || !target.Is(CustomRoles.Madmate))
-                    return true;
-            }
-        }
-        return false;
-    }
+    
+    private long BlindingStartTime;
+    private List<byte> Blinds;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.EvilGrenadierSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -87,10 +48,7 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         OptionSkillRange = FloatOptionItem.Create(RoleInfo, 14, OptionName.EvilGrenadierSkillRange, new(0f, 50f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
-    public override void OnGameStart()
-    {
-        Blinds = new();
-    }
+
     public override void Add()
     {
         OptionSkillDuration.GetFloat();
@@ -103,6 +61,22 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
             OptionSkillDuration.GetFloat() + 1 : OptionSkillCooldown.GetFloat();
         AURoleOptions.PhantomDuration = 1f;
     }
+
+    private void SendRPC()
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write(Blinds.Count);
+        for (int i = 0; i < Blinds.Count; i++)
+            sender.Writer.Write(Blinds[i]);
+    }
+    public override void ReceiveRPC(MessageReader reader)
+    {
+        int count = reader.ReadInt32();
+        Blinds = new();
+        for (int i = 0; i < count; i++)
+            Blinds.Add(reader.ReadByte());
+    }
+
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("GrenadierVetnButtonText");
@@ -112,7 +86,6 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
     {
         if (BlindingStartTime != 0) return false;
         BlindingStartTime = Utils.GetTimeStamp();
-        Player.RpcResetAbilityCooldown();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsImpTeam()))
         {
             OnBlinding(pc);
@@ -123,6 +96,8 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.IsImpTeam()))
             pc.Notify(GetString("GrenadierSkillInUse"), OptionSkillDuration.GetFloat());
         Utils.MarkEveryoneDirtySettings();
+        Player.SyncSettings();
+        Player.RpcResetAbilityCooldown();
         return false;
     }
     public override void OnFixedUpdate(PlayerControl player)
@@ -135,10 +110,10 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
             SendRPC();
             BlindingStartTime = 0;
             Player.RpcProtectedMurderPlayer();
-            Player.SyncSettings();
-            Player.RpcResetAbilityCooldown();
             Player.Notify(GetString("GrenadierSkillStop"));
             Utils.MarkEveryoneDirtySettings();
+            Player.SyncSettings();
+            Player.RpcResetAbilityCooldown();
         }
     }
     void OnBlinding(PlayerControl pc)
@@ -150,7 +125,6 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
             if (pc.IsModClient())
             {
                 pc.RPCPlayCustomSound("FlashBang");
-
             }
             Blinds.Add(pc.PlayerId);
         }
@@ -161,5 +135,24 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         if (IsBlinding(seer))
             return "<size=1000><color=#ffffff>●</color></size>";
         return "";
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        seen ??= seer;
+        if (Blinds.Contains(seen.PlayerId) && seen.IsAlive())
+            return Utils.ColorString(RoleInfo.RoleColor, "●");
+        return "";
+    }
+
+    // 全部模组端都会调用，确保所有变量列表都已同步
+    public static bool IsBlinding(PlayerControl target)
+    {
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.EvilGrenadier)))
+        {
+            if (pc.GetRoleClass() is not EvilGrenadier roleClass) continue;
+            if (roleClass.Blinds.Contains(target.PlayerId) && target.IsAlive())
+            return true;
+        }
+        return false;
     }
 }

@@ -979,21 +979,17 @@ class CheckVanishPatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
-        if (__instance.GetRoleClass()?.OnCheckVanish() == false && AmongUsClient.Instance.AmHost)
-        {
+        if (!AmongUsClient.Instance.AmHost) return true;
 
+        if (__instance.GetRoleClass()?.OnCheckVanish() == false)
+        {
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.StartVanish, SendOption.Reliable, __instance.GetClientId());
             messageWriter.WriteNetObject(__instance);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
-
             MessageWriter messageWriter1 = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.StartAppear, SendOption.Reliable, __instance.GetClientId());
             messageWriter1.WriteNetObject(__instance);
-            AmongUsClient.Instance.FinishRpcImmediately(messageWriter1);
-
-           
-            __instance.RpcResetAbilityCooldown();
-
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter1);__instance.RpcResetAbilityCooldown();
 
             return false;
         }
@@ -1001,29 +997,17 @@ class CheckVanishPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckAppear))]
-class CmdCheckAppearPatch
-{
-    public static bool Prefix([HarmonyArgument(0)] PlayerControl __instance, [HarmonyArgument(1)] bool shouldAnimate)
-    {
-        if (!__instance.IsEaten())
-        {
-            if (__instance.GetRoleClass()?.OnAppear(shouldAnimate) == false)
-                return false;
-        }
-        return true;
-    }
-}
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckAppear))]
 class CheckAppearPatch
 {
     public static bool Prefix([HarmonyArgument(0)] PlayerControl __instance, [HarmonyArgument(1)] bool shouldAnimate)
     {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
         if (!__instance.IsEaten())
         {
-            if (__instance.GetRoleClass()?.OnAppear(shouldAnimate) == false)
-                return false; 
+            if (__instance.GetRoleClass()?.OnCheckAppear(ref shouldAnimate) == false)
+                return false;
         }
         return true;
     }

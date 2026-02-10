@@ -35,8 +35,7 @@ public class Criminologist : RoleBase, IMeetingButton
         CriminologistDeductOnFailed,
     }
 
-    public int VerifyLimitPerMeeting = 0;
-    public bool DeductOnFailed = false;
+    public int VerifyLimitPerMeeting;
     public byte DeadPlayerChosen = byte.MaxValue;
     private bool HasExecutedThisMeeting = false;
     private int CurrentUsesThisMeeting = 0;
@@ -48,12 +47,7 @@ public class Criminologist : RoleBase, IMeetingButton
         OptionDeductOnFailed = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CriminologistDeductOnFailed, false, false);
     }
 
-    public override void Add()
-    {
-        VerifyLimitPerMeeting = OptionVerifyLimitPerMeeting.GetInt();
-        DeductOnFailed = OptionDeductOnFailed.GetBool();
-        CurrentUsesThisMeeting = VerifyLimitPerMeeting;
-    }
+    public override void Add() => VerifyLimitPerMeeting = OptionVerifyLimitPerMeeting.GetInt();
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
         if (Player.IsAlive() && isForMeeting)
@@ -83,11 +77,13 @@ public class Criminologist : RoleBase, IMeetingButton
         using var sender = CreateSender();
         sender.Writer.Write(DeadPlayerChosen);
         sender.Writer.Write(CurrentUsesThisMeeting);
+        sender.Writer.Write(HasExecutedThisMeeting);
     }
     public override void ReceiveRPC(MessageReader reader)
     {
         DeadPlayerChosen = reader.ReadByte();
         CurrentUsesThisMeeting = reader.ReadInt32();
+        HasExecutedThisMeeting = reader.ReadBoolean();
     }
 
     public string ButtonName { get; private set; } = "Verify";
@@ -136,7 +132,7 @@ public class Criminologist : RoleBase, IMeetingButton
         }
     }
 
-    private bool Verify(PlayerControl target, PlayerControl killer, out string reason, bool isUi = false)
+    private bool Verify(PlayerControl target /* 受害人 */ , PlayerControl killer /* 嫌疑人 */ , out string reason, bool isUi = false)
     {
         reason = string.Empty;
 
@@ -159,23 +155,27 @@ public class Criminologist : RoleBase, IMeetingButton
 
         DeadPlayerChosen = byte.MaxValue;
         var succeed = target.GetRealKiller()?.PlayerId == killer.PlayerId;
-        if (succeed || !DeductOnFailed)
-        {
-            HasExecutedThisMeeting = true;
-            CurrentUsesThisMeeting--;
-            SendRPC();
-        }
+        if (!succeed && !OptionDeductOnFailed.GetBool()) HasExecutedThisMeeting = true;
+        CurrentUsesThisMeeting--;
+
+        Logger.Info($"{Player.GetNameWithRole()} => Verify {target.GetNameWithRole()}(Victim) with {killer.GetNameWithRole()}(Suspect) (Succeed: {succeed})", "Criminologist");
+
+        SendRPC();
 
         string killerName = killer.GetRealName();
         string targetName = target.GetRealName();
 
         if (!succeed)
         {
-            Utils.SendMessage(
-                    string.Format(GetString("VerifyFailed"), killerName, targetName), 
-                    255, 
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
-                );
+            _ = new LateTask(() =>
+            {
+                Utils.SendMessage(
+                        string.Format(GetString("VerifyFailed"), killerName, targetName), 
+                        255, 
+                        Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle"))
+                    );
+            }, 0.8f, "Criminologist Execute Failed");
+
             return true;
         }
 

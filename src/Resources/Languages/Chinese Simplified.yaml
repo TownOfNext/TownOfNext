@@ -1013,9 +1013,9 @@ DSHintCooldown: "获取提示冷却时间"
 DSHintNums: "获取提示次数上限"
 CriminologistVerifyLimitPerMeeting: "每轮会议最大推理次数"
 CriminologistDeductOnFailed: "推理错误后可以继续推理"
-EvilGrenadierSkillCooldown: "掷雷冷却时间"
-EvilGrenadierSkillDuration: "失明持续时间"
-EvilGrenadierSkillRange: "影响失明范围"
+EvilGrenadierSkillCooldown: "使用闪光弹冷却时间"
+EvilGrenadierSkillDuration: "闪光弹状态持续时间"
+EvilGrenadierSkillRange: "受闪光弹影响的范围"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"

@@ -88,10 +88,10 @@ public sealed class Grenadier : RoleBase
         {
             BlindingStartTime = 0;
             Player.RpcProtectedMurderPlayer();
-            Player.SyncSettings();
-            Player.RpcResetAbilityCooldown();
             Player.Notify(GetString("GrenadierSkillStop"));
             Utils.MarkEveryoneDirtySettings();
+            Player.SyncSettings();
+            Player.RpcResetAbilityCooldown();
         }
     }
     public static bool IsBlinding(PlayerControl target)
