@@ -71,7 +71,7 @@ internal class ChatCommands
         if (mc.RecallMode == MsgRecallMode.Spam)
         {
             blockForLocalPlayer = true;
-            if (!mc.Message.StartsWith("/cmd")) MessageControl.TryHideMessage(false, false);
+            if (!mc.Message.StartsWith("/cmd") || !GameStates.IsOnlineGame) MessageControl.TryHideMessage(false, false);
         }
 
         ChatUpdatePatch.DoBlockChat = false;
