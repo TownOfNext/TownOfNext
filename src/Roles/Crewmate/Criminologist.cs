@@ -265,7 +265,7 @@ public class Criminologist : RoleBase, IMeetingButton
             error = GetString("VerifyPlayerNotFound");
             return false;
         }
-        if (target.IsAlive())
+        if (target.IsAlive() || !killer.IsAlive())
         {
             error = GetString("VerifyDeaderNoDeath");
             return false;
