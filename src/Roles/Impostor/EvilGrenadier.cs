@@ -150,8 +150,7 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.EvilGrenadier)))
         {
             if (pc.GetRoleClass() is not EvilGrenadier roleClass) continue;
-            if (roleClass.Blinds.Contains(target.PlayerId) && target.IsAlive())
-            return true;
+            if (roleClass.Blinds.Contains(target.PlayerId) && target.IsAlive()) return true;
         }
         return false;
     }
