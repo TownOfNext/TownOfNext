@@ -186,6 +186,9 @@ public class Criminologist : RoleBase, IMeetingButton
             killer.SetRealKiller(Player);
             killer.RpcSuicideWithAnime();
 
+            //死者检查
+            Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+
             _ = new LateTask(() =>
             {
                 Utils.SendMessage(
