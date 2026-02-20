@@ -7,7 +7,7 @@
   "md5": "708d95bc6f6e12a1603b587d4a086534",
 
   "announcement": {
-    "SChinese": "由于树懒对服务器的更新，刷屏隐藏消息已不再需要。输入指令时请使用 /cmd ，例如 /bt => /cmd bt",
+    "SChinese": "由于树懒服务器的更新，刷屏隐藏消息已不再需要。输入指令时请使用 /cmd ，例如 /bt => /cmd bt",
     "English": "Due to the update of the server, the function of hiding messages is no longer necessary. When inputting commands, please use /cmd, for example, /bt => /cmd bt"
   },
 

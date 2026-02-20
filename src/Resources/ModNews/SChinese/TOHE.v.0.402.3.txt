@@ -1,7 +1,7 @@
 #Number:100004
-#Title:TownOfHostEdited v4.0.2.3
+#Title:TownOfHostEdited v0.402.3
 #SubTitle:★★★★重构重构！学会了好多东西~★★★★
-#ShortTitle:★TOHE v4.0.2.3
+#ShortTitle:★TOHE v0.402.3
 #Date:2023-1-25T00:00:00Z
 #-----------------------------
 感谢您对TOHE的支持！！！

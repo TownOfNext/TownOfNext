@@ -1,4 +1,4 @@
-﻿#Number:100051
+﻿#Number:100052
 #Title:TownOfNext v4.0.0
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v4.0.0
@@ -12,6 +12,11 @@
 ## Warning
 - Create/join public lobbies is temporarily unavailable
 - This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+
+## Notice
+- Due to the update of the server, the function of hiding messages is no longer necessary.
+- Role commands have been changed from starting with / to starting with /cmd.
+- For example: /bt => /cmd bt
 
 ## What You Need to Know
 - We have refactored the code related to game modes.
@@ -29,10 +34,14 @@
 
 ## Changing
 - The client now uses the in-game Admin Map to switch map styles instead of a separate button
+- Role Draft now is an independent game mode
+- Role commands start with /cmd
 
 ## New Feature
 - Option: Enable vanilla Impostor team player count limit
-- Option: Override Origin Meeting Death Message
+- Option: Roles using commands do not notify others after using skills
+- Option: Number of Options
+- Option：Drafting Time
 
 ## New Role
 - Impostor: Evil Grenadier

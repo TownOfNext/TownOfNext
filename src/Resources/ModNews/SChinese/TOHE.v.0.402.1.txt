@@ -1,7 +1,7 @@
 #Number:100002
-#Title:TownOfHostEdited v4.0.2.1
+#Title:TownOfHostEdited v0.402.1
 #SubTitle:★★★★这一天，TOHE诞生了！！★★★★
-#ShortTitle:★TOHE v4.0.2.1
+#ShortTitle:★TOHE v0.402.1
 #Date:2023-1-17T00:00:00Z
 #-----------------------------
 感谢您对TOHE的支持！！！
