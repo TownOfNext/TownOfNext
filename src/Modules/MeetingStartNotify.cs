@@ -9,12 +9,6 @@ public static class MeetingStartNotify
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (RoleDraftManager.Instance != null)
-        {
-            new LateTask(RoleDraftManager.Instance.StartRoleDraft, 8f, "RoleDraftNotify");
-            return;
-        }
-
         List<(string, byte, string)> msgToSend = new();
 
         void AddMsg(string text, byte sendTo = 255, string title = "<Default>")

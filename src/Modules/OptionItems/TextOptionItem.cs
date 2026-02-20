@@ -10,7 +10,7 @@ public class TextOptionItem : OptionItem
     : base(id, name, defaultValue, tab, isSingleValue)
     {
         IsText = true;
-    IsHeader = true;
+        IsHeader = true;
     }
     public static TextOptionItem Create(
         int id, string name, TabGroup tab, bool isSingleValue = false

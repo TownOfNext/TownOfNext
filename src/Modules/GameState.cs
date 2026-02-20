@@ -250,6 +250,18 @@ public static class GameStates
     public static bool IsShip => ShipStatus.Instance != null;
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
+    public static bool IsVanillaServer // from Reactor.gg
+    {
+        get
+        {
+            if (IsLocalGame && !IsNotJoined) return true;
+            const string Domain = "among.us";
+            
+            return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+                   regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
+                   regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
+        }
+    }
 }
 public static class MeetingStates
 {

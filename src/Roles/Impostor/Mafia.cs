@@ -150,9 +150,14 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
 
         //判断选择的玩家是否合理
         target = Utils.MsgToPlayer(ref msg, out bool multiplePlayers);
-        if (target == null || target.Data.IsDead)
+        if (target == null)
         {
-            error = multiplePlayers ? GetString("RevengeMultipleColor") : GetString("MafiaKillDead");
+            error = multiplePlayers ? GetString("RevengeMultipleColor") : GetString("MafiaHelp");
+            return false;
+        }
+        if (target.Data.IsDead)
+        {
+            error = GetString("MafiaKillDead");
             return false;
         }
         return true;

@@ -27,6 +27,8 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
+        // Check if it is a mode command
+        if (!IsCommand) IsCommand = Options.CurrentGameMode.GetModeClass()?.OnSendMessage(Player, Message, out recallMode) ?? false;
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
 
@@ -36,43 +38,40 @@ public class MessageControl
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
 
-        if (!IsCommand)
+        // Not a role command, check for command list
+        foreach (var command in ChatCommand.AllCommands)
         {
-            // Not a role command, check for command list
-            foreach (var command in ChatCommand.AllCommands)
+            if (command.Access.Invoke() switch
             {
-                if (command.Access.Invoke() switch
+                CommandAccess.All => false,
+                CommandAccess.LocalMod => !IsFromSelf,
+                CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
+                CommandAccess.Debugger => !DebugModeManager.AmDebugger,
+                _ => true,
+            }) continue;
+
+            string keyword = string.Empty;
+            string matchedTag = string.Empty;
+            foreach (var tag in new List<string> {"/", "/cmd "}) // +25 模式下，官服中发送以 /cmd 开头的消息仅会被房主端接受
+            {                                                    // 详见：https://github.com/Innersloth-LLC/AmongUsModdingInformation
+                keyword = command.KeyWords.Find(k => Message.ToLower().StartsWith(tag + k.ToLower()));
+                if (!string.IsNullOrEmpty(keyword))
                 {
-                    CommandAccess.All => false,
-                    CommandAccess.LocalMod => !IsFromSelf,
-                    CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
-                    CommandAccess.Debugger => !DebugModeManager.AmDebugger,
-                    _ => true,
-                }) continue;
-
-                string keyword = string.Empty;
-                string matchedTag = string.Empty;
-                foreach (var tag in new List<string> {"/", "/cmd "}) // +25 模式下，官服中发送以 /cmd 开头的消息仅会被房主端接受
-                {                                                    // 详见：https://github.com/Innersloth-LLC/AmongUsModdingInformation
-                    keyword = command.KeyWords.Find(k => Message.ToLower().StartsWith(tag + k.ToLower()));
-                    if (!string.IsNullOrEmpty(keyword))
-                    {
-                        matchedTag = tag;
-                        break;
-                    }
+                    matchedTag = tag;
+                    break;
                 }
-                if (string.IsNullOrEmpty(keyword)) continue;
-
-                Args = Message[(matchedTag.Length + keyword.Length)..].Trim();
-                HasValidArgs = !string.IsNullOrWhiteSpace(Args);
-
-                Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");
-
-                (RecallMode, string msg) = command.Command(this);
-                if (!string.IsNullOrEmpty(msg)) Utils.SendMessage(msg, Player.PlayerId);
-                IsCommand = true;
-                return;
             }
+            if (string.IsNullOrEmpty(keyword)) continue;
+
+            Args = Message[(matchedTag.Length + keyword.Length)..].Trim();
+            HasValidArgs = !string.IsNullOrWhiteSpace(Args);
+
+            Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");
+
+            (RecallMode, string msg) = command.Command(this);
+            if (!string.IsNullOrEmpty(msg)) Utils.SendMessage(msg, Player.PlayerId);
+            IsCommand = true;
+            return;
         }
     }
 

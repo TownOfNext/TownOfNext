@@ -49,5 +49,6 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     SoloKombat = 0x02,
+    RoleDraft = 0x03,
     All = int.MaxValue
 }

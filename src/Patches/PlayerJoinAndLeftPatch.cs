@@ -16,7 +16,7 @@ class OnGameJoinedPatch
         Main.playerVersion = new ();
         Main.HostNickName = AmongUsClient.Instance?.GetHost()?.PlayerName ?? "";
         Main.HostClientId = AmongUsClient.Instance?.GetHost()?.Id ?? -1;
-        if (!Main.VersionCheat.Value) _ = new LateTask(RPC.RpcVersionCheck, 0.01f, "RpcVersionCheck");
+        if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
         Main.AllPlayerNames = new();
@@ -100,7 +100,7 @@ class OnPlayerJoinedPatch
         }
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
-        _ = new LateTask(RPC.RpcVersionCheck, 0.5f, "RpcVersionCheck");
+        RPC.RpcVersionCheck();
 
         if (AmongUsClient.Instance.AmHost)
         {

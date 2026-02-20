@@ -159,6 +159,7 @@ public class MeetingVoteManager
         var result = CountVotes(applyVoteMode);
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
         logger.Info($"会议结束，结果：{logName}");
+        CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role?.OnVotingComplete(result));
 
         var states = new List<MeetingHud.VoterState>();
         foreach (var voteArea in meetingHud.playerStates)

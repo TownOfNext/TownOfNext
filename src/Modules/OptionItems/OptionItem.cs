@@ -179,14 +179,14 @@ namespace TONX
             => Do(i => ReplacementDictionary?.Remove(key));
 
         // Getter
-    public virtual string GetName(bool disableColor = false, bool console = false)
+        public virtual string GetName(bool disableColor = false, bool console = false)
         {
         return (disableColor ?
             Translator.GetString(Name, ReplacementDictionary, console) :
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
             + AddonDescription;
         }
-        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool()) && (GameMode == CustomGameMode.All || GameMode == Options.CurrentGameMode);
+        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool()) && IsGameModeMatched(Options.CurrentGameMode);
         public virtual int GetInt() => CurrentValue;
         public virtual float GetFloat() => CurrentValue;
         public virtual string GetString()
@@ -198,8 +198,10 @@ namespace TONX
         // 旧IsHidden関数
         public virtual bool IsHiddenOn(CustomGameMode mode)
         {
-            return IsHidden || (GameMode != CustomGameMode.All && GameMode != mode);
+            return IsHidden || !IsGameModeMatched(mode);
         }
+        private bool IsGameModeMatched(CustomGameMode mode)
+            => GameMode == CustomGameMode.All || GameMode == mode || (GameMode == CustomGameMode.Standard && mode == CustomGameMode.RoleDraft);
 
         public string ApplyFormat(string value)
         {

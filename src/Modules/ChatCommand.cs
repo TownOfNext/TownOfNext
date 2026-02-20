@@ -253,12 +253,6 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 Logger.Warn($"VisorId: {of.VisorId}", "Get Cos Id");
                 Logger.Warn($"NamePlateId: {of.NamePlateId}", "Get Cos Id");
                 return (MsgRecallMode.Block, null);
-            }),
-            new(["ch"], () => CommandAccess.All, mc =>
-            {
-                MsgRecallMode recallMode = MsgRecallMode.None;
-                RoleDraftManager.Instance?.OnSendMessage(mc, out recallMode);
-                return (recallMode, null);
             })
         };
     }
@@ -454,8 +448,8 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         operate = 0; // 1:ID 2:技能
         bool isCmd = msg.StartsWith("/cmd ");
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (ChatCommand.MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id", isCmd: isCmd)) operate = 1;
-        else if (ChatCommand.MatchCommand(ref msg, command, false, isCmd)) operate = 2;
+        if (MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id", isCmd: isCmd)) operate = 1;
+        else if (MatchCommand(ref msg, command, false, isCmd)) operate = 2;
         return operate != 0;
     }
 }

@@ -42,9 +42,9 @@ public class Criminologist : RoleBase, IMeetingButton
 
     private static void SetupOptionItem()
     {
-        OptionVerifyLimitPerMeeting = IntegerOptionItem.Create(RoleInfo, 11, OptionName.CriminologistVerifyLimitPerMeeting, new(1, 15, 1), 3, false)
+        OptionVerifyLimitPerMeeting = IntegerOptionItem.Create(RoleInfo, 10, OptionName.CriminologistVerifyLimitPerMeeting, new(1, 15, 1), 3, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionDeductOnFailed = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CriminologistDeductOnFailed, false, false);
+        OptionDeductOnFailed = BooleanOptionItem.Create(RoleInfo, 11, OptionName.CriminologistDeductOnFailed, false, false);
     }
 
     public override void Add() => VerifyLimitPerMeeting = OptionVerifyLimitPerMeeting.GetInt();
@@ -138,12 +138,12 @@ public class Criminologist : RoleBase, IMeetingButton
 
         if (CurrentUsesThisMeeting < 1)
         {
-            reason = GetString("VerifyLimitMax");
+            reason = GetString("CriminologistVerifyMax");
             return false;
         }
         if (HasExecutedThisMeeting)
         {
-            reason = GetString("VerifyAlreadyExecuted");
+            reason = GetString("VerifyUsed");
             return false;
         }
 
@@ -192,7 +192,7 @@ public class Criminologist : RoleBase, IMeetingButton
             _ = new LateTask(() =>
             {
                 Utils.SendMessage(
-                    string.Format(GetString("VerifyExecuteKiller"), killerName, targetName),
+                    string.Format(GetString("VerifySucceed"), killerName, targetName),
                     255,
                     Utils.ColorString(Utils.GetRoleColor(CustomRoles.Criminologist), GetString("CriminologistVerifyTitle")),
                     false, true, killerName
@@ -209,7 +209,7 @@ public class Criminologist : RoleBase, IMeetingButton
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Criminologist)) return false;
 
-        if (!ChatCommand.OperateRoleCommand(ref msg, "vrf|verify|推理", out int operate)) return false;
+        if (!ChatCommand.OperateRoleCommand(ref msg, "vr|vrf|verify|推理", out int operate)) return false;
 
         if (!pc.IsAlive())
         {
@@ -245,14 +245,9 @@ public class Criminologist : RoleBase, IMeetingButton
         error = string.Empty;
 
         string[] parts = msg.Split(' ');
-        if (parts.Length < 3)
+        if (parts.Length < 3 || !byte.TryParse(parts[1], out byte targetId) || !byte.TryParse(parts[2], out byte killerId))
         {
-            error = GetString("VerifyCommandFormatError");
-            return false;
-        }
-        if (!byte.TryParse(parts[1], out byte targetId) || !byte.TryParse(parts[2], out byte killerId))
-        {
-            error = GetString("VerifyInvalidPlayerId");
+            error = GetString("VerifyHelp");
             return false;
         }
 
@@ -262,17 +257,22 @@ public class Criminologist : RoleBase, IMeetingButton
 
         if (target == null || killer == null)
         {
-            error = GetString("VerifyPlayerNotFound");
+            error = GetString("VerifyHelp");
+            return false;
+        }
+        if (Justice.UnableToBeTargetedInJusticeMeeting(target) || Justice.UnableToBeTargetedInJusticeMeeting(killer))
+        {
+            error = GetString("JusticeMeetingBanAbility");
             return false;
         }
         if (target.IsAlive() || !killer.IsAlive())
         {
-            error = GetString("VerifyDeaderNoDeath");
+            error = GetString("VerifyNull");
             return false;
         }
         if (target.PlayerId == killer.PlayerId)
         {
-            error = GetString("VerifyCoupleSame");
+            error = GetString("VerifySame");
             return false;
         }
         return true;

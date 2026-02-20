@@ -164,9 +164,19 @@ public sealed class Judge : RoleBase, IMeetingButton
 
         //判断选择的玩家是否合理
         target = Utils.MsgToPlayer(ref msg, out bool multiplePlayers);
-        if (target == null || target.Data.IsDead)
+        if (target == null)
         {
-            error = multiplePlayers ? GetString("TrialMultipleColor") : GetString("TrialNull");
+            error = multiplePlayers ? GetString("TrialMultipleColor") : GetString("TrialHelp");
+            return false;
+        }
+        if (target.Data.IsDead)
+        {
+            error = GetString("TrialNull");
+            return false;
+        }
+        if (Justice.UnableToBeTargetedInJusticeMeeting(target))
+        {
+            error = GetString("JusticeMeetingBanAbility");
             return false;
         }
         return true;

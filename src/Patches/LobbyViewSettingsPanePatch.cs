@@ -9,7 +9,7 @@ namespace TONX;
 public static class LobbyViewSettingsPanePatch
 {
     private static List<PassiveButton> tonxSettingsButton = new List<PassiveButton>();
-    public static List<CategoryHeaderMasked> CategoryHeaders = new List<CategoryHeaderMasked>();
+    public static Dictionary<int, CategoryHeaderMasked> CategoryHeaders = new Dictionary<int, CategoryHeaderMasked>();
     private static Vector3 buttonPosition = new(-6f, 1.4f, 0f);
     private static Vector3 buttonSize = new(0.45f, 0.45f, 1f);
 
@@ -30,9 +30,9 @@ public static class LobbyViewSettingsPanePatch
         {
             Vector3 offset_up = new (1.6f * ((int)tab + 2), 0.18f, 0f);
             Vector3 offset_down = new (1.6f * ((int)tab - 2), -0.2f, 0f);
-            tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + 3551));
+            tonxSettingsButton.Add(CreateButton(__instance, tab.ToString() + " VIEWBUTTON", ((int)tab < 2) ? offset_up : offset_down, GetString($"TabGroup.{tab}"), (int)tab + StringNameStartId));
         }
-        tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), 3558));
+        tonxSettingsButton.Add(CreateButton(__instance, "RolesOverview VIEWBUTTON", new Vector3(1.6f * 4, 0.18f, 0f), GetString("ActiveRolesList"), StringNameStartId + 7));
     }
 
     private static PassiveButton CreateButton(LobbyViewSettingsPane __instance, string buttonName, Vector3 offset, string buttonText, int targetMenu)
@@ -61,9 +61,9 @@ public static class LobbyViewSettingsPanePatch
         {
             button.SelectButton(false);
         }
-        if ((int)category < 3551) return;
+        if ((int)category < StringNameStartId) return;
         __instance.taskTabButton.SelectButton(false);
-        CreateCustomOptions(__instance, (int)category == 3558);
+        CreateCustomOptions(__instance, (int)category == StringNameStartId + 7);
     }
 
     private static void CreateCustomOptions(LobbyViewSettingsPane __instance, bool isRolesOverview)
@@ -76,7 +76,7 @@ public static class LobbyViewSettingsPanePatch
         __instance.settingsInfo.Clear();
 
         // 模组设置
-        CategoryHeaders = new List<CategoryHeaderMasked>();
+        CategoryHeaders = new Dictionary<int, CategoryHeaderMasked>();
         var template = __instance.infoPanelOrigin;
         if (isRolesOverview)
         {
@@ -92,12 +92,12 @@ public static class LobbyViewSettingsPanePatch
         {
             foreach (var option in OptionItem.AllOptions)
             {
-                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;  
+                if ((int)option.Tab != ((int)__instance.currentTab - StringNameStartId)) continue;  
                 
                 if (option.IsText)
                 {
                     var categoryHeader = CreateCategoryHeader(__instance, option);
-                    CategoryHeaders.Add(categoryHeader);
+                    CategoryHeaders.Add(option.Id, categoryHeader);
                     __instance.settingsInfo.Add(categoryHeader.gameObject);
                     continue;
                 }
@@ -153,7 +153,7 @@ public static class LobbyViewSettingsPanePatch
     [HarmonyPatch(nameof(LobbyViewSettingsPane.Update)), HarmonyPostfix]
     public static void Update_Postfix(LobbyViewSettingsPane __instance)
     {
-        if ((int)__instance.currentTab < 3551) return;
+        if ((int)__instance.currentTab < StringNameStartId) return;
 
         _timer += Time.deltaTime;
         if (_timer < 0.1f) return;
@@ -162,7 +162,7 @@ public static class LobbyViewSettingsPanePatch
         var offset = 2f;
         var isFirst = true;
 
-        if ((int)__instance.currentTab == 3558)
+        if ((int)__instance.currentTab == StringNameStartId + 7)
         {
             foreach (var kvp in Options.CustomRoleSpawnChances)
             {
@@ -175,7 +175,7 @@ public static class LobbyViewSettingsPanePatch
         {
             foreach (var option in OptionItem.AllOptions)
             {
-                if ((int)option.Tab != ((int)__instance.currentTab - 3551)) continue;
+                if ((int)option.Tab != ((int)__instance.currentTab - StringNameStartId)) continue;
                 if (option.IsText)
                 {
                     if (isFirst)
@@ -183,14 +183,7 @@ public static class LobbyViewSettingsPanePatch
                         offset += 0.3f;
                         isFirst = false;
                     }
-                    foreach (var categoryHeader in CategoryHeaders)
-                    {
-                        if (option.Name == categoryHeader.name)
-                        {
-                            UpdateCategoryHeader(categoryHeader, option, ref offset);
-                            continue;
-                        }
-                    }
+                    UpdateCategoryHeader(CategoryHeaders[option.Id], option, ref offset);
                     continue;
                 }
                 if (isFirst) isFirst = false;
@@ -249,4 +242,5 @@ public static class LobbyViewSettingsPanePatch
         }
     }
     private const float HeaderSpacingY = 0.2f;
+    private const int StringNameStartId = 100001;
 }

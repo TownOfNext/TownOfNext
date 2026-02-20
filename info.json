@@ -3,12 +3,12 @@
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
-  
+
   "md5": "708d95bc6f6e12a1603b587d4a086534",
-  
+
   "announcement": {
-    "SChinese": "创建/加入公开游戏暂时不可用\n这是由于游戏服务器变更导致H系暂时无法在公开房间游玩\n私人房间暂时不受影响",
-    "English": "Create/join public lobbies is temporarily unavailable\nThis change is due to a server-side update that makes modded public lobbies unavailable for vanilla.\nPrivate lobbies are not affected.\nCurrently, this change is NOT permanent."
+    "SChinese": "由于树懒对服务器的更新，刷屏隐藏消息已不再需要。输入指令时请使用 /cmd ，例如 /bt => /cmd bt",
+    "English": "Due to the update of the server, the function of hiding messages is no longer necessary. When inputting commands, please use /cmd, for example, /bt => /cmd bt"
   },
 
   "url": {

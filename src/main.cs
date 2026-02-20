@@ -36,8 +36,9 @@ public class Main : BasePlugin
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "4.0.0";
     public const int PluginCreation = 1;
+    public const VersionType VerType = VersionType.Canary;
     // == 链接相关设定 / Link Config ==
-    public static readonly bool ShowWebsiteButton = false;
+    public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
     public static readonly bool ShowQQButton = false;
     public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
@@ -420,4 +421,14 @@ public enum OutfitType
     NormalMode,
     HorseMode,
     LongMode
+}
+
+public enum VersionType
+{
+    Release,
+    Canary,
+    Beta,
+    Snapshot,
+    Preview,
+    Broken
 }

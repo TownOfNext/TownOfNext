@@ -13,7 +13,7 @@ public static class GameSettingMenuPatch
     private static List<GameOptionsMenu> tonxSettingsTab = new List<GameOptionsMenu>();
     private static List<PassiveButton> tonxSettingsButton = new List<PassiveButton>();
     public static List<string> TONXMenuName = new List<string>();
-    public static List<CategoryHeaderMasked> CategoryHeaders = new List<CategoryHeaderMasked>();
+    public static Dictionary<int, CategoryHeaderMasked> CategoryHeaders = new Dictionary<int, CategoryHeaderMasked>();
     // 左侧按钮坐标
     private static Vector3 buttonPosition = new(-2.55f, -0.1f, 0f);
     // 本体按钮大小
@@ -26,7 +26,7 @@ public static class GameSettingMenuPatch
         tonxSettingsTab = new List<GameOptionsMenu>();
         tonxSettingsButton = new List<PassiveButton>();
         TONXMenuName = new List<string>();
-        CategoryHeaders = new List<CategoryHeaderMasked>();
+        CategoryHeaders = new Dictionary<int, CategoryHeaderMasked>();
 
         __instance.GamePresetsButton.transform.parent.localPosition = buttonPosition;
         __instance.GamePresetsButton.transform.parent.localScale = buttonSize;
@@ -88,7 +88,7 @@ public static class GameSettingMenuPatch
                 {
                     if (option.IsText)
                     {
-                        CategoryHeaders.Add(CreateCategoryHeader(__instance, settingsTab, option));
+                        CategoryHeaders.Add(option.Id, CreateCategoryHeader(__instance, settingsTab, option));
                         continue;
                     }
                     var stringOption = Object.Instantiate(template, settingsTab.settingsContainer);
@@ -239,14 +239,7 @@ public class GameOptionsMenuUpdatePatch
                         offset += 0.3f;
                         isFirst = false;
                     }
-                    foreach (var categoryHeader in GameSettingMenuPatch.CategoryHeaders)
-                    {
-                        if (option.Name == categoryHeader.name)
-                        {
-                            UpdateCategoryHeader(categoryHeader, option, ref offset);
-                            continue;
-                        }
-                    }
+                    UpdateCategoryHeader(GameSettingMenuPatch.CategoryHeaders[option.Id], option, ref offset);
                     continue;
                 }
                 if (isFirst) isFirst = false;
@@ -258,8 +251,7 @@ public class GameOptionsMenuUpdatePatch
     }
     private static void UpdateCategoryHeader(CategoryHeaderMasked categoryHeader, OptionItem item, ref float offset)
     {
-        var enabled = true;
-        enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
+        var enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
         categoryHeader.gameObject.SetActive(enabled);
         if (enabled)
         {
@@ -271,11 +263,10 @@ public class GameOptionsMenuUpdatePatch
     {
         if (item?.OptionBehaviour == null || item.OptionBehaviour.gameObject == null) return;
 
-        var enabled = true;
         var parent = item.Parent;
 
         // 查看父选项值并决定是否显示
-        enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
+        var enabled = AmongUsClient.Instance.AmHost && !item.IsHiddenOn(Options.CurrentGameMode);
         var stringOption = item.OptionBehaviour;
         while (parent != null && enabled)
         {

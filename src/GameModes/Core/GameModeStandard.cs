@@ -12,10 +12,8 @@ namespace TONX.GameModes.Core;
 internal static class GameModeStandard
 {
     // == 游戏开始相关 ==
-    public static void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult)
+    public static AvailableRolesData AddAvailableRoles()
     {
-        // 职业抽取开始
-
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Count();
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
@@ -35,10 +33,6 @@ internal static class GameModeStandard
         int optNeutralNum = 0;
         if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
-
-        int readyRoleNum = 0;
-
-        List<CustomRoles> rolesToAssign = new();
 
         List<CustomRoles> roleList = new();
         List<CustomRoles> roleOnList = new();
@@ -82,26 +76,16 @@ internal static class GameModeStandard
             else roleRateList.Add(role);
         }
 
-        if (Options.EnableRoleDraftMode.GetBool())
-        {
-            var rolesLists = new List<List<CustomRoles>> { roleRateList, roleOnList, ImpRateList, ImpOnList, NeutralRateList, NeutralOnList };
-            if (!Options.DisableHiddenRoles.GetBool())
-            {
-                foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
-                {
-                    if (!role.IsHidden(out var hiddenRoleInfo) || hiddenRoleInfo.TargetRole == null) continue;
-                    if (rd.Next(0, 100) < hiddenRoleInfo.Probability)
-                    {
-                        foreach (var list in rolesLists) if (list.Remove(hiddenRoleInfo.TargetRole.Value)) list.Add(role);
-                    }
-                }
-            }
-            RoleDraftManager.Start(rolesLists, (optImpNum, optNeutralNum));
-            Logger.Info("已启用轮抽选角", "Role Draft");
-            return;
-        }
+        return new(optImpNum, optNeutralNum, roleOnList, ImpOnList, NeutralOnList, roleRateList, ImpRateList, NeutralRateList);
+    }
+    public static void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
+    {
+        var rd = IRandom.Instance;
+        int playerCount = Main.AllAlivePlayerControls.Count();
+        List<CustomRoles> rolesToAssign = new();
+        int readyRoleNum = 0;
 
-        void SelectRoles(string team, List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
+        void SelectRoles(string team, ref List<CustomRoles> currentRoleList, int optRoleNum, int lastReadyRoleNum, out int readyCurrentTeamRoleNum)
         {
             readyCurrentTeamRoleNum = 0;
             if (lastReadyRoleNum >= optRoleNum) return;
@@ -118,12 +102,12 @@ internal static class GameModeStandard
             }
         }
 
-        SelectRoles("内鬼(优先)", ImpOnList, optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
-        SelectRoles("内鬼(启用)", ImpRateList, optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
-        SelectRoles("中立(优先)", NeutralOnList, optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
-        SelectRoles("中立(启用)", NeutralRateList, optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
-        SelectRoles("船员(优先)", roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
-        SelectRoles("船员(启用)", roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
+        SelectRoles("内鬼(优先)", ref data.ImpOnList, data.optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
+        SelectRoles("内鬼(启用)", ref data.ImpRateList, data.optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        SelectRoles("中立(优先)", ref data.NeutralOnList, data.optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
+        SelectRoles("中立(启用)", ref data.NeutralRateList, data.optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
+        SelectRoles("船员(优先)", ref data.roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）
+        SelectRoles("船员(启用)", ref data.roleRateList, playerCount, 0, out _); // 优先职业不足以分配，开始分配启用的职业（船员）
 
         // 职业抽取结束
 
@@ -391,17 +375,6 @@ internal static class GameModeStandard
 
         if (MeetingStates.FirstMeeting)
             AllText += $"\r\n\r\n</color><size=70%>{GetString("PressF1ShowRoleDescription")}</size>";
-    }
-    public static void EditIntroFormat(ref IntroCutscene intro)
-    {
-        if (RoleDraftManager.Instance != null)
-        {
-            intro.TeamTitle.text = GetString("RoleDraft");
-            intro.TeamTitle.color = Color.gray;
-            intro.ImpostorText.gameObject.SetActive(false);
-            intro.BackgroundBar.material.color = Color.gray;
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = IntroCutscenePatch.GetIntroSound(RoleTypes.Crewmate);
-        }
     }
     public static void EditOutroFormat(ref EndGameManager outro, ref TextMeshPro winnerText, ref string cwText, ref StringBuilder awText, ref string cwColor)
     {

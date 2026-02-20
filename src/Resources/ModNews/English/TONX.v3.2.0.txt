@@ -17,9 +17,9 @@
 - This update is mainly for adapting to Android system
 
 ## Fix
-- Fix plenty of errors
-- Fix a bug where the skills of Shapeshifter and Phantom are not reverted after forcing closing meetings 
-- Fix a bug where the Shapeshifter does not revert after being recruited
+- Fixed plenty of errors
+- Fixed a bug where the skills of Shapeshifter and Phantom are not reverted after forcing closing meetings 
+- Fixed a bug where the Shapeshifter does not revert after being recruited
 
 ## New Feature
 - Option: Show Players Selections (in Role Draft Mode)

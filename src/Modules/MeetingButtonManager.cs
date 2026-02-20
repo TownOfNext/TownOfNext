@@ -85,7 +85,7 @@ public class MeetingButtonManager
     {
         foreach (var pva in __instance.playerStates)
         {
-            if (pva?.transform?.FindChild("Custom Meeting Button")?.gameObject != null) continue;
+            if (pva?.transform?.FindChild("Custom Meeting Button")?.gameObject != null || !pva.gameObject.active) continue;
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !meetingButton.ShouldShowButtonFor(pc)) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;

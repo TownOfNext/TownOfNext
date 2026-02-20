@@ -3,8 +3,9 @@
 static class MeetingHudManager
 {
     /// <summary>
-    /// 用于强制结束会议
-    /// </summary>
+    /// 用于强制结束会议<br/>
+    /// 所有投票都将被清空<br/>
+    /// </summary>s
     public static void RpcForceEndMeeting(this MeetingHud meetingHud)
     {
         if (meetingHud == null) return;

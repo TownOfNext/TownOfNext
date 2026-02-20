@@ -404,6 +404,25 @@ public static class CustomRoleManager
         var playerId = reader.ReadByte();
         GetByPlayerId(playerId)?.ReceiveRPC(reader);
     }
+    //VoteSystem
+    public static HashSet<Func<PlayerControl, PlayerControl, bool>> CheckVote = new();
+ 
+    /// <summary>
+    /// 无论 voter,voted 是否持有职业，职业都会触发的 Vote 判断事件
+    /// 会默认为全体职业注册
+    /// </summary>
+    /// <param name="voter">看到的人</param>
+    /// <param name="voted">被看到的人</param>
+    /// <returns>是否清除投票</returns>
+    public static bool CheckVoteOthers(PlayerControl voter, PlayerControl voted)
+    {
+        foreach (var vote in CheckVote)
+        {
+            if (!vote(voter, voted))
+                return false;
+        }
+        return true;
+    }
     //NameSystem
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = new();
     public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = new();
@@ -632,6 +651,7 @@ public enum CustomRoles
     Collator,
     Swapper,
     Criminologist,
+    Justice,
     //Neutral
     Arsonist,
     Jester,

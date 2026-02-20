@@ -136,6 +136,7 @@ internal class SelectRolesPatch
                 PlayerState.AllPlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
+            RoleAssigned = false;
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();
@@ -220,13 +221,12 @@ internal class SelectRolesPatch
             }
             CustomRoleManager.CreateInstance();
 
-            if (!Options.CurrentGameMode.GetModeClass()?.ShouldAssignAddons() ?? true) goto EndOfSelectRolePatch;
+            if (Options.CurrentGameMode.GetModeClass()?.ShouldAssignAddons() ?? false)
+            {
+                AssignAddons();
+            }
 
-            if (RoleDraftManager.Instance != null) goto EndOfSelectRolePatch;
-
-            AssignAddons();
-
-        EndOfSelectRolePatch:
+            Options.CurrentGameMode.GetModeClass()?.AfterAssignRoles();
 
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -241,7 +241,7 @@ internal class SelectRolesPatch
             }
 
             GameEndChecker.SetPredicate();
-            Main.CanRecord = RoleDraftManager.Instance == null;
+            Main.CanRecord = RoleAssigned;
             if (Main.CanRecord) foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
             AmongUsClient.Instance.StartCoroutine(CoEndAssign().WrapToIl2Cpp()); // 准备进入IntroCutscene
         }

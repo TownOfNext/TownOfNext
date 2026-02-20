@@ -39,7 +39,7 @@ public static class LastImpostor
     {
         //ラストインポスターがすでにいれば処理不要
         if (currentId != byte.MaxValue) return;
-        if (CurrentGameMode != CustomGameMode.Standard
+        if (CurrentGameMode != CustomGameMode.Standard || CurrentGameMode != CustomGameMode.RoleDraft
         || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1)
             return;
         foreach (var pc in Main.AllAlivePlayerControls)

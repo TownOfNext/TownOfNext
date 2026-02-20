@@ -94,7 +94,9 @@ internal class RPCHandlerPatch
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
         if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance?.Data?.PlayerId == 0 ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+        Logger.Info(
+            $"{__instance?.Data?.PlayerId}({(__instance?.Data?.PlayerId == 0 ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})",
+            "ReceiveRPC");
         switch (rpcType)
         {
             case RpcCalls.SetName: //SetNameRPC
@@ -119,11 +121,13 @@ internal class RPCHandlerPatch
                 Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
                 break;
         }
+
         if (__instance?.PlayerId != 0
             && Enum.IsDefined(typeof(CustomRPC), (int)callId)
             && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
-            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。", "CustomRPC");
+            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。",
+                "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
             {
                 if (!EAC.ReceiveInvalidRpc(__instance, callId)) return false;
@@ -170,50 +174,10 @@ internal class RPCHandlerPatch
                 }
                 break;
             case CustomRPC.VersionCheck:
-                try
-                {
-                    _ = new LateTask(() =>
-                    {
-                        Version version = Version.Parse(reader.ReadString());
-                        string tag = reader.ReadString();
-                        string forkId = reader.ReadString();
-                        var clientId = __instance.GetClientId();
-                        Main.playerVersion.Remove(clientId);
-                        Main.playerVersion[clientId] = new PlayerVersion(version, tag, forkId);
-
-                        if (Main.VersionCheat.Value && __instance.PlayerId == 0) RPC.RpcVersionCheck();
-
-                        if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
-                            Main.playerVersion[clientId] = Main.playerVersion[clientId];
-
-                        // Kick Unmached Player Start
-                        if (AmongUsClient.Instance.AmHost && tag != $"{Main.GitCommit}({Main.GitBranch})")
-                        {
-                            if (forkId != Main.ForkId)
-                                _ = new LateTask(() =>
-                                {
-                                    if (__instance?.Data?.Disconnected is not null and not true)
-                                    {
-                                        var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"),
-                                            __instance?.Data?.PlayerName);
-                                        Logger.Warn(msg, "Version Kick");
-                                        RPC.NotificationPop(msg);
-                                        Utils.KickPlayer(clientId, false, "ModVersionIncorrect");
-                                    }
-                                }, 5f, "Kick");
-                        }
-                        // Kick Unmached Player End
-                    }, 0.01f, "Version Check Process Task");
-                }
-                catch
-                {
-                    Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
-                    _ = new LateTask(() =>
-                    {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.GetClientId());
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    }, 1f, "Retry Version Check Task");
-                }
+                Version version = Version.Parse(reader.ReadString());
+                string tag = reader.ReadString();
+                string forkId = reader.ReadString();
+                RPC.ProceedVersionCheck(__instance, version, tag, forkId);
                 break;
             case CustomRPC.RequestRetryVersionCheck:
                 RPC.RpcVersionCheck();
@@ -338,6 +302,45 @@ internal class RPCHandlerPatch
 
 internal static class RPC
 {
+    public static async void ProceedVersionCheck(PlayerControl sender, Version version, string tag, string forkId)
+    {
+        try
+        {
+            while (sender == null || sender.GetClient() == null) await Task.Yield();
+
+            var clientId = sender.GetClientId();
+            Main.playerVersion.Remove(clientId);
+            Main.playerVersion[clientId] = new PlayerVersion(version, tag, forkId);
+
+            if (Main.VersionCheat.Value && sender.PlayerId == 0) RpcVersionCheck();
+            if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
+                Main.playerVersion[clientId] = Main.playerVersion[clientId];
+
+            // Kick Unmatched Player
+            if (AmongUsClient.Instance.AmHost && tag != $"{Main.GitCommit}({Main.GitBranch})" && forkId != Main.ForkId)
+            {
+                _ = new LateTask(() =>
+                {
+                    if (sender?.Data?.Disconnected is not null and not true)
+                    {
+                        var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"), sender?.Data?.PlayerName);
+                        Logger.Warn(msg, "Version Kick");
+                        NotificationPop(msg);
+                        Utils.KickPlayer(clientId, false, "ModVersionIncorrect");
+                    }
+                }, 5f, "Kick");
+            }
+        }
+        catch
+        {
+            Logger.Warn($"{sender?.Data?.PlayerName}({sender.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
+            _ = new LateTask(() =>
+            {
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, sender.GetClientId());
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }, 1f, "Retry Version Check Task");
+        }
+    }
     // 来源：https://github.com/music-discussion/TownOfHost-TheOtherRoles/blob/main/Modules/RPC.cs
     public static void SyncCustomSettingsRPC(int targetId = -1)
     {
@@ -421,9 +424,9 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null) await Task.Delay(500);
-        
-        Main.playerVersion.TryAdd(PlayerControl.LocalPlayer.GetClientId(),new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId));
+        while (PlayerControl.LocalPlayer == null || PlayerControl.LocalPlayer.GetClient() == null) await Task.Delay(500);
+
+        Main.playerVersion.TryAdd(PlayerControl.LocalPlayer.GetClientId(), new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId));
         if (Main.playerVersion.ContainsKey(Main.HostClientId) || !Main.VersionCheat.Value)
         {
             bool cheating = Main.VersionCheat.Value;
@@ -594,5 +597,15 @@ internal class StartRpcImmediatelyPatch
     public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
     {
         RPC.SendRpcLogger(targetNetId, callId, targetClientId);
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRoleRpc))]
+internal class RoleRPCHandlerPatch
+{
+    public static bool Prefix(PlayerControl __instance)
+    {
+        var isNull = __instance?.Data?.Role == null;                                                        // HandleRoleRpc中树懒不检验Data.Role是否为空
+        if (isNull) Logger.Info($"{__instance?.Data?.PlayerName}: Null Role Data", "HandleRoleRpc.Prefix"); // 用于临时修复原版问题
+        return !isNull;                                                                                     // 如果Data.Role为null则不接收职业(幻象师)的Rpc
     }
 }

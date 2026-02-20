@@ -827,13 +827,14 @@ public static class Utils
         { 16, "茶|tan" },
         { 17, "珊瑚|coral" }
     };
-    public static readonly List<(int, string)> SeparatedColorNames = new Func<List<(int, string)>>(() =>
+    public static readonly List<(int, string)> SeparatedColorNames = 
+        ColorNames.SelectMany(kvp => kvp.Value.Split('|').Select(n => (kvp.Key, n.Trim().ToLower()))).ToList();
+    public static List<(int, string)> GetSeparatedColorNames()
     {
-        List<(int, string)> names = new();
-        ColorNames.Do(kvp => kvp.Value.Split('|').ToList().Do(n => names.Add((kvp.Key, n.Trim().ToLower())))); // 加入颜色名称缩写
+        List<(int, string)> names = [..SeparatedColorNames];
         for (int i = 0; i < Palette.ColorNames.Length; i++) names.Add((i, GetString(Palette.ColorNames[i]).Trim().ToLower())); // 加入翻译文件中的颜色名称
         return names.OrderByDescending(n => n.Item2.Length).ToList(); // 按名称长度倒序排列
-    })();
+    }
     public static byte MsgToColor(string text, bool isHost = false)
     {
         text = text.ToLowerInvariant();
@@ -1156,6 +1157,7 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        Options.CurrentGameMode.GetModeClass()?.AfterMeetingTasks();
         foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
             roleClass.AfterMeetingTasks();
         if (Options.AirShipVariableElectrical.GetBool())
@@ -1258,7 +1260,7 @@ public static class Utils
     }
     public static void RecordPlayerRoles(byte id)
     {
-        if (!Main.CanRecord) return;
+        if (!Main.CanRecord || !CustomRoleSelector.RoleAssigned) return;
         RPC.SyncRolesRecord(id);
         SyncRolesRecord(id);
     }

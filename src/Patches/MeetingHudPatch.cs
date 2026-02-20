@@ -3,6 +3,7 @@ using System.Text;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
+using TONX.Roles.Crewmate;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -87,7 +88,14 @@ public static class MeetingHudPatch
                         return false;
                     }
                 }
+                
                 if (voter.GetRoleClass()?.CheckVoteAsVoter(voted) == false)
+                {
+                    __instance.RpcClearVote(voter.GetClientId());
+                    Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
+                    return false;
+                }
+                if (CustomRoleManager.CheckVoteOthers(voter, voted) == false)
                 {
                     __instance.RpcClearVote(voter.GetClientId());
                     Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
@@ -186,6 +194,7 @@ public static class MeetingHudPatch
             if (AmongUsClient.Instance.AmHost)
             {
                 CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role.OnStartMeeting());
+                Options.CurrentGameMode.GetModeClass()?.OnStartMeeting();
                 MeetingStartNotify.OnMeetingStart();
                 Tiebreaker.OnMeetingStart();
             }
@@ -272,24 +281,15 @@ public static class MeetingHudPatch
             }
         }
     }
-    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
-    class ClosePatch
-    {
-        public static void Postfix()
-        {
-            RoleDraftManager.Instance?.AssignDraftRoles();
-        }
-    }
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class OnDestroyPatch
     {
         public static void Postfix()
         {
-            if (RoleDraftManager.Instance == null) MeetingStates.FirstMeeting = false;
+            if (CustomRoleSelector.RoleAssigned) MeetingStates.FirstMeeting = false;
             Logger.Info("------------会议结束------------", "Phase");
             if (AmongUsClient.Instance.AmHost)
             {
-                RoleDraftManager.Instance?.Destroy();
                 AntiBlackout.SetIsDead();
                 EAC.MeetingTimes = 0;
             }
@@ -326,5 +326,31 @@ class SetHighlightedPatch
         if (!__instance.HighlightedFX) return false;
         __instance.HighlightedFX.enabled = value;
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
+class JusticeMeetingHudPopulateButtonsPatch
+{
+    public static void Postfix(MeetingHud __instance)
+    {
+        HandleJusticeMeeting(__instance);
+    }
+    public static void HandleJusticeMeeting(MeetingHud __instance)
+    {
+        if (!Justice.IsJusticeMeeting()) return;
+
+        var targets = Justice.GetHostingJustice()?.SelectedPlayers ?? new();
+        var num = -1;
+        foreach (var pva in __instance.playerStates)
+        {
+            if (!targets.Contains(pva.TargetPlayerId))
+            {
+                pva.gameObject.SetActive(false);
+                continue;
+            }
+            pva.transform.localPosition = new Vector3(2f * num, 0f, pva.transform.localPosition.z);
+            num *= -1;
+        }
     }
 }

@@ -33,7 +33,7 @@ public class MeetingTimeManager
     }
     public static void OnReportDeadBody()
     {
-        if (RoleDraftManager.Instance != null)
+        if (CustomGameMode.RoleDraft.IsEnable() && !CustomRoleSelector.RoleAssigned)
         {
             DiscussionTime = Main.AllAlivePlayerControls.Count() * 20 + 10;
             VotingTime = 0;

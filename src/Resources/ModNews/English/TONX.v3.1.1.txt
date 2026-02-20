@@ -14,10 +14,10 @@
 - This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
 
 ## Fix
-- Fix a bug where /lastresult does not contain kill count information
-- Fix a conflict between Role Draft Mode and Solo PVP Mode
-- Fix a bug where player names are displayed incorrectly after changing a role
-- Fix a bug where the game will report an error while changing a role
-- Fix a bug where the count of roles assgined is squared
-- Fix a bug where roles cannot be assgined multiply in Role Draft Mode
-- Fix a bug where Lovers victories are displayed incorrectly in some cases
+- Fixed a bug where /lastresult does not contain kill count information
+- Fixed a conflict between Role Draft Mode and Solo PVP Mode
+- Fixed a bug where player names are displayed incorrectly after changing a role
+- Fixed a bug where the game will report an error while changing a role
+- Fixed a bug where the count of roles assgined is squared
+- Fixed a bug where roles cannot be assgined multiply in Role Draft Mode
+- Fixed a bug where Lovers victories are displayed incorrectly in some cases

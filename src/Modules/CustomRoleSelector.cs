@@ -6,11 +6,13 @@ internal static class CustomRoleSelector
 {
     public static Dictionary<PlayerControl, CustomRoles> RoleResult;
     public static IReadOnlyList<CustomRoles> AllRoles => RoleResult.Values.ToList();
+    public static bool RoleAssigned = false;
 
     public static void SelectCustomRoles()
     {
+        var data = Options.CurrentGameMode.GetModeClass()?.AddAvailableRoles() ?? default;
         RoleResult = new();
-        Options.CurrentGameMode.GetModeClass()?.SelectCustomRoles(ref RoleResult);
+        Options.CurrentGameMode.GetModeClass()?.SelectCustomRoles(ref RoleResult, ref data);
     }
 
     public static int addScientistNum = 0;

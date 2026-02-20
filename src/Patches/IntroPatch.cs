@@ -294,7 +294,8 @@ public class IntroCutscenePatch
                 _ = new LateTask(() =>
                 {
                     CustomRoleManager.AllActiveRoles.Values.ToList().Do(x => x?.OnGameStart());
-                }, 0.1f, "RoleClassOnGameStartTask");
+                    Options.CurrentGameMode.GetModeClass()?.OnGameStart();
+                }, 0.1f, "OnGameStartTask");
             }
             // _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "SetImpostorForServer");
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
@@ -319,7 +320,5 @@ public class IntroCutscenePatch
 
         GameStates.InTask = true;
         Logger.Info("タスクフェイズ開始", "Phase");
-
-        if (RoleDraftManager.Instance != null && AmongUsClient.Instance.AmHost) PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
     }
 }

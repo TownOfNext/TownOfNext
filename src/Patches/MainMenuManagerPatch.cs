@@ -11,7 +11,7 @@ public class MainMenuManagerPatch
     public static MainMenuManager Instance { get; private set; }
 
     public static GameObject InviteButton;
-    //public static GameObject WebsiteButton;
+    public static GameObject WebsiteButton;
     public static GameObject UpdateButton;
     public static GameObject PlayButton;
 
@@ -48,6 +48,9 @@ public class MainMenuManagerPatch
     {
         var asa1 = InviteButton?.GetComponent<PassiveButton>()?.GetComponent<AspectScaledAsset>() ?? null;
         asa1?.ScaleObject(Utils.GetAspectRatio(Screen.width, Screen.height));
+        
+        var asa2 = WebsiteButton?.GetComponent<PassiveButton>()?.GetComponent<AspectScaledAsset>() ?? null;
+        asa2?.ScaleObject(Utils.GetAspectRatio(Screen.width, Screen.height));
 
         CustomPopup.Update();
 
@@ -118,6 +121,11 @@ public class MainMenuManagerPatch
         string extraLinkName = "Github";
         string extraLinkUrl = Main.GithubRepoUrl;
         bool extraLinkEnabled = Main.ShowGithubUrl;
+        
+        string websiteLinkName = GetString("Website");
+        string websiteLinkUrl = Main.WebsiteUrl;
+        bool websiteLinkEnabled = Main.ShowWebsiteButton;
+        
         // if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
         // {
         //     extraLinkName = IsChineseUser ? "QQ群" : "Discord";
@@ -129,9 +137,9 @@ public class MainMenuManagerPatch
         InviteButton.gameObject.SetActive(extraLinkEnabled);
         InviteButton.name = "TONX Extra Link Button";
 
-        // if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
-        // WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
-        // WebsiteButton.name = "TONX Website Button";
+        if (WebsiteButton == null) WebsiteButton = CreatButton(websiteLinkName, () => OpenUrl(websiteLinkUrl));
+        WebsiteButton.gameObject.SetActive(websiteLinkEnabled);
+        WebsiteButton.name = "TONX Website Button";
 #if Windows
         if (UpdateButton == null)
         {

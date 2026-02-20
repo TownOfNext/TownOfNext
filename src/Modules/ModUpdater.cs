@@ -22,8 +22,8 @@ public class ModUpdater
         "https://record.tonx.cc/api/version.json"
 #else
         "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
-        "https://cdn.jsdelivr.net/gh/TownOfNext/TownOfNext/info.json",
-        "https://tonx.leever.cn/api/version.json",
+        "https://download.hayashiume.top/https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
+        "https://record.tonx.cc/api/version.json",
 #endif
     };
     private static IReadOnlyList<string> GetInfoFileUrlList()

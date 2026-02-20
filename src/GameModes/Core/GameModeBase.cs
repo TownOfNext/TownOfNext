@@ -1,5 +1,6 @@
 using TMPro;
 using System.Text;
+using TONX.Modules;
 
 namespace TONX.GameModes.Core;
 
@@ -29,16 +30,28 @@ public abstract class GameModeBase : IDisposable
 
     // == 职业分配相关 ==
     /// <summary>
-    /// 用于特殊模式分配主职业
+    /// 用于筛选主职业
+    /// </summary>
+    /// <param name="data">职业信息</param>
+    public virtual AvailableRolesData AddAvailableRoles() => GameModeStandard.AddAvailableRoles();
+    /// <summary>
+    /// 用于分配主职业
     /// </summary>
     /// <param name="RoleResult">职业分配字典</param>
-    public virtual void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult)
-        => GameModeStandard.SelectCustomRoles(ref RoleResult);
+    public virtual void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
+        => GameModeStandard.SelectCustomRoles(ref RoleResult, ref data);
     /// <summary>
     /// 用于判断特殊模式是否分配附加职业
     /// </summary>
     /// <returns>返回false不分配附加职业</returns>
     public virtual bool ShouldAssignAddons() => true;
+    /// <summary>
+    /// 分配职业结束后调用
+    /// </summary>
+    public virtual void AfterAssignRoles()
+    {
+        CustomRoleSelector.RoleAssigned = true;
+    }
 
     // == 游戏结束相关 ==
     /// <summary>
@@ -92,11 +105,37 @@ public abstract class GameModeBase : IDisposable
     /// <returns>返回true则能看到</returns>
     public virtual bool CanSeeOtherProgressText() => false;
     /// <summary>
+    /// 每次会议结束后调用的函数
+    /// </summary>
+    public virtual void AfterMeetingTasks()
+    { }
+    /// <summary>
     /// 是否能应随机出生<br/>
     /// 判断优先级高于设置的<br/>
     /// </summary>
     /// <returns>返回true则默认随机出生</returns>
     public virtual bool ShouldRandomSpawn() => false;
+    /// <summary>
+    /// 玩家发送消息后调用的函数
+    /// </summary>
+    /// <param name="msg">玩家发送的消息</param>
+    /// <param name="recallMode">该消息应该做何处理</param>
+    /// <returns>true: 阻塞该消息并停止向下判断</returns>
+    public virtual bool OnSendMessage(PlayerControl player, string msg, out MsgRecallMode recallMode)
+    {
+        recallMode = MsgRecallMode.None;
+        return false;
+    }
+    /// <summary>
+    /// 会议开始时调用的函数
+    /// </summary>
+    public virtual void OnStartMeeting()
+    { }
+    /// <summary>
+    /// 游戏开始后会立刻调用该函数
+    /// </summary>
+    public virtual void OnGameStart()
+    { }
 
     // == 字符串相关 ==
     /// <summary>
@@ -127,7 +166,7 @@ public abstract class GameModeBase : IDisposable
     /// </summary>
     /// <param name="intro">开始界面实例</param>
     public virtual void EditIntroFormat(ref IntroCutscene intro)
-        => GameModeStandard.EditIntroFormat(ref intro);
+    { }
     /// <summary>
     /// 修改结束界面的样式<br/>
     /// 请注意：全部模组端都会调用<br/>

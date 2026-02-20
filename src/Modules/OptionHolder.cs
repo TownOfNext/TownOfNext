@@ -37,6 +37,7 @@ public static class Options
         => GameMode.GetInt() switch
         {
             1 => CustomGameMode.SoloKombat,
+            2 => CustomGameMode.RoleDraft,
             _ => CustomGameMode.Standard
         };
 
@@ -324,8 +325,8 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem KillFlashDuration;
-    public static OptionItem EnableRoleDraftMode;
-    public static OptionItem ShowSelectedRoles;
+    // public static OptionItem EnableRoleDraftMode;
+    // public static OptionItem ShowSelectedRoles;
 
     // 幽灵相关设定
     public static OptionItem GhostIgnoreTasks;
@@ -1079,11 +1080,11 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         
         // 轮抽选角
-        EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-        ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", true, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
-            .SetGameMode(CustomGameMode.Standard);
+        // EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
+        //     .SetGameMode(CustomGameMode.Standard)
+        //     .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        // ShowSelectedRoles = BooleanOptionItem.Create(3_046_002, "ShowSelectedRoles", true, TabGroup.GameSettings, false).SetParent(EnableRoleDraftMode)
+        //     .SetGameMode(CustomGameMode.RoleDraft)
 
         // 幽灵相关设定
         TextOptionItem.Create(3_100_008, "MenuTitle.Ghost", TabGroup.GameSettings)

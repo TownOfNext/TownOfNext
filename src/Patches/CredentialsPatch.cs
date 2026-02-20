@@ -79,13 +79,14 @@ internal class VersionShowerStartPatch
 
         TMPTemplate.SetBase(__instance.text);
         Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
+        Main.CredentialsText += (Main.VerType == VersionType.Release) ? "" : $"\r\n{GetString("CurrentVersionType")} <color={Main.ModColor}>{Main.VerType.ToString()}</color>";
 #if DEBUG
         Main.CredentialsText += $"\r\n<color=#00a4ff>{Main.GitBranch}</color> - {Main.GitCommit}";
 #endif
 
 #if RELEASE
         string additionalCredentials = GetString("TextBelowVersionText");
-        if (additionalCredentials != null && additionalCredentials != "*TextBelowVersionText")
+        if (additionalCredentials != string.Empty && additionalCredentials != "*TextBelowVersionText")
         {
             Main.CredentialsText += $"\r\n{additionalCredentials}";
         }

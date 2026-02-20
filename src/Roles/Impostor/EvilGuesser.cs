@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.Crewmate;
 using static TONX.GuesserHelper;
 
 namespace TONX.Roles.Impostor;

@@ -18,13 +18,13 @@
 - If possible, please report bugs in time and attach logs.
 
 ## Fix
-- Fix a bug where roles can not be assigned multiple times
-- Fix a bug where errors would be shown when connecting to a lobby
-- Fix a bug where everyone dies at the end of a game causing certain special skills like Celebrity's skill to be triggered
-- Fix a bug where the haunt menu does not display real roles of players on the modded client side
-- Fix a bug where some parts of the main menu UI are not positioned correctly on resolutions other than 16:9
-- Fix a bug where the left skill counts of Mayor and Veteran are displayed incorrectly on the modded non-host side
-- Fix a bug where the size of players' role name is incorrect
+- Fixed a bug where roles can not be assigned multiple times
+- Fixed a bug where errors would be shown when connecting to a lobby
+- Fixed a bug where everyone dies at the end of a game causing certain special skills like Celebrity's skill to be triggered
+- Fixed a bug where the haunt menu does not display real roles of players on the modded client side
+- Fixed a bug where some parts of the main menu UI are not positioned correctly on resolutions other than 16:9
+- Fixed a bug where the left skill counts of Mayor and Veteran are displayed incorrectly on the modded non-host side
+- Fixed a bug where the size of players' role name is incorrect
 
 ## Changing
 - Add role transforming information to the summary text

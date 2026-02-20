@@ -2,7 +2,7 @@
 #Title:TownOfNext v4.0.0
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v4.0.0
-#Date:2025-11-30T00:00:00Z
+#Date:2026-02-28T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -14,21 +14,29 @@
 - This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
 
 ## What You Need to Know
-- We refactored codes related to custom game modes
-- TONX may have a lot of bugs. If possible, please report bugs in time and attach logs.
+- We have refactored the code related to game modes.
+- Upcoming versions of TONX may contain numerous bugs. Please report any bugs you encounter promptly and include logs if possible.
 
 ## Fix
-- Fix a bug where the Collator's skill cooldown is not reset correctly
-- Fix a bug where players' pets disappear after being revived
-- Fix a bug where some roles can not pick players by typing color names in the command
-- Fix a bug where the text of the version shower is duplicated
+- Fixed incorrect cooldown for the Surveyor's ability
+- Fixed pets disappearing after a player is revived
+- Fixed the inability to select players via color input for certain role commands
+- Fixed duplicate display of mod usage count
+- Fixed incorrect language for some game setting options
+- Fixed the `/color` command failing under certain conditions
+- Fixed missing version mismatch warnings
+- Fixed RPC errors when players send messages as Gambler, Pelican, Seducer, or Challenger
 
 ## Changing
-- Modded clients now use the laptop during games to switch ship styles
+- The client now uses the in-game Admin Map to switch map styles instead of a separate button
 
 ## New Feature
-- Option: Enable Vanilla Impostors Amount Limit
+- Option: Enable vanilla Impostor team player count limit
+- Option: Override Origin Meeting Death Message
 
 ## New Role
+- Impostor: Evil Grenadier
 - Crewmate: Swapper
+- Crewmate: Criminologist
+- Crewmate: Justice
 - Neutral: Doomsayer

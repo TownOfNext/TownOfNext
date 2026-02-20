@@ -58,7 +58,8 @@ public sealed class SoloKombat : GameModeBase
         RoundTime = KB_GameTime.GetInt() + 8;
     }
     public override bool ShouldAssignAddons() => false;
-    public override void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult)
+    public override AvailableRolesData AddAvailableRoles() => default;
+    public override void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
     {
         foreach (var pc in Main.AllAlivePlayerControls)
             RoleResult.Add(pc, pc.PlayerId == 0 && Options.EnableGM.GetBool() ? CustomRoles.GM : CustomRoles.KB_Normal);

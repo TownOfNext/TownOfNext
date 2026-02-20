@@ -45,7 +45,7 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
             .SetValueFormat(OptionFormat.Seconds);
         OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.EvilGrenadierSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillRange = FloatOptionItem.Create(RoleInfo, 14, OptionName.EvilGrenadierSkillRange, new(0f, 50f, 2.5f), 10f, false)
+        OptionSkillRange = FloatOptionItem.Create(RoleInfo, 12, OptionName.EvilGrenadierSkillRange, new(0f, 50f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
@@ -120,7 +120,7 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
     {
         var posi = Player.transform.position;
         var diss = Vector2.Distance(posi, pc.transform.position);
-        if (pc != Player && diss <= OptionSkillRange.GetFloat())
+        if (pc.IsAlive() && pc != Player && diss <= OptionSkillRange.GetFloat())
         {
             if (pc.IsModClient())
             {
