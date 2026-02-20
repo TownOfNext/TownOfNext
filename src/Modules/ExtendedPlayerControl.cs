@@ -665,8 +665,8 @@ static class ExtendedPlayerControl
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
     public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
     public static bool IsNeutralNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralKiller();
-    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is IAdditionalWinner;
-    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is not IAdditionalWinner;
+    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && (player is IOverrideWinner || player.GetCustomRole().GetRoleInfo()?.CountType != CountTypes.None || Enum.IsDefined(typeof(CustomWinner), (CustomWinner)player.GetCustomRole()));
+    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralEvil();
     public static bool IsShapeshifting(this PlayerControl player) => Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl seen)
     {

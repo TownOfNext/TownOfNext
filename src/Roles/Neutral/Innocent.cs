@@ -42,7 +42,6 @@ public sealed class Innocent : RoleBase
 
         IsKilled = reader.ReadBoolean();
     }
-    public bool IsNK { get; private set; } = false;
 
     public float CalculateKillCooldown() => 1f;
     public bool CanUseKillButton() => true;

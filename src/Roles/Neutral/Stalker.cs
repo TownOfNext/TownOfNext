@@ -5,7 +5,7 @@ using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
 
-public sealed class Stalker : RoleBase, IOverrideWinner
+public sealed class Stalker : RoleBase, IKiller, IOverrideWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -34,7 +34,6 @@ public sealed class Stalker : RoleBase, IOverrideWinner
 
         IsWinKill = false;
     }
-    public bool IsNK { get; private set; } = true;
     private static OptionItem OptionKillCooldown;
     private static OptionItem OptionHasImpostorVision;
     public static OptionItem OptionCanCountNeutralKiller;

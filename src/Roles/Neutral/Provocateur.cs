@@ -43,8 +43,6 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
 
         IsKilled = reader.ReadBoolean();
     }
-    public bool IsNK { get; private set; } = true;
-    public bool IsNE { get; private set; } = false;
     public float CalculateKillCooldown() => 1f;
     public bool CanUseKillButton() => true;
     public bool CanUseSabotageButton() => false;

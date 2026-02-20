@@ -30,17 +30,29 @@ internal static class GameModeStandard
                     optImpNum = 2;
                     break;
             }
+
         int optNeutralNum = 0;
-        if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
-            optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
+        if (Options.NeutralCountModes.GetInt() == 0)
+            if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
+                optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
+        else if (Options.NeutralCountModes.GetInt() == 1)
+            if (Options.NeutralPassiveRolesMaxPlayer.GetInt() > 0 && Options.NeutralPassiveRolesMaxPlayer.GetInt() >= Options.NeutralPassiveRolesMinPlayer.GetInt())
+                optNeutralNum = rd.Next(Options.NeutralPassiveRolesMinPlayer.GetInt(), Options.NeutralPassiveRolesMaxPlayer.GetInt() + 1);
+
+        int optNeutralKillingNum = 0;
+        if (Options.NeutralCountModes.GetInt() == 1)
+            if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 0 && Options.NeutralKillingRolesMaxPlayer.GetInt() >= Options.NeutralKillingRolesMinPlayer.GetInt())
+            optNeutralKillingNum = rd.Next(Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
 
         List<CustomRoles> roleList = new();
         List<CustomRoles> roleOnList = new();
         List<CustomRoles> ImpOnList = new();
+        List<CustomRoles> NeutralKillingOnList = new();
         List<CustomRoles> NeutralOnList = new();
 
         List<CustomRoles> roleRateList = new();
         List<CustomRoles> ImpRateList = new();
+        List<CustomRoles> NeutralKillingRateList = new();
         List<CustomRoles> NeutralRateList = new();
 
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
@@ -65,6 +77,7 @@ internal static class GameModeStandard
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2).Concat(roleList.Where(x => x.IsVanilla())))
         {
             if (role.IsImpostor()) ImpOnList.Add(role);
+            else if (role.IsNeutralKiller() && Options.NeutralCountModes.GetInt() == 1) NeutralKillingOnList.Add(role);
             else if (role.IsNeutral()) NeutralOnList.Add(role);
             else roleOnList.Add(role);
         }
@@ -72,11 +85,16 @@ internal static class GameModeStandard
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 1))
         {
             if (role.IsImpostor()) ImpRateList.Add(role);
+            else if (role.IsNeutralKiller() && Options.NeutralCountModes.GetInt() == 1) NeutralKillingRateList.Add(role);
             else if (role.IsNeutral()) NeutralRateList.Add(role);
             else roleRateList.Add(role);
         }
 
-        return new(optImpNum, optNeutralNum, roleOnList, ImpOnList, NeutralOnList, roleRateList, ImpRateList, NeutralRateList);
+        return new(
+            optImpNum, optNeutralKillingNum, optNeutralNum,
+            roleOnList, ImpOnList, NeutralKillingOnList, NeutralOnList,
+            roleRateList, ImpRateList, NeutralKillingRateList, NeutralRateList
+        );
     }
     public static void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
     {
@@ -104,6 +122,8 @@ internal static class GameModeStandard
 
         SelectRoles("内鬼(优先)", ref data.ImpOnList, data.optImpNum, 0, out var readyImpNum); // 抽取优先职业（内鬼）
         SelectRoles("内鬼(启用)", ref data.ImpRateList, data.optImpNum, readyImpNum, out _); // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        SelectRoles("中立杀手(优先)", ref data.NeutralKillingOnList, data.optNeutralKillingNum, 0, out var readyNeutralKillingNum); // 抽取优先职业（中立杀手）
+        SelectRoles("中立杀手(启用)", ref data.NeutralKillingRateList, data.optNeutralKillingNum, readyNeutralKillingNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立杀手）
         SelectRoles("中立(优先)", ref data.NeutralOnList, data.optNeutralNum, 0, out var readyNeutralNum); // 抽取优先职业（中立）
         SelectRoles("中立(启用)", ref data.NeutralRateList, data.optNeutralNum, readyNeutralNum, out _); // 优先职业不足以分配，开始分配启用的职业（中立）
         SelectRoles("船员(优先)", ref data.roleOnList, playerCount, 0, out _); // 抽取优先职业（船员）

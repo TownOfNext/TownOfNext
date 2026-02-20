@@ -31,6 +31,8 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Neutral;
         return false;
     }
+    public static bool IsNeutralKiller(this CustomRoles role) => role.IsNeutral() && role.GetRoleInfo()?.CountType != CountTypes.None;
+    public static bool IsNeutralEvil(this CustomRoles role) => role.IsNeutral() && (role.GetRoleInfo()?.CountType != CountTypes.None || Enum.IsDefined(typeof(CustomWinner), (CustomWinner)role));
     public static bool IsCrewmate(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();

@@ -69,6 +69,7 @@ namespace TONX
         // 親子情報
         public OptionItem Parent { get; private set; }
         public List<OptionItem> Children;
+        public bool TriggerActivateBool { get; private set; } = true;
 
         public StringOption OptionBehaviour;
         public ViewSettingsInfoPanel ViewOptionBehaviour;
@@ -158,6 +159,7 @@ namespace TONX
         public OptionItem SetFixValue(bool value) => Do(i => i.IsFixValue = value);
         public OptionItem SetText(bool value) => Do(i => i.IsText = value);
         public OptionItem SetAddDesc(string value) => Do(i => i.AddonDescription = value);
+        public OptionItem SetTriggerActivateValue(bool value) => Do(i => i.TriggerActivateBool = value);
 
         public OptionItem SetParent(OptionItem parent) => Do(i =>
         {
@@ -186,7 +188,7 @@ namespace TONX
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary)))
             + AddonDescription;
         }
-        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool()) && IsGameModeMatched(Options.CurrentGameMode);
+        public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool() == TriggerActivateBool) && IsGameModeMatched(Options.CurrentGameMode);
         public virtual int GetInt() => CurrentValue;
         public virtual float GetFloat() => CurrentValue;
         public virtual string GetString()

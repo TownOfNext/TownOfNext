@@ -30,7 +30,6 @@ public sealed class Sunnyboy : RoleBase, IAdditionalWinner
         
     }
 
-    public bool IsNE { get; private set; } = false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
 
     public bool CheckWin(ref CustomRoles winnerRole)

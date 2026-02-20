@@ -270,7 +270,7 @@ public class GameOptionsMenuUpdatePatch
         var stringOption = item.OptionBehaviour;
         while (parent != null && enabled)
         {
-            enabled = parent.GetBool();
+            enabled = parent.GetBool() == item.TriggerActivateBool;
             parent = parent.Parent;
         }
         

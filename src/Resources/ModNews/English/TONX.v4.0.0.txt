@@ -42,6 +42,7 @@
 - Option: Roles using commands do not notify others after using skills
 - Option: Number of Options
 - Option：Drafting Time
+- Option: Neutral Roles Amount Limit Mode
 
 ## New Role
 - Impostor: Evil Grenadier

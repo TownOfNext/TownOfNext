@@ -74,6 +74,10 @@ public static class Options
         "ConfirmEjections.Team",
         "ConfirmEjections.Role"
     };
+    public static readonly string[] NeutralCountModeNames =
+    {
+        "NeutralCountMode.General", "NeutralCountMode.Specific"
+    };
 
     #region 创建选项
 
@@ -92,8 +96,13 @@ public static class Options
     public static OptionItem ImpCanKillMadmate;
     public static OptionItem MadmateCanKillImp;
 
+    public static OptionItem NeutralCountModes;
     public static OptionItem NeutralRolesMinPlayer;
     public static OptionItem NeutralRolesMaxPlayer;
+    public static OptionItem NeutralKillingRolesMinPlayer;
+    public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralPassiveRolesMinPlayer;
+    public static OptionItem NeutralPassiveRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
 
@@ -515,20 +524,36 @@ public static class Options
         DeadImpCantSabotage = BooleanOptionItem.Create(1_003_003, "DeadImpCantSabotage", false, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
-        NeutralRolesMinPlayer = IntegerOptionItem.Create(1_004_001, "NeutralRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
-            .SetValueFormat(OptionFormat.Players);
-        NeutralRolesMaxPlayer = IntegerOptionItem.Create(1_004_002, "NeutralRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetValueFormat(OptionFormat.Players);
-        NeutralRoleWinTogether = BooleanOptionItem.Create(1_004_003, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
+        NeutralCountModes = StringOptionItem.Create(1_004_001, "NeutralCountModes", NeutralCountModeNames, 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
-        NeutralWinTogether = BooleanOptionItem.Create(1_004_004, "NeutralWinTogether", false, TabGroup.NeutralRoles, false).SetParent(NeutralRoleWinTogether)
+        NeutralRolesMinPlayer = IntegerOptionItem.Create(1_004_002, "NeutralRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players)
+            .SetTriggerActivateValue(false);
+        NeutralRolesMaxPlayer = IntegerOptionItem.Create(1_004_003, "NeutralRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players)
+            .SetTriggerActivateValue(false);
+        NeutralKillingRolesMinPlayer = IntegerOptionItem.Create(1_004_004, "NeutralKillingRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralKillingRolesMaxPlayer = IntegerOptionItem.Create(1_004_005, "NeutralKillingRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralPassiveRolesMinPlayer = IntegerOptionItem.Create(1_004_006, "NeutralPassiveRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralPassiveRolesMaxPlayer = IntegerOptionItem.Create(1_004_007, "NeutralPassiveRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false).SetParent(NeutralCountModes)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralRoleWinTogether = BooleanOptionItem.Create(1_004_008, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        NeutralWinTogether = BooleanOptionItem.Create(1_004_009, "NeutralWinTogether", false, TabGroup.NeutralRoles, false).SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
-        AddonsNumLimit = IntegerOptionItem.Create(1_004_005, "AddonsNumLimit", new(0, 99, 1), 1, TabGroup.Addons, false)
+        AddonsNumLimit = IntegerOptionItem.Create(1_005_001, "AddonsNumLimit", new(0, 99, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
 
@@ -913,7 +938,7 @@ public static class Options
         DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(3_005_005, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false).SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
 
-        //会议相关设定
+        // 会议相关设定
         TextOptionItem.Create(3_100_003, "MenuTitle.Meeting", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));

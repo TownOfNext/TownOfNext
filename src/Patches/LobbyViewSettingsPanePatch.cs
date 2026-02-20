@@ -218,7 +218,7 @@ public static class LobbyViewSettingsPanePatch
         var infoPanelOption = option.ViewOptionBehaviour;
         while (parent != null && enabled)
         {
-            enabled = parent.GetBool();
+            enabled = parent.GetBool() == option.TriggerActivateBool;
             parent = parent.Parent;
         }
 

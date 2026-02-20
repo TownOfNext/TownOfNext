@@ -156,17 +156,23 @@ public sealed class RoleDraft : GameModeBase
     private CustomRoles GetRandomDraftRole(AvailableRolesData data, List<CustomRoles> existedRoles = null)
     {
         int neededimps = data.optImpNum - DraftRoleResult.Values.Count(v => v.IsImpostor());
+        int needednks = data.optNeutralKillingNum - DraftRoleResult.Values.Count(v => v.IsNeutralKiller());
         int neededneuts = data.optNeutralNum - DraftRoleResult.Values.Count(v => v.IsNeutral());
         int leftplayers = ArrangedPlayers.Count - CurrentAssignIndex - DevRoles.Values.Count(v => v.IsCrewmate()) - 1;
 
-        if (neededimps + neededneuts >= leftplayers) // 若玩家人数即将不够分配内鬼和中立职业，优先分配内鬼或中立职业
+        if (neededimps + needednks + neededneuts >= leftplayers) // 若玩家人数即将不够分配内鬼和中立职业，优先分配内鬼或中立职业
         {
-            if (neededimps > 0)
+            if (neededimps > 0) // 内鬼
             {
                 if (data.ImpOnList.Count > 0) return data.ImpOnList[IRandom.Instance.Next(0, data.ImpOnList.Count)];
                 if (data.ImpRateList.Count > 0) return data.ImpRateList[IRandom.Instance.Next(0, data.ImpRateList.Count)];
             }
-            if (neededneuts > 0)
+            if (needednks > 0) // 中立杀手
+            {
+                if (data.NeutralKillingOnList.Count > 0) return data.NeutralKillingOnList[IRandom.Instance.Next(0, data.NeutralKillingOnList.Count)];
+                if (data.NeutralKillingRateList.Count > 0) return data.NeutralKillingRateList[IRandom.Instance.Next(0, data.NeutralKillingRateList.Count)];
+            }
+            if (neededneuts > 0) // 中立
             {
                 if (data.NeutralOnList.Count > 0) return data.NeutralOnList[IRandom.Instance.Next(0, data.NeutralOnList.Count)];
                 if (data.NeutralRateList.Count > 0) return data.NeutralRateList[IRandom.Instance.Next(0, data.NeutralRateList.Count)];
@@ -200,9 +206,9 @@ public sealed class RoleDraft : GameModeBase
         else
         {
             AvailableRolesData cachedRoleData = new(
-                Data.optImpNum, Data.optNeutralNum,
-                [.. Data.roleOnList], [.. Data.ImpOnList], [.. Data.NeutralOnList],
-                [.. Data.roleRateList], [.. Data.ImpRateList], [.. Data.NeutralRateList]
+                Data.optImpNum, Data.optNeutralKillingNum, Data.optNeutralNum,
+                [.. Data.roleOnList], [.. Data.ImpOnList], [.. Data.NeutralKillingOnList], [.. Data.NeutralOnList],
+                [.. Data.roleRateList], [.. Data.ImpRateList], [.. Data.NeutralKillingRateList], [.. Data.NeutralRateList]
             );
             for (int i = 0; i < count; i++)
             {
