@@ -245,11 +245,13 @@ public sealed class RoleDraft : GameModeBase
 
         rolesToAssign = data.roleOnList; // 优先
         if (neededimps > 0) rolesToAssign.AddRange(data.ImpOnList);
+        if (needednks > 0) rolesToAssign.AddRange(data.NeutralKillingOnList);
         if (neededneuts > 0) rolesToAssign.AddRange(data.NeutralOnList);
         if (rolesToAssign.Count > 0) return rolesToAssign[IRandom.Instance.Next(0, rolesToAssign.Count)];
 
         rolesToAssign = data.roleRateList; // 启用
         if (neededimps > 0) rolesToAssign.AddRange(data.ImpRateList);
+        if (needednks > 0) rolesToAssign.AddRange(data.NeutralKillingRateList);
         if (neededneuts > 0) rolesToAssign.AddRange(data.NeutralRateList);
         if (rolesToAssign.Count > 0) return rolesToAssign[IRandom.Instance.Next(0, rolesToAssign.Count)];
 
