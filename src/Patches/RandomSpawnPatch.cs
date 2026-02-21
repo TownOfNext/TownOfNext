@@ -95,7 +95,7 @@ class RandomSpawn
                     if (IsAirshipVanillaSpawnPosition(position))
                     {
                         AirshipSpawn(player);
-                        return!IsRandomSpawn();
+                        return !IsRandomSpawn();
                     }
                     Logger.Info("ポジションは湧き位置ではありません", "RandomSpawn");
                 }

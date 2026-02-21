@@ -22,7 +22,7 @@ public sealed class SoloKombat : GameModeBase
     { }
     public static int RoundTime;
 
-    public static OptionItem KB_GameTime;
+    private static OptionItem KB_GameTime;
     public static OptionItem KB_ATKCooldown;
     public static OptionItem KB_HPMax;
     public static OptionItem KB_ATK;

@@ -127,6 +127,13 @@ public abstract class GameModeBase : IDisposable
         return false;
     }
     /// <summary>
+    /// 修改会议时长
+    /// </summary>
+    /// <param name="discussionTime">讨论时间</param>
+    /// <param name="votingTime">投票时间</param>
+    public virtual void AlterMeetingTime(ref int discussionTime, ref int votingTime)
+    { }
+    /// <summary>
     /// 会议开始时调用的函数
     /// </summary>
     public virtual void OnStartMeeting()

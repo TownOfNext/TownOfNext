@@ -306,7 +306,7 @@ internal static class RPC
     {
         try
         {
-            while (sender == null || sender.GetClient() == null) await Task.Yield();
+            while (sender == null || sender.GetClient() == null) await Task.Delay(500);
 
             var clientId = sender.GetClientId();
             Main.playerVersion.Remove(clientId);
@@ -424,17 +424,27 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || PlayerControl.LocalPlayer.GetClient() == null) await Task.Delay(500);
-
-        Main.playerVersion.TryAdd(PlayerControl.LocalPlayer.GetClientId(), new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId));
-        if (Main.playerVersion.ContainsKey(Main.HostClientId) || !Main.VersionCheat.Value)
+        try
         {
-            bool cheating = Main.VersionCheat.Value;
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].tag : $"{Main.GitCommit}({Main.GitBranch})");
-            writer.Write(cheating ? Main.playerVersion[Main.HostClientId].forkId : Main.ForkId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            while (PlayerControl.LocalPlayer == null || PlayerControl.LocalPlayer.GetClient() == null) await Task.Delay(500);
+
+            Main.playerVersion.TryAdd(PlayerControl.LocalPlayer.GetClientId(), new PlayerVersion(Main.PluginVersion, $"{Main.GitCommit}({Main.GitBranch})", Main.ForkId));
+            if (Main.playerVersion.ContainsKey(Main.HostClientId) || !Main.VersionCheat.Value)
+            {
+                bool cheating = Main.VersionCheat.Value;
+                _ = new LateTask(() => // 利用LateTask使RPC相关操作在主线程进行
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
+                    writer.Write(cheating ? Main.playerVersion[Main.HostClientId].version.ToString() : Main.PluginVersion);
+                    writer.Write(cheating ? Main.playerVersion[Main.HostClientId].tag : $"{Main.GitCommit}({Main.GitBranch})");
+                    writer.Write(cheating ? Main.playerVersion[Main.HostClientId].forkId : Main.ForkId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }, 0f, "RpcVersionCheck");
+            }
+        }
+        catch
+        {
+            Logger.Warn($"{PlayerControl.LocalPlayer?.Data?.PlayerName}({PlayerControl.LocalPlayer.PlayerId}): 本地版本信息无效", "RpcVersionCheck");
         }
     }
     public static void SendDeathReason(byte playerId, CustomDeathReason deathReason)

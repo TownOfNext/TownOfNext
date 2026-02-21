@@ -36,8 +36,8 @@ public sealed class Swapper : RoleBase, IMeetingButton
         SwapperCanUseButton
     }
 
-    public int SwapLimit;
-    public List<byte> Targets = new();
+    private int SwapLimit;
+    private List<byte> Targets = new();
 
     private static void SetupOptionItem()
     {

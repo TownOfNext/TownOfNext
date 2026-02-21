@@ -33,14 +33,6 @@ public class MeetingTimeManager
     }
     public static void OnReportDeadBody()
     {
-        if (CustomGameMode.RoleDraft.IsEnable() && !CustomRoleSelector.RoleAssigned)
-        {
-            DiscussionTime = Main.AllAlivePlayerControls.Count() * 20 + 10;
-            VotingTime = 0;
-            Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
-            return;
-        }
-
         if (Options.AllAliveMeeting.GetBool() && Utils.IsAllAlive)
         {
             DiscussionTime = 0;
@@ -94,6 +86,8 @@ public class MeetingTimeManager
                 DiscussionTime = 0;
             }
         }
+
+        Options.CurrentGameMode.GetModeClass()?.AlterMeetingTime(ref DiscussionTime, ref VotingTime);
         Logger.Info($"DiscussionTime:{DiscussionTime}, VotingTime{VotingTime}", "MeetingTimeManager.OnReportDeadBody");
     }
 }

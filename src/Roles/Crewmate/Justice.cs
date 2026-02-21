@@ -34,7 +34,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
         JusticeMeetingVotingTime
     }
 
-    public bool HostingJusticeMeeting;
+    private bool HostingJusticeMeeting;
     private int SkillLimits;
     public List<byte> SelectedPlayers { get; set; }
     public bool RevertOnDie => true;

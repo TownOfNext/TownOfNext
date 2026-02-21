@@ -20,6 +20,7 @@ public class SwitchShipStyleButtonPatch
     public static void Start_Prefix(SystemConsole __instance)
     {
         if (__instance.MinigamePrefab.TryCast<TaskAdderGame>()) __instance.FreeplayOnly = false; // 阻止TaskAdder被销毁
+        __instance.MinigamePrefab.TryCast<VitalsMinigame>()?.BatteryText?.gameObject?.SetActive(false); // 树懒写了SetActive(true)，却忘了默认的应该设为false
         if (Main.NormalOptions.MapId == 4) // 树懒不修的bug我来修hhh
         {
             if (__instance.MinigamePrefab.TryCast<PlanetSurveillanceMinigame>()) __instance.useIcon = ImageNames.CamsButton;

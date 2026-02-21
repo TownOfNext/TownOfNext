@@ -209,7 +209,7 @@ public class Criminologist : RoleBase, IMeetingButton
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Criminologist)) return false;
 
-        if (!ChatCommand.OperateRoleCommand(ref msg, "vr|vrf|verify|推理", out int operate)) return false;
+        if (!ChatCommand.OperateRoleCommand(ref msg, "vf|vrf|verify|推理", out int operate)) return false;
 
         if (!pc.IsAlive())
         {
@@ -245,15 +245,15 @@ public class Criminologist : RoleBase, IMeetingButton
         error = string.Empty;
 
         string[] parts = msg.Split(' ');
-        if (parts.Length < 3 || !byte.TryParse(parts[1], out byte targetId) || !byte.TryParse(parts[2], out byte killerId))
+        if (parts.Length < 3)
         {
             error = GetString("VerifyHelp");
             return false;
         }
 
         //判断选择的玩家是否合理
-        target = Utils.GetPlayerById(targetId);
-        killer = Utils.GetPlayerById(killerId);
+        target = Utils.MsgToPlayer(ref parts[1], out _);
+        killer = Utils.MsgToPlayer(ref parts[2], out _);
 
         if (target == null || killer == null)
         {
@@ -270,7 +270,7 @@ public class Criminologist : RoleBase, IMeetingButton
             error = GetString("VerifyNull");
             return false;
         }
-        if (target.PlayerId == killer.PlayerId)
+        if (target.PlayerId == killer.PlayerId) // 理论来讲这是不可能的hh
         {
             error = GetString("VerifySame");
             return false;

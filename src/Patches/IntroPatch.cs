@@ -291,12 +291,12 @@ public class IntroCutscenePatch
                             Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldownV2(Main.AllPlayerKillCooldown[pc.PlayerId] - 2f));
                         }
                     }, 2f, "FixKillCooldownTask");
-                _ = new LateTask(() =>
-                {
-                    CustomRoleManager.AllActiveRoles.Values.ToList().Do(x => x?.OnGameStart());
-                    Options.CurrentGameMode.GetModeClass()?.OnGameStart();
-                }, 0.1f, "OnGameStartTask");
             }
+            _ = new LateTask(() =>
+            {
+                CustomRoleManager.AllActiveRoles.Values.ToList().Do(x => x?.OnGameStart());
+                Options.CurrentGameMode.GetModeClass()?.OnGameStart();
+            }, 0.1f, "OnGameStartTask");
             // _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "SetImpostorForServer");
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
             {

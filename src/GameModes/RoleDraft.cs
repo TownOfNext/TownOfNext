@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TONX.Modules;
 
 namespace TONX.GameModes;
@@ -28,9 +26,9 @@ public sealed class RoleDraft : GameModeBase
 
     private const float NoticeTime = 10f;
 
-    public static OptionItem RD_OptionNum;
-    public static OptionItem RD_DraftTimeLimit;
-    public static OptionItem RD_ShowSelectedRoles;
+    private static OptionItem RD_OptionNum;
+    private static OptionItem RD_DraftTimeLimit;
+    private static OptionItem RD_ShowSelectedRoles;
 
     public static void SetupCustomOption()
     {
@@ -42,6 +40,19 @@ public sealed class RoleDraft : GameModeBase
             .SetValueFormat(OptionFormat.Seconds);
         RD_ShowSelectedRoles = BooleanOptionItem.Create(ModeInfo, 3, "RD_ShowSelectedRoles", true, false);
     }
+
+    private enum DraftState
+    {
+        Idle,     // 空闲
+        Drafting, // 正在选角
+        WaitNext, // 等待切换下一位
+        WaitEnd,  // 等待结束
+        Ending    // 结束
+    }
+    private DraftState _state = DraftState.Idle;
+    private long _timer;
+    private bool _noticed;
+    private byte _playerId => CurrentAssignIndex > -1 && CurrentAssignIndex < ArrangedPlayers.Count ? ArrangedPlayers[CurrentAssignIndex] : byte.MaxValue;
 
     public override void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
     {
@@ -73,34 +84,76 @@ public sealed class RoleDraft : GameModeBase
         intro.ImpostorText.gameObject.SetActive(false);
         intro.BackgroundBar.material.color = Color.gray;
     }
-    public override void OnGameStart()
+    public override void OnGameStart() => PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+    public override void AlterMeetingTime(ref int discussionTime, ref int votingTime)
     {
-        PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+        if (CustomRoleSelector.RoleAssigned) return;
+        discussionTime = Main.AllAlivePlayerControls.Count() * (int)RD_DraftTimeLimit.GetFloat() + 10;
+        votingTime = 0;
     }
 
     public override void OnStartMeeting()
     {
         if (CustomRoleSelector.RoleAssigned) return;
-
-        _ = new LateTask(() =>
-        {
-            DraftRoleResult = new();
-            AmongUsClient.Instance.StartCoroutine(CoDraftRoles().WrapToIl2Cpp());
-        }, 8f, "StartRoleDraft");
+        _ = new LateTask(StartDraft, 8f, "StartRoleDraft");
     }
     public override void AfterMeetingTasks()
     {
         if (CustomRoleSelector.RoleAssigned) return;
-
-        AssignDraftRoles();
-
-        Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
-        GameData.Instance.RecomputeTaskCounts();
-        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
-        Main.CanRecord = CustomRoleSelector.RoleAssigned = true;
-        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
+        EndDraft();
     }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost || CustomRoleSelector.RoleAssigned) return;
+
+        switch (_state)
+        {
+            case DraftState.Idle:
+                break;
+            case DraftState.Drafting:
+                if (IsPlayerNull(Utils.GetPlayerById(_playerId)) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(_playerId)))
+                {
+                    _state = DraftState.WaitNext;
+                    break;
+                }
+                if (Utils.GetTimeStamp() - _timer >= (long)RD_DraftTimeLimit.GetFloat())
+                {
+                    ChooseRole(_playerId, (RandomRoles.Count + 1).ToString() /* 随机选择 */ );
+                    _state = DraftState.WaitNext;
+                }
+                else if (Utils.GetTimeStamp() - _timer >= (long)(RD_DraftTimeLimit.GetFloat() - NoticeTime) && !_noticed)
+                {
+                    Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), _playerId);
+                    _noticed = true;
+                }
+                break;
+            case DraftState.WaitNext:
+                CurrentAssignIndex++;
+                if (CurrentAssignIndex >= ArrangedPlayers.Count)
+                {
+                    _state = DraftState.WaitEnd;
+                    break;
+                }
+                SelectRandomRoles(_playerId, RD_OptionNum.GetInt());
+                Utils.KillFlash(Utils.GetPlayerById(_playerId));
+                _noticed = false;
+                _timer = Utils.GetTimeStamp();
+                _state = DraftState.Drafting;
+                break;
+            case DraftState.WaitEnd:
+                _timer = Utils.GetTimeStamp();
+                _state = DraftState.Ending;
+                break;
+            case DraftState.Ending:
+                if (Utils.GetTimeStamp() - _timer >= 5L)
+                {
+                    MeetingHud.Instance?.RpcForceEndMeeting();
+                    _state = DraftState.Idle;
+                }
+                break;
+        }
+    }
+
     public override bool OnSendMessage(PlayerControl player, string msg, out MsgRecallMode recallMode)
     {
         bool isCommand = RoleDraftMsg(player, msg, out bool spam);
@@ -112,19 +165,22 @@ public sealed class RoleDraft : GameModeBase
         spam = false;
         if (!GameStates.IsMeeting || CustomRoleSelector.RoleAssigned || IsPlayerNull(pc)) return false;
 
+        int operate = 0;
         bool isCmd = msg.StartsWith("/cmd ");
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (!ChatCommand.MatchCommand(ref msg, "ch|choose|选|选择", false, isCmd)) return false;
+        if (ChatCommand.MatchCommand(ref msg, "ch|choose|选|选择", true, isCmd)) operate = 1;
+        else if (ChatCommand.MatchCommand(ref msg, "ch|choose|选|选择", false, isCmd)) operate = 2;
+        else return false;
 
         spam = true;
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (pc.PlayerId != ArrangedPlayers[CurrentAssignIndex]) _ = new LateTask(() => { Utils.SendMessage(GetString("RoleDraft.DraftAssignWait"), pc.PlayerId); }, 0.2f, "RoleDraftSelectRole");
-        else _ = new LateTask(() => { ChooseRole(pc.PlayerId, msg.TrimStart().TrimEnd()); }, 0.2f, "RoleDraftSelectRole");
+        if (pc.PlayerId != _playerId) Utils.SendMessage(GetString("RoleDraft.DraftAssignWait"), pc.PlayerId);
+        else if (operate == 1) SendRandomRoles(pc.PlayerId);
+        else if (operate == 2) ChooseRole(pc.PlayerId, msg.TrimStart().TrimEnd());
         return true;
     }
 
-    private static bool IsPlayerNull(PlayerControl pc) => pc?.Data == null || pc.Data.IsDead || pc.Data.Disconnected;
     private void ChooseRole(byte playerId, string input)
     {
         if (!int.TryParse(input, out int roleId) || roleId < 1 || roleId > RandomRoles.Count + 1)
@@ -218,45 +274,35 @@ public sealed class RoleDraft : GameModeBase
                 cachedRoleData.RemoveRole(chosenRole);
             }
         }
-
+        SendRandomRoles(playerId);
+    }
+    private void SendRandomRoles(byte playerId)
+    {
         string text = string.Join("\n", RandomRoles.Select((role, index) => $" {index + 1} => {Utils.GetColoredRoleName(role, true)}").ToList());
         text += $"\n {RandomRoles.Count + 1} => {GetString("RoleDraft.Random")}";
         Utils.SendMessage(string.Format(GetString("RoleDraft.Choices"), text, RD_DraftTimeLimit.GetFloat()), playerId);
     }
-    private IEnumerator CoDraftRoles()
+    private void StartDraft()
     {
+        DraftRoleResult = new();
         ArrangedPlayers = Main.AllAlivePlayerControls
             .OrderBy(_ => IRandom.Instance.Next(Main.AllAlivePlayerControls.Count()))
             .Select(p => p.PlayerId)
             .ToList();
         CurrentAssignIndex = -1;
-        for (int i = 0; i < ArrangedPlayers.Count; i++) Utils.SendMessage(string.Format(GetString("RoleDraft.StartDraft"), i + 1), ArrangedPlayers[i]);
-
-        foreach (var playerId in ArrangedPlayers)
-        {
-            CurrentAssignIndex++;
-            SelectRandomRoles(playerId, RD_OptionNum.GetInt());
-            Utils.KillFlash(Utils.GetPlayerById(playerId));
-            yield return CoDraftPlayer(playerId);
-        }
-
-        yield return new WaitForSeconds(5.0f);
-        if (GameStates.IsMeeting) MeetingHud.Instance?.RpcForceEndMeeting();
+        for (int i = 0; i < ArrangedPlayers.Count; i++) Utils.SendMessage(string.Format(GetString("RoleDraft.StartDraft"), i + 1), ArrangedPlayers[i]); 
+        _state = DraftState.WaitNext;  
     }
-    private IEnumerator CoDraftPlayer(byte playerId)
+    private void EndDraft()
     {
-        bool noticed = false;
-        for (float timer = 0f; timer < RD_DraftTimeLimit.GetFloat() + 0.5f /* 0.5f为消息延迟 */ ; timer += Time.deltaTime)
-        {
-            if (IsPlayerNull(Utils.GetPlayerById(playerId)) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(playerId))) yield break;
-            if (timer >= NoticeTime && !noticed)
-            {
-                Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), playerId);
-                noticed = true;
-            }
-            yield return null;
-        }
-        if (!IsPlayerNull(Utils.GetPlayerById(playerId))) ChooseRole(playerId, (RandomRoles.Count + 1).ToString() /* 随机选择 */ ); 
+        AssignDraftRoles();
+
+        Main.AllPlayerControls.Do(x => PlayerState.GetByPlayerId(x.PlayerId).InitTask(x));
+        GameData.Instance.RecomputeTaskCounts();
+        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+
+        Main.CanRecord = CustomRoleSelector.RoleAssigned = true;
+        foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
     }
     private void AssignDraftRoles()
     {
@@ -264,4 +310,5 @@ public sealed class RoleDraft : GameModeBase
             player.RpcChangeRole(role, refreshSeen: false, refreshTasks: false);
         SelectRolesPatch.AssignAddons();
     }
+    private static bool IsPlayerNull(PlayerControl pc) => pc?.Data == null || pc.Data.IsDead || pc.Data.Disconnected;
 }

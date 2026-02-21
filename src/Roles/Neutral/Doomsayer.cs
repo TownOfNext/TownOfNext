@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using UnityEngine;
+using Hazel;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 using static TONX.GuesserHelper;
-using Hazel;
 
 namespace TONX.Roles.Neutral;
 public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
@@ -28,14 +28,14 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     )
     { }
 
-    public static OptionItem OptionGuessNums;
-    public static OptionItem OptionCanGuessAddons;
-    public static OptionItem OptionCanGuessVanilla;
-    public static OptionItem OptionGuessNumsToWin;
-    public static OptionItem OptionSuicideIfGuessWrong;
-    public static OptionItem OptionForbidGuessIfWrongThisMeeting;
-    public static OptionItem OptionHintCooldown;
-    public static OptionItem OptionHintNums;
+    private static OptionItem OptionGuessNums;
+    private static OptionItem OptionCanGuessAddons;
+    private static OptionItem OptionCanGuessVanilla;
+    private static OptionItem OptionGuessNumsToWin;
+    private static OptionItem OptionSuicideIfGuessWrong;
+    private static OptionItem OptionForbidGuessIfWrongThisMeeting;
+    private static OptionItem OptionHintCooldown;
+    private static OptionItem OptionHintNums;
     enum OptionName
     {
         GuesserCanGuessTimes,
@@ -53,7 +53,7 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     public bool CanGuessAddons => OptionCanGuessAddons.GetBool();
     public bool CanGuessVanilla => OptionCanGuessVanilla.GetBool();
     private byte Target;
-    public bool HasWrongGuess;
+    private bool HasWrongGuess;
     private int CorrectGuesses;
     private int HintLimit;
     private static void SetupOptionItem()
@@ -135,7 +135,7 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
         void AddSuspectedRoles(CustomRoleTypes customRoleTypes)
         {
             var roles = CustomRolesHelper.AllRoles.Where(r => r.GetCustomRoleTypes() == customRoleTypes && r.IsEnable()).ToList();
-            for (int i = 0; i < 3 - Suspects.Where(r => r.GetCustomRoleTypes() == customRoleTypes).Count(); i++)
+            for (int i = 0; i < 3 - Suspects.Count(r => r.GetCustomRoleTypes() == customRoleTypes); i++)
             {
                 if (roles.Count == 0) break;
                 var role = roles[IRandom.Instance.Next(roles.Count)];
