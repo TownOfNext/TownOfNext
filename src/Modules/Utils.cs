@@ -902,13 +902,14 @@ public static class Utils
             + $"\n  ○ /up {GetString("Command.up")}";
         SendMessage(txt, ID);
     }
+    public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string dead = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "<Default>") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
         var resultTitle = (Options.RoleCommandNoNotify.GetBool() && allowOverride) ? GetString("MeetingDeathGlobal") : title;
         var resultText = (Options.RoleCommandNoNotify.GetBool() && allowOverride) ? string.Format(GetString("MeetingDeathMessage"), dead) : text;
-        Main.MessagesToSend.Add((removeTags ? resultText.RemoveHtmlTags() : resultText, sendTo, resultTitle + '\0'));
+        Main.MessagesToSend.Add((removeTags || MustRemoveHtmlTags() ? resultText.RemoveHtmlTags() : resultText, sendTo, resultTitle + '\0'));
     }
     public static void AddChatMessage(string text, string title = "")
     {

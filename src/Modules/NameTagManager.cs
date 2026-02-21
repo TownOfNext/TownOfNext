@@ -1,7 +1,6 @@
 ﻿using AmongUs.Data;
 using Newtonsoft.Json.Linq;
 using System.Text;
-using Sentry.Protocol;
 using UnityEngine;
 
 namespace TONX;

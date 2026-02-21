@@ -17,9 +17,9 @@ public static class ServerAddManager
         regionInfos.Add(CreateHttp("au-as.duikbo.at", "Modded Asia (MAS)", 443, true));
         regionInfos.Add(CreateHttp("www.aumods.org", "Modded NA (MNA)", 443, true));
         regionInfos.Add(CreateHttp("au-eu.duikbo.at", "Modded EU (MEU)", 443, true));
-        regionInfos.Add(CreateHttp("au-us.niko233.me", "Niko233(NA)", 443, true));
-        regionInfos.Add(CreateHttp("au-as.niko233.me", "Niko233(AS)", 443, true));
-        regionInfos.Add(CreateHttp("au-eu.niko233.me", "Niko233(EU)", 443, true));
+        regionInfos.Add(CreateHttp("au-us.niko233.top", "Niko233(NA)", 443, true));
+        regionInfos.Add(CreateHttp("au-as.niko233.top", "Niko233(AS)", 443, true));
+        regionInfos.Add(CreateHttp("au-eu.niko233.top", "Niko233(EU)", 443, true));
 
         var defaultRegion = serverManager.CurrentRegion;
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);

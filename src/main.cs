@@ -33,10 +33,11 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2025.11.18"; // 17.1.0
-    public static readonly bool IsPublicAvailableOnThisVersion = false;
+    public static readonly bool IsPublicAvailableOnThisVersion = true;
     public const string PluginVersion = "4.0.0";
     public const int PluginCreation = 1;
-    public const VersionType VerType = VersionType.Canary;
+    public const VersionType VerType = VersionType.Release;
+    public static readonly bool AllowHtmlTagMsgOnOfficialServer = false;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";

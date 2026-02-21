@@ -10,10 +10,6 @@
 - Base on TOH v5.1.14
 
 ## Warning
-- Create/join public lobbies is temporarily unavailable
-- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
-
-## Notice
 - Due to the update of the server, the function of hiding messages is no longer necessary.
 - Role commands have been changed from starting with / to starting with /cmd.
 - For example: /bt => /cmd bt
