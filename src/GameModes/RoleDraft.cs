@@ -54,6 +54,7 @@ public sealed class RoleDraft : GameModeBase
     private bool _noticed;
     private byte _playerId => CurrentAssignIndex > -1 && CurrentAssignIndex < ArrangedPlayers.Count ? ArrangedPlayers[CurrentAssignIndex] : byte.MaxValue;
 
+    public override void Add() => _state = DraftState.Idle;
     public override void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
     {
         Data = data;
