@@ -64,10 +64,7 @@ public sealed class RoleDraft : GameModeBase
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
                 if (!role.IsHidden(out var hiddenRoleInfo) || hiddenRoleInfo.TargetRole == null) continue;
-                if (IRandom.Instance.Next(0, 100) < hiddenRoleInfo.Probability)
-                {
-                    Data.ReplaceRole(hiddenRoleInfo.TargetRole.Value, role);
-                }
+                if (IRandom.Instance.Next(0, 100) < hiddenRoleInfo.Probability) Data.ReplaceRole(hiddenRoleInfo.TargetRole.Value, role);
             }
         }
 
@@ -112,16 +109,8 @@ public sealed class RoleDraft : GameModeBase
             case DraftState.Idle:
                 break;
             case DraftState.Drafting:
-                if (IsPlayerNull(Utils.GetPlayerById(_playerId)) || DraftRoleResult.ContainsKey(Utils.GetPlayerById(_playerId)))
-                {
-                    _state = DraftState.WaitNext;
-                    break;
-                }
-                if (Utils.GetTimeStamp() - _timer >= (long)RD_DraftTimeLimit.GetFloat())
-                {
-                    ChooseRole(_playerId, (RandomRoles.Count + 1).ToString() /* 随机选择 */ );
-                    _state = DraftState.WaitNext;
-                }
+                if (IsPlayerNull(Utils.GetPlayerById(_playerId))) _state = DraftState.WaitNext;
+                else if (Utils.GetTimeStamp() - _timer >= (long)RD_DraftTimeLimit.GetFloat()) ChooseRole(_playerId, RandomRoles.Count + 1 /* 随机选择 */ );
                 else if (Utils.GetTimeStamp() - _timer >= (long)(RD_DraftTimeLimit.GetFloat() - NoticeTime) && !_noticed)
                 {
                     Utils.SendMessage(string.Format(GetString("RoleDraft.TimeNotice"), NoticeTime), _playerId);
@@ -164,7 +153,7 @@ public sealed class RoleDraft : GameModeBase
     private bool RoleDraftMsg(PlayerControl pc, string msg, out bool spam)
     {
         spam = false;
-        if (!GameStates.IsMeeting || CustomRoleSelector.RoleAssigned || IsPlayerNull(pc)) return false;
+        if (CustomRoleSelector.RoleAssigned || _state != DraftState.Drafting || IsPlayerNull(pc)) return false;
 
         int operate = 0;
         bool isCmd = msg.StartsWith("/cmd ");
@@ -178,22 +167,22 @@ public sealed class RoleDraft : GameModeBase
 
         if (pc.PlayerId != _playerId) Utils.SendMessage(GetString("RoleDraft.DraftAssignWait"), pc.PlayerId);
         else if (operate == 1) SendRandomRoles(pc.PlayerId);
-        else if (operate == 2) ChooseRole(pc.PlayerId, msg.TrimStart().TrimEnd());
+        else if (operate == 2)
+        {
+            if (!int.TryParse(msg.TrimStart().TrimEnd(), out int roleId) || roleId < 1 || roleId > RandomRoles.Count + 1)
+                Utils.SendMessage(GetString("RoleDraft.FailedChosen"), pc.PlayerId);
+            else ChooseRole(pc.PlayerId, roleId);
+        }
         return true;
     }
 
-    private void ChooseRole(byte playerId, string input)
+    private void ChooseRole(byte playerId, int roleId)
     {
-        if (!int.TryParse(input, out int roleId) || roleId < 1 || roleId > RandomRoles.Count + 1)
-        {
-            Utils.SendMessage(GetString("RoleDraft.FailedChosen"), playerId);
-            return;
-        }
-
         bool isRandom = roleId == RandomRoles.Count + 1;
         CustomRoles role = isRandom ? TryGetDevRole(playerId, out CustomRoles dr) ? dr : GetRandomDraftRole(Data) : RandomRoles[roleId - 1];
         DraftRoleResult.Add(Utils.GetPlayerById(playerId), role);
         Data.RemoveRole(role);
+        _state = DraftState.WaitNext;
         Utils.SendMessage(string.Format(GetString("RoleDraft.SuccessfullyChosen"), Utils.GetColoredRoleName(role, true)), playerId);
         if (!RD_ShowSelectedRoles.GetBool()) return;
 
