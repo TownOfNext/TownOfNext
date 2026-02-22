@@ -31,28 +31,29 @@ public static class MeetingHudPatch
         {
             __instance.StartCoroutine(CoAnimateSwapVote(__instance).WrapToIl2Cpp()); // 换票动画
         }
-    }
-    public static IEnumerator CoAnimateSwapVote(MeetingHud __instance)
-    {
-        var meetingVoteManager = MeetingVoteManager.Instance;
-        if (meetingVoteManager == null) yield break;
-
-        var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
-        foreach (var data in swappedPlayers)
+        public static IEnumerator CoAnimateSwapVote(MeetingHud __instance)
         {
-            if (!data.ShouldAnimate) continue;
-            if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
+            var meetingVoteManager = MeetingVoteManager.Instance;
+            if (meetingVoteManager == null) yield break;
 
-            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
-            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
-            if (pva1 == null || pva2 == null) continue;
+            var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
+            foreach (var data in swappedPlayers)
+            {
+                if (!data.ShouldAnimate) continue;
+                if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
 
-            var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
-            __instance.StartCoroutine(Effects.Slide3D(pva1.transform, pva1.transform.localPosition, pva2.transform.localPosition, time));
-            __instance.StartCoroutine(Effects.Slide3D(pva2.transform, pva2.transform.localPosition, pva1.transform.localPosition, time));
-            yield return new WaitForSeconds(time);
+                var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
+                var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
+                if (pva1 == null || pva2 == null) continue;
+
+                var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
+                __instance.StartCoroutine(Effects.Slide3D(pva1.transform, pva1.transform.localPosition, pva2.transform.localPosition, time));
+                __instance.StartCoroutine(Effects.Slide3D(pva2.transform, pva2.transform.localPosition, pva1.transform.localPosition, time));
+                yield return new WaitForSeconds(time);
+            }
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
@@ -329,13 +330,9 @@ class SetHighlightedPatch
     }
 }
 
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
-class JusticeMeetingHudPopulateButtonsPatch
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+class JusticeMeetingHudPatch
 {
-    public static void Postfix(MeetingHud __instance)
-    {
-        HandleJusticeMeeting(__instance);
-    }
     public static void HandleJusticeMeeting(MeetingHud __instance)
     {
         if (!Justice.IsJusticeMeeting()) return;
@@ -352,5 +349,6 @@ class JusticeMeetingHudPopulateButtonsPatch
             pva.transform.localPosition = new Vector3(2f * num, 0f, pva.transform.localPosition.z);
             num *= -1;
         }
+        __instance.SkipVoteButton.gameObject.SetActive(false);
     }
 }

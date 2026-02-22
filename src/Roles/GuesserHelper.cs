@@ -233,7 +233,7 @@ public static class GuesserHelper
             exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                JusticeMeetingHudPopulateButtonsPatch.HandleJusticeMeeting(__instance);
+                JusticeMeetingHudPatch.HandleJusticeMeeting(__instance);
                 UnityEngine.Object.Destroy(container.gameObject);
             }));
             ExitButton = exitButton.GetComponent<PassiveButton>();
@@ -405,7 +405,7 @@ public static class GuesserHelper
 
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                        JusticeMeetingHudPopulateButtonsPatch.HandleJusticeMeeting(__instance);
+                        JusticeMeetingHudPatch.HandleJusticeMeeting(__instance);
                         UnityEngine.Object.Destroy(container.gameObject);
                         textTemplate.enabled = false;
 
