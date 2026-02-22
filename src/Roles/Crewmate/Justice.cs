@@ -179,7 +179,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
                 Utils.SendMessage(
                     string.Format(GetString("BalanceSkillCancelled"), Name),
                     Player.PlayerId,
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("JusticeBalanceTitle")));
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Justice), GetString("JusticeBalanceTitle")));
             }, 0.8f, "Balance Skill Cancelled");
 
             return true;
@@ -208,7 +208,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
             Utils.SendMessage(
                 string.Format(GetString("BalanceSkill"), Name2),
                 Player.PlayerId,
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("JusticeBalanceTitle")));
+                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Justice), GetString("JusticeBalanceTitle")));
         }, 0.8f, "Balance Skill");
 
         if (SelectedPlayers.Count == 2) MeetingHud.Instance.RpcForceEndMeeting();
