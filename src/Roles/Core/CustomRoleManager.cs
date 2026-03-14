@@ -684,6 +684,9 @@ public enum CustomRoles
     //SoloKombat
     KB_Normal = 400,
 
+    //RoleDraft
+    Drafter,
+
     //GM
     GM,
 

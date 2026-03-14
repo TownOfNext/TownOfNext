@@ -57,6 +57,7 @@ public sealed class RoleDraft : GameModeBase
     public override void Add() => _state = DraftState.Idle;
     public override void SelectCustomRoles(ref Dictionary<PlayerControl, CustomRoles> RoleResult, ref AvailableRolesData data)
     {
+        foreach (var pc in Main.AllAlivePlayerControls.ToList()) RoleResult.Add(pc, CustomRoles.Drafter);
         Data = data;
 
         if (!Options.DisableHiddenRoles.GetBool())
@@ -83,6 +84,11 @@ public sealed class RoleDraft : GameModeBase
         intro.BackgroundBar.material.color = Color.gray;
     }
     public override void OnGameStart() => PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+    public override string GetMeetingTitleText()
+    {
+        if (!CustomRoleSelector.RoleAssigned) return GetString("RoleDraft");
+        return base.GetMeetingTitleText();
+    }
     public override void AlterMeetingTime(ref int discussionTime, ref int votingTime)
     {
         if (CustomRoleSelector.RoleAssigned) return;
@@ -294,6 +300,8 @@ public sealed class RoleDraft : GameModeBase
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
         Main.CanRecord = CustomRoleSelector.RoleAssigned = true;
+        CustomRoleSelector.RoleAssigned = true;
+        RPC.SyncRolesAssigningState(true);
         foreach (var pc in Main.AllPlayerControls) Utils.RecordPlayerRoles(pc.PlayerId);
     }
     private void AssignDraftRoles()

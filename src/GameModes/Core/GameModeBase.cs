@@ -127,6 +127,11 @@ public abstract class GameModeBase : IDisposable
         return false;
     }
     /// <summary>
+    /// 会议标题内容
+    /// </summary>
+    /// <returns></returns>
+    public virtual string GetMeetingTitleText() => GetString(StringNames.MeetingWhoIsTitle);
+    /// <summary>
     /// 修改会议时长
     /// </summary>
     /// <param name="discussionTime">讨论时间</param>

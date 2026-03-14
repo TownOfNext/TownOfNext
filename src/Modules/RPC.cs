@@ -35,6 +35,7 @@ public enum CustomRPC
     SyncRolesRecord,
     SyncTaskState,
     Revive,
+    SyncRolesAssigningState,
 
     //Roles
     Guess,
@@ -71,9 +72,9 @@ public enum CustomRPC
     //SyncMarioVentedTimes,
 
     //SoloKombat
-    SyncKBPlayer,
-    SyncKBBackCountdown,
-    SyncKBNameNotify,
+    //SyncKBPlayer,
+    //SyncKBBackCountdown,
+    //SyncKBNameNotify,
 }
 public enum Sounds
 {
@@ -598,6 +599,13 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Revive, SendOption.Reliable, -1);
         writer.Write(playerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncRolesAssigningState(bool assigned)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRolesAssigningState, SendOption.Reliable, -1);
+        writer.Write(assigned);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }
