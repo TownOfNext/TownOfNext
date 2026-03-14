@@ -51,6 +51,7 @@ public abstract class GameModeBase : IDisposable
     public virtual void AfterAssignRoles()
     {
         CustomRoleSelector.RoleAssigned = true;
+        RPC.SyncRolesAssigningState(true);
     }
 
     // == 游戏结束相关 ==
