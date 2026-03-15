@@ -1,10 +1,31 @@
 ﻿namespace TONX;
 
+[HarmonyPatch(typeof(AprilFoolsMode))]
 public static class AprilFoolsModePatch
 {
     public static bool FlipSkeld => AprilFoolsMode.ShouldFlipSkeld();
     public static bool HorseMode => AprilFoolsMode.ShouldHorseAround();
     public static bool LongMode => AprilFoolsMode.ShouldLongAround();
+    public static bool EnableFlipSkeld = false;
+
+    [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
+    public static bool ShouldFlipSkeld_Prefix(ref bool __result)
+    {
+        __result = EnableFlipSkeld;
+        return false;
+    }
+    /*[HarmonyPatch(nameof(AprilFoolsMode.ShouldHorseAround)), HarmonyPrefix]
+    public static bool ShouldHorseAround_Prefix(ref bool __result)
+    {
+        __result = Main.SwitchOutfitType.Value == OutfitType.HorseMode;
+        return false;
+    }
+    [HarmonyPatch(nameof(AprilFoolsMode.ShouldLongAround)), HarmonyPrefix]
+    public static bool ShouldLongAround_Prefix(ref bool __result)
+    {
+        __result = Main.SwitchOutfitType.Value == OutfitType.LongMode;
+        return false;
+    }*/
 }
 
 #region GameManager Patches
@@ -100,6 +121,66 @@ public static class LongBoiPatch
         }
 
         __result = true;
+        return false;
+    }
+}
+
+#endregion
+
+#region Dleks Patches
+
+[HarmonyPatch(typeof(GameOptionsMapPicker))]
+public static class GameOptionsMapPickerDleksPatch
+{
+    // [HarmonyPatch(typeof(FilterMapPicker), nameof(FilterMapPicker.Initialize))] Dleks默认指向Skeld，不需要再筛选
+    [HarmonyPatch(typeof(CreateGameMapPicker), nameof(CreateGameMapPicker.Initialize))]
+    [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize))]
+    [HarmonyPrefix]
+    public static void Initialize_Prefix(GameOptionsMapPicker __instance)
+    {
+        MapIconByName thisVal = new MapIconByName
+        {
+            Name = MapNames.Dleks,
+            MapIcon = __instance.AllMapIcons[0].MapIcon,
+            MapImage = __instance.AllMapIcons[0].MapImage,
+            NameImage = __instance.AllMapIcons[0].NameImage
+        };
+        if (!__instance.AllMapIcons.Contains(thisVal)) __instance.AllMapIcons.Insert(3, thisVal);
+    }
+    [HarmonyPatch(nameof(GameOptionsMapPicker.SetupMapButtons)), HarmonyPostfix]
+    public static void SetupMapButtons_Postfix(GameOptionsMapPicker __instance)
+    {
+        for (var i = 0; i < __instance.mapButtons.Count; i++)
+        {
+            var btn = __instance.mapButtons[i];
+            MapIconByName thisVal = __instance.AllMapIcons[i];
+            btn.Button.OnClick.RemoveAllListeners();
+            btn.Button.OnClick.AddListener((Action)(() =>
+            {
+                if (__instance.selectedButton)
+                {
+                    __instance.selectedButton.Button.SelectButton(isSelected: false);
+                }
+                __instance.selectedButton = btn;
+                __instance.selectedButton.Button.SelectButton(isSelected: true);
+                AprilFoolsModePatch.EnableFlipSkeld = (int)thisVal.Name == 3;
+                __instance.SelectMap((int)thisVal.Name == 3 ? __instance.AllMapIcons[0] : thisVal);
+            }));
+        }
+
+        if (AprilFoolsModePatch.EnableFlipSkeld && __instance.selectedMapId == 0)
+        {
+            __instance.mapButtons[0].Button.SelectButton(isSelected: false);
+            __instance.mapButtons[3].Button.SelectButton(isSelected: true);
+            __instance.selectedButton = __instance.mapButtons[3];
+        }
+    }
+    [HarmonyPatch(nameof(GameOptionsMapPicker.SelectMap), new Type[] { typeof(int) }), HarmonyPrefix]
+    public static bool SelectMapTypeOfInt_Prefix(GameOptionsMapPicker __instance, [HarmonyArgument(0)] int mapId)
+    {
+        if (mapId != 3) return true;
+        AprilFoolsModePatch.EnableFlipSkeld = true;
+        __instance.SelectMap(0);
         return false;
     }
 }
