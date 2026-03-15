@@ -11,7 +11,7 @@ public static class AprilFoolsModePatch
     [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
     public static bool ShouldFlipSkeld_Prefix(ref bool __result)
     {
-        __result = EnableFlipSkeld;
+        __result = EnableFlipSkeld && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "FindAGame";
         return false;
     }
     /*[HarmonyPatch(nameof(AprilFoolsMode.ShouldHorseAround)), HarmonyPrefix]
@@ -132,7 +132,7 @@ public static class LongBoiPatch
 [HarmonyPatch(typeof(GameOptionsMapPicker))]
 public static class GameOptionsMapPickerDleksPatch
 {
-    // [HarmonyPatch(typeof(FilterMapPicker), nameof(FilterMapPicker.Initialize))] Dleks默认指向Skeld，不需要再筛选
+    // [HarmonyPatch(typeof(FilterMapPicker), nameof(FilterMapPicker.Initialize))] // Dleks默认指向Skeld，不需要再筛选
     [HarmonyPatch(typeof(CreateGameMapPicker), nameof(CreateGameMapPicker.Initialize))]
     [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize))]
     [HarmonyPrefix]
@@ -145,7 +145,7 @@ public static class GameOptionsMapPickerDleksPatch
             MapImage = __instance.AllMapIcons[0].MapImage,
             NameImage = __instance.AllMapIcons[0].NameImage
         };
-        if (!__instance.AllMapIcons.Contains(thisVal)) __instance.AllMapIcons.Insert(3, thisVal);
+        if (!__instance.AllMapIcons.ToArray().Any(m => m.Name == thisVal.Name)) __instance.AllMapIcons.Insert(3, thisVal);
     }
     [HarmonyPatch(nameof(GameOptionsMapPicker.SetupMapButtons)), HarmonyPostfix]
     public static void SetupMapButtons_Postfix(GameOptionsMapPicker __instance)
