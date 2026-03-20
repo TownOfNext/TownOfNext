@@ -1,4 +1,7 @@
-﻿namespace TONX;
+﻿using UnityEngine;
+using Object = UnityEngine.Object;
+
+namespace TONX;
 
 [HarmonyPatch(typeof(AprilFoolsMode))]
 public static class AprilFoolsModePatch
@@ -11,10 +14,14 @@ public static class AprilFoolsModePatch
     [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
     public static bool ShouldFlipSkeld_Prefix(ref bool __result)
     {
-        __result = EnableFlipSkeld && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "FindAGame";
+        __result = EnableFlipSkeld
+            && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "FindAGame"
+            && (!GameObject.Find("FreeplayPopover")?.active ?? true);
         return false;
     }
-    /*[HarmonyPatch(nameof(AprilFoolsMode.ShouldHorseAround)), HarmonyPrefix]
+
+    /*
+    [HarmonyPatch(nameof(AprilFoolsMode.ShouldHorseAround)), HarmonyPrefix]
     public static bool ShouldHorseAround_Prefix(ref bool __result)
     {
         __result = Main.SwitchOutfitType.Value == OutfitType.HorseMode;
@@ -25,7 +32,8 @@ public static class AprilFoolsModePatch
     {
         __result = Main.SwitchOutfitType.Value == OutfitType.LongMode;
         return false;
-    }*/
+    }
+    */
 }
 
 #region GameManager Patches
@@ -132,12 +140,12 @@ public static class LongBoiPatch
 [HarmonyPatch(typeof(GameOptionsMapPicker))]
 public static class GameOptionsMapPickerDleksPatch
 {
-    // [HarmonyPatch(typeof(FilterMapPicker), nameof(FilterMapPicker.Initialize))] // Dleks默认指向Skeld，不需要再筛选
     [HarmonyPatch(typeof(CreateGameMapPicker), nameof(CreateGameMapPicker.Initialize))]
     [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize))]
     [HarmonyPrefix]
     public static void Initialize_Prefix(GameOptionsMapPicker __instance)
     {
+        if (__instance.AllMapIcons.ToArray().Any(m => m.Name == MapNames.Dleks)) return;
         MapIconByName thisVal = new MapIconByName
         {
             Name = MapNames.Dleks,
@@ -145,7 +153,7 @@ public static class GameOptionsMapPickerDleksPatch
             MapImage = __instance.AllMapIcons[0].MapImage,
             NameImage = __instance.AllMapIcons[0].NameImage
         };
-        if (!__instance.AllMapIcons.ToArray().Any(m => m.Name == thisVal.Name)) __instance.AllMapIcons.Insert(3, thisVal);
+        __instance.AllMapIcons.Insert(3, thisVal);
     }
     [HarmonyPatch(nameof(GameOptionsMapPicker.SetupMapButtons)), HarmonyPostfix]
     public static void SetupMapButtons_Postfix(GameOptionsMapPicker __instance)
@@ -175,13 +183,21 @@ public static class GameOptionsMapPickerDleksPatch
             __instance.selectedButton = __instance.mapButtons[3];
         }
     }
-    [HarmonyPatch(nameof(GameOptionsMapPicker.SelectMap), new Type[] { typeof(int) }), HarmonyPrefix]
-    public static bool SelectMapTypeOfInt_Prefix(GameOptionsMapPicker __instance, [HarmonyArgument(0)] int mapId)
+
+    [HarmonyPatch(typeof(FreeplayPopover), nameof(FreeplayPopover.Awake)), HarmonyPrefix]
+    public static void FreeplayPopover_Awake_Prefix(FreeplayPopover __instance)
     {
-        if (mapId != 3) return true;
-        AprilFoolsModePatch.EnableFlipSkeld = true;
-        __instance.SelectMap(0);
-        return false;
+        Logger.Info($"{__instance.gameObject.name}", "HaHaHa");
+        FreeplayPopoverButton prefab = __instance.buttons[0];
+        FreeplayPopoverButton thisBtn = Object.Instantiate(prefab, prefab.transform.parent);
+        thisBtn.map = MapNames.Dleks;
+        thisBtn.button.GetComponent<SpriteRenderer>().flipX = true;
+        var btns = __instance.buttons.ToList();
+        btns.Insert(3, thisBtn);
+        __instance.buttons = btns.ToArray();
+        __instance.buttons[3].transform.localPosition = new Vector3(1.25f, 0.00f, 0.00f);
+        __instance.buttons[4].transform.localPosition = new Vector3(-1.25f, -0.75f, 0.00f);
+        __instance.buttons[5].transform.localPosition = new Vector3(1.25f, -0.75f, 0.00f);
     }
 }
 
