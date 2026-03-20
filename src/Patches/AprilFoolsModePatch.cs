@@ -137,8 +137,7 @@ public static class LongBoiPatch
 
 #region Dleks Patches
 
-[HarmonyPatch(typeof(GameOptionsMapPicker))]
-public static class GameOptionsMapPickerDleksPatch
+public static class DleksPatch
 {
     [HarmonyPatch(typeof(CreateGameMapPicker), nameof(CreateGameMapPicker.Initialize))]
     [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize))]
@@ -155,6 +154,7 @@ public static class GameOptionsMapPickerDleksPatch
         };
         __instance.AllMapIcons.Insert(3, thisVal);
     }
+
     [HarmonyPatch(nameof(GameOptionsMapPicker.SetupMapButtons)), HarmonyPostfix]
     public static void SetupMapButtons_Postfix(GameOptionsMapPicker __instance)
     {
@@ -182,6 +182,15 @@ public static class GameOptionsMapPickerDleksPatch
             __instance.mapButtons[3].Button.SelectButton(isSelected: true);
             __instance.selectedButton = __instance.mapButtons[3];
         }
+    }
+
+    [HarmonyPatch(nameof(GameOptionsMapPicker.SelectMap), new Type[] { typeof(int) }), HarmonyPrefix]
+    public static bool SelectMapTypeOfInt_Prefix(GameOptionsMapPicker __instance, [HarmonyArgument(0)] int mapId)
+    {
+        if (mapId != 3) return true;
+        AprilFoolsModePatch.EnableFlipSkeld = true;
+        __instance.SelectMap(0);
+        return false;
     }
 
     [HarmonyPatch(typeof(FreeplayPopover), nameof(FreeplayPopover.Awake)), HarmonyPrefix]
