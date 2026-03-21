@@ -14,8 +14,13 @@ public static class AprilFoolsModePatch
     [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
     public static bool ShouldFlipSkeld_Prefix(ref bool __result)
     {
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "FindAGame") return true;
-        __result = EnableFlipSkeld && (!GameObject.Find("FreeplayPopover")?.active ?? true);
+        string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        bool isOnlineHost = scene == Constants.ONLINE_SCENE && (AmongUsClient.Instance?.AmHost ?? false);
+        bool isCreatingGame = scene == Constants.MAIN_MENU_SCENE && (MainMenuManagerPatch.Instance?.createGameScreen?.isActiveAndEnabled ?? false);
+
+        bool isHost = isOnlineHost || isCreatingGame;
+        if (!isHost) return true;
+        __result = EnableFlipSkeld;
         return false;
     }
 
@@ -204,9 +209,11 @@ public static class FreeplayPopoverPatch
         FreeplayPopoverButton thisBtn = Object.Instantiate(prefab, prefab.transform.parent);
         thisBtn.map = MapNames.Dleks;
         thisBtn.button.GetComponent<SpriteRenderer>().flipX = true;
+
         var btns = __instance.buttons.ToList();
         btns.Insert(3, thisBtn);
         __instance.buttons = btns.ToArray();
+
         __instance.buttons[3].transform.localPosition = new Vector3(1.25f, 0.00f, 0.00f);
         __instance.buttons[4].transform.localPosition = new Vector3(-1.25f, -0.75f, 0.00f);
         __instance.buttons[5].transform.localPosition = new Vector3(1.25f, -0.75f, 0.00f);
