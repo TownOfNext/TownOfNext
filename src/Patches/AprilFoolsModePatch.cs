@@ -14,9 +14,8 @@ public static class AprilFoolsModePatch
     [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
     public static bool ShouldFlipSkeld_Prefix(ref bool __result)
     {
-        __result = EnableFlipSkeld
-            && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "FindAGame"
-            && (!GameObject.Find("FreeplayPopover")?.active ?? true);
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "FindAGame") return true;
+        __result = EnableFlipSkeld && (!GameObject.Find("FreeplayPopover")?.active ?? true);
         return false;
     }
 
