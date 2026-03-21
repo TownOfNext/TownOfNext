@@ -254,7 +254,7 @@ public static class GameStates
     {
         get
         {
-            if (IsLocalGame && !IsNotJoined) return true;
+            if ((IsLocalGame || IsFreePlay) && !IsNotJoined) return true;
             const string Domain = "among.us";
             
             return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&

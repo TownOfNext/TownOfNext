@@ -902,7 +902,7 @@ public static class Utils
             + $"\n  ○ /up {GetString("Command.up")}";
         SendMessage(txt, ID);
     }
-    public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
+    public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && !GameStates.IsFreePlay && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string dead = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
