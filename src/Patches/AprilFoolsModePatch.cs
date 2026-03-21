@@ -137,7 +137,8 @@ public static class LongBoiPatch
 
 #region Dleks Patches
 
-public static class DleksPatch
+[HarmonyPatch(typeof(GameOptionsMapPicker))]
+public static class GameOptionsMapPickerPatch
 {
     [HarmonyPatch(typeof(CreateGameMapPicker), nameof(CreateGameMapPicker.Initialize))]
     [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.Initialize))]
@@ -192,11 +193,14 @@ public static class DleksPatch
         __instance.SelectMap(0);
         return false;
     }
+}
 
-    [HarmonyPatch(typeof(FreeplayPopover), nameof(FreeplayPopover.Awake)), HarmonyPrefix]
+[HarmonyPatch(typeof(FreeplayPopover))] 
+public static class FreeplayPopoverPatch
+{
+    [HarmonyPatch(nameof(FreeplayPopover.Awake)), HarmonyPrefix]
     public static void FreeplayPopover_Awake_Prefix(FreeplayPopover __instance)
     {
-        Logger.Info($"{__instance.gameObject.name}", "HaHaHa");
         FreeplayPopoverButton prefab = __instance.buttons[0];
         FreeplayPopoverButton thisBtn = Object.Instantiate(prefab, prefab.transform.parent);
         thisBtn.map = MapNames.Dleks;
