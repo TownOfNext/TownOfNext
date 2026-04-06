@@ -102,7 +102,7 @@ public class MessageControl
         {
             // The number of historical messages is not enough to cover all messages
             var player = Main.AllAlivePlayerControls.ToArray()[IRandom.Instance.Next(0, Main.AllAlivePlayerControls.Count())];
-            SendMessageAsPlayerImmediately(player, "Hello " + Main.ModName, includeHost, includeModded);
+            SendMessageAsPlayerImmediately(player, "Hello " + (Main.IsAprilFools ? "TOHE" : Main.ModName), includeHost, includeModded);
         }
         foreach (var mc in sendList)
         {

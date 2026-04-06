@@ -128,7 +128,7 @@ public static class GameSettingMenuPatch
     }
     private static MapSelectButton CreateTabImage(GameSettingMenu __instance, GameOptionsMenu tonxTab, string resourcePath)
     {
-        var image = Utils.LoadSprite(resourcePath, 100f);
+        var image = Utils.LoadSprite((Main.IsAprilFools ? "TONX.Resources.Images.TOHE_TabIcon_SystemSettings.png" : resourcePath), 100f);
         var tabImage = Object.Instantiate(__instance.GameSettingsTab.MapPicker.MapButtonOrigin, Vector3.zero, Quaternion.identity, tonxTab.transform);
         tabImage.SetImage(image, GameOptionsMenu.MASK_LAYER);
         tabImage.transform.localPosition = new(7.3f, -0.6f, -10f);

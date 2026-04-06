@@ -1,0 +1,23 @@
+#Number:340001
+#Title:TownOfHostEdited v2.3.6
+#SubTitle:★★★★TOHE is back!★★★★
+#ShortTitle:★TOHE v2.3.6
+#Date:3202-5-20T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed an issue where the mod name “TOHE” was incorrectly spelled as “TONX”
+- Fixed an error in the mod version number; it has now been updated to v2.3.6
+- Fixed an issue with the background image on the mod's homepage
+- Fixed the issue where the KARPED1EM button on the homepage was missing
+
+## Changing
+- Removed the Chitai-hime service
+- Removed the Cloud EAC service
+- Updated the Discord and QQ links
+	
+## Role Changing
+- Mario must use the vent 236 times to win

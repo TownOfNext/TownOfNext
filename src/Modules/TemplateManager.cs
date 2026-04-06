@@ -21,7 +21,8 @@ public static class TemplateManager
         ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
         ["PlayerName"] = () => DataManager.Player.Customization.Name,
         ["AmongUsVersion"] = () => UnityEngine.Application.version,
-        ["ModVersion"] = () => Main.PluginVersion,
+        ["ModName"] = () => Main.IsAprilFools ? "TOHE" : Main.ModName,
+        ["ModVersion"] = () => Main.IsAprilFools ? "2.3.6" : Main.PluginVersion,
         ["Map"] = () => Constants.MapNames[Main.NormalOptions.MapId],
         ["NumEmergencyMeetings"] = () => Main.NormalOptions.NumEmergencyMeetings.ToString(),
         ["EmergencyCooldown"] = () => Main.NormalOptions.EmergencyCooldown.ToString(),
@@ -72,7 +73,7 @@ public static class TemplateManager
         else
         {
             var text = File.ReadAllText(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
-            File.WriteAllText(TEMPLATE_FILE_PATH, text.Replace("tohe.cc", "tonx.cc"));
+            if(Main.IsAprilFools) File.WriteAllText(TEMPLATE_FILE_PATH, text.Replace("tonx.cc", "tohe.cc"));
         }
     }
 

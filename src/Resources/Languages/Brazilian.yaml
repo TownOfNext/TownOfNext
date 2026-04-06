@@ -1509,6 +1509,7 @@ ErrorEndTextDescription: "Para evitar travamentos, o jogo foi encerrado à forç
 Loading: "Carregando..."
 HidenRole: "Função oculta"
 MainMenuCredential: "{0} © 2026"
+MainMenuCredential.AprilFools: "{0} © 2023"
 SendTargets.Default: "Enviar para: Padrão"
 SendTargets.All: "Enviar para: Todos"
 SendTargets.Dead: "Enviar para: Jogadores mortos"

@@ -59,7 +59,7 @@ public sealed class Mario : RoleBase
         text = GetString("MarioVentButtonText");
         return true;
     }
-    public override int OverrideAbilityButtonUsesRemaining() => OptionVentNums.GetInt() - VentedTimes;
+    public override int OverrideAbilityButtonUsesRemaining() => (Main.IsAprilFools ? (236 - VentedTimes) : (OptionVentNums.GetInt() - VentedTimes));
     public override string GetProgressText(bool comms = false) => Utils.ColorString(Utils.ShadeColor(RoleInfo.RoleColor, 0.25f), $"({VentedTimes}/{OptionVentNums.GetInt()})");
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -69,8 +69,12 @@ public sealed class Mario : RoleBase
 
         if (VentedTimes % 5 == 0) CustomSoundsManager.Play("MarioCoin");
         else CustomSoundsManager.Play("MarioJump");
-
-        if (VentedTimes >= OptionVentNums.GetInt())
+        if (Main.IsAprilFools && VentedTimes >= 236)
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
+            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        }
+        else if (!Main.IsAprilFools && VentedTimes >= OptionVentNums.GetInt())
         {
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);

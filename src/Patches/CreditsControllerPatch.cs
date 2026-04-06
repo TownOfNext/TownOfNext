@@ -95,7 +95,7 @@ public class CreditsControllerPatch
 
         var credits = new List<CreditsController.CreditStruct>();
 
-        AddTitleToCredits(Utils.ColorString(Main.ModColor32, Main.ModName));
+        AddTitleToCredits(Utils.ColorString(Main.ModColor32, Main.IsAprilFools ? "TOHE" : Main.ModName));
         AddPersonToCredits(devList);
         AddSpaceToCredits();
 

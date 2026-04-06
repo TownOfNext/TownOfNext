@@ -60,7 +60,7 @@ public static class NameTagManager
         {
             name = Options.GetSuffixMode() switch
             {
-                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>TONX v{Main.PluginVersion}</color>",
+                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>{(Main.IsAprilFools ? "TOHE" : "TONX")} v{(Main.IsAprilFools ? "2.3.6" : Main.PluginVersion)}</color>",
                 SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
@@ -71,7 +71,7 @@ public static class NameTagManager
             };
             if (GameStates.IsOnlineGame)
             {
-                var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
+                var upper = $"<size=80%><color=#ffd6ec>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color><color=#baf7ca>★</color>";
                 upper += Options.CurrentGameMode.GetModeInfo()?.HostTag?.Invoke() ?? "";
                 name = upper + "</size>\r\n" + name;
             }

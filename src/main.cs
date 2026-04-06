@@ -41,10 +41,10 @@ public class Main : BasePlugin
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
-    public static readonly bool ShowQQButton = false;
-    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
-    public static readonly bool ShowDiscordButton = false;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
+    public static readonly bool ShowQQButton = true;
+    public static readonly string QQInviteUrl = "https://qm.qq.com/q/mbQdTjfa9i";
+    public static readonly bool ShowDiscordButton = true;
+    public static readonly string DiscordInviteUrl = "https://discord.gg/QkVygSHyDX";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
     // ==========

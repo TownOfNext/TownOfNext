@@ -11,12 +11,12 @@ public static class UpdateFriendCodeUIPatch
     public static void Prefix(AccountTab __instance)
     {
 
-        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>KARPED1EM</color>");
+        string credentialsText = string.Format(GetString((Main.IsAprilFools ? "MainMenuCredential.AprilFools" : "MainMenuCredential")), $"<color={Main.ModColor}>KARPED1EM</color>");
         credentialsText += "\t\t\t";
-        string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
-
+        string versionText = $"<color={Main.ModColor}>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color> - {(Main.IsAprilFools ? "2.3.6" : Main.PluginVersion)}";
+ 
 #if CANARY
-        versionText = $"<color=#fffe1e>{Main.ModName}</color> - {Main.GitCommit}";
+        versionText = $"<color=#fffe1e>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color> - {Main.GitCommit}";
 #endif
 
 #if DEBUG

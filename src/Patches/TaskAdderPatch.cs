@@ -15,7 +15,7 @@ class TaskAdderGamePatch
         if (__instance.Root != taskFolder) return;
 
         if (CustomRolesFolder == null && DestroyableSingleton<TutorialManager>.InstanceExists)
-            CreateCustomFolder(__instance, ref CustomRolesFolder, Main.ModName);
+            CreateCustomFolder(__instance, ref CustomRolesFolder, Main.IsAprilFools ? "TOHE" : Main.ModName);
         if (ShipStylesFolder == null)
             CreateCustomFolder(__instance, ref ShipStylesFolder, "ShipStyles");
     }

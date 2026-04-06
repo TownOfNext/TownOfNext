@@ -118,6 +118,15 @@ public class MainMenuManagerPatch
             return button;
         }
 
+        if (Main.IsAprilFools)
+        {
+            var bq = new GameObject("title_BQ");
+            bq.transform.position = new Vector3(4.1f, -2f, 0f);
+            bq.transform.localScale *= 1.8f;
+            var bqRenderer = bq.AddComponent<SpriteRenderer>();
+            bqRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.BQ.png", 300f);
+        }
+
         string extraLinkName = "Github";
         string extraLinkUrl = Main.GithubRepoUrl;
         bool extraLinkEnabled = Main.ShowGithubUrl;
@@ -126,12 +135,12 @@ public class MainMenuManagerPatch
         string websiteLinkUrl = Main.WebsiteUrl;
         bool websiteLinkEnabled = Main.ShowWebsiteButton;
         
-        // if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
-        // {
-        //     extraLinkName = IsChineseUser ? "QQ群" : "Discord";
-        //     extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
-        //     extraLinkEnabled = true;
-        // }
+         if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
+         {
+             extraLinkName = IsChineseUser ? "QQ群" : "Discord";
+             extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
+             extraLinkEnabled = true;
+         }
 
         if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { OpenUrl(extraLinkUrl); });
         InviteButton.gameObject.SetActive(extraLinkEnabled);
