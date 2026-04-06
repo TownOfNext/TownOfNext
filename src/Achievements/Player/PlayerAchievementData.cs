@@ -47,11 +47,6 @@ public static class PlayerAchievementData
         return list.Any(r => r.Id == achievementId);
     }
     
-    /// <summary>
-    /// 设置指定玩家佩戴的成就头衔 ID。
-    /// 传入 0 或负数表示卸下头衔。
-    /// 由 RPC 同步到所有客户端后调用。
-    /// </summary>
     public static void SetEquippedTitle(byte playerId, int achievementId)
     {
         if (achievementId <= 0)
@@ -66,7 +61,6 @@ public static class PlayerAchievementData
     public static void ResetTitles()
     {
         EquippedTitles.Clear();
-        Logger.Info("[Achievement] 头衔佩戴状态已重置（新大厅）", "AchievementData");
     }
     
     public static void ClearAll()

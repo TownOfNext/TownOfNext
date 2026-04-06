@@ -1,6 +1,7 @@
 using Hazel;
 using TONX.Achievements.Game;
 using TONX.Achievements.Player;
+using TONX.Attributes;
 using UnityEngine;
 
 namespace TONX.Achievements.Player;
@@ -37,7 +38,7 @@ public static class AchievementTitleHandler
         PlayerAchievementData.SetEquippedTitle(playerId, achievementId);
         Logger.Info($"Player {playerId} Title change → ID={achievementId}", "TitleHandler");
         
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
+        if (!GameStates.IsLobby) return;
 
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return;
@@ -46,47 +47,18 @@ public static class AchievementTitleHandler
             0.15f, $"RefreshNameForTitle p{playerId}");
     }
     
-
-    [HarmonyPatch(typeof(NameTagManager), nameof(NameTagManager.ApplyFor))]
-    public static class InjectAchievementTitle
+    // 实现接口
+    public class AchievementTitleProvider : NameTagManager.INameTagProvider
     {
-        public static void Postfix(PlayerControl player)
+        public string GetPrefix(PlayerControl player)
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-            if (!GameStates.IsLobby) return; 
-            if (player == null) return;
-
             int titleId = PlayerAchievementData.GetEquippedTitle(player.PlayerId);
-            if (titleId <= 0) return;
+            if (titleId <= 0) return null;
 
             var achievement = AchievementRegistry.GetById(titleId);
-            if (achievement == null) return;
+            if (achievement == null) return null;
 
-            string currentName = player.name;
-            string prefix      = $"<size=75%><color={achievement.TitleColorHex}>《{achievement.TitleDisplay}》</color></size>";
-
-            // 防止重复叠加（名字里已有该头衔字符串则跳过）
-            if (currentName.Contains(achievement.TitleDisplay)) return;
-
-            string newName = prefix + "\r\n" + currentName;
-            if (player.CurrentOutfitType == PlayerOutfitType.Default)
-                player.RpcSetName(newName);
-        }
-    }
-
-    // ────────────────────────────────────────────
-    //  Harmony Patch #2
-    //  LobbyBehaviour.Start → Postfix
-    //  每次进入大厅时重置头衔佩戴状态
-    // ────────────────────────────────────────────
-
-    [HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
-    public static class ResetTitlesOnLobbyStart
-    {
-        public static void Postfix()
-        {
-            PlayerAchievementData.ResetTitles();
-            Logger.Info("[Achievement] 大厅开始，头衔佩戴状态已重置。", "TitleHandler");
+            return $"<size=75%><color={achievement.TitleColorHex}>[{achievement.TitleDisplay}]</color></size>";
         }
     }
 }

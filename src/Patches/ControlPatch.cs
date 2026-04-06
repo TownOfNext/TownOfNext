@@ -1,4 +1,7 @@
 using Hazel;
+using TONX.Achievements.Common;
+using TONX.Achievements.Game;
+using TONX.Achievements.Roles.Crewmate.Criminologist;
 using TONX.Modules;
 using UnityEngine;
 
@@ -12,6 +15,17 @@ internal class ControllerManagerUpdatePatch
 
     public static void Postfix(ControllerManager __instance)
     {
+        //成就测试
+        if (GetKeysDown(KeyCode.T,KeyCode.Alpha2))
+        {
+            var achievement = AchievementRegistry.GetById(TestAchievement2.AchievementId);
+            achievement?.TryUnlock(PlayerControl.LocalPlayer);
+        }
+        if (GetKeysDown(KeyCode.T,KeyCode.Alpha1))
+        {
+            var achievement = AchievementRegistry.GetById(TestAchievement1.AchievementId);
+            achievement?.TryUnlock(PlayerControl.LocalPlayer);
+        }
         //切换自定义设置的页面
         if (GameStates.IsLobby && !ChatUpdatePatch.Active)
         {

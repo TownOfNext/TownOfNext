@@ -43,7 +43,7 @@ public static class AchievementManager
     public static async Task FetchAndDisplayAchievementsAsync(PlayerControl player)
     {
         if (player == null) return;
-        string friendCode = player.FriendCode.Replace("#","%23");// #需要转成Url编码
+        string friendCode = player.FriendCode;
 
         Utils.SendMessage(GetString("Achievement.LoadingFromServer"), player.PlayerId, $"<color=#FFD700>{GetString("AchievementMsgTitle")}</color>");
 
@@ -112,7 +112,7 @@ public static class AchievementManager
         {
             try
             {
-                var response = await Http.GetAsync($"{ServerBaseUrl}/api/achievements/{Uri.EscapeDataString(player.FriendCode.Replace("#","%23"))}");
+                var response = await Http.GetAsync($"{ServerBaseUrl}/api/achievements/{Uri.EscapeDataString(player.FriendCode)}");
                 if (response.IsSuccessStatusCode)
                 {
                     string json = await response.Content.ReadAsStringAsync();

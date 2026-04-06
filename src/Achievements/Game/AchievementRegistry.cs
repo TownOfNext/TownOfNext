@@ -12,19 +12,20 @@ public static class AchievementRegistry
     [PluginModuleInitializer]
     public static void Initialize()
     {
+        //这咋一股COG味。
         All.Clear();
-        // 公用成就(0-999)
 
-        // 船员职业成就 (1000–1999)
-        Register(new SelfVerify());
+        var types = System.Reflection.Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AchievementBase)));
 
-        // 内鬼职业成就 (2000–2999)
+        foreach (var type in types)
+        {
+            var instance = (AchievementBase)Activator.CreateInstance(type);
+            Register(instance);
+        }
 
-        // 中立职业成就 (3000–3999)
-
-        // 附加身份成就 (4000–4999)
-
-        Logger.Info($"{All.Count} achievements registered", "AchievementRegistry");
+        Logger.Info($"{All.Count} Achievements Registry", "AchievementRegistry");
     }
     
     public static AchievementBase GetById(int id)

@@ -43,7 +43,7 @@ public abstract class AchievementBase : IAchievement
     
     public void TryUnlock(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (GameStates.IsLocalGame) return;
         if (player == null || string.IsNullOrEmpty(player.FriendCode)) return;
         if (PlayerAchievementData.HasAchievement(player.FriendCode, Id)) return;
 
@@ -76,7 +76,7 @@ public abstract class AchievementBase : IAchievement
 
             var achievement = AchievementRegistry.GetById(id);
             string colorHex = achievement?.TitleColorHex ?? "#FFD700";
-            string msg = string.Format(GetString("Achievement.Unlocked"),colorHex,name,description);
+            string msg = string.Format(GetString("Achievement.Unlocked"),colorHex,name);
             Utils.SendMessage(msg, player.PlayerId, $"<color=#FFD700>{GetString("AchievementMsgTitle")}</color>");
         }
     }

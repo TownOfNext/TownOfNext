@@ -1,6 +1,7 @@
 ﻿using AmongUs.Data;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using TONX.Attributes;
 using UnityEngine;
 
 namespace TONX;
@@ -17,6 +18,8 @@ public static class NameTagManager
     public static IReadOnlyDictionary<string, NameTag> AllNameTags => NameTags;
     public static IReadOnlyDictionary<string, NameTag> AllInternalNameTags => AllNameTags.Where(t => t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
     public static IReadOnlyDictionary<string, NameTag> AllExternalNameTags => AllNameTags.Where(t => !t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
+    
+    private static readonly List<INameTagProvider> TagProviders = new();
     public static NameTag DeepClone(NameTag tag)
     {
         NameTag newTag = new();
@@ -74,6 +77,18 @@ public static class NameTagManager
                 var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
                 upper += Options.CurrentGameMode.GetModeInfo()?.HostTag?.Invoke() ?? "";
                 name = upper + "</size>\r\n" + name;
+            }
+        }
+        
+        //这个Lobby的判定条件也许可以扬了
+        if (GameStates.IsLobby)
+        {
+            foreach (var provider in TagProviders)
+            {
+                string prefix = provider.GetPrefix(player);
+                if (string.IsNullOrEmpty(prefix)) continue;
+                if (name.Contains(prefix)) continue; // 防重复
+                name = prefix + "\r\n" + name;
             }
         }
 
@@ -292,6 +307,30 @@ public static class NameTagManager
 
             return new Color(r, g, b);
         }
+    }
+    [PluginModuleInitializer]
+    public static void InitializeProviders()
+    {
+        TagProviders.Clear();
+
+        var types = System.Reflection.Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && typeof(INameTagProvider).IsAssignableFrom(t));
+
+        foreach (var type in types)
+        {
+            var instance = (INameTagProvider)Activator.CreateInstance(type);
+            TagProviders.Add(instance);
+        }
+    }
+    public interface INameTagProvider
+    {
+        /// <summary>
+        /// 添加头衔，很何意味吧。
+        /// </summary>
+        /// <param name="player">添加对象</param>
+        /// <returns></returns>
+        string GetPrefix(PlayerControl player);
     }
 }
 #nullable disable
