@@ -8,21 +8,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  assign_self_to_pull_request:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+  assign:
+    name: Assign self to pull request
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
-      NUMBER: ${{ github.event.pull_request.number }}
-      ASSIGNEE: ${{ github.event.pull_request.user.login }}
-
     steps:
-      - name: Configure git and gh auth
-        run: |
-          gh auth status || gh auth login --with-token <<< "$GH_TOKEN"
-
       - name: Assign self to pull request
-        run: |
-          echo "Assigning PR #$NUMBER to $ASSIGNEE in $GH_REPO"
-          gh pr edit "$NUMBER" --add-assignee "$ASSIGNEE"
+        uses: actions-ecosystem/action-add-assignees@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignees: ${{ github.actor }}
