@@ -152,7 +152,12 @@ public sealed class Stealth : RoleBase, IImpostor
         // 会議中，自分のSuffixじゃない，どこも暗転させてなければ何も出さない
         if (isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
         {
-            return base.GetSuffix(seer, seen, isForMeeting);
+            string addonSuffix = "";
+            foreach (var addon in Player.GetAddonClasses())
+            {
+                addonSuffix += addon?.GetSuffix(seer, seen, isForMeeting);
+            }
+            return base.GetSuffix(seer, seen, isForMeeting) +  addonSuffix;
         }
         return string.Format(GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }

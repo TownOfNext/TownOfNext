@@ -196,7 +196,12 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         seen ??= seer;
         if (isForMeeting || !canSeeMurderRoom || seer != Player || seen != Player || activeNotifies.Count <= 0)
         {
-            return base.GetSuffix(seer, seen, isForMeeting);
+            string addonSuffix = "";
+            foreach (var addon in Player.GetAddonClasses())
+            {
+                addonSuffix += addon?.GetSuffix(seer, seen, isForMeeting);
+            }
+            return base.GetSuffix(seer, seen, isForMeeting) +  addonSuffix;
         }
         var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
         return Utils.ColorString(Color.green, $"{GetString("MurderNotify")}: {string.Join(", ", roomNames)}");

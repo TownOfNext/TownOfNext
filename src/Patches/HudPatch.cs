@@ -91,6 +91,7 @@ class HudManagerPatch
             {
                 //CustomRoleManager.AllActiveRoles.Do(r => Logger.Test(r.Key + " - " + r.Value.MyState.GetCustomRole().ToString()));
                 var roleClass = player.GetRoleClass();
+                var roleAddonClasses = player.GetAddonClasses();
                 if (roleClass != null)
                 {
                     __instance.KillButton.OverrideText((roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text 
@@ -121,6 +122,9 @@ class HudManagerPatch
                     LowerInfoText.fontSizeMax = 2.0f;
                 }
                 LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+                if(roleAddonClasses != null)
+                    foreach (var addon in roleAddonClasses)
+                        LowerInfoText.text += addon?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true);
                 LowerInfoText.enabled = LowerInfoText.text != "";
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)

@@ -296,9 +296,11 @@ public static class Utils
 
         //seen側による変更
         seen.GetRoleClass()?.OverrideDisplayRoleNameAsSeen(seer, ref enabled, ref roleColor, ref roleText);
+        seen?.GetAddonClasses().ForEach( x => x?.OverrideDisplayRoleNameAsSeen(seer, ref enabled, ref roleColor, ref roleText));
 
         //seer側による変更
         seer.GetRoleClass()?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText);
+        seen?.GetAddonClasses().ForEach( x => x?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText));
 
         return enabled ? ColorString(roleColor, roleText) : "";
     }
@@ -368,6 +370,7 @@ public static class Utils
         var state = PlayerState.GetByPlayerId(playerId);
         var (color, text) = GetRoleNameData(state.MainRole, state.SubRoles, showSubRoleMarks);
         CustomRoleManager.GetByPlayerId(playerId)?.OverrideTrueRoleName(ref color, ref text);
+        CustomRoleManager.GetAddonByPlayerId(playerId).ForEach( x => x?.OverrideTrueRoleName(ref color, ref text));
         return (color, text);
     }
     /// <summary>
@@ -555,6 +558,7 @@ public static class Utils
 
         //seer側による変更
         seer.GetRoleClass()?.OverrideProgressTextAsSeer(seen, ref enabled, ref text);
+        seer?.GetAddonClasses().ForEach(x => x?.OverrideProgressTextAsSeer(seen, ref enabled, ref text));
 
         return enabled ? text : "";
     }
@@ -972,6 +976,7 @@ public static class Utils
 
             if (seer.IsModClient()) continue;
             var seerRole = seer.GetRoleClass();
+            var seerAddons = seer.GetAddonClasses();
             string fontSize = isForMeeting ? "1.5" : Main.RoleTextSize.ToString();
             if (isForMeeting && (seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Switch)) fontSize = "70%";
             logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
@@ -992,6 +997,10 @@ public static class Utils
 
                 //seer役職が対象のMark
                 SelfMark.Append(seerRole?.GetMark(seer, isForMeeting: isForMeeting));
+                if (seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        SelfMark.Append(addon?.GetMark(seer, isForMeeting: isForMeeting));
+                
                 //seerに関わらず発動するMark
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
@@ -1003,11 +1012,17 @@ public static class Utils
 
                 //seer役職が対象のLowerText
                 SelfSuffix.Append(seerRole?.GetLowerText(seer, isForMeeting: isForMeeting));
+                if(seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        SelfSuffix.Append(addon?.GetMark(seer, isForMeeting: isForMeeting));
                 //seerに関わらず発動するLowerText
                 SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, isForMeeting: isForMeeting));
 
                 //seer役職が対象のSuffix
                 SelfSuffix.Append(seerRole?.GetSuffix(seer, isForMeeting: isForMeeting));
+                if(seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        SelfSuffix.Append(addon?.GetSuffix(seer, isForMeeting: isForMeeting));
                 //seerに関わらず発動するSuffix
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
@@ -1061,6 +1076,10 @@ public static class Utils
 
                     //seer役職が対象のMark
                     TargetMark.Append(seerRole?.GetMark(seer, target, isForMeeting));
+                    if (seerAddons != null)
+                        foreach (var addon in seerAddons)
+                            TargetMark.Append(addon?.GetMark(seer, isForMeeting: isForMeeting));
+                    
                     //seerに関わらず発動するMark
                     TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 
@@ -1089,6 +1108,9 @@ public static class Utils
 
                     //seer役職が対象のSuffix
                     TargetSuffix.Append(seerRole?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                    if(seerAddons != null)
+                        foreach (var addon in seerAddons)
+                            TargetSuffix.Append(addon?.GetSuffix(seer, isForMeeting: isForMeeting));
                     //seerに関わらず発動するSuffix
                     TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
 

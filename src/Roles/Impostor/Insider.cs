@@ -118,6 +118,9 @@ public sealed class Insider : RoleBase, IImpostor
             {
                 if (seer == impostor || impostor.Is(CustomRoles.Insider) || !impostor.Is(CustomRoleTypes.Impostor)) continue;
                 mark.Append(impostor.GetRoleClass()?.GetMark(impostor, seen, isForMeeting));
+                if (impostor.GetAddonClasses() != null)
+                    foreach (var addon in impostor.GetAddonClasses())
+                        mark.Append(addon?.GetMark(impostor, seen, isForMeeting));
             }
         }
         return mark.ToString();

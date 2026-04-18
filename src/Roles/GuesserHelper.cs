@@ -13,7 +13,7 @@ public static class GuesserHelper
         spam = false;
 
         if (!GameStates.IsInGame || pc == null) return false;
-        if (pc.GetRoleClass() is not IGuesser) return false;
+        if (pc.GetRoleClass() is not IGuesser || !(pc.GetAddonClasses()?.OfType<IGuesser>().Any() ?? false)) return false;
 
         int operate; // 1:ID 2:猜测
         msg = msg.ToLower().Trim();
@@ -53,7 +53,7 @@ public static class GuesserHelper
         reason = string.Empty;
 
         bool guesserSuicide = false;
-        if (guesser.GetRoleClass() is not IGuesser gc) return false;
+        if (guesser.GetRoleClass() is not IGuesser gc|| !(guesser.GetAddonClasses()?.OfType<IGuesser>().Any() ?? false)) return false;
         if (gc.GuessLimit < 1)
         {
             reason = GetString(gc.GuessMaxMsg);
@@ -236,7 +236,8 @@ public static class GuesserHelper
             List<Transform> buttons = new();
             Transform selectedButton = null;
 
-            var gc = PlayerControl.LocalPlayer.GetRoleClass() as IGuesser;
+            IGuesser gc = PlayerControl.LocalPlayer.GetRoleClass() as IGuesser ??
+                          PlayerControl.LocalPlayer.GetAddonClasses()?.OfType<IGuesser>().FirstOrDefault();
             int tabCount = 0;
             List<CustomRoleTypes> customRoleTypesList = gc.GetCustomRoleTypesList();
             if (!gc.CanGuessAddons) customRoleTypesList.Remove(CustomRoleTypes.Addon);

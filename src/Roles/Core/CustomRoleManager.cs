@@ -676,6 +676,7 @@ public enum CustomRoles
     Charmed,
     Bait,
     Beartrap,
+    Guesser,
 }
 public enum CustomRoleTypes
 {

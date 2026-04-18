@@ -119,6 +119,7 @@ public static class MeetingHudPatch
             SoundManager.Instance.ChangeAmbienceVolume(0f);
             if (!GameStates.IsModHost) return;
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
+            var myAddons = PlayerControl.LocalPlayer.GetAddonClasses();
             foreach (var pva in __instance.playerStates)
             {
                 var pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -137,6 +138,11 @@ public static class MeetingHudPatch
                 if (myRole != null)
                 {
                     suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+                }
+                if (myAddons != null)
+                {
+                    foreach (var addon in myAddons)
+                        suffixBuilder.Append(addon?.GetSuffix(PlayerControl.LocalPlayer,pc, isForMeeting: true));
                 }
                 suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
                 if (suffixBuilder.Length > 0)
@@ -194,6 +200,7 @@ public static class MeetingHudPatch
                 if (pva == null) continue;
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
+                var seerAddons = seer.GetAddonClasses();
 
                 var target = Utils.GetPlayerById(pva.TargetPlayerId);
                 if (target == null) continue;
@@ -208,8 +215,10 @@ public static class MeetingHudPatch
                 var overrideName = pva.NameText.text;
                 //调用职业类通过 seer 重写 name
                 seer.GetRoleClass()?.OverrideNameAsSeer(target, ref overrideName, true);
+                seer.GetAddonClasses()?.ForEach(x => x?.OverrideNameAsSeer(target,ref overrideName, true));
                 //调用职业类通过 seen 重写 name
                 target.GetRoleClass()?.OverrideNameAsSeen(seer, ref overrideName, true);
+                target.GetAddonClasses()?.ForEach(x => x?.OverrideNameAsSeen(target, ref overrideName, true));
                 pva.NameText.text = overrideName;
 
                 //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
@@ -218,6 +227,10 @@ public static class MeetingHudPatch
                     sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
 
                 sb.Append(seerRole?.GetMark(seer, target, true));
+                if (seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        sb.Append(addon?.GetMark(seer, target, true));
+                
                 sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
 
                 bool isLover = false;

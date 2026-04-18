@@ -584,6 +584,7 @@ class FixedUpdatePatch
                 //変数定義
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
+                var seerAddons = seer.GetAddonClasses();
                 var target = __instance;
                 string RealName;
                 Mark.Clear();
@@ -607,6 +608,9 @@ class FixedUpdatePatch
 
                 //seer役職が対象のMark
                 Mark.Append(seerRole?.GetMark(seer, target, false));
+                if (seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        Mark.Append(addon?.GetMark(seer, target, true));
                 //seerに関わらず発動するMark
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
@@ -633,6 +637,9 @@ class FixedUpdatePatch
 
                 //seer役職が対象のSuffix
                 Suffix.Append(seerRole?.GetSuffix(seer, target));
+                if(seerAddons != null)
+                    foreach (var addon in seerAddons)
+                        Suffix.Append(addon?.GetSuffix(seer, target));
 
                 //seerに関わらず発動するSuffix
                 Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
