@@ -1422,6 +1422,7 @@ SwapVoteTitle: "【 ★ 换票师 ★ 】"
 CriminologistVerifyTitle: "【 ★ 犯罪学研究院 ★ 】"
 JusticeBalanceTitle: "【 ★ 天平会议 ★ 】"
 MeetingDeathGlobal: "【 ★ 会议凶杀 ★ 】"
+AchievementMsgTitle: "【 ★ 成就消息 ★ 】"
 
 # 单位 / Units
 Format.Players: "{0}人"
@@ -1734,6 +1735,25 @@ Deadbody: "死亡"
 PenguinTimerText: "拖拽倒计时"
 Infected: "感染"
 CurrentVersionType: "当前游戏版本："
+
+# 成就 / Achievement
+Achievement.SetWarning: "此指令只能在大厅阶段使用"
+Achievement.NotFound: "未找到ID为{0}的成就，请检查成就ID是否正确"
+Achievement.Tip: "/wach [成就ID] 佩戴成就头衔 \n/wach 0 卸下成就头衔 \n/achid 查看你的成就ID列表。"
+Achievement.Tip1: "/wach [ID] 佩戴成就头衔 \n/wach 0 卸下头衔"
+Achievement.Tip2: "/ach [成就ID] 查询成就详情 \n/achid 查看你的成就ID列表。"
+Achievement.Unlocked: "<color=#FFD700>★</color> 成就已解锁：\n</color><color={0}>【{1}】</color>"
+Achievement.LoadingFromServer: "<size=80%>正在从服务器读取你的成就，请稍候…</size>"
+Achievement.LoadingFromServer.Fail: "读取失败，也许是网络问题：{0}"
+Achievement.LoadingFromServer.ServerBomb: "无法连接到成就服务器。"
+Achievement.LoadingFromServer.Empty: "你还没有解锁任何成就!\n完成特定目标后，成就将自动解锁"
+Achievement.Command.UnWear: "已卸下成就头衔。"
+Achievement.Command.Wear: "已佩戴头衔 <color={0}>【{1}】</color>\n此头衔将在大厅阶段显示在你的名字前。"
+Achievement.Command.Fail: "未找到ID为 {0} 的成就，请用 /tlid 确认你的成就列表"
+Achievement.Command.NoBelong: "你尚未解锁成就 {0}，无法佩戴此头衔。"
+Achievement.Command.Local: "因为技术原因,我们目前不建议您在本地房间使用成就系统，如果您试图通过修改代码等方式强行佩戴成就头衔的话，那么您的成就可能会全部清零。"
+Achievement.Info.AllCount: "你总共拥有{0}个成就"
+Achievement.Info.UnlockedAt: "解锁时间：{0}"
 
 # 轮抽选角 / Role Draft
 RoleDraft: "轮抽选角"
