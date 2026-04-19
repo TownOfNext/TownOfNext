@@ -31,28 +31,29 @@ public static class MeetingHudPatch
         {
             __instance.StartCoroutine(CoAnimateSwapVote(__instance).WrapToIl2Cpp()); // 换票动画
         }
-    }
-    public static IEnumerator CoAnimateSwapVote(MeetingHud __instance)
-    {
-        var meetingVoteManager = MeetingVoteManager.Instance;
-        if (meetingVoteManager == null) yield break;
-
-        var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
-        foreach (var data in swappedPlayers)
+        public static IEnumerator CoAnimateSwapVote(MeetingHud __instance)
         {
-            if (!data.ShouldAnimate) continue;
-            if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
+            var meetingVoteManager = MeetingVoteManager.Instance;
+            if (meetingVoteManager == null) yield break;
 
-            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
-            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
-            if (pva1 == null || pva2 == null) continue;
+            var swappedPlayers = meetingVoteManager.SwappedPlayers.ToList();
+            foreach (var data in swappedPlayers)
+            {
+                if (!data.ShouldAnimate) continue;
+                if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
 
-            var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
-            __instance.StartCoroutine(Effects.Slide3D(pva1.transform, pva1.transform.localPosition, pva2.transform.localPosition, time));
-            __instance.StartCoroutine(Effects.Slide3D(pva2.transform, pva2.transform.localPosition, pva1.transform.localPosition, time));
-            yield return new WaitForSeconds(time);
+                var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
+                var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
+                if (pva1 == null || pva2 == null) continue;
+
+                var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
+                __instance.StartCoroutine(Effects.Slide3D(pva1.transform, pva1.transform.localPosition, pva2.transform.localPosition, time));
+                __instance.StartCoroutine(Effects.Slide3D(pva2.transform, pva2.transform.localPosition, pva1.transform.localPosition, time));
+                yield return new WaitForSeconds(time);
+            }
         }
     }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
@@ -329,28 +330,49 @@ class SetHighlightedPatch
     }
 }
 
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
-class JusticeMeetingHudPopulateButtonsPatch
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CoIntro))]
+class MeetingHudCoIntroPatch
 {
-    public static void Postfix(MeetingHud __instance)
+    public static bool Prefix(MeetingHud __instance,
+        ref Il2CppSystem.Collections.IEnumerator __result,
+        [HarmonyArgument(0)]NetworkedPlayerInfo reporter,
+        [HarmonyArgument(1)]NetworkedPlayerInfo reportedBody,
+        [HarmonyArgument(2)]Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<NetworkedPlayerInfo> deadBodies
+    )
     {
-        HandleJusticeMeeting(__instance);
-    }
-    public static void HandleJusticeMeeting(MeetingHud __instance)
-    {
-        if (!Justice.IsJusticeMeeting()) return;
-
-        var targets = Justice.GetHostingJustice()?.SelectedPlayers ?? new();
-        var num = -1;
-        foreach (var pva in __instance.playerStates)
+        IEnumerator CoIntroWithEmblem()
         {
-            if (!targets.Contains(pva.TargetPlayerId))
-            {
-                pva.gameObject.SetActive(false);
-                continue;
-            }
-            pva.transform.localPosition = new Vector3(2f * num, 0f, pva.transform.localPosition.z);
-            num *= -1;
+            __instance.SkipVoteButton.SetDisabled();
+            __instance.transform.SetParent(DestroyableSingleton<HudManager>.Instance.transform);
+            __instance.transform.localPosition = Vector3.zero;
+            __instance.meetingContents.localPosition = new Vector3(0f, -10f, 0f);
+
+            DestroyableSingleton<HudManager>.Instance.Chat.ForceClosed();
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(isActive: false);
+            DestroyableSingleton<HudManager>.Instance.MapButton.gameObject.SetActive(false);
+
+            bool num = reportedBody == null;
+            MeetingCalledAnimation prefab = num ? ShipStatus.Instance.EmergencyOverlay : ShipStatus.Instance.ReportOverlay;
+            NetworkedPlayerInfo networkedPlayerInfo = num ? reporter : reportedBody;
+            DestroyableSingleton<HudManager>.Instance.KillOverlay.ShowMeeting(prefab, networkedPlayerInfo.DefaultOutfit);
+            yield return DestroyableSingleton<HudManager>.Instance.KillOverlay.WaitForFinish();
+
+            __instance.MeetingIntro.Init(reporter, deadBodies);
+            __instance.SetMasksEnabled(enabled: true);
+            DestroyableSingleton<HudManager>.Instance.MapButton.gameObject.SetActive(true);
+            yield return Effects.Slide2D(__instance.meetingContents, new Vector2(0f, -10f), new Vector2(0f, 0f), 0.25f);
+            yield return Effects.Wait(0.5f);
+            yield return __instance.MeetingIntro.CoRun();
+            __instance.SetMasksEnabled(enabled: false);
+
+            __instance.TitleText.text = Options.CurrentGameMode.GetModeClass()?.GetMeetingTitleText() ?? GetString(StringNames.MeetingWhoIsTitle);
+            __instance.state = MeetingHud.VoteStates.Discussion;
+            ControllerManager.Instance.OpenOverlayMenu(__instance.name, null, __instance.DefaultButtonSelected, __instance.ControllerSelectable);
+            ConsoleJoystick.SetMode_Menu();
+            if (!PlayerControl.LocalPlayer.Data.IsDead) yield return DestroyableSingleton<HudManager>.Instance.ShowEmblem(false);
         }
-    }
+
+        __result = CoIntroWithEmblem().WrapToIl2Cpp();
+        return false;
+    } 
 }
