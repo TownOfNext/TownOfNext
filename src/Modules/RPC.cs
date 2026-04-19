@@ -288,8 +288,7 @@ internal class RPCHandlerPatch
                 var target = Utils.GetPlayerById(reader.ReadByte());
                 if (AmongUsClient.Instance.AmHost && (GameStates.IsDiscussing || GameStates.IsVoting))
                 {
-                    var meetingButton = __instance.GetRoleClass() as IMeetingButton
-                        ?? __instance.GetAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
+                    var meetingButton = __instance.GetRoleAndAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
                     meetingButton?.OnClickButton(target);
                 }
                 break;

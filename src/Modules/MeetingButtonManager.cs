@@ -21,8 +21,7 @@ public class MeetingButtonManager
 
         // CreateMeetingButton
         ButtonCreated = false;
-        var meetingButton = PlayerControl.LocalPlayer.GetRoleClass() as IMeetingButton
-            ?? PlayerControl.LocalPlayer.GetAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
+        var meetingButton = PlayerControl.LocalPlayer.GetRoleAndAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
         if (meetingButton != null && meetingButton.ShouldShowButton())
         {
             CreateMeetingButton(__instance, meetingButton);
@@ -41,8 +40,7 @@ public class MeetingButtonManager
         __instance.playerStates.Where(x => (!PlayerState.AllPlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
 
         //本地玩家并没有会议技能按钮
-        var meetingButton = PlayerControl.LocalPlayer.GetRoleClass() as IMeetingButton
-            ?? PlayerControl.LocalPlayer.GetAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
+        var meetingButton = PlayerControl.LocalPlayer.GetRoleAndAddonClasses()?.OfType<IMeetingButton>().FirstOrDefault();
         if (meetingButton == null) return;
 
         //投票结束时销毁全部技能按钮
