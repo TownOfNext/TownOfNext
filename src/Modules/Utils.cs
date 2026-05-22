@@ -296,11 +296,11 @@ public static class Utils
 
         //seen側による変更
         seen.GetRoleClass()?.OverrideDisplayRoleNameAsSeen(seer, ref enabled, ref roleColor, ref roleText);
-        seen?.GetAddonClasses().ForEach( x => x?.OverrideDisplayRoleNameAsSeen(seer, ref enabled, ref roleColor, ref roleText));
+        seen?.GetAddonClasses()?.ForEach( x => x?.OverrideDisplayRoleNameAsSeen(seer, ref enabled, ref roleColor, ref roleText));
 
         //seer側による変更
         seer.GetRoleClass()?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText);
-        seen?.GetAddonClasses().ForEach( x => x?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText));
+        seer?.GetAddonClasses()?.ForEach( x => x?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText));
 
         return enabled ? ColorString(roleColor, roleText) : "";
     }
@@ -370,7 +370,7 @@ public static class Utils
         var state = PlayerState.GetByPlayerId(playerId);
         var (color, text) = GetRoleNameData(state.MainRole, state.SubRoles, showSubRoleMarks);
         CustomRoleManager.GetByPlayerId(playerId)?.OverrideTrueRoleName(ref color, ref text);
-        CustomRoleManager.GetAddonByPlayerId(playerId).ForEach( x => x?.OverrideTrueRoleName(ref color, ref text));
+        CustomRoleManager.GetAddonByPlayerId(playerId)?.ForEach( x => x?.OverrideTrueRoleName(ref color, ref text));
         return (color, text);
     }
     /// <summary>
@@ -558,7 +558,7 @@ public static class Utils
 
         //seer側による変更
         seer.GetRoleClass()?.OverrideProgressTextAsSeer(seen, ref enabled, ref text);
-        seer?.GetAddonClasses().ForEach(x => x?.OverrideProgressTextAsSeer(seen, ref enabled, ref text));
+        seer?.GetAddonClasses()?.ForEach(x => x?.OverrideProgressTextAsSeer(seen, ref enabled, ref text));
 
         return enabled ? text : "";
     }
@@ -1125,8 +1125,10 @@ public static class Utils
 
                     //调用职业类通过 seer 重写 name
                     seer.GetRoleClass()?.OverrideNameAsSeer(target, ref TargetPlayerName, isForMeeting);
+                    seer.GetAddonClasses()?.ForEach(x => x?.OverrideNameAsSeer(target, ref TargetPlayerName, isForMeeting));
                     //调用职业类通过 seen 重写 name
                     target.GetRoleClass()?.OverrideNameAsSeen(seer, ref TargetPlayerName, isForMeeting);
+                    target.GetAddonClasses()?.ForEach(x => x?.OverrideNameAsSeen(seer, ref TargetPlayerName, isForMeeting));
 
                     //ターゲットのプレイヤー名の色を書き換えます。
                     TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, isForMeeting);

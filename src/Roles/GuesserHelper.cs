@@ -53,7 +53,8 @@ public static class GuesserHelper
         reason = string.Empty;
 
         bool guesserSuicide = false;
-        if (guesser.GetRoleAndAddonClasses() is not IGuesser gc) return false;
+        var gc = guesser.GetRoleAndAddonClasses()?.OfType<IGuesser>().FirstOrDefault();
+        if (gc == null) return false;
         if (gc.GuessLimit < 1)
         {
             reason = GetString(gc.GuessMaxMsg);

@@ -38,9 +38,18 @@ public static class HudSpritePatch
                 if (killer.OverrideVentButtonSprite(out var newVentButtonName))
                     newVentButton = CustomButton.GetSprite(newVentButtonName);
             }
-            if (player.GetRoleClass()?.GetAbilityButtonSprite(out var newAbilityButtonName) ?? false)
+            string? newAbilityButtonName = null;
+            var hasAbilitySprite = player.GetRoleClass()?.GetAbilityButtonSprite(out newAbilityButtonName) ?? false;
+            if (!hasAbilitySprite)
+                hasAbilitySprite = player.GetAddonClasses()?.Any(a => a?.GetAbilityButtonSprite(out newAbilityButtonName) ?? false) ?? false;
+            if (hasAbilitySprite)
                 newAbilityButton = CustomButton.GetSprite(newAbilityButtonName);
-            if (player.GetRoleClass()?.GetReportButtonSprite(out var newReportButtonName) ?? false)
+
+            string? newReportButtonName = null;
+            var hasReportSprite = player.GetRoleClass()?.GetReportButtonSprite(out newReportButtonName) ?? false;
+            if (!hasReportSprite)
+                hasReportSprite = player.GetAddonClasses()?.Any(a => a?.GetReportButtonSprite(out newReportButtonName) ?? false) ?? false;
+            if (hasReportSprite)
                 newReportButton = CustomButton.GetSprite(newReportButtonName);
         }
 

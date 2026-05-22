@@ -94,7 +94,7 @@ class HudManagerPatch
                 var roleAddonClasses = player.GetAddonClasses();
                 if (roleClass != null)
                 {
-                    __instance.KillButton.OverrideText((roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text 
+                    __instance.KillButton.OverrideText((roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text
                         : (player.GetCustomRole().GetRoleTypes() is RoleTypes.Viper ? GetString(StringNames.ViperAbility) : GetString(StringNames.KillLabel)));
                     var reportLabel = roleClass?.GetReportButtonText() ?? "";
                     if (reportLabel != "") __instance.ReportButton.OverrideText(reportLabel);
@@ -105,6 +105,23 @@ class HudManagerPatch
                         int uses = roleClass.OverrideAbilityButtonUsesRemaining();
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
                         else __instance.AbilityButton.SetInfiniteUses();
+                    }
+                }
+                if (roleAddonClasses != null)
+                {
+                    foreach (var addon in roleAddonClasses)
+                    {
+                        if (addon == null) continue;
+                        var addonReportLabel = addon.GetReportButtonText();
+                        if (addonReportLabel != "" && __instance.ReportButton.buttonLabelText.text == GetString(StringNames.ReportLabel))
+                            __instance.ReportButton.OverrideText(addonReportLabel);
+                        if (roleClass?.HasAbility == true)
+                        {
+                            if (addon.GetAbilityButtonText(out var addonAbilityLabel)) __instance.AbilityButton.OverrideText(addonAbilityLabel);
+                            if (!addon.CanUseAbilityButton()) __instance.AbilityButton.ToggleVisible(false);
+                            int uses = addon.OverrideAbilityButtonUsesRemaining();
+                            if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
+                        }
                     }
                 }
 

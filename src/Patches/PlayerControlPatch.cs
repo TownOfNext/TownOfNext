@@ -218,9 +218,24 @@ public static class PlayerControlCheckShapeshiftPatch
 
         // 役職の処理
         var role = __instance.GetRoleClass();
-        if (role?.OnCheckShapeshift(target, ref shouldAnimate) == false)
+        var addons = __instance.GetAddonClasses();
+        bool rejectedByRole = role?.OnCheckShapeshift(target, ref shouldAnimate) == false;
+        bool rejectedByAddon = false;
+        bool addonCanDesync = false;
+        if (addons != null)
         {
-            if (role.CanDesyncShapeshift)
+            foreach (var addon in addons)
+            {
+                if (addon?.OnCheckShapeshift(target, ref shouldAnimate) == false)
+                {
+                    rejectedByAddon = true;
+                    if (addon.CanDesyncShapeshift) addonCanDesync = true;
+                }
+            }
+        }
+        if (rejectedByRole || rejectedByAddon)
+        {
+            if ((rejectedByRole && role.CanDesyncShapeshift) || addonCanDesync)
             {
                 __instance.RpcSpecificRejectShapeshift(target, shouldAnimate);
             }

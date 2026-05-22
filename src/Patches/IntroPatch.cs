@@ -279,6 +279,7 @@ public class IntroCutscenePatch
                 Main.AllPlayerControls.Do(pc =>
                 {
                     pc.GetRoleClass()?.OnSpawn(true);
+                    pc.GetAddonClasses()?.Do(a => a?.OnSpawn(true));
                     pc.SyncSettings();
                     pc.RpcResetAbilityCooldown();
                 });

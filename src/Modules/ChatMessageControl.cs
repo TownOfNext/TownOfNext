@@ -27,6 +27,22 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
+        // Also check addon classes
+        if (!IsCommand)
+        {
+            var addons = Player.GetAddonClasses();
+            if (addons != null)
+            {
+                foreach (var addon in addons)
+                {
+                    if (addon != null && addon.OnSendMessage(Message, out recallMode))
+                    {
+                        IsCommand = true;
+                        break;
+                    }
+                }
+            }
+        }
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
 

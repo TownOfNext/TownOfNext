@@ -1,10 +1,13 @@
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
+using static TONX.GuesserHelper;
 
 namespace TONX.Roles.AddOns.Common;
 
 public sealed class Guesser : AddonBase, IGuesser, IMeetingButton
 {
+    private static List<CustomRoles> Conflicts = new() { CustomRoles.NiceGuesser, CustomRoles.EvilGuesser };
+
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.CreateForAddon(
             typeof(Guesser),
@@ -14,7 +17,8 @@ public sealed class Guesser : AddonBase, IGuesser, IMeetingButton
             SetupCustomOption,
             "gs|guesser|赌怪|猜测",
             "#eede26",
-            assignTeam: (true, true, true)
+            assignTeam: (true, true, true),
+            conflicts: Conflicts
         );
 
     public Guesser(PlayerControl player) : base(RoleInfo, player) { }
@@ -36,7 +40,7 @@ public sealed class Guesser : AddonBase, IGuesser, IMeetingButton
         GGCanGuessAdt,
         GGCanGuessVanilla,
     }
-    
+
     public int GuessLimit { get; set; } = 3;
     public string GuessMaxMsg => "GGGuessMax";
     public bool CanGuessAddons => OptionCanGuessAddons.GetBool();
@@ -53,12 +57,18 @@ public sealed class Guesser : AddonBase, IGuesser, IMeetingButton
             nameText = Utils.ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
         }
     }
+    public override bool OnSendMessage(string msg, out MsgRecallMode recallMode)
+    {
+        bool isCommand = GuesserMsg(Player, msg, out bool spam);
+        recallMode = spam ? MsgRecallMode.Spam : MsgRecallMode.None;
+        return isCommand;
+    }
     public string ButtonName { get; private set; } = "Target";
     public bool ShouldShowButton() => Player.IsAlive();
     public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
     public bool OnClickButtonLocal(PlayerControl target)
     {
-        GuesserHelper.ShowGuessPanel(target.PlayerId, MeetingHud.Instance);
+        ShowGuessPanel(target.PlayerId, MeetingHud.Instance);
         return false;
     }
 

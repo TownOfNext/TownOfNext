@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+using TONX.Modules;
 using UnityEngine;
 
 namespace TONX.Roles.Core;
@@ -18,6 +20,18 @@ public abstract class AddonBase : BaseCore
         if (CustomRoleManager.AllActiveAddons[Player.PlayerId].Count == 0)
             CustomRoleManager.AllActiveAddons.Remove(Player.PlayerId);
     }
+
+    /// <summary>
+    /// 可以使用技能按钮
+    /// </summary>
+    /// <returns>true：可以使用能力按钮</returns>
+    public virtual bool CanUseAbilityButton() => true;
+
+    /// <summary>
+    /// 自視点のみ変身する
+    /// 抜け殻を自視点のみに残すことが可能
+    /// </summary>
+    public virtual bool CanDesyncShapeshift => false;
 
     /// <summary>
     /// 显示在职业旁边的文本
@@ -105,4 +119,47 @@ public abstract class AddonBase : BaseCore
     /// <param name="isForMeeting">是否用于显示在会议上</param>
     public virtual void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     { }
+
+    /// <summary>
+    /// 修改技能按钮的剩余次数
+    /// </summary>
+    public virtual int OverrideAbilityButtonUsesRemaining() => -1;
+
+    /// <summary>
+    /// 更改变形/跳管/生命面板按钮的文本
+    /// </summary>
+    public virtual bool GetAbilityButtonText(out string text)
+    {
+        text = default;
+        return false;
+    }
+
+    /// <summary>
+    /// 更改变形/跳管/生命面板按钮的图片
+    /// </summary>
+    /// <param name="buttonName">按钮图片名</param>
+    /// <returns>true：确定要覆盖</returns>
+    public virtual bool GetAbilityButtonSprite(out string buttonName)
+    {
+        buttonName = default;
+        return false;
+    }
+
+    /// <summary>
+    /// 更改报告按钮的文本
+    /// </summary>
+    /// <param name="text">覆盖后的文本</param>
+    /// <returns>true：确定要覆盖</returns>
+    public virtual string GetReportButtonText() => GetString(StringNames.ReportLabel);
+
+    /// <summary>
+    /// 更改报告按钮的图片
+    /// </summary>
+    /// <param name="buttonName">按钮图片名</param>
+    /// <returns>true：确定要覆盖</returns>
+    public virtual bool GetReportButtonSprite(out string buttonName)
+    {
+        buttonName = default;
+        return false;
+    }
 }

@@ -96,6 +96,7 @@ class ExileControllerWrapUpPatch
             foreach (var pc in Main.AllPlayerControls)
             {
                 pc.GetRoleClass()?.OnSpawn();
+                pc.GetAddonClasses()?.Do(a => a?.OnSpawn());
                 pc.SyncSettings();
                 pc.RpcResetAbilityCooldown();
             }

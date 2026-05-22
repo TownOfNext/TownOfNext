@@ -35,7 +35,7 @@ public sealed class Tiebreaker : AddonBase
         List<byte> votes = new();
         foreach (var tieBreaker in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Tiebreaker)))
         {
-            var bclass = tieBreaker.GetAddonClasses().FirstOrDefault(c => c is Tiebreaker) as Tiebreaker;
+            var bclass = tieBreaker.GetAddonClasses()?.FirstOrDefault(c => c is Tiebreaker) as Tiebreaker;
             votes.Add(bclass.TiebreakerVote);
         }
         if (mostVotedPlayers.Count(votes.Contains) == 1)
