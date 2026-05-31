@@ -43,7 +43,10 @@ public class MeetingVoteManager
     /// <param name="exiled">驱逐者</param>
     public void ClearAndExile(byte voter, byte exiled)
     {
-        logger.Info($"{Utils.GetPlayerById(voter).GetNameWithRole()} によって {GetVoteName(exiled)} が追放されます");
+        var voterPlayer = Utils.GetPlayerById(voter);
+        var exiledName = GetVoteName(exiled);
+        logger.Info($"ClearAndExile called: voterId={voter}, voterName={(voterPlayer != null ? voterPlayer.GetNameWithRole() : "NULL")}, exiledId={exiled}, exiledName={exiledName}");
+        logger.Info($"{voterPlayer.GetNameWithRole()} によって {exiledName} が追放されます");
         ClearVotes();
         var vote = new VoteData(voter);
         vote.DoVote(exiled, 1);
@@ -155,6 +158,7 @@ public class MeetingVoteManager
     /// <param name="applyVoteMode">是否应用投票的设置</param>
     public void EndMeeting(bool applyVoteMode = true)
     {
+        logger.Info($"EndMeeting called: applyVoteMode={applyVoteMode}, meetingHud={(meetingHud != null ? "exists" : "NULL")}");
         SwappedPlayers.ForEach(swapped => SwapVote(swapped.Target1, swapped.Target2));
         var result = CountVotes(applyVoteMode);
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
