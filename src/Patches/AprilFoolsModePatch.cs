@@ -16,7 +16,12 @@ public static class AprilFoolsModePatch
     {
         string scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         bool isOnlineHost = scene == Constants.ONLINE_SCENE && (AmongUsClient.Instance?.AmHost ?? false);
-        bool isCreatingGame = scene == Constants.MAIN_MENU_SCENE && (MainMenuManagerPatch.Instance?.createGameScreen?.isActiveAndEnabled ?? false);
+        bool isCreatingGame = false;
+        if (scene == Constants.MAIN_MENU_SCENE)
+        {
+            try { isCreatingGame = MainMenuManagerPatch.Instance != null && MainMenuManagerPatch.Instance.createGameScreen != null && MainMenuManagerPatch.Instance.createGameScreen.isActiveAndEnabled; }
+            catch { isCreatingGame = false; }
+        }
 
         bool isHost = isOnlineHost || isCreatingGame;
         if (!isHost) return true;
