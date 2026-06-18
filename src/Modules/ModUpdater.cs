@@ -18,12 +18,9 @@ public class ModUpdater
     {
 #if DEBUG && Windows
         "file:///D:/Desktop/TONX/info.json",
-        "file:///D:/Desktop/info.json",
-        "https://record.tonx.cc/api/version.json"
+        "file:///D:/Desktop/info.json"
 #else
-        "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
-        "https://download.hayashiume.top/https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
-        "https://record.tonx.cc/api/version.json",
+        "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json"
 #endif
     };
     private static IReadOnlyList<string> GetInfoFileUrlList()
