@@ -22,6 +22,7 @@ public class CreditsControllerPatch
                 $"喜 - {GetString("PullRequester")}",
                 $"Tommy-XL - {GetString("PullRequester")}",
                 $"Slok7565 - {GetString("PullRequester")}",
+                $"ELinmei - {GetString("Collaborators")}",
 
                 $"Commandf1 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
