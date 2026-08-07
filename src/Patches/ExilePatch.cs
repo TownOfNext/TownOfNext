@@ -27,8 +27,13 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(AirshipExileController._WrapUpAndSpawn_d__11), nameof(AirshipExileController._WrapUpAndSpawn_d__11.MoveNext))]
     class AirshipExileControllerPatch
     {
+        private static int _LastInstance = -1;
         public static void Postfix(AirshipExileController._WrapUpAndSpawn_d__11 __instance)
         {
+            var key = __instance.GetHashCode();
+            if (key == _LastInstance) return;
+            _LastInstance = key;
+
             var airshipExileController = __instance.__4__this;
             try
             {

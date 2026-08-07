@@ -179,7 +179,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
                 Utils.SendMessage(
                     string.Format(GetString("BalanceSkillCancelled"), Name),
                     Player.PlayerId,
-                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("JusticeBalanceTitle")));
+                    Utils.ColorString(Utils.GetRoleColor(CustomRoles.Justice), GetString("JusticeBalanceTitle")));
             }, 0.8f, "Balance Skill Cancelled");
 
             return true;
@@ -208,7 +208,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
             Utils.SendMessage(
                 string.Format(GetString("BalanceSkill"), Name2),
                 Player.PlayerId,
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("JusticeBalanceTitle")));
+                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Justice), GetString("JusticeBalanceTitle")));
         }, 0.8f, "Balance Skill");
 
         if (SelectedPlayers.Count == 2) MeetingHud.Instance.RpcForceEndMeeting();
@@ -277,11 +277,30 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
 
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
     {
+        Logger.Info($"OnPlayerDeath enter: dyingPlayer={player.GetNameWithRole()}, deathReason={deathReason}, isOnMeeting={isOnMeeting}, MyPlayer={Player.GetNameWithRole()}, HostingJusticeMeeting={HostingJusticeMeeting}, SelectedPlayers=[{string.Join(",", SelectedPlayers)}]", "Justice");
         if (deathReason is CustomDeathReason.Vote || !isOnMeeting || player == null) return;
+        if (!HostingJusticeMeeting)
+        {
+            if (SelectedPlayers.Remove(player.PlayerId)) SendRPC();
+            return;
+        }
+
+        // Justice 死亡或掉线时清除天平会议状态，让当前会议正常继续
+        if (player.PlayerId == Player.PlayerId)
+        {
+            Logger.Info($"Justice 死亡或掉线，清除天平会议状态", "Justice");
+            HostingJusticeMeeting = false;
+            SelectedPlayers.Clear();
+            SendRPC();
+            return;
+        }
+
+        // 被选中的目标在会议期间死亡 — 将其移除并放逐存活者
         if (SelectedPlayers.Remove(player.PlayerId)) SendRPC();
-        if (!HostingJusticeMeeting) return;
+        if (SelectedPlayers.Count == 0 || MeetingVoteManager.Instance == null) return;
 
         var survivorId = SelectedPlayers.Find(x => x != player.PlayerId);
+        if (Utils.GetPlayerById(survivorId) == null) return;
         MeetingVoteManager.Instance.ClearAndExile(player.PlayerId, survivorId);
         Utils.SendMessage(
             string.Format(GetString("JusticeMeetingForceExile"), player.GetRealName(), Utils.GetPlayerById(survivorId).GetRealName()),

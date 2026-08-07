@@ -54,6 +54,8 @@ internal class ChangeRoleSettings
             Main.RolesRecord = new();
             Main.CanRecord = false;
 
+            RoleAssigned = false;
+
             Main.PlayerColors = new();
             //名前の記録
             // Main.AllPlayerNames = new();
@@ -136,7 +138,6 @@ internal class SelectRolesPatch
                 PlayerState.AllPlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            RoleAssigned = false;
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();

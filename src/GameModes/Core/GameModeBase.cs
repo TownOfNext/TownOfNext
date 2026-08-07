@@ -51,6 +51,7 @@ public abstract class GameModeBase : IDisposable
     public virtual void AfterAssignRoles()
     {
         CustomRoleSelector.RoleAssigned = true;
+        RPC.SyncRolesAssigningState(true);
     }
 
     // == 游戏结束相关 ==
@@ -126,6 +127,11 @@ public abstract class GameModeBase : IDisposable
         recallMode = MsgRecallMode.None;
         return false;
     }
+    /// <summary>
+    /// 会议标题内容
+    /// </summary>
+    /// <returns></returns>
+    public virtual string GetMeetingTitleText() => GetString(StringNames.MeetingWhoIsTitle);
     /// <summary>
     /// 修改会议时长
     /// </summary>

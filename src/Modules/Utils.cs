@@ -727,7 +727,7 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
             if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
             if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
@@ -902,7 +902,7 @@ public static class Utils
             + $"\n  ○ /up {GetString("Command.up")}";
         SendMessage(txt, ID);
     }
-    public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
+    public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && !GameStates.IsFreePlay && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string dead = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -1465,6 +1465,7 @@ public static class Utils
             0 => AprilFoolsModePatch.FlipSkeld ? new(27f, 3.3f) : new(-27f, 3.3f), // The Skeld & Dleks Eht
             1 => new(-11.4f, 8.2f), // Mira HQ
             2 => new(42.6f, -19.9f), // Polus
+            3 => new(27f, 3.3f), // Dleks Eht
             4 => new(-16.8f, -6.2f), // Airship
             5 => new(9.4f, 17.9f), // The Fungle
             _ => throw new NotImplementedException(),

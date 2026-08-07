@@ -277,7 +277,7 @@ public static class GameStartManagerBeginGamePatch
             if (Options.AddedTheSkeld.GetBool()) randomMaps.Add(0);
             if (Options.AddedMiraHQ.GetBool()) randomMaps.Add(1);
             if (Options.AddedPolus.GetBool()) randomMaps.Add(2);
-            // if (Options.AddedDleks.GetBool()) RandomMaps.Add(3);
+            if (Options.AddedDleks.GetBool()) randomMaps.Add(3);
             if (Options.AddedTheAirShip.GetBool()) randomMaps.Add(4);
             if (Options.AddedTheFungle.GetBool()) randomMaps.Add(5);
 

@@ -116,7 +116,12 @@ class OnPlayerLeftPatch
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
-        CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role.OnPlayerDeath(data.Character, PlayerState.GetByPlayerId(data.Character.PlayerId).DeathReason, GameStates.IsMeeting));
+        var player = data.Character;
+        if (player == null) return;
+        var deathReason = PlayerState.GetByPlayerId(player.PlayerId)?.DeathReason ?? CustomDeathReason.etc;
+        Logger.Info($"OnPlayerLeft Prefix: player={player.GetNameWithRole()}, deathReason={deathReason}, isMeeting={GameStates.IsMeeting}, roleCount={CustomRoleManager.AllActiveRoles.Count}", "OnPlayerLeft");
+        CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role.OnPlayerDeath(player, deathReason, GameStates.IsMeeting));
+        Logger.Info($"OnPlayerLeft Prefix done for {player.GetNameWithRole()}", "OnPlayerLeft");
     }
     public static List<int> ClientsProcessed = new();
     public static void Add(int id)
