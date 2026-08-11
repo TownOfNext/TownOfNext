@@ -253,7 +253,38 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 Logger.Warn($"VisorId: {of.VisorId}", "Get Cos Id");
                 Logger.Warn($"NamePlateId: {of.NamePlateId}", "Get Cos Id");
                 return (MsgRecallMode.Block, null);
-            })
+            }),
+            new(["achid","achevementid"], () => CommandAccess.All, mc =>
+            {
+                if (!GameStates.IsLobby)
+                    return (MsgRecallMode.Block, GetString("Achievement.SetWarning"));
+                _ = Achievements.Game.AchievementManager.FetchAndDisplayAchievementsAsync(mc.Player);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["wach","wearachievement"], () => CommandAccess.All, mc =>
+            {
+                if (!GameStates.IsLobby)
+                    return (MsgRecallMode.Block, GetString("Achievement.SetWarning"));
+                if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int titleId))
+                    return (MsgRecallMode.Block, GetString("Achievement.Tip"));
+                if (GameStates.IsLocalGame)
+                    return (MsgRecallMode.Block, GetString("Achievement.Command.Local"));
+                _ = Achievements.Game.AchievementManager.WearTitleAsync(mc.Player, titleId);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["ach","achievement"], () => CommandAccess.All, mc =>
+            {
+                if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int achId))
+                    return (MsgRecallMode.Block, GetString("Achievement.Tip2"));
+
+                var achievement = TONX.Achievements.Game.AchievementRegistry.GetById(achId);
+                if (achievement == null)
+                    return (MsgRecallMode.Block, string.Format(GetString("Achievement.NotFound"), achId));
+
+                string msg = $"<color={achievement.TitleColorHex}>【{achievement.Name}】</color>\n" +
+                             $"{achievement.Description}";
+                return (MsgRecallMode.Block, msg);
+            }),
         };
     }
 

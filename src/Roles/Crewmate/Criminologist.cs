@@ -3,6 +3,8 @@ using Hazel;
 using TONX.Modules;
 using UnityEngine;
 using TONX.Roles.Core.Interfaces;
+using TONX.Achievements.Game;
+using TONX.Achievements.Roles.Crewmate.Criminologist;
 
 namespace TONX.Roles.Crewmate;
 
@@ -153,6 +155,9 @@ public class Criminologist : RoleBase, IMeetingButton
             else Player.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("VerifySuicideMessage"));
         }
 
+        // 记录是否为自我指认（用于成就判断）
+        bool isSelfVerify = Is(killer);
+
         DeadPlayerChosen = byte.MaxValue;
         var succeed = target.GetRealKiller()?.PlayerId == killer.PlayerId;
         if (!succeed && !OptionDeductOnFailed.GetBool()) HasExecutedThisMeeting = true;
@@ -185,9 +190,15 @@ public class Criminologist : RoleBase, IMeetingButton
             state.DeathReason = CustomDeathReason.Verifyed;
             killer.SetRealKiller(Player);
             killer.RpcSuicideWithAnime();
-
-            //死者检查
+            
             Utils.NotifyRoles(isForMeeting: true, NoCache: true);
+
+            // 终极犯罪成就
+            if (isSelfVerify)
+            {
+                var achievement = AchievementRegistry.GetById(SelfVerify.AchievementId);
+                achievement?.TryUnlock(Player);
+            }
 
             _ = new LateTask(() =>
             {
