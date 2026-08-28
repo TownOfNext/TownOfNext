@@ -11,9 +11,7 @@ public class CreditsControllerPatch
 
                 $"KARPED1EM - {GetString("Creater")}",
                 $"SHAAARKY - {GetString("Collaborators")}",
-                $"Slok7565 - {GetString("Collaborators")}",
                 $"Mousse - {GetString("Collaborators")}",
-                $"ELinmei - {GetString("Collaborators")}",
 
                 $"IRIDESCENT - {GetString("Art")}",
                 $"Endrmen40409 - {GetString("Art")}",
@@ -23,6 +21,8 @@ public class CreditsControllerPatch
                 $"天寸梦初 - {GetString("PullRequester")}",
                 $"喜 - {GetString("PullRequester")}",
                 $"Tommy-XL - {GetString("PullRequester")}",
+                $"Slok7565 - {GetString("PullRequester")}",
+                $"ELinmei - {GetString("PullRequester")}",
 
                 $"Commandf1 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
