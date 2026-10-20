@@ -27,7 +27,7 @@ internal static class CrowdedPatch
     {
         try
         {
-            RuntimeHelpers.RunClassConstructor(typeof(NormalGameOptionsV11).TypeHandle);
+            RuntimeHelpers.RunClassConstructor(typeof(NormalGameOptionsV12).TypeHandle);
 
             int[] origMaxImp = { 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
             int[] expandedMaxImp = new int[128];
@@ -39,8 +39,8 @@ internal static class CrowdedPatch
             for (int i = 0; i < 128; i++)
                 expandedMinPlayers[i] = i < origMinPlayers.Length ? origMinPlayers[i] : 4;
 
-            var maxImpField = typeof(NormalGameOptionsV11).GetField("MaxImpostors", BindingFlags.NonPublic | BindingFlags.Static);
-            var minPlayersField = typeof(NormalGameOptionsV11).GetField("MinPlayers", BindingFlags.NonPublic | BindingFlags.Static);
+            var maxImpField = typeof(NormalGameOptionsV12).GetField("MaxImpostors", BindingFlags.NonPublic | BindingFlags.Static);
+            var minPlayersField = typeof(NormalGameOptionsV12).GetField("MinPlayers", BindingFlags.NonPublic | BindingFlags.Static);
             if (maxImpField != null) maxImpField.SetValue(null, expandedMaxImp);
             if (minPlayersField != null) minPlayersField.SetValue(null, expandedMinPlayers);
 
@@ -159,11 +159,11 @@ internal static class CrowdedPatch
         }
     }
 
-    [HarmonyPatch(typeof(NormalGameOptionsV11), nameof(NormalGameOptionsV11.AreInvalid))]
+    [HarmonyPatch(typeof(NormalGameOptionsV12), nameof(NormalGameOptionsV12.AreInvalid))]
     public static class InvalidOptionsPatches
     {
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        public static bool Prefix(NormalGameOptionsV11 __instance, [HarmonyArgument(0)] int maxExpectedPlayers)
+        public static bool Prefix(NormalGameOptionsV12 __instance, [HarmonyArgument(0)] int maxExpectedPlayers)
         {
             return __instance.NumImpostors < 1 ||
                    __instance.KillDistance is < 0 or > 2 ||
