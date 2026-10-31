@@ -399,7 +399,7 @@ public static class Utils
     public static Color GetRoleColor(CustomRoles role)
     {
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = role.GetRoleInfo()?.RoleColorCode;
-        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
+        _ = ColorHelper.TryParseHtmlString(hexColor, out Color c);
         return c;
     }
     public static string GetRoleColorCode(CustomRoles role)
@@ -911,7 +911,7 @@ public static class Utils
 
     public static Color HexToColor(string hex)
     {
-        _ = ColorUtility.TryParseHtmlString(hex, out var color);
+        _ = ColorHelper.TryParseHtmlString(hex, out var color);
         return color;
     }
 
@@ -1257,7 +1257,7 @@ public static class Utils
     {
 #if Windows
         string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TONX-logs/";
-#elif Android
+#elif Android || iOS
         string f = $"{Application.persistentDataPath}/TONX-logs/";
 #endif
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
@@ -1265,7 +1265,7 @@ public static class Utils
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
 #if Windows
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-#elif Android
+#elif Android || iOS
         FileInfo file = new(@$"/data/data/dev.allofus.starlight/files/BepInEx/LogOutput.log");
 #endif
 

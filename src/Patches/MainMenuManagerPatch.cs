@@ -98,7 +98,7 @@ public class MainMenuManagerPatch
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener(action);
             AspectPosition aspectPosition = button.GetComponent<AspectPosition>();
-#if Android
+#if Android || iOS
             var yPosition = col == 1 ? 0.5f - 0.08f * row : 0.5f - 0.08f * (row - 1);
 #else
             var yPosition = 0.5f - 0.08f * row;
@@ -137,7 +137,7 @@ public class MainMenuManagerPatch
 
         if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () =>
         {
-#if Android
+#if Android || iOS
             OpenURLAndroid(extraLinkUrl);
 #elif Windows
             Application.OpenURL(extraLinkUrl);
@@ -148,7 +148,7 @@ public class MainMenuManagerPatch
 
         if (WebsiteButton == null) WebsiteButton = CreatButton(websiteLinkName, () =>
         {
-#if Android
+#if Android || iOS
             OpenURLAndroid(websiteLinkUrl);
 #elif Windows
             Application.OpenURL(websiteLinkUrl);
@@ -157,7 +157,7 @@ public class MainMenuManagerPatch
         WebsiteButton.gameObject.SetActive(websiteLinkEnabled);
         WebsiteButton.name = "TONX Website Button";
         
-#if Android
+#if Android || iOS
         // 對Android端按鈕重叠問題的容錯
         // 此段代碼必須在所有創建按鈕代碼後
         __instance.quitButton.gameObject.SetActive(false); // 因會和按鈕重叠，故隱藏 
@@ -186,7 +186,7 @@ public class MainMenuManagerPatch
 
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
     }
-#if Android
+#if Android || iOS
     private static void OpenURLAndroid(string url)
     {
         Constants.OpenURL(url);

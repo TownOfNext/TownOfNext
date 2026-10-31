@@ -8,7 +8,7 @@ public static class OptionSerializer
 {
     private static LogHandler logger = Logger.Handler(nameof(OptionSerializer));
     private const string Header = "%TOHOptions%", Footer = "%End%";
-#if Android
+#if Android || iOS
     private static readonly DirectoryInfo exportDir = new($"{Application.persistentDataPath}/TONX_DATA/OptionOutputs");
 #elif Windows
     private static readonly DirectoryInfo exportDir = new("./TONX_DATA/OptionOutputs");

@@ -19,9 +19,7 @@ internal class ChangeRoleSettings
         {
             //注:この時点では役職は設定されていません。
             Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-
-            // 和天使同等待遇
-            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.SpiritGuide, 0, 0);
+            
 
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();

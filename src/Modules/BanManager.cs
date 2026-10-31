@@ -13,7 +13,7 @@ public static class BanManager
 #if Windows
     private static readonly string DENY_NAME_LIST_PATH = @"./TONX_Data/DenyName.txt";
     private static readonly string BAN_LIST_PATH = @"./TONX_Data/BanList.txt";
-#elif Android
+#elif Android || iOS
     private static readonly string DENY_NAME_LIST_PATH = $"{Application.persistentDataPath}/TONX_Data/DenyName.txt";
     private static readonly string BAN_LIST_PATH = $"{Application.persistentDataPath}/TONX_Data/BanList.txt";
 #endif
@@ -27,7 +27,7 @@ public static class BanManager
         {
 #if Windows
             if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
-#elif Android
+#elif Android || iOS
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif
 
@@ -96,7 +96,7 @@ public static class BanManager
         {
 #if Windows
             if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
-#elif Android
+#elif Android || iOS
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif
             if (!File.Exists(DENY_NAME_LIST_PATH)) File.Create(DENY_NAME_LIST_PATH).Close();
@@ -147,7 +147,7 @@ public static class BanManager
         {
 #if Windows
             if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");               
-#elif Android
+#elif Android || iOS
             if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
 #endif
             if (!File.Exists(BAN_LIST_PATH)) File.Create(BAN_LIST_PATH).Close();

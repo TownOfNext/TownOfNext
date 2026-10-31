@@ -92,7 +92,7 @@ public class SimpleRoleInfo
             };
         RoleColorCode = colorCode;
 
-        _ = ColorUtility.TryParseHtmlString(colorCode, out RoleColor);
+        _ = ColorHelper.TryParseHtmlString(colorCode, out RoleColor);
 
         if (Experimental) tab = TabGroup.OtherRoles;
         else if (tab == TabGroup.GameSettings)
@@ -198,10 +198,6 @@ public class SimpleRoleInfo
                 break;
             case RoleTypes.Judge:
                 roleName = CustomRoles.Judge;
-                customRoleType = CustomRoleTypes.Crewmate;
-                break;
-            case RoleTypes.SpiritGuide:
-                roleName = CustomRoles.SpiritGuide;
                 customRoleType = CustomRoleTypes.Crewmate;
                 break;
             case RoleTypes.Impostor:

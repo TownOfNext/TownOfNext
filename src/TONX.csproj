@@ -46,6 +46,9 @@
 			<HintPath>..\libs\Assembly-CSharp.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="..\libs\iOS\*.dll">
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

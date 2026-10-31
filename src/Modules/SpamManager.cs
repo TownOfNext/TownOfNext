@@ -9,7 +9,7 @@ public static class SpamManager
 {
 #if Windows
     private static readonly string BANEDWORDS_FILE_PATH = "./TONX_Data/BanWords.txt";
-#elif Android
+#elif Android || iOS
     private static readonly string BANEDWORDS_FILE_PATH = $"{Application.persistentDataPath}/TONX_Data/BanWords.txt";
 #endif
     
@@ -30,7 +30,7 @@ public static class SpamManager
 #if Windows
                 if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
                 if (File.Exists(@"./BanWords.txt")) File.Move(@"./BanWords.txt", BANEDWORDS_FILE_PATH);
-#elif Android
+#elif Android || iOS
                 if (!Directory.Exists($"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
                 if (File.Exists(@$"{Application.persistentDataPath}/BanWords.txt")) File.Move(@$"{Application.persistentDataPath}/BanWords.txt", BANEDWORDS_FILE_PATH);
 #endif

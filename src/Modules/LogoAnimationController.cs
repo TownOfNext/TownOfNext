@@ -63,13 +63,13 @@ public class LogoAnimationController : MonoBehaviour
         {
             // 防止三个点在同一象限
             var angles = new float[3];
-            angles[0] = Random.Range(30f, 90f) * Mathf.Deg2Rad;
-            angles[1] = Random.Range(150f, 210f) * Mathf.Deg2Rad;
-            angles[2] = Random.Range(270f, 330f) * Mathf.Deg2Rad;
+            angles[0] = Random.Range(30f, 90f) * MathHelper.Deg2Rad;
+            angles[1] = Random.Range(150f, 210f) * MathHelper.Deg2Rad;
+            angles[2] = Random.Range(270f, 330f) * MathHelper.Deg2Rad;
 
             for (var i = 0; i < 3; i++)
             {
-                angles[i] += Random.Range(-15f, 15f) * Mathf.Deg2Rad;
+                angles[i] += Random.Range(-15f, 15f) * MathHelper.Deg2Rad;
                 var distance = Random.Range(minDistance, maxDistance);
                 flyOutTargets[i] = new Vector3(Mathf.Cos(angles[i]) * distance, Mathf.Sin(angles[i]) * distance, 0);
             }
@@ -97,7 +97,7 @@ public class LogoAnimationController : MonoBehaviour
 
         logoRenderer.enabled = false;
         logoRenderer.sortingOrder = 1;
-        logoRenderer.sortingLayerName = "UI";
+        //logoRenderer.sortingLayerName = "UI";
         
         allBallsArrived = false;
         ballsArrivedCount = 0;
@@ -287,7 +287,7 @@ public class LogoAnimationController : MonoBehaviour
             var tangent = CalculateBezierTangent(startPosition, controlPoint, targetPosition, currentT);
             if (tangent.magnitude > 0.01f)
             {
-                var angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+                var angle = Mathf.Atan2(tangent.y, tangent.x) * MathHelper.Rad2Deg;
                 ball.transform.rotation = Quaternion.Euler(0, 0, angle);
             }
             
@@ -334,7 +334,7 @@ public class LogoAnimationController : MonoBehaviour
             new Vector2(0.5f, 0.5f));
         circleRenderer.sprite = circleSprite;
         circleRenderer.sortingOrder = 0;
-        circleRenderer.sortingLayerName = "UI";
+        //circleRenderer.sortingLayerName = "UI";
 
         var elapsed = 0f;
         const float intensifyDuration = 0.5f;
@@ -415,7 +415,7 @@ public class LogoAnimationController : MonoBehaviour
             
             if (t < 0.7f)
             {
-                var glow = Mathf.Sin(t * Mathf.PI * 2f) * 0.1f + 1f;
+                var glow = Mathf.Sin(t * MathHelper.PI * 2f) * 0.1f + 1f;
                 logoRenderer.color = new Color(glow, glow, glow, fadeT);
             }
             
@@ -553,17 +553,17 @@ public class LogoAnimationController : MonoBehaviour
     */
     private static float EaseOutSine(float t)
     {
-        return Mathf.Sin(t * Mathf.PI * 0.5f);
+        return Mathf.Sin(t * MathHelper.PI * 0.5f);
     }
     
     private static float EaseInSine(float t)
     {
-        return 1 - Mathf.Cos(t * Mathf.PI * 0.5f);
+        return 1 - Mathf.Cos(t * MathHelper.PI * 0.5f);
     }
     
     private static float EaseInOutSine(float t)
     {
-        return -(Mathf.Cos(Mathf.PI * t) - 1) / 2;
+        return -(Mathf.Cos(MathHelper.PI * t) - 1) / 2;
     }
 }
 

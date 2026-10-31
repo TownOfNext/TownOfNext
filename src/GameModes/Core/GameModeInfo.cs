@@ -35,7 +35,7 @@ public class GameModeInfo
         if (colorCode == "") colorCode = "#ffffff";
         ModeColorCode = colorCode;
 
-        _ = ColorUtility.TryParseHtmlString(colorCode, out ModeColor);
+        _ = ColorHelper.TryParseHtmlString(colorCode, out ModeColor);
 
         hostTag ??= () => $"<color=#87cefa>{Main.PluginVersion}</color>";
         HostTag = hostTag;

@@ -135,7 +135,7 @@ public class ModUpdater
 
             SetUpdateButtonStatus();
         }, 0f, "CheckForUpdate");
-#elif Android
+#elif Android || iOS
         foreach (var url in GetInfoFileUrlList())
         {
             if (await GetVersionInfo(url))

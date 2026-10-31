@@ -27,7 +27,7 @@ internal static class CrowdedPatch
     {
         try
         {
-            RuntimeHelpers.RunClassConstructor(typeof(NormalGameOptionsV12).TypeHandle);
+            RuntimeHelpers.RunClassConstructor(typeof(NormalGameOptionsV11).TypeHandle);
 
             int[] origMaxImp = { 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
             int[] expandedMaxImp = new int[128];
@@ -40,9 +40,9 @@ internal static class CrowdedPatch
                 expandedMinPlayers[i] = i < origMinPlayers.Length ? origMinPlayers[i] : 4;
 
             // v19将这些从私有改为公共了。
-            SetStaticArray(typeof(NormalGameOptionsV12), "MaxImpostors", expandedMaxImp);
-            SetStaticArray(typeof(NormalGameOptionsV12), "MinPlayers", expandedMinPlayers);
-            SetStaticArray(typeof(HideNSeekGameOptionsV12), "MinPlayers", expandedMinPlayers);
+            SetStaticArray(typeof(NormalGameOptionsV11), "MaxImpostors", expandedMaxImp);
+            SetStaticArray(typeof(NormalGameOptionsV11), "MinPlayers", expandedMinPlayers);
+            SetStaticArray(typeof(HideNSeekGameOptionsV11), "MinPlayers", expandedMinPlayers);
 
             Logger.Info("Expanded MaxImpostors/MinPlayers arrays to 128 elements", "CrowdedPatch");
         }
@@ -172,11 +172,11 @@ internal static class CrowdedPatch
         }
     }
 
-    [HarmonyPatch(typeof(NormalGameOptionsV12), nameof(NormalGameOptionsV12.AreInvalid))]
+    [HarmonyPatch(typeof(NormalGameOptionsV11), nameof(NormalGameOptionsV11.AreInvalid))]
     public static class InvalidOptionsPatches
     {
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        public static bool Prefix(NormalGameOptionsV12 __instance, [HarmonyArgument(0)] int maxExpectedPlayers)
+        public static bool Prefix(NormalGameOptionsV11 __instance, [HarmonyArgument(0)] int maxExpectedPlayers)
         {
             return __instance.NumImpostors < 1 ||
                    __instance.KillDistance is < 0 or > 2 ||

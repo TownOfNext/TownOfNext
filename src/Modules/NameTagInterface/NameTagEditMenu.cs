@@ -121,9 +121,9 @@ public static class NameTagEditMenu
         string color2 = Color2_Enter.GetComponent<TextBoxTMP>().text.Trim();
         string color3 = Color3_Enter.GetComponent<TextBoxTMP>().text.Trim();
         List<Color> colors = new();
-        if (color1 != "" && ColorUtility.DoTryParseHtmlColor("#" + color1, out var c1)) colors.Add(c1);
-        if (color2 != "" && ColorUtility.DoTryParseHtmlColor("#" + color2, out var c2)) colors.Add(c2);
-        if (color3 != "" && ColorUtility.DoTryParseHtmlColor("#" + color3, out var c3)) colors.Add(c3);
+        if (color1 != "" && ColorHelper.TryParseHtmlString("#" + color1, out var c1)) colors.Add(c1);
+        if (color2 != "" && ColorHelper.TryParseHtmlString("#" + color2, out var c2)) colors.Add(c2);
+        if (color3 != "" && ColorHelper.TryParseHtmlString("#" + color3, out var c3)) colors.Add(c3);
         if (colors.Count > 1) com.Gradient = new(colors.ToArray());
         else if (colors.Count == 1) com.TextColor = colors[0];
         com.Spaced = default;

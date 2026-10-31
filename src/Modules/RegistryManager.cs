@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-#if Android
+#if Android || iOS
 using UnityEngine;
 #endif
 
@@ -36,7 +36,7 @@ public static class RegistryManager
         Keys.SetValue("Last launched version", Main.version.ToString());
         Keys.SetValue("Path", Path.GetFullPath("./"));
 
-#elif Android
+#elif Android || iOS
         string regLastVersion = PlayerPrefs.GetString("Last launched version", "");
         if (string.IsNullOrEmpty(regLastVersion))
             LastVersion = new Version(0, 0, 0);
@@ -52,7 +52,7 @@ public static class RegistryManager
 #if Windows
                 @"./TOH_DATA",
                 @"./TOHE_DATA",
-#elif Android
+#elif Android || iOS
                 $"{Application.persistentDataPath}/TOH_DATA",
                 $"{Application.persistentDataPath}/TOHE_DATA",
 #endif

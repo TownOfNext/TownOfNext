@@ -36,11 +36,11 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2026.9.29"; // 19.0
+    public const string LowestSupportedVersion = "2026.8.18"; // 18.0
     public static readonly bool IsPublicAvailableOnThisVersion = true;
-    public const string PluginVersion = "4.0.2";
+    public const string PluginVersion = "4.0.3";
     public const int PluginCreation = 1;
-    public const VersionType VerType = VersionType.Release;
+    public const VersionType VerType = VersionType.Beta;
     public static readonly bool AllowHtmlTagMsgOnOfficialServer = false;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -66,7 +66,7 @@ public class Main : BasePlugin
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
-    public static NormalGameOptionsV12 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static NormalGameOptionsV11 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }

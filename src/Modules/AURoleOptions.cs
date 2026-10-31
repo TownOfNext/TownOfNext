@@ -116,10 +116,5 @@ namespace TONX
             get => Opt.GetFloat(FloatOptionNames.JudgeTaskRequirementPercentage);
             set => Opt.SetFloat(FloatOptionNames.JudgeTaskRequirementPercentage, value);
         }
-        public static float SpiritGuideCooldownSeconds
-        {
-            get => Opt.GetFloat(FloatOptionNames.SpiritGuideCooldownSeconds);
-            set => Opt.SetFloat(FloatOptionNames.SpiritGuideCooldownSeconds, value);
-        }
     }
 }

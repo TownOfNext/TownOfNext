@@ -486,7 +486,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.Data.Role.Role == RoleTypes.SpiritGuide || pc.IsEaten()) return false;
+        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.IsEaten()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
 

@@ -41,8 +41,8 @@ public class GameStartManagerPatch
             HideName.gameObject.SetActive(true);
             HideName.name = "HideName";
             HideName.color =
-                    ColorUtility.TryParseHtmlString(Main.HideColor.Value, out var color) ? color :
-                    ColorUtility.TryParseHtmlString(Main.ModColor, out var modColor) ? modColor : HideName.color;
+                    ColorHelper.TryParseHtmlString(Main.HideColor.Value, out var color) ? color :
+                    ColorHelper.TryParseHtmlString(Main.ModColor, out var modColor) ? modColor : HideName.color;
             HideName.text = Main.HideName.Value;
 
             warningText = Object.Instantiate(__instance.GameStartText, __instance.transform);

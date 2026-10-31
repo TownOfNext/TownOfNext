@@ -11,7 +11,7 @@ public class IntroCutscenePatch
 #if Windows
     [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext)), HarmonyPostfix]
     public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__41 __instance)
-#elif Android
+#elif Android || iOS
     [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__40), nameof(IntroCutscene._ShowRole_d__40.MoveNext)), HarmonyPostfix]
     public static void ShowRole_Postfix(IntroCutscene._ShowRole_d__40 __instance)
 #endif
@@ -253,7 +253,7 @@ public class IntroCutscenePatch
     }
 #if Windows
     [HarmonyPatch(nameof(IntroCutscene.OnDestroy))]
-#elif Android
+#elif Android || iOS
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX))]
     [HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
 #endif

@@ -11,7 +11,7 @@ public static class TemplateManager
 {
 #if Windows
     private static readonly string TEMPLATE_FILE_PATH = "./TONX_Data/MsgTemplate.txt";
-#elif Android
+#elif Android || iOS
     private static readonly string TEMPLATE_FILE_PATH = $"{Application.persistentDataPath}/TONX_Data/MsgTemplate.txt";
 #endif
     
@@ -54,7 +54,7 @@ public static class TemplateManager
 #if Windows
                 if (!Directory.Exists(@"TONX_Data")) Directory.CreateDirectory(@"TONX_Data");
                 if (File.Exists(@"./MsgTemplate.txt")) File.Move(@"./MsgTemplate.txt", TEMPLATE_FILE_PATH);
-#elif Android
+#elif Android || iOS
                 if (!Directory.Exists(@$"{Application.persistentDataPath}/TONX_Data")) Directory.CreateDirectory($"{Application.persistentDataPath}/TONX_Data");
                 if (File.Exists(@$"{Application.persistentDataPath}/MsgTemplate.txt")) File.Move(@$"{Application.persistentDataPath}//MsgTemplate.txt", TEMPLATE_FILE_PATH);
 #endif

@@ -10,7 +10,7 @@ class ChanceChangePatch
     {
         // The Phantom does not work together with desynchronized impostor roles e.g. Sheriff so we need to disable it.
         // This may be removed in the future when we have implemented changing vanilla role or some other stuff.
-        if (__instance.Role.Role is RoleTypes.GuardianAngel or RoleTypes.SpiritGuide) /*|| (__instance.Role.Role is RoleTypes.Phantom && !DebugModeManager.IsDebugMode)*/
+        if (__instance.Role.Role is RoleTypes.GuardianAngel) /*|| (__instance.Role.Role is RoleTypes.Phantom && !DebugModeManager.IsDebugMode)*/
         {
             string disableText = $" ({GetString("Disabled")})";
             // 隐藏+-按钮
